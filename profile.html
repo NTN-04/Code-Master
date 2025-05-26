@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hồ Sơ Của Tôi | CodeMaster</title>
+    <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="css/profile.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+  </head>
+
+  <body>
+    <header>
+      <div class="container">
+        <div class="logo">
+          <a href="index.html">
+            <img src="./images/logo-01.svg" alt="logo"
+          /></a>
+        </div>
+        <nav>
+          <ul>
+            <li><a href="index.html">Trang Chủ</a></li>
+            <li><a href="courses.html">Khóa Học</a></li>
+            <li><a href="resources.html">Tài Nguyên</a></li>
+            <li><a href="profile.html" class="active">Hồ Sơ Của Tôi</a></li>
+          </ul>
+        </nav>
+      </div>
+    </header>
+
+    <section class="profile-header">
+      <div class="container">
+        <div class="profile-info">
+          <div class="profile-avatar">
+            <img src="images/profile-avatar.jpg" alt="Ảnh Đại Diện" />
+          </div>
+          <div class="profile-details">
+            <h1>Nguyễn Văn A</h1>
+            <p class="profile-title">Lập Trình Viên Web</p>
+            <div class="profile-stats">
+              <div class="stat">
+                <span class="stat-value">4</span>
+                <span class="stat-label">Khóa Học Đang Học</span>
+              </div>
+              <div class="stat">
+                <span class="stat-value">2</span>
+                <span class="stat-label">Khóa Học Đã Hoàn Thành</span>
+              </div>
+              <div class="stat">
+                <span class="stat-value">65%</span>
+                <span class="stat-label">Tiến Độ Trung Bình</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="profile-content">
+      <div class="container">
+        <div class="profile-tabs">
+          <button class="tab-btn active" data-tab="my-courses">
+            Khóa Học Của Tôi
+          </button>
+          <button class="tab-btn" data-tab="saved-resources">
+            Tài Nguyên Đã Lưu
+          </button>
+          <button class="tab-btn" data-tab="achievements">Thành Tích</button>
+          <button class="tab-btn" data-tab="settings">Cài Đặt Tài Khoản</button>
+        </div>
+
+        <div class="tab-content active" id="my-courses">
+          <h2>Khóa Học Của Tôi</h2>
+
+          <div class="courses-filter">
+            <div class="filter-options">
+              <button class="filter-btn active" data-filter="all">
+                Tất Cả Khóa Học
+              </button>
+              <button class="filter-btn" data-filter="in-progress">
+                Đang Học
+              </button>
+              <button class="filter-btn" data-filter="completed">
+                Đã Hoàn Thành
+              </button>
+            </div>
+
+            <div class="search-box">
+              <input
+                type="text"
+                placeholder="Tìm kiếm khóa học..."
+                id="course-search"
+              />
+              <button><i class="fas fa-search"></i></button>
+            </div>
+          </div>
+
+          <div class="user-courses">
+            <div class="course-card" data-status="in-progress">
+              <div class="course-image">
+                <img src="images/html-css.png" alt="Khóa Học HTML & CSS" />
+                <div class="course-tag">Phát Triển Web</div>
+              </div>
+              <div class="course-info">
+                <h3>Nền Tảng HTML & CSS</h3>
+                <div class="progress-container">
+                  <div class="progress-bar" data-progress="35">
+                    <div class="progress" style="width: 35%"></div>
+                  </div>
+                  <span class="progress-text">35% Hoàn Thành</span>
+                </div>
+                <div class="course-meta">
+                  <span
+                    ><i class="far fa-clock"></i> Truy cập gần nhất: 2 ngày
+                    trước</span
+                  >
+                  <span
+                    ><i class="far fa-calendar-alt"></i> Bắt đầu:
+                    15/06/2023</span
+                  >
+                </div>
+                <a href="courses/html-css.html" class="btn btn-primary"
+                  >Tiếp Tục Học</a
+                >
+              </div>
+            </div>
+
+            <div class="course-card" data-status="in-progress">
+              <div class="course-image">
+                <img src="images/javascript.png" alt="Khóa Học JavaScript" />
+                <div class="course-tag">Phát Triển Web</div>
+              </div>
+              <div class="course-info">
+                <h3>Lập Trình JavaScript</h3>
+                <div class="progress-container">
+                  <div class="progress-bar" data-progress="68">
+                    <div class="progress" style="width: 68%"></div>
+                  </div>
+                  <span class="progress-text">68% Hoàn Thành</span>
+                </div>
+                <div class="course-meta">
+                  <span
+                    ><i class="far fa-clock"></i> Truy cập gần nhất: 1 ngày
+                    trước</span
+                  >
+                  <span
+                    ><i class="far fa-calendar-alt"></i> Bắt đầu:
+                    22/05/2023</span
+                  >
+                </div>
+                <a href="courses/javascript.html" class="btn btn-primary"
+                  >Tiếp Tục Học</a
+                >
+              </div>
+            </div>
+
+            <div class="course-card" data-status="completed">
+              <div class="course-image">
+                <img src="images/git.png" alt="Khóa Học Git" />
+                <div class="course-tag">Phát Triển Web</div>
+              </div>
+              <div class="course-info">
+                <h3>Giới Thiệu về Git</h3>
+                <div class="progress-container">
+                  <div class="progress-bar" data-progress="100">
+                    <div class="progress" style="width: 100%"></div>
+                  </div>
+                  <span class="progress-text">100% Hoàn Thành</span>
+                </div>
+                <div class="course-meta">
+                  <span
+                    ><i class="fas fa-graduation-cap"></i> Hoàn thành:
+                    10/07/2023</span
+                  >
+                  <span
+                    ><i class="far fa-calendar-alt"></i> Bắt đầu:
+                    05/06/2023</span
+                  >
+                </div>
+                <a href="courses/git.html" class="btn btn-secondary"
+                  >Xem Chứng Chỉ</a
+                >
+              </div>
+              <!-- chứng chỉ -->
+              <div class="course-completion-badge">
+                <i class="fas fa-award"></i>
+              </div>
+            </div>
+
+            <div class="course-card" data-status="in-progress">
+              <div class="course-image">
+                <img src="images/react.png" alt="Khóa Học React" />
+                <div class="course-tag">Phát Triển Web</div>
+              </div>
+              <div class="course-info">
+                <h3>Phát Triển React.js</h3>
+                <div class="progress-container">
+                  <div class="progress-bar" data-progress="12">
+                    <div class="progress" style="width: 12%"></div>
+                  </div>
+                  <span class="progress-text">12% Hoàn Thành</span>
+                </div>
+                <div class="course-meta">
+                  <span
+                    ><i class="far fa-clock"></i> Truy cập gần nhất: 5 ngày
+                    trước</span
+                  >
+                  <span
+                    ><i class="far fa-calendar-alt"></i> Bắt đầu:
+                    01/07/2023</span
+                  >
+                </div>
+                <a href="courses/react.html" class="btn btn-primary"
+                  >Tiếp Tục Học</a
+                >
+              </div>
+            </div>
+
+            <div class="course-card" data-status="completed">
+              <div class="course-image">
+                <img src="images/python.png" alt="Khóa Học Python" />
+                <div class="course-tag">Lập Trình</div>
+              </div>
+              <div class="course-info">
+                <h3>Python Cơ Bản</h3>
+                <div class="progress-container">
+                  <div class="progress-bar" data-progress="100">
+                    <div class="progress" style="width: 100%"></div>
+                  </div>
+                  <span class="progress-text">100% Hoàn Thành</span>
+                </div>
+                <div class="course-meta">
+                  <span
+                    ><i class="fas fa-graduation-cap"></i> Hoàn thành:
+                    20/04/2023</span
+                  >
+                  <span
+                    ><i class="far fa-calendar-alt"></i> Bắt đầu:
+                    05/03/2023</span
+                  >
+                </div>
+                <a href="courses/python.html" class="btn btn-secondary"
+                  >Xem Chứng Chỉ</a
+                >
+              </div>
+              <!-- chứng chỉ -->
+              <div class="course-completion-badge">
+                <i class="fas fa-award"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="tab-content" id="saved-resources">
+          <h2>Tài Nguyên Đã Lưu</h2>
+
+          <div class="resources-filter">
+            <div class="filter-options">
+              <button class="filter-btn active" data-filter="all">
+                Tất Cả Tài Nguyên
+              </button>
+              <button class="filter-btn" data-filter="documentation">
+                Tài Liệu
+              </button>
+              <button class="filter-btn" data-filter="examples">
+                Ví Dụ Mã Nguồn
+              </button>
+              <button class="filter-btn" data-filter="videos">Video</button>
+              <button class="filter-btn" data-filter="books">Sách</button>
+            </div>
+
+            <div class="search-box">
+              <input
+                type="text"
+                placeholder="Tìm kiếm tài nguyên đã lưu..."
+                id="resource-search"
+              />
+              <button><i class="fas fa-search"></i></button>
+            </div>
+          </div>
+
+          <div class="saved-resources">
+            <div class="resource-item" data-type="documentation">
+              <div class="resource-icon">
+                <i class="fab fa-js"></i>
+              </div>
+              <div class="resource-details">
+                <h3>Tài Liệu JavaScript</h3>
+                <p>
+                  Tài liệu tham khảo đầy đủ cho ngôn ngữ JavaScript, cú pháp,
+                  phương thức và API.
+                </p>
+                <div class="resource-meta">
+                  <span
+                    ><i class="far fa-bookmark"></i> Đã lưu vào 15/07/2023</span
+                  >
+                </div>
+              </div>
+              <div class="resource-actions">
+                <a href="#" class="btn btn-outline">Xem</a>
+                <button class="btn-icon remove-bookmark">
+                  <i class="fas fa-times"></i>
+                </button>
+              </div>
+            </div>
+
+            <div class="resource-item" data-type="examples">
+              <div class="resource-icon">
+                <i class="fas fa-code"></i>
+              </div>
+              <div class="resource-details">
+                <h3>Thanh Điều Hướng Responsive</h3>
+                <p>
+                  Thanh điều hướng responsive chuyển thành menu di động trên màn
+                  hình nhỏ hơn.
+                </p>
+                <div class="resource-meta">
+                  <span
+                    ><i class="far fa-bookmark"></i> Đã lưu vào 10/07/2023</span
+                  >
+                </div>
+              </div>
+              <div class="resource-actions">
+                <a href="#" class="btn btn-outline">Xem</a>
+                <button class="btn-icon remove-bookmark">
+                  <i class="fas fa-times"></i>
+                </button>
+              </div>
+            </div>
+
+            <div class="resource-item" data-type="videos">
+              <div class="resource-icon">
+                <i class="fas fa-video"></i>
+              </div>
+              <div class="resource-details">
+                <h3>Hướng Dẫn Hoàn Chỉnh về CSS Flexbox</h3>
+                <p>
+                  Làm chủ bố cục CSS Flexbox với hướng dẫn toàn diện và các ví
+                  dụ.
+                </p>
+                <div class="resource-meta">
+                  <span
+                    ><i class="far fa-bookmark"></i> Đã lưu vào 05/07/2023</span
+                  >
+                </div>
+              </div>
+              <div class="resource-actions">
+                <a href="#" class="btn btn-outline">Xem</a>
+                <button class="btn-icon remove-bookmark">
+                  <i class="fas fa-times"></i>
+                </button>
+              </div>
+            </div>
+
+            <div class="resource-item" data-type="books">
+              <div class="resource-icon">
+                <i class="fas fa-book"></i>
+              </div>
+              <div class="resource-details">
+                <h3>Eloquent JavaScript</h3>
+                <p>
+                  Một giới thiệu hiện đại về lập trình với JavaScript, bao gồm
+                  từ nền tảng ngôn ngữ đến các khái niệm nâng cao.
+                </p>
+                <div class="resource-meta">
+                  <span
+                    ><i class="far fa-bookmark"></i> Đã lưu vào 28/06/2023</span
+                  >
+                </div>
+              </div>
+              <div class="resource-actions">
+                <a href="#" class="btn btn-outline">Xem</a>
+                <button class="btn-icon remove-bookmark">
+                  <i class="fas fa-times"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="tab-content" id="achievements">
+          <h2>Thành Tích</h2>
+
+          <div class="achievements-grid">
+            <div class="achievement-card">
+              <div class="achievement-icon">
+                <i class="fas fa-certificate"></i>
+              </div>
+              <div class="achievement-details">
+                <h3>Nhà Lập Trình Bắt Đầu</h3>
+                <p>Hoàn thành khóa học đầu tiên của bạn.</p>
+                <div class="achievement-date">
+                  <span
+                    ><i class="far fa-calendar-check"></i> Đạt được vào:
+                    20/04/2023</span
+                  >
+                </div>
+              </div>
+            </div>
+
+            <div class="achievement-card">
+              <div class="achievement-icon">
+                <i class="fas fa-fire"></i>
+              </div>
+              <div class="achievement-details">
+                <h3>Người Học Chăm Chỉ</h3>
+                <p>Học tập 7 ngày liên tiếp.</p>
+                <div class="achievement-date">
+                  <span
+                    ><i class="far fa-calendar-check"></i> Đạt được vào:
+                    10/05/2023</span
+                  >
+                </div>
+              </div>
+            </div>
+
+            <div class="achievement-card">
+              <div class="achievement-icon">
+                <i class="fas fa-code"></i>
+              </div>
+              <div class="achievement-details">
+                <h3>Chuyên Gia Front-End</h3>
+                <p>
+                  Hoàn thành tất cả các bài tập thực hành trong khóa học HTML &
+                  CSS.
+                </p>
+                <div class="achievement-date">
+                  <span
+                    ><i class="far fa-calendar-check"></i> Đạt được vào:
+                    15/06/2023</span
+                  >
+                </div>
+              </div>
+            </div>
+
+            <div class="achievement-card">
+              <div class="achievement-icon">
+                <i class="fas fa-project-diagram"></i>
+              </div>
+              <div class="achievement-details">
+                <h3>Nhà Phát Triển Đa Kỹ Năng</h3>
+                <p>Hoàn thành khóa học trong ít nhất 2 lĩnh vực khác nhau.</p>
+                <div class="achievement-date">
+                  <span
+                    ><i class="far fa-calendar-check"></i> Đạt được vào:
+                    10/07/2023</span
+                  >
+                </div>
+              </div>
+            </div>
+
+            <div class="achievement-card locked">
+              <div class="achievement-icon">
+                <i class="fas fa-star"></i>
+              </div>
+              <div class="achievement-details">
+                <h3>Nhà Phát Triển Toàn Diện</h3>
+                <p>Hoàn thành ít nhất 5 khóa học.</p>
+                <div class="achievement-progress">
+                  <span>Tiến độ: 2/5 khóa học</span>
+                  <div class="progress-bar" data-progress="40">
+                    <div class="progress" style="width: 40%"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="achievement-card locked">
+              <div class="achievement-icon">
+                <i class="fas fa-trophy"></i>
+              </div>
+              <div class="achievement-details">
+                <h3>Lập Trình Viên Chuyên Nghiệp</h3>
+                <p>Hoàn thành ít nhất một lộ trình học đầy đủ.</p>
+                <div class="achievement-progress">
+                  <span>Hoàn thành 0/1 lộ trình</span>
+                  <div class="progress-bar" data-progress="0">
+                    <div class="progress" style="width: 0%"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="tab-content" id="settings">
+          <h2>Cài Đặt Tài Khoản</h2>
+
+          <div class="settings-container">
+            <div class="settings-section">
+              <h3>Thông Tin Cá Nhân</h3>
+              <form class="settings-form">
+                <div class="form-group">
+                  <label for="full-name">Họ và Tên</label>
+                  <input type="text" id="full-name" value="Nguyễn Văn A" />
+                </div>
+                <div class="form-group">
+                  <label for="email">Email</label>
+                  <input
+                    type="email"
+                    id="email"
+                    value="nguyenvana@example.com"
+                  />
+                </div>
+                <div class="form-group">
+                  <label for="username">Tên Người Dùng</label>
+                  <input type="text" id="username" value="nguyenvana" />
+                </div>
+                <div class="form-group">
+                  <label for="bio">Giới Thiệu</label>
+                  <textarea id="bio" rows="4">
+Tôi là một lập trình viên web đam mê học hỏi các công nghệ mới và xây dựng ứng dụng web tuyệt vời.</textarea
+                  >
+                </div>
+                <div class="form-group">
+                  <label for="profile-picture">Ảnh Đại Diện</label>
+                  <div class="profile-picture-upload">
+                    <img
+                      src="images/profile-avatar.jpg"
+                      alt="Ảnh Đại Diện Hiện Tại"
+                    />
+                    <div class="upload-controls">
+                      <input
+                        type="file"
+                        id="profile-picture"
+                        class="file-input"
+                      />
+                      <label for="profile-picture" class="btn btn-outline"
+                        >Chọn Ảnh</label
+                      >
+                    </div>
+                  </div>
+                </div>
+                <button type="submit" class="btn btn-primary">
+                  Lưu Thay Đổi
+                </button>
+              </form>
+            </div>
+
+            <div class="settings-section">
+              <h3>Thay Đổi Mật Khẩu</h3>
+              <form class="settings-form">
+                <div class="form-group">
+                  <label for="current-password">Mật Khẩu Hiện Tại</label>
+                  <input type="password" id="current-password" />
+                </div>
+                <div class="form-group">
+                  <label for="new-password">Mật Khẩu Mới</label>
+                  <input type="password" id="new-password" />
+                </div>
+                <div class="form-group">
+                  <label for="confirm-password">Xác Nhận Mật Khẩu Mới</label>
+                  <input type="password" id="confirm-password" />
+                </div>
+                <button type="submit" class="btn btn-primary">
+                  Cập Nhật Mật Khẩu
+                </button>
+              </form>
+            </div>
+
+            <div class="settings-section">
+              <h3>Tùy Chọn Thông Báo</h3>
+              <form class="settings-form">
+                <div class="form-group checkbox-group">
+                  <input type="checkbox" id="email-notifications" checked />
+                  <label for="email-notifications"
+                    >Nhận thông báo qua email</label
+                  >
+                </div>
+                <div class="form-group checkbox-group">
+                  <input type="checkbox" id="course-updates" checked />
+                  <label for="course-updates">Cập nhật khóa học</label>
+                </div>
+                <div class="form-group checkbox-group">
+                  <input type="checkbox" id="new-courses" checked />
+                  <label for="new-courses">Khóa học mới</label>
+                </div>
+                <div class="form-group checkbox-group">
+                  <input type="checkbox" id="promotions" />
+                  <label for="promotions">Khuyến mãi và ưu đãi</label>
+                </div>
+                <button type="submit" class="btn btn-primary">
+                  Lưu Tùy Chọn
+                </button>
+              </form>
+            </div>
+
+            <div class="settings-section danger-zone">
+              <h3>Vùng Nguy Hiểm</h3>
+              <div class="danger-zone-actions">
+                <div class="action">
+                  <div class="action-info">
+                    <h4>Tạm Ngưng Tài Khoản</h4>
+                    <p>
+                      Tạm thời vô hiệu hóa tài khoản của bạn. Bạn có thể kích
+                      hoạt lại sau.
+                    </p>
+                  </div>
+                  <button class="btn btn-outline-danger">Tạm Ngưng</button>
+                </div>
+                <div class="action">
+                  <div class="action-info">
+                    <h4>Xóa Tài Khoản</h4>
+                    <p>
+                      Xóa vĩnh viễn tài khoản của bạn và tất cả dữ liệu liên
+                      quan. Hành động này không thể hoàn tác.
+                    </p>
+                  </div>
+                  <button class="btn btn-danger">Xóa Tài Khoản</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <div class="container">
+        <div class="footer-content">
+          <div class="footer-logo">
+            <a href="index.html">
+              <img src="./images/logo-02.svg" alt="logo"
+            /></a>
+            <p>Hành trình làm chủ lập trình của bạn bắt đầu từ đây.</p>
+          </div>
+          <div class="footer-links">
+            <h3>Liên Kết Nhanh</h3>
+            <ul>
+              <li><a href="index.html">Trang Chủ</a></li>
+              <li><a href="courses.html">Khóa Học</a></li>
+              <li><a href="resources.html">Tài Nguyên</a></li>
+              <li><a href="profile.html">Hồ Sơ Của Tôi</a></li>
+            </ul>
+          </div>
+          <div class="footer-contact">
+            <h3>Liên Hệ</h3>
+            <p>Email: info@codemaster.com</p>
+            <p>Điện thoại: +84 909 123 456</p>
+            <div class="social-icons">
+              <a href="#"><i class="fab fa-facebook"></i></a>
+              <a href="#"><i class="fab fa-twitter"></i></a>
+              <a href="#"><i class="fab fa-instagram"></i></a>
+              <a href="#"><i class="fab fa-github"></i></a>
+            </div>
+          </div>
+        </div>
+        <div class="footer-bottom">
+          <p>&copy; 2025 CodeMaster. Đã đăng ký bản quyền.</p>
+        </div>
+      </div>
+    </footer>
+
+    <script src="js/script.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/profile.js"></script>
+  </body>
+</html>

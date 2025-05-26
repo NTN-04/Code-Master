@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Đăng Nhập | CodeMaster</title>
+    <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="css/login.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+  </head>
+
+  <body>
+    <header>
+      <div class="container">
+        <div class="logo">
+          <a href="index.html">
+            <img src="./images/logo-01.svg" alt="logo"
+          /></a>
+        </div>
+        <nav>
+          <ul>
+            <li><a href="index.html">Trang Chủ</a></li>
+            <li><a href="courses.html">Khóa Học</a></li>
+            <li><a href="resources.html">Tài Nguyên</a></li>
+            <li><a href="login.html" class="active">Đăng Nhập</a></li>
+          </ul>
+        </nav>
+      </div>
+    </header>
+
+    <section class="login-section">
+      <div class="container">
+        <div class="login-container">
+          <div class="login-header">
+            <h2>Đăng Nhập</h2>
+            <p>
+              Chào mừng trở lại! Đăng nhập để tiếp tục hành trình học tập của
+              bạn.
+            </p>
+          </div>
+
+          <div class="login-tabs">
+            <button class="tab-btn active" data-tab="login">Đăng Nhập</button>
+            <button class="tab-btn" data-tab="register">Đăng Ký</button>
+          </div>
+
+          <div class="tab-content active" id="login">
+            <form id="login-form" class="auth-form">
+              <div class="form-group">
+                <label for="login-email">Email</label>
+                <div class="input-with-icon">
+                  <i class="fas fa-envelope"></i>
+                  <input
+                    type="email"
+                    id="login-email"
+                    placeholder="Nhập email của bạn"
+                    required
+                  />
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="login-password">Mật Khẩu</label>
+                <div class="input-with-icon">
+                  <i class="fas fa-lock"></i>
+                  <input
+                    type="password"
+                    id="login-password"
+                    placeholder="Nhập mật khẩu của bạn"
+                    required
+                  />
+                  <button
+                    type="button"
+                    class="toggle-password"
+                    aria-label="Hiện/ẩn mật khẩu"
+                  >
+                    <i class="fas fa-eye"></i>
+                  </button>
+                </div>
+              </div>
+              <div class="form-options">
+                <div class="remember-me">
+                  <input type="checkbox" id="remember-me" />
+                  <label for="remember-me">Ghi nhớ đăng nhập</label>
+                </div>
+                <a href="#" class="forgot-password">Quên mật khẩu?</a>
+              </div>
+              <button type="submit" class="btn btn-primary btn-block">
+                Đăng Nhập
+              </button>
+              <div class="social-login">
+                <p>Hoặc đăng nhập với</p>
+                <div class="social-buttons">
+                  <button type="button" class="btn-social btn-google">
+                    <i class="fab fa-google"></i>
+                    <span>Google</span>
+                  </button>
+                  <button type="button" class="btn-social btn-facebook">
+                    <i class="fab fa-facebook-f"></i>
+                    <span>Facebook</span>
+                  </button>
+                  <button type="button" class="btn-social btn-github">
+                    <i class="fab fa-github"></i>
+                    <span>GitHub</span>
+                  </button>
+                </div>
+              </div>
+            </form>
+          </div>
+
+          <div class="tab-content" id="register">
+            <form id="register-form" class="auth-form">
+              <div class="form-group">
+                <label for="register-name">Họ và Tên</label>
+                <div class="input-with-icon">
+                  <i class="fas fa-user"></i>
+                  <input
+                    type="text"
+                    id="register-name"
+                    placeholder="Nhập họ và tên của bạn"
+                    required
+                  />
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="register-email">Email</label>
+                <div class="input-with-icon">
+                  <i class="fas fa-envelope"></i>
+                  <input
+                    type="email"
+                    id="register-email"
+                    placeholder="Nhập email của bạn"
+                    required
+                  />
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="register-password">Mật Khẩu</label>
+                <div class="input-with-icon">
+                  <i class="fas fa-lock"></i>
+                  <input
+                    type="password"
+                    id="register-password"
+                    placeholder="Tạo mật khẩu (ít nhất 6 ký tự)"
+                    required
+                  />
+                  <button
+                    type="button"
+                    class="toggle-password"
+                    aria-label="Hiện/ẩn mật khẩu"
+                  >
+                    <i class="fas fa-eye"></i>
+                  </button>
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="register-password-confirm">Xác Nhận Mật Khẩu</label>
+                <div class="input-with-icon">
+                  <i class="fas fa-lock"></i>
+                  <input
+                    type="password"
+                    id="register-password-confirm"
+                    placeholder="Nhập lại mật khẩu"
+                    required
+                  />
+                  <button
+                    type="button"
+                    class="toggle-password"
+                    aria-label="Hiện/ẩn mật khẩu"
+                  >
+                    <i class="fas fa-eye"></i>
+                  </button>
+                </div>
+              </div>
+              <div class="form-options">
+                <div class="terms-checkbox">
+                  <input type="checkbox" id="terms-agree" required />
+                  <label for="terms-agree"
+                    >Tôi đồng ý với <a href="#">Điều khoản dịch vụ</a> và
+                    <a href="#">Chính sách bảo mật</a></label
+                  >
+                </div>
+              </div>
+              <button type="submit" class="btn btn-primary btn-block">
+                Tạo Tài Khoản
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <div class="container">
+        <div class="footer-content">
+          <div class="footer-logo">
+            <a href="index.html">
+              <img src="./images/logo-02.svg" alt="logo"
+            /></a>
+            <p>Hành trình làm chủ lập trình của bạn bắt đầu từ đây.</p>
+          </div>
+          <div class="footer-links">
+            <h3>Liên Kết Nhanh</h3>
+            <ul>
+              <li><a href="index.html">Trang Chủ</a></li>
+              <li><a href="courses.html">Khóa Học</a></li>
+              <li><a href="resources.html">Tài Nguyên</a></li>
+              <li><a href="login.html">Đăng Nhập</a></li>
+            </ul>
+          </div>
+          <div class="footer-contact">
+            <h3>Liên Hệ</h3>
+            <p>Email: info@codemaster.com</p>
+            <p>Điện thoại: +84 909 123 456</p>
+            <div class="social-icons">
+              <a href="#"><i class="fab fa-facebook"></i></a>
+              <a href="#"><i class="fab fa-twitter"></i></a>
+              <a href="#"><i class="fab fa-instagram"></i></a>
+              <a href="#"><i class="fab fa-github"></i></a>
+            </div>
+          </div>
+        </div>
+        <div class="footer-bottom">
+          <p>&copy; 2025 CodeMaster. Đã đăng ký bản quyền.</p>
+        </div>
+      </div>
+    </footer>
+
+    <script src="js/script.js"></script>
+    <script src="js/login.js"></script>
+  </body>
+</html>
