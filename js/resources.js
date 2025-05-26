@@ -8,7 +8,7 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 // Tự động kích hoạt tab nếu có dấu thăng (hash) trong URL
-// Ví dụ: /resources#documentation
+// Ví dụ: /resources.html#documentation
 document.addEventListener("DOMContentLoaded", function () {
   const hash = window.location.hash.replace("#", "");
   if (hash) {
@@ -68,6 +68,118 @@ function initSearch() {
     );
   }
 }
+
+/* -- xử lý phân trang cho 'ví dụ mã nguồn' -- */
+
+// số lượng card trên mỗi trang
+const EXAMPLES_PER_PAGE = 3;
+let currentExamplePage = 1;
+
+// Hàm render phân trang
+function renderPagination(filtered = false) {
+  const examplesTab = document.getElementById("examples");
+  const examplesGrid = examplesTab.querySelector(".examples-grid");
+  const allExamples = Array.from(
+    examplesGrid.querySelectorAll(".example-card")
+  );
+
+  // lấy danh sách hiện thị đã lọc (tìm kiếm)
+  if (filtered) {
+    allExamples = allExamples.filter((card) => card.style.display !== "none");
+  }
+
+  // tính tổng số trang
+  const totalPages = Math.ceil(allExamples.length / EXAMPLES_PER_PAGE);
+
+  // ẩn/hiện các card theo trang
+  allExamples.forEach((card, id) => {
+    if (
+      id >= (currentExamplePage - 1) * EXAMPLES_PER_PAGE &&
+      id < currentExamplePage * EXAMPLES_PER_PAGE
+    ) {
+      card.style.display = "";
+    } else {
+      card.style.display = "none";
+    }
+  });
+
+  // Render nút phân trang
+  let pagination = document.getElementById("examples-pagination");
+  if (!pagination) {
+    pagination = document.createElement("div");
+    pagination.id = "examples-pagination";
+    pagination.className = "pagination";
+    examplesTab.appendChild(pagination);
+  }
+  pagination.innerHTML = "";
+
+  if (totalPages <= 1) {
+    pagination.style.display = "none";
+    return;
+  }
+  pagination.style.display = "flex";
+
+  // Nút prev
+  const prevBtn = document.createElement("button");
+  prevBtn.className = "btn btn-prev";
+  prevBtn.innerHTML = `<i class="fa-solid fa-arrow-left"></i>`;
+  prevBtn.disabled = currentExamplePage === 1;
+  prevBtn.onclick = function () {
+    if (currentExamplePage > 1) {
+      currentExamplePage--;
+      renderPagination();
+    }
+  };
+  pagination.appendChild(prevBtn);
+
+  // Nút số trang
+  for (let i = 1; i <= totalPages; i++) {
+    const btn = document.createElement("button");
+    btn.textContent = i;
+    if (i === currentExamplePage) btn.className = "active";
+    btn.onclick = () => {
+      currentExamplePage = i;
+      renderPagination();
+    };
+    pagination.appendChild(btn);
+  }
+
+  // Nút next
+  const nextBtn = document.createElement("button");
+  nextBtn.className = "btn btn-next";
+  nextBtn.innerHTML = `<i class="fa-solid fa-arrow-right"></i>`;
+  nextBtn.disabled = currentExamplePage === totalPages;
+  nextBtn.onclick = function () {
+    if (currentExamplePage < totalPages) {
+      currentExamplePage++;
+      renderPagination();
+    }
+  };
+  pagination.appendChild(nextBtn);
+}
+
+// Gọi khi tab 'ví dụ mã nguồn' đc active
+function handleExampleTabPaging() {
+  const examplesTab = document.getElementById("examples");
+  if (examplesTab.classList.contains("active")) {
+    renderPagination();
+  }
+}
+
+// Hook và sự kiện chuyển tab
+function patchTabSwitchForPaging() {
+  const tabButtons = document.querySelectorAll(".tab-btn");
+  tabButtons.forEach((btn) => {
+    btn.addEventListener("click", () => {
+      setTimeout(handleExampleTabPaging, 10);
+    });
+  });
+}
+// Gọi khi dom sẳn sàng
+document.addEventListener("DOMContentLoaded", function () {
+  patchTabSwitchForPaging();
+  handleExampleTabPaging();
+});
 
 // Tìm kiếm tài nguyên dựa trên từ khóa
 function searchResources(query) {
@@ -131,6 +243,11 @@ function searchResources(query) {
     noResults.style.display = "flex";
   } else if (noResults) {
     noResults.style.display = "none";
+  }
+  // Nếu là tab 'examples' thì phân trang lại
+  if (tabId === "examples") {
+    currentExamplePage = 1;
+    renderPagination(true); // chỉ phân trang phần đã lọc
   }
 }
 

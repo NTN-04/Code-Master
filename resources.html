@@ -285,6 +285,165 @@ function validateInputs() {
               </div>
               <a href="#" class="btn btn-outline">Xem Đầy Đủ Ví Dụ</a>
             </div>
+            <div class="example-card">
+              <h3>Ứng Dụng Todo React</h3>
+              <div class="example-tags">
+                <span>React</span>
+                <span>JavaScript</span>
+                <span>CSS</span>
+              </div>
+              <p>
+                Một ứng dụng Todo đơn giản được xây dựng với React hooks và quản
+                lý trạng thái.
+              </p>
+              <div class="example-preview">
+                <pre><code>function App() {
+  const [todos, setTodos] = useState([]);
+  const [inputValue, setInputValue] = useState('');
+
+  const addTodo = () => {
+    if (inputValue.trim() !== '') {
+      setTodos([
+        ...todos, 
+        { 
+          id: Date.now(), 
+          text: inputValue, 
+          completed: false 
+        }
+      ]);
+      setInputValue('');
+    }
+  };
+
+  const toggleTodo = (id) => {
+    setTodos(
+      todos.map(todo => 
+        todo.id === id ? 
+        { ...todo, completed: !todo.completed } : 
+        todo
+      )
+    );
+  };
+
+  return (
+    &lt;div className="app"&gt;
+      &lt;h1&gt;Ứng Dụng Todo&lt;/h1&gt;
+      {/* Form nhập liệu */}
+      {/* Danh sách todo */}
+    &lt;/div&gt;
+  );
+}</code></pre>
+              </div>
+              <a href="#" class="btn btn-outline">Xem Đầy Đủ Ví Dụ</a>
+            </div>
+            <div class="example-card">
+              <h3>Ứng Dụng Todo React</h3>
+              <div class="example-tags">
+                <span>React</span>
+                <span>JavaScript</span>
+                <span>CSS</span>
+              </div>
+              <p>
+                Một ứng dụng Todo đơn giản được xây dựng với React hooks và quản
+                lý trạng thái.
+              </p>
+              <div class="example-preview">
+                <pre><code>function App() {
+  const [todos, setTodos] = useState([]);
+  const [inputValue, setInputValue] = useState('');
+
+  const addTodo = () => {
+    if (inputValue.trim() !== '') {
+      setTodos([
+        ...todos, 
+        { 
+          id: Date.now(), 
+          text: inputValue, 
+          completed: false 
+        }
+      ]);
+      setInputValue('');
+    }
+  };
+
+  const toggleTodo = (id) => {
+    setTodos(
+      todos.map(todo => 
+        todo.id === id ? 
+        { ...todo, completed: !todo.completed } : 
+        todo
+      )
+    );
+  };
+
+  return (
+    &lt;div className="app"&gt;
+      &lt;h1&gt;Ứng Dụng Todo&lt;/h1&gt;
+      {/* Form nhập liệu */}
+      {/* Danh sách todo */}
+    &lt;/div&gt;
+  );
+}</code></pre>
+              </div>
+              <a href="#" class="btn btn-outline">Xem Đầy Đủ Ví Dụ</a>
+            </div>
+            <div class="example-card">
+              <h3>Ứng Dụng Todo React</h3>
+              <div class="example-tags">
+                <span>React</span>
+                <span>JavaScript</span>
+                <span>CSS</span>
+              </div>
+              <p>
+                Một ứng dụng Todo đơn giản được xây dựng với React hooks và quản
+                lý trạng thái.
+              </p>
+              <div class="example-preview">
+                <pre><code>function App() {
+  const [todos, setTodos] = useState([]);
+  const [inputValue, setInputValue] = useState('');
+
+  const addTodo = () => {
+    if (inputValue.trim() !== '') {
+      setTodos([
+        ...todos, 
+        { 
+          id: Date.now(), 
+          text: inputValue, 
+          completed: false 
+        }
+      ]);
+      setInputValue('');
+    }
+  };
+
+  const toggleTodo = (id) => {
+    setTodos(
+      todos.map(todo => 
+        todo.id === id ? 
+        { ...todo, completed: !todo.completed } : 
+        todo
+      )
+    );
+  };
+
+  return (
+    &lt;div className="app"&gt;
+      &lt;h1&gt;Ứng Dụng Todo&lt;/h1&gt;
+      {/* Form nhập liệu */}
+      {/* Danh sách todo */}
+    &lt;/div&gt;
+  );
+}</code></pre>
+              </div>
+              <a href="#" class="btn btn-outline">Xem Đầy Đủ Ví Dụ</a>
+            </div>
+          </div>
+          <!--nút phân trang -->
+          <div id="examples-pagination" class="pagination">
+            <!-- <button class="btn btn-prev">pre</button>
+            <div class="btn btn-dots"></div>
+            <button class="btn btn-next">next</button> -->
           </div>
         </div>
 
