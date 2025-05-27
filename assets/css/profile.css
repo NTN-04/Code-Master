@@ -584,8 +584,9 @@
 
   .profile-tabs {
     overflow-x: auto;
-    justify-content: flex-start;
+    justify-content: center;
     padding-bottom: 10px;
+    flex-wrap: nowrap;
   }
 
   .tab-btn {
