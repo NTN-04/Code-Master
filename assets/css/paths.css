@@ -1,0 +1,80 @@
+/* header */
+.path-header {
+  background: linear-gradient(198deg, #0abde3 20%, #2d98da 80%);
+  background: -webkit-linear-gradient(198deg, #0abde3 20%, #2d98da 80%);
+  color: #fff;
+}
+.path-header .path-icon {
+  color: #fff;
+}
+.path-header h1 {
+  font-size: 2rem;
+}
+/* tổng quan */
+.path-overview .path-cta,
+.cta-buttons {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+}
+/* Các Học Trong Lộ Trình */
+.level-line {
+  margin: 10px 0 0;
+}
+.level-marker h3 {
+  color: #fff;
+  display: inline-block;
+  padding: 3px 7px;
+  border-radius: 5px;
+}
+.level-marker .level-1 {
+  background-color: var(--success-color);
+}
+.level-marker .level-2 {
+  background-color: var(--warning-color);
+}
+.level-marker .level-3 {
+  background-color: var(--danger-color);
+}
+
+/* Kỹ năng */
+.skills-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(225px, 1fr));
+  gap: 30px 20px;
+  justify-items: center;
+}
+.skills-grid .skill-card {
+  /* width: 230px; */
+  border-radius: 10px;
+  box-shadow: 0 6px 10px rgba(0, 0, 0, 0.1);
+  transition: var(--transition);
+  overflow: hidden;
+}
+.skill-card:hover {
+  scale: 1.1;
+}
+.skill-card .skill-icon {
+  background-color: var(--primary-color);
+  padding: 10px 20px 2px;
+  color: #fff;
+}
+.skill-card ul {
+  padding: 10px 20px;
+}
+/*  */
+.path-cta p,
+.cta-buttons {
+  text-align: center;
+}
+
+/* Media Queries  */
+@media (max-width: 576px) {
+  .path-overview .path-cta,
+  .cta-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+}
