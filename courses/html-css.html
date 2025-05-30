@@ -13,6 +13,30 @@
   </head>
 
   <body>
+    <script type="module">
+      // Import the functions you need from the SDKs you need
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-app.js";
+      import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-analytics.js";
+      // TODO: Add SDKs for Firebase products that you want to use
+      // https://firebase.google.com/docs/web/setup#available-libraries
+
+      // Your web app's Firebase configuration
+      // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+      const firebaseConfig = {
+        apiKey: "AIzaSyAbF7-FR98Pm8l6Ztw8AeFBktu7eyLmwe4",
+        authDomain: "db-code-master.firebaseapp.com",
+        projectId: "db-code-master",
+        storageBucket: "db-code-master.firebasestorage.app",
+        messagingSenderId: "65137096874",
+        appId: "1:65137096874:web:2cd562dd97fc19d27b38d3",
+        measurementId: "G-458MDPKFE5",
+      };
+
+      // Initialize Firebase
+      const app = initializeApp(firebaseConfig);
+      const analytics = getAnalytics(app);
+    </script>
+
     <header>
       <div class="container">
         <div class="logo">
@@ -274,7 +298,18 @@
                 <div class="lesson-video">
                   <div class="video-placeholder">
                     <i class="fas fa-play-circle"></i>
-                    <p>Video Giới Thiệu Khóa Học</p>
+
+                    <video width="320" height="240" controls>
+                      <!-- <source
+                        src="../assets/video/video-html-css/movie.mp4"
+                        type="video/mp4"
+                      /> -->
+                      <source
+                        src="../assets/video/video-html-css/001-Giới thiệu khóa học.mp4"
+                        type="video/mp4"
+                      />
+                      <p>Video Giới Thiệu Khóa Học</p>
+                    </video>
                   </div>
                 </div>
                 <div class="lesson-text">
