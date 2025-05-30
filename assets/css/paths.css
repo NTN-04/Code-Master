@@ -46,7 +46,7 @@
   justify-items: center;
 }
 .skills-grid .skill-card {
-  /* width: 230px; */
+  width: 230px;
   border-radius: 10px;
   box-shadow: 0 6px 10px rgba(0, 0, 0, 0.1);
   transition: var(--transition);
