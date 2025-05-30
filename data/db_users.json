@@ -1,0 +1,34 @@
+{
+  "users": [
+    {
+      "id": "user01",
+      "name": "Nguyễn Văn A",
+      "email": "nguyenvana@example.com",
+      "username": "nguyenvana",
+      "password": "hashed_password",
+      "bio": "Tôi là một lập trình viên web đam mê học hỏi các công nghệ mới.",
+      "avatar": "images/profile-avatar.jpg",
+      "joinDate": "2025-07-15"
+    },
+    {
+      "id": "user02",
+      "name": "Nguyễn Văn B",
+      "email": "nguyenvanb@example.com",
+      "username": "nguyenvanb",
+      "password": "hashed_password",
+      "bio": "Là một người thích khám phá những điều thú vị",
+      "avatar": "images/profile-avatar.jpg",
+      "joinDate": "2025-08-16"
+    },
+    {
+      "id": "user03",
+      "name": "Nguyễn Văn C",
+      "email": "nguyenvanc@example.com",
+      "username": "nguyenvanc",
+      "password": "hashed_password",
+      "bio": "Sống hết mình với cái gọi là đam mê, code là mê",
+      "avatar": "images/profile-avatar.jpg",
+      "joinDate": "2025-09-17"
+    }
+  ]
+}

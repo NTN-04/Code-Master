@@ -1,0 +1,90 @@
+{
+  "resources": [
+    {
+      "id": "html-doc",
+      "type": "documentation",
+      "title": "Tài Liệu HTML",
+      "description": "Tham khảo đầy đủ các phần tử và API HTML5.",
+      "url": "https://example.com/html-guide"
+    },
+    {
+      "id": "css-doc",
+      "type": "documentation",
+      "title": "Tài Liệu CSS",
+      "description": "Tài liệu hướng dẫn về thuộc tính CSS, bộ chọn và kỹ thuật bố cục hiện đại.",
+      "url": "https://example.com/css-guide"
+    },
+    {
+      "id": "javascript-doc",
+      "type": "documentation",
+      "title": "Tài Liệu JavaScript",
+      "description": "Tài liệu tham khảo đầy đủ cho ngôn ngữ JavaScript, cú pháp, phương thức và API.",
+      "url": "https://example.com/javascript-guide"
+    },
+    {
+      "id": "react-doc",
+      "type": "documentation",
+      "title": "Tài Liệu React",
+      "description": "Tài liệu tham khảo cho thư viện React, components, hooks và các phương pháp hay nhất.",
+      "url": "https://example.com/react-guide"
+    },
+    {
+      "id": "nodejs-doc",
+      "type": "documentation",
+      "title": "Tài Liệu Node JS",
+      "description": "Tài liệu hướng dẫn chi tiết về môi trường chạy Node.js, modules và API.",
+      "url": "https://example.com/nodejs-guide"
+    },
+    {
+      "id": "sql-doc",
+      "type": "documentation",
+      "title": "Tài Liệu SQL",
+      "description": "Tài liệu tham khảo đầy đủ cho cú pháp SQL, lệnh và thao tác cơ sở dữ liệu.",
+      "url": "https://example.com/sql-guide"
+    },
+
+    {
+      "id": "navbar-example",
+      "type": "examples",
+      "title": "Thanh điều hướng responsive",
+      "description": "Thanh điều hướng responsive chuyển thành menu di động trên màn hình nhỏ hơn.",
+      "url": "https://example.com/navbar"
+    },
+    {
+      "id": "validate-form-example",
+      "type": "examples",
+      "title": "Xác Thực Form Tương Tác",
+      "description": "Xác thực form thời gian thực với JavaScript và phản hồi trực quan.",
+      "url": "https://example.com/validate-form"
+    },
+    {
+      "id": "todo-example",
+      "type": "examples",
+      "title": "Ứng Dụng Todo React",
+      "description": "Một ứng dụng Todo đơn giản được xây dựng với React hooks và quản lý trạng thái.",
+      "url": "https://example.com/todo-js"
+    },
+
+    {
+      "id": "css-video",
+      "type": "videos",
+      "title": "Hướng Dẫn về CSS Flexbox",
+      "description": "Làm chủ bố cục CSS Flexbox với hướng dẫn toàn diện và các ví dụ.",
+      "url": "https://example.com/flexbox-video"
+    },
+    {
+      "id": "html-video",
+      "type": "videos",
+      "title": "Hướng Dẫn HTML cho người mới",
+      "description": "Nắm vững các kiến thức cơ bản về HTML trong bài học này. ",
+      "url": "https://example.com/html-video"
+    },
+    {
+      "id": "javascript-video",
+      "type": "videos",
+      "title": "Hướng Dẫn Javascript ES6",
+      "description": "Tìm hiểu về các tính năng và cách sử dụng của Javascript ES6",
+      "url": "https://example.com/Es6-video"
+    }
+  ]
+}
