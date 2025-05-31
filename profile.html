@@ -20,7 +20,43 @@
             <img src="./assets/images/logo-01.svg" alt="logo"
           /></a>
         </div>
-        <nav>
+        <!-- Navbar mobile -->
+        <div class="navbar-on-mobile">
+          <label for="nav-mobile-input" class="toggle-menu">
+            <i class="fa-solid fa-bars"></i>
+          </label>
+          <input type="checkbox" id="nav-mobile-input" hidden />
+          <label for="nav-mobile-input" class="nav-overlay"></label>
+          <nav class="nav-mobile">
+            <div class="nav-mobile-header">
+              <a href="index.html">
+                <img src="./assets/images/logo-01.svg" alt="logo"
+              /></a>
+              <label for="nav-mobile-input"
+                ><i class="fa-solid fa-xmark"></i
+              ></label>
+            </div>
+            <ul class="nav-mobile-list">
+              <li class="nav-mobile-group">
+                <a href="index.html" class="active nav-mobile-link"
+                  >Trang Chủ</a
+                >
+              </li>
+              <li class="nav-mobile-group">
+                <a href="courses.html" class="nav-mobile-link">Khóa Học</a>
+              </li>
+              <li class="nav-mobile-group">
+                <a href="resources.html" class="nav-mobile-link">Tài Nguyên</a>
+              </li>
+              <li class="nav-mobile-group">
+                <a href="profile.html" class="nav-mobile-link">Hồ Sơ Của Tôi</a>
+              </li>
+            </ul>
+          </nav>
+        </div>
+
+        <!-- Navbar PC -->
+        <nav class="nav-pc">
           <ul>
             <li><a href="index.html">Trang Chủ</a></li>
             <li><a href="courses.html">Khóa Học</a></li>
