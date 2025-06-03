@@ -1,208 +1,196 @@
 <!DOCTYPE html>
 <html lang="vi">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Tài Nguyên | CodeMaster</title>
-    <link rel="stylesheet" href="./assets/css/style.css" />
-    <link rel="stylesheet" href="./assets/css/resources.css" />
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
-    />
-  </head>
 
-  <body>
-    <header>
-      <div class="container">
-        <div class="logo">
-          <a href="index.html">
-            <img src="./assets/images/logo-01.svg" alt="logo"
-          /></a>
-        </div>
-        <!-- Navbar mobile -->
-        <div class="navbar-on-mobile">
-          <label for="nav-mobile-input" class="toggle-menu">
-            <i class="fa-solid fa-bars"></i>
-          </label>
-          <input type="checkbox" id="nav-mobile-input" hidden />
-          <label for="nav-mobile-input" class="nav-overlay"></label>
-          <nav class="nav-mobile">
-            <div class="nav-mobile-header">
-              <a href="index.html">
-                <img src="./assets/images/logo-01.svg" alt="logo"
-              /></a>
-              <label for="nav-mobile-input"
-                ><i class="fa-solid fa-xmark"></i
-              ></label>
-            </div>
-            <ul class="nav-mobile-list">
-              <li class="nav-mobile-group">
-                <a href="index.html" class="active nav-mobile-link"
-                  >Trang Chủ</a
-                >
-              </li>
-              <li class="nav-mobile-group">
-                <a href="courses.html" class="nav-mobile-link">Khóa Học</a>
-              </li>
-              <li class="nav-mobile-group">
-                <a href="resources.html" class="nav-mobile-link">Tài Nguyên</a>
-              </li>
-              <li class="nav-mobile-group">
-                <a href="profile.html" class="nav-mobile-link">Hồ Sơ Của Tôi</a>
-              </li>
-            </ul>
-          </nav>
-        </div>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tài Nguyên | CodeMaster</title>
+  <link rel="stylesheet" href="./assets/css/style.css" />
+  <link rel="stylesheet" href="./assets/css/resources.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+</head>
 
-        <!-- Navbar PC -->
-        <nav class="nav-pc">
-          <ul>
-            <li><a href="index.html">Trang Chủ</a></li>
-            <li><a href="courses.html">Khóa Học</a></li>
-            <li><a href="resources.html" class="active">Tài Nguyên</a></li>
-            <li><a href="profile.html">Hồ Sơ Của Tôi</a></li>
+<body>
+  <header>
+    <div class="container">
+      <div class="logo">
+        <a href="index.html">
+          <img src="./assets/images/logo-01.svg" alt="logo" /></a>
+      </div>
+      <!-- Navbar mobile -->
+      <div class="navbar-on-mobile">
+        <label for="nav-mobile-input" class="toggle-menu">
+          <i class="fa-solid fa-bars"></i>
+        </label>
+        <input type="checkbox" id="nav-mobile-input" hidden />
+        <label for="nav-mobile-input" class="nav-overlay"></label>
+        <nav class="nav-mobile">
+          <div class="nav-mobile-header">
+            <a href="index.html">
+              <img src="./assets/images/logo-01.svg" alt="logo" /></a>
+            <label for="nav-mobile-input"><i class="fa-solid fa-xmark"></i></label>
+          </div>
+          <ul class="nav-mobile-list">
+            <li class="nav-mobile-group">
+              <a href="index.html" class="active nav-mobile-link">Trang Chủ</a>
+            </li>
+            <li class="nav-mobile-group">
+              <a href="courses.html" class="nav-mobile-link">Khóa Học</a>
+            </li>
+            <li class="nav-mobile-group">
+              <a href="resources.html" class="nav-mobile-link">Tài Nguyên</a>
+            </li>
+            <li class="nav-mobile-group">
+              <a href="profile.html" class="nav-mobile-link">Hồ Sơ Của Tôi</a>
+            </li>
           </ul>
         </nav>
       </div>
-    </header>
 
-    <section class="resources-header">
-      <div class="container">
-        <h1>Tài Nguyên Học Tập</h1>
-        <p>
-          Truy cập tài liệu toàn diện, ví dụ mã nguồn và các tài liệu học tập
-          giá trị khác để hỗ trợ hành trình lập trình của bạn.
-        </p>
+      <!-- Navbar PC -->
+      <nav class="nav-pc">
+        <ul>
+          <li><a href="index.html">Trang Chủ</a></li>
+          <li><a href="courses.html">Khóa Học</a></li>
+          <li><a href="resources.html" class="active">Tài Nguyên</a></li>
+          <li><a href="profile.html">Hồ Sơ Của Tôi</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
 
-        <div class="resources-search">
-          <input
-            type="text"
-            placeholder="Tìm kiếm tài nguyên..."
-            id="resource-search"
-          />
-          <button><i class="fas fa-search"></i></button>
-        </div>
+  <section class="resources-header">
+    <div class="container">
+      <h1>Tài Nguyên Học Tập</h1>
+      <p>
+        Truy cập tài liệu toàn diện, ví dụ mã nguồn và các tài liệu học tập
+        giá trị khác để hỗ trợ hành trình lập trình của bạn.
+      </p>
+
+      <div class="resources-search">
+        <input type="text" placeholder="Tìm kiếm tài nguyên..." id="resource-search" />
+        <button><i class="fas fa-search"></i></button>
       </div>
-    </section>
+    </div>
+  </section>
 
-    <section class="resources-tabs">
-      <div class="container">
-        <div class="tabs">
-          <button class="tab-btn active" data-tab="documentation">
-            Tài Liệu
-          </button>
-          <button class="tab-btn" data-tab="examples">Ví Dụ Mã Nguồn</button>
-          <button class="tab-btn" data-tab="videos">Video Hướng Dẫn</button>
-          <button class="tab-btn" data-tab="books">Sách & Ebook</button>
-          <button class="tab-btn" data-tab="tools">Công Cụ Phát Triển</button>
-        </div>
+  <section class="resources-tabs">
+    <div class="container">
+      <div class="tabs">
+        <button class="tab-btn active" data-tab="documentation">
+          Tài Liệu
+        </button>
+        <button class="tab-btn" data-tab="examples">Ví Dụ Mã Nguồn</button>
+        <button class="tab-btn" data-tab="videos">Video Hướng Dẫn</button>
+        <button class="tab-btn" data-tab="books">Sách & Ebook</button>
+        <button class="tab-btn" data-tab="tools">Công Cụ Phát Triển</button>
+      </div>
 
-        <div class="tab-content active" id="documentation">
-          <h2>Tài Liệu</h2>
-          <div class="resources-grid">
-            <div class="resource-card">
-              <div class="resource-icon">
-                <i class="fab fa-html5"></i>
-              </div>
-              <div class="resource-info">
-                <h3>Tài Liệu HTML</h3>
-                <p class="line-clamp-3">
-                  Tài liệu tham khảo chi tiết cho các phần tử, cấu trúc, thuộc
-                  tính và API HTML5.
-                </p>
-                <a href="#" class="btn btn-outline">Xem Tài Liệu</a>
-              </div>
+      <div class="tab-content active" id="documentation">
+        <h2>Tài Liệu</h2>
+        <div class="resources-grid">
+          <div class="resource-card">
+            <div class="resource-icon">
+              <i class="fab fa-html5"></i>
             </div>
-
-            <div class="resource-card">
-              <div class="resource-icon">
-                <i class="fab fa-css3-alt"></i>
-              </div>
-              <div class="resource-info">
-                <h3>Tài Liệu CSS</h3>
-                <p class="line-clamp-3">
-                  Tài liệu hướng dẫn về thuộc tính CSS, bộ chọn và kỹ thuật bố
-                  cục hiện đại.
-                </p>
-                <a href="#" class="btn btn-outline">Xem Tài Liệu</a>
-              </div>
+            <div class="resource-info">
+              <h3>Tài Liệu HTML</h3>
+              <p class="line-clamp-3">
+                Tài liệu tham khảo chi tiết cho các phần tử, cấu trúc, thuộc
+                tính và API HTML5.
+              </p>
+              <a href="./documents/html.html" class="btn btn-outline">Xem Tài Liệu</a>
             </div>
+          </div>
 
-            <div class="resource-card">
-              <div class="resource-icon">
-                <i class="fab fa-js"></i>
-              </div>
-              <div class="resource-info">
-                <h3>Tài Liệu JavaScript</h3>
-                <p class="line-clamp-3">
-                  Tài liệu tham khảo đầy đủ cho ngôn ngữ JavaScript, cú pháp,
-                  phương thức và API.
-                </p>
-                <a href="#" class="btn btn-outline">Xem Tài Liệu</a>
-              </div>
+          <div class="resource-card">
+            <div class="resource-icon">
+              <i class="fab fa-css3-alt"></i>
             </div>
-
-            <div class="resource-card">
-              <div class="resource-icon">
-                <i class="fab fa-react"></i>
-              </div>
-              <div class="resource-info">
-                <h3>Tài Liệu React</h3>
-                <p class="line-clamp-3">
-                  Tài liệu tham khảo cho thư viện React, components, hooks và
-                  các phương pháp hay nhất.
-                </p>
-                <a href="#" class="btn btn-outline">Xem Tài Liệu</a>
-              </div>
+            <div class="resource-info">
+              <h3>Tài Liệu CSS</h3>
+              <p class="line-clamp-3">
+                Tài liệu hướng dẫn về thuộc tính CSS, bộ chọn và kỹ thuật bố
+                cục hiện đại.
+              </p>
+              <a href="./documents/css.html" class="btn btn-outline">Xem Tài Liệu</a>
             </div>
+          </div>
 
-            <div class="resource-card">
-              <div class="resource-icon">
-                <i class="fab fa-node-js"></i>
-              </div>
-              <div class="resource-info">
-                <h3>Tài Liệu Node.js</h3>
-                <p class="line-clamp-3">
-                  Tài liệu hướng dẫn chi tiết về môi trường chạy Node.js,
-                  modules và API.
-                </p>
-                <a href="#" class="btn btn-outline">Xem Tài Liệu</a>
-              </div>
+          <div class="resource-card">
+            <div class="resource-icon">
+              <i class="fab fa-js"></i>
             </div>
+            <div class="resource-info">
+              <h3>Tài Liệu JavaScript</h3>
+              <p class="line-clamp-3">
+                Tài liệu tham khảo đầy đủ cho ngôn ngữ JavaScript, cú pháp,
+                phương thức và API.
+              </p>
+              <a href="./documents/javascript.html" class="btn btn-outline">Xem Tài Liệu</a>
+            </div>
+          </div>
 
-            <div class="resource-card">
-              <div class="resource-icon">
-                <i class="fas fa-database"></i>
-              </div>
-              <div class="resource-info">
-                <h3>Tham Khảo SQL</h3>
-                <p class="line-clamp-3">
-                  Tài liệu tham khảo đầy đủ cho cú pháp SQL, lệnh và thao tác cơ
-                  sở dữ liệu.
-                </p>
-                <a href="#" class="btn btn-outline">Xem Tài Liệu</a>
-              </div>
+          <div class="resource-card">
+            <div class="resource-icon">
+              <i class="fab fa-react"></i>
+            </div>
+            <div class="resource-info">
+              <h3>Tài Liệu React</h3>
+              <p class="line-clamp-3">
+                Tài liệu tham khảo cho thư viện React, components, hooks và
+                các phương pháp hay nhất.
+              </p>
+              <a href="./documents/react.html" class="btn btn-outline">Xem Tài Liệu</a>
+            </div>
+          </div>
+
+          <div class="resource-card">
+            <div class="resource-icon">
+              <i class="fab fa-node-js"></i>
+            </div>
+            <div class="resource-info">
+              <h3>Tài Liệu Node.js</h3>
+              <p class="line-clamp-3">
+                Tài liệu hướng dẫn chi tiết về môi trường chạy Node.js,
+                modules và API.
+              </p>
+              <a href="./documents/nodejs.html" class="btn btn-outline">Xem Tài Liệu</a>
+            </div>
+          </div>
+
+          <div class="resource-card">
+            <div class="resource-icon">
+              <i class="fas fa-database"></i>
+            </div>
+            <div class="resource-info">
+              <h3>Tham Khảo SQL</h3>
+              <p class="line-clamp-3">
+                Tài liệu tham khảo đầy đủ cho cú pháp SQL, lệnh và thao tác cơ
+                sở dữ liệu.
+              </p>
+              <a href="./documents/sql.html" class="btn btn-outline">Xem Tài Liệu</a>
             </div>
           </div>
         </div>
+      </div>
 
-        <div class="tab-content" id="examples">
-          <h2>Ví Dụ Mã Nguồn</h2>
-          <div class="examples-grid">
-            <div class="example-card">
-              <h3>Thanh Điều Hướng Responsive</h3>
-              <div class="example-tags">
-                <span>HTML</span>
-                <span>CSS</span>
-                <span>JavaScript</span>
-              </div>
-              <p>
-                Thanh điều hướng responsive chuyển thành menu di động trên màn
-                hình nhỏ hơn.
-              </p>
-              <div class="example-preview">
-                <pre><code>&lt;nav class="navbar"&gt;
+      <div class="tab-content" id="examples">
+        <h2>Ví Dụ Mã Nguồn</h2>
+        <div class="examples-grid">
+          <div class="example-card">
+            <h3>Thanh Điều Hướng Responsive</h3>
+            <div class="example-tags">
+              <span>HTML</span>
+              <span>CSS</span>
+              <span>JavaScript</span>
+            </div>
+            <p>
+              Thanh điều hướng responsive chuyển thành menu di động trên màn
+              hình nhỏ hơn.
+            </p>
+            <div class="example-preview">
+              <pre><code>&lt;nav class="navbar"&gt;
   &lt;div class="logo"&gt;Brand&lt;/div&gt;
   &lt;ul class="nav-links"&gt;
     &lt;li&gt;&lt;a href="#"&gt;Trang Chủ&lt;/a&gt;&lt;/li&gt;
@@ -216,23 +204,23 @@
     &lt;div class="line3"&gt;&lt;/div&gt;
   &lt;/div&gt;
 &lt;/nav&gt;</code></pre>
-              </div>
-              <a href="#" class="btn btn-outline">Xem Đầy Đủ Ví Dụ</a>
             </div>
+            <a href="#" class="btn btn-outline">Xem Đầy Đủ Ví Dụ</a>
+          </div>
 
-            <div class="example-card">
-              <h3>Xác Thực Form Tương Tác</h3>
-              <div class="example-tags">
-                <span>HTML</span>
-                <span>CSS</span>
-                <span>JavaScript</span>
-              </div>
-              <p>
-                Xác thực form thời gian thực với JavaScript và phản hồi trực
-                quan.
-              </p>
-              <div class="example-preview">
-                <pre><code>const form = document.getElementById('form');
+          <div class="example-card">
+            <h3>Xác Thực Form Tương Tác</h3>
+            <div class="example-tags">
+              <span>HTML</span>
+              <span>CSS</span>
+              <span>JavaScript</span>
+            </div>
+            <p>
+              Xác thực form thời gian thực với JavaScript và phản hồi trực
+              quan.
+            </p>
+            <div class="example-preview">
+              <pre><code>const form = document.getElementById('form');
 const username = document.getElementById('username');
 const email = document.getElementById('email');
 
@@ -266,521 +254,509 @@ function validateInputs() {
   
   return isValid;
 }</code></pre>
-              </div>
-              <a href="#" class="btn btn-outline">Xem Đầy Đủ Ví Dụ</a>
             </div>
-
-            <div class="example-card">
-              <h3>Ứng Dụng Todo React</h3>
-              <div class="example-tags">
-                <span>React</span>
-                <span>JavaScript</span>
-                <span>CSS</span>
-              </div>
-              <p>
-                Một ứng dụng Todo đơn giản được xây dựng với React hooks và quản
-                lý trạng thái.
-              </p>
-              <div class="example-preview">
-                <pre><code>function App() {
-  const [todos, setTodos] = useState([]);
-  const [inputValue, setInputValue] = useState('');
-
-  const addTodo = () => {
-    if (inputValue.trim() !== '') {
-      setTodos([
-        ...todos, 
-        { 
-          id: Date.now(), 
-          text: inputValue, 
-          completed: false 
-        }
-      ]);
-      setInputValue('');
-    }
-  };
-
-  const toggleTodo = (id) => {
-    setTodos(
-      todos.map(todo => 
-        todo.id === id ? 
-        { ...todo, completed: !todo.completed } : 
-        todo
-      )
-    );
-  };
-
-  return (
-    &lt;div className="app"&gt;
-      &lt;h1&gt;Ứng Dụng Todo&lt;/h1&gt;
-      {/* Form nhập liệu */}
-      {/* Danh sách todo */}
-    &lt;/div&gt;
-  );
-}</code></pre>
-              </div>
-              <a href="#" class="btn btn-outline">Xem Đầy Đủ Ví Dụ</a>
-            </div>
-            <div class="example-card">
-              <h3>Ứng Dụng Todo React</h3>
-              <div class="example-tags">
-                <span>React</span>
-                <span>JavaScript</span>
-                <span>CSS</span>
-              </div>
-              <p>
-                Một ứng dụng Todo đơn giản được xây dựng với React hooks và quản
-                lý trạng thái.
-              </p>
-              <div class="example-preview">
-                <pre><code>function App() {
-  const [todos, setTodos] = useState([]);
-  const [inputValue, setInputValue] = useState('');
-
-  const addTodo = () => {
-    if (inputValue.trim() !== '') {
-      setTodos([
-        ...todos, 
-        { 
-          id: Date.now(), 
-          text: inputValue, 
-          completed: false 
-        }
-      ]);
-      setInputValue('');
-    }
-  };
-
-  const toggleTodo = (id) => {
-    setTodos(
-      todos.map(todo => 
-        todo.id === id ? 
-        { ...todo, completed: !todo.completed } : 
-        todo
-      )
-    );
-  };
-
-  return (
-    &lt;div className="app"&gt;
-      &lt;h1&gt;Ứng Dụng Todo&lt;/h1&gt;
-      {/* Form nhập liệu */}
-      {/* Danh sách todo */}
-    &lt;/div&gt;
-  );
-}</code></pre>
-              </div>
-              <a href="#" class="btn btn-outline">Xem Đầy Đủ Ví Dụ</a>
-            </div>
-            <div class="example-card">
-              <h3>Ứng Dụng Todo React</h3>
-              <div class="example-tags">
-                <span>React</span>
-                <span>JavaScript</span>
-                <span>CSS</span>
-              </div>
-              <p>
-                Một ứng dụng Todo đơn giản được xây dựng với React hooks và quản
-                lý trạng thái.
-              </p>
-              <div class="example-preview">
-                <pre><code>function App() {
-  const [todos, setTodos] = useState([]);
-  const [inputValue, setInputValue] = useState('');
-
-  const addTodo = () => {
-    if (inputValue.trim() !== '') {
-      setTodos([
-        ...todos, 
-        { 
-          id: Date.now(), 
-          text: inputValue, 
-          completed: false 
-        }
-      ]);
-      setInputValue('');
-    }
-  };
-
-  const toggleTodo = (id) => {
-    setTodos(
-      todos.map(todo => 
-        todo.id === id ? 
-        { ...todo, completed: !todo.completed } : 
-        todo
-      )
-    );
-  };
-
-  return (
-    &lt;div className="app"&gt;
-      &lt;h1&gt;Ứng Dụng Todo&lt;/h1&gt;
-      {/* Form nhập liệu */}
-      {/* Danh sách todo */}
-    &lt;/div&gt;
-  );
-}</code></pre>
-              </div>
-              <a href="#" class="btn btn-outline">Xem Đầy Đủ Ví Dụ</a>
-            </div>
-            <div class="example-card">
-              <h3>Ứng Dụng Todo React</h3>
-              <div class="example-tags">
-                <span>React</span>
-                <span>JavaScript</span>
-                <span>CSS</span>
-              </div>
-              <p>
-                Một ứng dụng Todo đơn giản được xây dựng với React hooks và quản
-                lý trạng thái.
-              </p>
-              <div class="example-preview">
-                <pre><code>function App() {
-  const [todos, setTodos] = useState([]);
-  const [inputValue, setInputValue] = useState('');
-
-  const addTodo = () => {
-    if (inputValue.trim() !== '') {
-      setTodos([
-        ...todos, 
-        { 
-          id: Date.now(), 
-          text: inputValue, 
-          completed: false 
-        }
-      ]);
-      setInputValue('');
-    }
-  };
-
-  const toggleTodo = (id) => {
-    setTodos(
-      todos.map(todo => 
-        todo.id === id ? 
-        { ...todo, completed: !todo.completed } : 
-        todo
-      )
-    );
-  };
-
-  return (
-    &lt;div className="app"&gt;
-      &lt;h1&gt;Ứng Dụng Todo&lt;/h1&gt;
-      {/* Form nhập liệu */}
-      {/* Danh sách todo */}
-    &lt;/div&gt;
-  );
-}</code></pre>
-              </div>
-              <a href="#" class="btn btn-outline">Xem Đầy Đủ Ví Dụ</a>
-            </div>
+            <a href="#" class="btn btn-outline">Xem Đầy Đủ Ví Dụ</a>
           </div>
-          <!--nút phân trang -->
-          <div id="examples-pagination" class="pagination"></div>
-        </div>
 
-        <div class="tab-content" id="videos">
-          <h2>Video Hướng Dẫn</h2>
-          <div class="videos-grid">
-            <div class="video-card">
-              <div class="video-thumbnail">
-                <img src="images/video-html.jpg" alt="Hướng Dẫn HTML" />
-                <div class="play-icon">
-                  <i class="fas fa-play"></i>
-                </div>
-              </div>
-              <div class="video-info">
-                <h3>Khóa Học Cấp Tốc HTML cho Người Mới</h3>
-                <p class="line-clamp-2">
-                  Học kiến thức cơ bản về HTML trong khóa học cấp tốc toàn diện
-                  này dành cho người mới.
-                </p>
-                <div class="video-meta">
-                  <span><i class="far fa-clock"></i> 1h 15p</span>
-                  <span><i class="far fa-eye"></i> 1.2M lượt xem</span>
-                </div>
-                <a href="#" class="btn btn-outline">Xem Video</a>
-              </div>
+          <div class="example-card">
+            <h3>Ứng Dụng Todo React</h3>
+            <div class="example-tags">
+              <span>React</span>
+              <span>JavaScript</span>
+              <span>CSS</span>
             </div>
+            <p>
+              Một ứng dụng Todo đơn giản được xây dựng với React hooks và quản
+              lý trạng thái.
+            </p>
+            <div class="example-preview">
+              <pre><code>function App() {
+  const [todos, setTodos] = useState([]);
+  const [inputValue, setInputValue] = useState('');
 
-            <div class="video-card">
-              <div class="video-thumbnail">
-                <img src="images/video-css.jpg" alt="Hướng Dẫn CSS" />
-                <div class="play-icon">
-                  <i class="fas fa-play"></i>
-                </div>
-              </div>
-              <div class="video-info">
-                <h3>Hướng Dẫn Hoàn Chỉnh về CSS Flexbox</h3>
-                <p class="line-clamp-2">
-                  Làm chủ bố cục CSS Flexbox với hướng dẫn toàn diện và các ví
-                  dụ.
-                </p>
-                <div class="video-meta">
-                  <span><i class="far fa-clock"></i> 45p</span>
-                  <span><i class="far fa-eye"></i> 850K lượt xem</span>
-                </div>
-                <a href="#" class="btn btn-outline">Xem Video</a>
-              </div>
-            </div>
+  const addTodo = () => {
+    if (inputValue.trim() !== '') {
+      setTodos([
+        ...todos, 
+        { 
+          id: Date.now(), 
+          text: inputValue, 
+          completed: false 
+        }
+      ]);
+      setInputValue('');
+    }
+  };
 
-            <div class="video-card">
-              <div class="video-thumbnail">
-                <img src="images/video-js.jpg" alt="Hướng Dẫn JavaScript" />
-                <div class="play-icon">
-                  <i class="fas fa-play"></i>
-                </div>
-              </div>
-              <div class="video-info">
-                <h3>Giải Thích Tính Năng JavaScript ES6</h3>
-                <p class="line-clamp-2">
-                  Tìm hiểu về các tính năng hiện đại của JavaScript ES6 và cách
-                  sử dụng chúng trong dự án của bạn.
-                </p>
-                <div class="video-meta">
-                  <span><i class="far fa-clock"></i> 1h 30p</span>
-                  <span><i class="far fa-eye"></i> 920K lượt xem</span>
-                </div>
-                <a href="#" class="btn btn-outline">Xem Video</a>
-              </div>
-            </div>
+  const toggleTodo = (id) => {
+    setTodos(
+      todos.map(todo => 
+        todo.id === id ? 
+        { ...todo, completed: !todo.completed } : 
+        todo
+      )
+    );
+  };
 
-            <div class="video-card">
-              <div class="video-thumbnail">
-                <img src="images/video-react.jpg" alt="Hướng Dẫn React" />
-                <div class="play-icon">
-                  <i class="fas fa-play"></i>
-                </div>
-              </div>
-              <div class="video-info">
-                <h3>Hướng Dẫn React Hooks</h3>
-                <p class="line-clamp-2">
-                  Hướng dẫn toàn diện về sử dụng React Hooks như useState,
-                  useEffect và các hooks tùy chỉnh.
-                </p>
-                <div class="video-meta">
-                  <span><i class="far fa-clock"></i> 2h 05p</span>
-                  <span><i class="far fa-eye"></i> 750K lượt xem</span>
-                </div>
-                <a href="#" class="btn btn-outline">Xem Video</a>
-              </div>
+  return (
+    &lt;div className="app"&gt;
+      &lt;h1&gt;Ứng Dụng Todo&lt;/h1&gt;
+      {/* Form nhập liệu */}
+      {/* Danh sách todo */}
+    &lt;/div&gt;
+  );
+}</code></pre>
             </div>
+            <a href="#" class="btn btn-outline">Xem Đầy Đủ Ví Dụ</a>
+          </div>
+          <div class="example-card">
+            <h3>Ứng Dụng Todo React</h3>
+            <div class="example-tags">
+              <span>React</span>
+              <span>JavaScript</span>
+              <span>CSS</span>
+            </div>
+            <p>
+              Một ứng dụng Todo đơn giản được xây dựng với React hooks và quản
+              lý trạng thái.
+            </p>
+            <div class="example-preview">
+              <pre><code>function App() {
+  const [todos, setTodos] = useState([]);
+  const [inputValue, setInputValue] = useState('');
+
+  const addTodo = () => {
+    if (inputValue.trim() !== '') {
+      setTodos([
+        ...todos, 
+        { 
+          id: Date.now(), 
+          text: inputValue, 
+          completed: false 
+        }
+      ]);
+      setInputValue('');
+    }
+  };
+
+  const toggleTodo = (id) => {
+    setTodos(
+      todos.map(todo => 
+        todo.id === id ? 
+        { ...todo, completed: !todo.completed } : 
+        todo
+      )
+    );
+  };
+
+  return (
+    &lt;div className="app"&gt;
+      &lt;h1&gt;Ứng Dụng Todo&lt;/h1&gt;
+      {/* Form nhập liệu */}
+      {/* Danh sách todo */}
+    &lt;/div&gt;
+  );
+}</code></pre>
+            </div>
+            <a href="#" class="btn btn-outline">Xem Đầy Đủ Ví Dụ</a>
+          </div>
+          <div class="example-card">
+            <h3>Ứng Dụng Todo React</h3>
+            <div class="example-tags">
+              <span>React</span>
+              <span>JavaScript</span>
+              <span>CSS</span>
+            </div>
+            <p>
+              Một ứng dụng Todo đơn giản được xây dựng với React hooks và quản
+              lý trạng thái.
+            </p>
+            <div class="example-preview">
+              <pre><code>function App() {
+  const [todos, setTodos] = useState([]);
+  const [inputValue, setInputValue] = useState('');
+
+  const addTodo = () => {
+    if (inputValue.trim() !== '') {
+      setTodos([
+        ...todos, 
+        { 
+          id: Date.now(), 
+          text: inputValue, 
+          completed: false 
+        }
+      ]);
+      setInputValue('');
+    }
+  };
+
+  const toggleTodo = (id) => {
+    setTodos(
+      todos.map(todo => 
+        todo.id === id ? 
+        { ...todo, completed: !todo.completed } : 
+        todo
+      )
+    );
+  };
+
+  return (
+    &lt;div className="app"&gt;
+      &lt;h1&gt;Ứng Dụng Todo&lt;/h1&gt;
+      {/* Form nhập liệu */}
+      {/* Danh sách todo */}
+    &lt;/div&gt;
+  );
+}</code></pre>
+            </div>
+            <a href="#" class="btn btn-outline">Xem Đầy Đủ Ví Dụ</a>
+          </div>
+          <div class="example-card">
+            <h3>Ứng Dụng Todo React</h3>
+            <div class="example-tags">
+              <span>React</span>
+              <span>JavaScript</span>
+              <span>CSS</span>
+            </div>
+            <p>
+              Một ứng dụng Todo đơn giản được xây dựng với React hooks và quản
+              lý trạng thái.
+            </p>
+            <div class="example-preview">
+              <pre><code>function App() {
+  const [todos, setTodos] = useState([]);
+  const [inputValue, setInputValue] = useState('');
+
+  const addTodo = () => {
+    if (inputValue.trim() !== '') {
+      setTodos([
+        ...todos, 
+        { 
+          id: Date.now(), 
+          text: inputValue, 
+          completed: false 
+        }
+      ]);
+      setInputValue('');
+    }
+  };
+
+  const toggleTodo = (id) => {
+    setTodos(
+      todos.map(todo => 
+        todo.id === id ? 
+        { ...todo, completed: !todo.completed } : 
+        todo
+      )
+    );
+  };
+
+  return (
+    &lt;div className="app"&gt;
+      &lt;h1&gt;Ứng Dụng Todo&lt;/h1&gt;
+      {/* Form nhập liệu */}
+      {/* Danh sách todo */}
+    &lt;/div&gt;
+  );
+}</code></pre>
+            </div>
+            <a href="#" class="btn btn-outline">Xem Đầy Đủ Ví Dụ</a>
           </div>
         </div>
+        <!--nút phân trang -->
+        <div id="examples-pagination" class="pagination"></div>
+      </div>
 
-        <div class="tab-content" id="books">
-          <h2>Sách & Ebook</h2>
-          <div class="books-grid">
-            <div class="book-card">
-              <div class="book-cover">
-                <img
-                  src="./assets/images/img-book/book-html-css.jpg"
-                  alt="Sách HTML và CSS"
-                />
-              </div>
-              <div class="book-info">
-                <h3>Design & Construction</h3>
-                <p class="book-author">Tác giả: Jon Duckett</p>
-                <p class="book-description line-clamp-4">
-                  Một giới thiệu được thiết kế đẹp mắt về HTML và CSS cho người
-                  mới với các ví dụ trực quan.
-                </p>
-                <div class="book-details">
-                  <span><i class="fas fa-book"></i> 490 trang</span>
-                  <span><i class="fas fa-star"></i> 4.8/5</span>
-                </div>
-                <a href="#" class="btn btn-outline">Xem Chi Tiết Sách</a>
+      <div class="tab-content" id="videos">
+        <h2>Video Hướng Dẫn</h2>
+        <div class="videos-grid">
+          <div class="video-card">
+            <div class="video-thumbnail">
+              <img src="images/video-html.jpg" alt="Hướng Dẫn HTML" />
+              <div class="play-icon">
+                <i class="fas fa-play"></i>
               </div>
             </div>
-
-            <div class="book-card">
-              <div class="book-cover">
-                <img
-                  src="./assets/images/img-book/book-js.jpg"
-                  alt="Sách JavaScript"
-                />
+            <div class="video-info">
+              <h3>Khóa Học Cấp Tốc HTML cho Người Mới</h3>
+              <p class="line-clamp-2">
+                Học kiến thức cơ bản về HTML trong khóa học cấp tốc toàn diện
+                này dành cho người mới.
+              </p>
+              <div class="video-meta">
+                <span><i class="far fa-clock"></i> 1h 15p</span>
+                <span><i class="far fa-eye"></i> 1.2M lượt xem</span>
               </div>
-              <div class="book-info">
-                <h3>Eloquent JavaScript</h3>
-                <p class="book-author">Tác giả: Marijn Haverbeke</p>
-                <p class="book-description line-clamp-4">
-                  Một giới thiệu hiện đại về lập trình với JavaScript, bao gồm
-                  từ nền tảng ngôn ngữ đến các khái niệm nâng cao.
-                </p>
-                <div class="book-details">
-                  <span><i class="fas fa-book"></i> 472 trang</span>
-                  <span><i class="fas fa-star"></i> 4.7/5</span>
-                </div>
-                <a href="#" class="btn btn-outline">Xem Chi Tiết Sách</a>
-              </div>
-            </div>
-
-            <div class="book-card">
-              <div class="book-cover">
-                <img
-                  src="./assets/images/img-book/book-react.jpg"
-                  alt="Sách React"
-                />
-              </div>
-              <div class="book-info">
-                <h3>React: Up & Running</h3>
-                <p class="book-author">Tác giả: Stoyan Stefanov</p>
-                <p class="book-description line-clamp-4">
-                  Xây dựng ứng dụng web với React, JSX, Redux và các công nghệ
-                  liên quan, phát triển một ứng dụng đơn giản.
-                </p>
-                <div class="book-details">
-                  <span><i class="fas fa-book"></i> 310 trang</span>
-                  <span><i class="fas fa-star"></i> 4.6/5</span>
-                </div>
-                <a href="#" class="btn btn-outline">Xem Chi Tiết Sách</a>
-              </div>
-            </div>
-
-            <div class="book-card">
-              <div class="book-cover">
-                <img
-                  src="./assets/images/img-book/book-algorithm.jpg"
-                  alt="Sách Thuật Toán"
-                />
-              </div>
-              <div class="book-info">
-                <h3>Grokking Algorithms</h3>
-                <p class="book-author">Tác giả: Aditya Bhargava</p>
-                <p class="book-description line-clamp-4">
-                  Hướng dẫn minh họa về thuật toán với các ví dụ thực tế và giải
-                  thích rõ ràng.
-                </p>
-                <div class="book-details">
-                  <span><i class="fas fa-book"></i> 256 trang</span>
-                  <span><i class="fas fa-star"></i> 4.9/5</span>
-                </div>
-                <a href="#" class="btn btn-outline">Xem Chi Tiết Sách</a>
-              </div>
+              <a href="#" class="btn btn-outline">Xem Video</a>
             </div>
           </div>
-        </div>
 
-        <div class="tab-content" id="tools">
-          <h2>Công Cụ Phát Triển</h2>
-          <div class="tools-grid">
-            <div class="tool-card">
-              <div class="tool-icon">
-                <i class="fas fa-code"></i>
-              </div>
-              <div class="tool-info">
-                <h3>Visual Studio Code</h3>
-                <p class="line-clamp-3">
-                  Trình soạn thảo mã nguồn nhẹ nhưng mạnh mẽ với hỗ trợ cho
-                  nhiều ngôn ngữ lập trình.
-                </p>
-                <div class="tool-features">
-                  <span>Chỉnh Sửa Mã</span>
-                  <span>Gỡ Lỗi</span>
-                  <span>Extensions</span>
-                </div>
-                <a href="#" class="btn btn-outline">Tải Công Cụ</a>
+          <div class="video-card">
+            <div class="video-thumbnail">
+              <img src="images/video-css.jpg" alt="Hướng Dẫn CSS" />
+              <div class="play-icon">
+                <i class="fas fa-play"></i>
               </div>
             </div>
-
-            <div class="tool-card">
-              <div class="tool-icon">
-                <i class="fa-brands fa-git-alt"></i>
+            <div class="video-info">
+              <h3>Hướng Dẫn Hoàn Chỉnh về CSS Flexbox</h3>
+              <p class="line-clamp-2">
+                Làm chủ bố cục CSS Flexbox với hướng dẫn toàn diện và các ví
+                dụ.
+              </p>
+              <div class="video-meta">
+                <span><i class="far fa-clock"></i> 45p</span>
+                <span><i class="far fa-eye"></i> 850K lượt xem</span>
               </div>
-              <div class="tool-info">
-                <h3>Git & GitHub</h3>
-                <p class="line-clamp-3">
-                  Hệ thống quản lý phiên bản và nền tảng cho phát triển phần mềm
-                  cộng tác.
-                </p>
-                <div class="tool-features">
-                  <span>Quản Lý Phiên Bản</span>
-                  <span>Hợp Tác</span>
-                  <span>Chia Sẻ Mã</span>
-                </div>
-                <a href="#" class="btn btn-outline">Tải Công Cụ</a>
+              <a href="#" class="btn btn-outline">Xem Video</a>
+            </div>
+          </div>
+
+          <div class="video-card">
+            <div class="video-thumbnail">
+              <img src="images/video-js.jpg" alt="Hướng Dẫn JavaScript" />
+              <div class="play-icon">
+                <i class="fas fa-play"></i>
               </div>
             </div>
-
-            <div class="tool-card">
-              <div class="tool-icon">
-                <i class="fa-brands fa-chrome"></i>
+            <div class="video-info">
+              <h3>Giải Thích Tính Năng JavaScript ES6</h3>
+              <p class="line-clamp-2">
+                Tìm hiểu về các tính năng hiện đại của JavaScript ES6 và cách
+                sử dụng chúng trong dự án của bạn.
+              </p>
+              <div class="video-meta">
+                <span><i class="far fa-clock"></i> 1h 30p</span>
+                <span><i class="far fa-eye"></i> 920K lượt xem</span>
               </div>
-              <div class="tool-info">
-                <h3>Chrome DevTools</h3>
-                <p class="line-clamp-3">
-                  Công cụ phát triển web tích hợp trong Google Chrome để gỡ lỗi
-                  và phân tích hiệu suất.
-                </p>
-                <div class="tool-features">
-                  <span>Gỡ Lỗi</span>
-                  <span>Hiệu Suất</span>
-                  <span>Kiểm Tra Di Động</span>
-                </div>
-                <a href="#" class="btn btn-outline">Tìm Hiểu Thêm</a>
+              <a href="#" class="btn btn-outline">Xem Video</a>
+            </div>
+          </div>
+
+          <div class="video-card">
+            <div class="video-thumbnail">
+              <img src="images/video-react.jpg" alt="Hướng Dẫn React" />
+              <div class="play-icon">
+                <i class="fas fa-play"></i>
               </div>
             </div>
-
-            <div class="tool-card">
-              <div class="tool-icon">
-                <i class="fas fa-sitemap"></i>
+            <div class="video-info">
+              <h3>Hướng Dẫn React Hooks</h3>
+              <p class="line-clamp-2">
+                Hướng dẫn toàn diện về sử dụng React Hooks như useState,
+                useEffect và các hooks tùy chỉnh.
+              </p>
+              <div class="video-meta">
+                <span><i class="far fa-clock"></i> 2h 05p</span>
+                <span><i class="far fa-eye"></i> 750K lượt xem</span>
               </div>
-              <div class="tool-info">
-                <h3>Postman</h3>
-                <p class="line-clamp-3">
-                  Nền tảng API để xây dựng và sử dụng API, với công cụ cho mọi
-                  giai đoạn của vòng đời API.
-                </p>
-                <div class="tool-features">
-                  <span>Kiểm Tra API</span>
-                  <span>Tài Liệu</span>
-                  <span>Hợp Tác</span>
-                </div>
-                <a href="#" class="btn btn-outline">Tải Công Cụ</a>
-              </div>
+              <a href="#" class="btn btn-outline">Xem Video</a>
             </div>
           </div>
         </div>
       </div>
-    </section>
 
-    <footer>
-      <div class="container">
-        <div class="footer-content">
-          <div class="footer-logo">
-            <a href="index.html">
-              <img src="./assets/images/logo-02.svg" alt="logo"
-            /></a>
-            <p>Hành trình làm chủ lập trình của bạn bắt đầu từ đây.</p>
+      <div class="tab-content" id="books">
+        <h2>Sách & Ebook</h2>
+        <div class="books-grid">
+          <div class="book-card">
+            <div class="book-cover">
+              <img src="./assets/images/img-book/book-html-css.jpg" alt="Sách HTML và CSS" />
+            </div>
+            <div class="book-info">
+              <h3>Design & Construction</h3>
+              <p class="book-author">Tác giả: Jon Duckett</p>
+              <p class="book-description line-clamp-4">
+                Một giới thiệu được thiết kế đẹp mắt về HTML và CSS cho người
+                mới với các ví dụ trực quan.
+              </p>
+              <div class="book-details">
+                <span><i class="fas fa-book"></i> 490 trang</span>
+                <span><i class="fas fa-star"></i> 4.8/5</span>
+              </div>
+              <a href="#" class="btn btn-outline">Xem Chi Tiết Sách</a>
+            </div>
           </div>
-          <div class="footer-links">
-            <h3>Liên Kết Nhanh</h3>
-            <ul>
-              <li><a href="index.html">Trang Chủ</a></li>
-              <li><a href="courses.html">Khóa Học</a></li>
-              <li><a href="resources.html">Tài Nguyên</a></li>
-              <li><a href="profile.html">Hồ Sơ Của Tôi</a></li>
-            </ul>
+
+          <div class="book-card">
+            <div class="book-cover">
+              <img src="./assets/images/img-book/book-js.jpg" alt="Sách JavaScript" />
+            </div>
+            <div class="book-info">
+              <h3>Eloquent JavaScript</h3>
+              <p class="book-author">Tác giả: Marijn Haverbeke</p>
+              <p class="book-description line-clamp-4">
+                Một giới thiệu hiện đại về lập trình với JavaScript, bao gồm
+                từ nền tảng ngôn ngữ đến các khái niệm nâng cao.
+              </p>
+              <div class="book-details">
+                <span><i class="fas fa-book"></i> 472 trang</span>
+                <span><i class="fas fa-star"></i> 4.7/5</span>
+              </div>
+              <a href="#" class="btn btn-outline">Xem Chi Tiết Sách</a>
+            </div>
           </div>
-          <div class="footer-contact">
-            <h3>Liên Hệ</h3>
-            <p>Email: info@codemaster.com</p>
-            <p>Điện thoại: +84 909 123 456</p>
-            <div class="social-icons">
-              <a href="#"><i class="fab fa-facebook"></i></a>
-              <a href="#"><i class="fab fa-twitter"></i></a>
-              <a href="#"><i class="fab fa-instagram"></i></a>
-              <a href="#"><i class="fab fa-github"></i></a>
+
+          <div class="book-card">
+            <div class="book-cover">
+              <img src="./assets/images/img-book/book-react.jpg" alt="Sách React" />
+            </div>
+            <div class="book-info">
+              <h3>React: Up & Running</h3>
+              <p class="book-author">Tác giả: Stoyan Stefanov</p>
+              <p class="book-description line-clamp-4">
+                Xây dựng ứng dụng web với React, JSX, Redux và các công nghệ
+                liên quan, phát triển một ứng dụng đơn giản.
+              </p>
+              <div class="book-details">
+                <span><i class="fas fa-book"></i> 310 trang</span>
+                <span><i class="fas fa-star"></i> 4.6/5</span>
+              </div>
+              <a href="#" class="btn btn-outline">Xem Chi Tiết Sách</a>
+            </div>
+          </div>
+
+          <div class="book-card">
+            <div class="book-cover">
+              <img src="./assets/images/img-book/book-algorithm.jpg" alt="Sách Thuật Toán" />
+            </div>
+            <div class="book-info">
+              <h3>Grokking Algorithms</h3>
+              <p class="book-author">Tác giả: Aditya Bhargava</p>
+              <p class="book-description line-clamp-4">
+                Hướng dẫn minh họa về thuật toán với các ví dụ thực tế và giải
+                thích rõ ràng.
+              </p>
+              <div class="book-details">
+                <span><i class="fas fa-book"></i> 256 trang</span>
+                <span><i class="fas fa-star"></i> 4.9/5</span>
+              </div>
+              <a href="#" class="btn btn-outline">Xem Chi Tiết Sách</a>
             </div>
           </div>
         </div>
-        <div class="footer-bottom">
-          <p>&copy; 2025 CodeMaster. Đã đăng ký bản quyền.</p>
+      </div>
+
+      <div class="tab-content" id="tools">
+        <h2>Công Cụ Phát Triển</h2>
+        <div class="tools-grid">
+          <div class="tool-card">
+            <div class="tool-icon">
+              <i class="fas fa-code"></i>
+            </div>
+            <div class="tool-info">
+              <h3>Visual Studio Code</h3>
+              <p class="line-clamp-3">
+                Trình soạn thảo mã nguồn nhẹ nhưng mạnh mẽ với hỗ trợ cho
+                nhiều ngôn ngữ lập trình.
+              </p>
+              <div class="tool-features">
+                <span>Chỉnh Sửa Mã</span>
+                <span>Gỡ Lỗi</span>
+                <span>Extensions</span>
+              </div>
+              <a href="#" class="btn btn-outline">Tải Công Cụ</a>
+            </div>
+          </div>
+
+          <div class="tool-card">
+            <div class="tool-icon">
+              <i class="fa-brands fa-git-alt"></i>
+            </div>
+            <div class="tool-info">
+              <h3>Git & GitHub</h3>
+              <p class="line-clamp-3">
+                Hệ thống quản lý phiên bản và nền tảng cho phát triển phần mềm
+                cộng tác.
+              </p>
+              <div class="tool-features">
+                <span>Quản Lý Phiên Bản</span>
+                <span>Hợp Tác</span>
+                <span>Chia Sẻ Mã</span>
+              </div>
+              <a href="#" class="btn btn-outline">Tải Công Cụ</a>
+            </div>
+          </div>
+
+          <div class="tool-card">
+            <div class="tool-icon">
+              <i class="fa-brands fa-chrome"></i>
+            </div>
+            <div class="tool-info">
+              <h3>Chrome DevTools</h3>
+              <p class="line-clamp-3">
+                Công cụ phát triển web tích hợp trong Google Chrome để gỡ lỗi
+                và phân tích hiệu suất.
+              </p>
+              <div class="tool-features">
+                <span>Gỡ Lỗi</span>
+                <span>Hiệu Suất</span>
+                <span>Kiểm Tra Di Động</span>
+              </div>
+              <a href="#" class="btn btn-outline">Tìm Hiểu Thêm</a>
+            </div>
+          </div>
+
+          <div class="tool-card">
+            <div class="tool-icon">
+              <i class="fas fa-sitemap"></i>
+            </div>
+            <div class="tool-info">
+              <h3>Postman</h3>
+              <p class="line-clamp-3">
+                Nền tảng API để xây dựng và sử dụng API, với công cụ cho mọi
+                giai đoạn của vòng đời API.
+              </p>
+              <div class="tool-features">
+                <span>Kiểm Tra API</span>
+                <span>Tài Liệu</span>
+                <span>Hợp Tác</span>
+              </div>
+              <a href="#" class="btn btn-outline">Tải Công Cụ</a>
+            </div>
+          </div>
         </div>
       </div>
-    </footer>
+    </div>
+  </section>
 
-    <script src="./assets/js/script.js"></script>
-    <script src="./assets/js/resources.js"></script>
-  </body>
+  <footer>
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-logo">
+          <a href="index.html">
+            <img src="./assets/images/logo-02.svg" alt="logo" /></a>
+          <p>Hành trình làm chủ lập trình của bạn bắt đầu từ đây.</p>
+        </div>
+        <div class="footer-links">
+          <h3>Liên Kết Nhanh</h3>
+          <ul>
+            <li><a href="index.html">Trang Chủ</a></li>
+            <li><a href="courses.html">Khóa Học</a></li>
+            <li><a href="resources.html">Tài Nguyên</a></li>
+            <li><a href="profile.html">Hồ Sơ Của Tôi</a></li>
+          </ul>
+        </div>
+        <div class="footer-contact">
+          <h3>Liên Hệ</h3>
+          <p>Email: info@codemaster.com</p>
+          <p>Điện thoại: +84 909 123 456</p>
+          <div class="social-icons">
+            <a href="#"><i class="fab fa-facebook"></i></a>
+            <a href="#"><i class="fab fa-twitter"></i></a>
+            <a href="#"><i class="fab fa-instagram"></i></a>
+            <a href="#"><i class="fab fa-github"></i></a>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2025 CodeMaster. Đã đăng ký bản quyền.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="./assets/js/script.js"></script>
+  <script src="./assets/js/resources.js"></script>
+</body>
+
 </html>

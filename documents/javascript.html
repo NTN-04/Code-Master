@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tài Liệu JavaScript | CodeMaster</title>
+    <link rel="stylesheet" href="../assets/css/style.css" />
+    <link rel="stylesheet" href="../assets/css/resources.css" />
+    <link rel="stylesheet" href="../assets/css/documents.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+</head>
+
+<body>
+    <header>
+        <div class="container">
+            <div class="logo">
+                <a href="../index.html">
+                    <img src="../assets/images/logo-01.svg" alt="logo" /></a>
+            </div>
+            <!-- Navbar mobile -->
+            <div class="navbar-on-mobile">
+                <label for="nav-mobile-input" class="toggle-menu">
+                    <i class="fa-solid fa-bars"></i>
+                </label>
+                <input type="checkbox" id="nav-mobile-input" hidden />
+                <label for="nav-mobile-input" class="nav-overlay"></label>
+                <nav class="nav-mobile">
+                    <div class="nav-mobile-header">
+                        <a href="../index.html">
+                            <img src="../assets/images/logo-01.svg" alt="logo" /></a>
+                        <label for="nav-mobile-input"><i class="fa-solid fa-xmark"></i></label>
+                    </div>
+                    <ul class="nav-mobile-list">
+                        <li class="nav-mobile-group">
+                            <a href="../index.html" class="nav-mobile-link">Trang Chủ</a>
+                        </li>
+                        <li class="nav-mobile-group">
+                            <a href="../courses.html" class="nav-mobile-link">Khóa Học</a>
+                        </li>
+                        <li class="nav-mobile-group">
+                            <a href="../resources.html" class="active nav-mobile-link">Tài Nguyên</a>
+                        </li>
+                        <li class="nav-mobile-group">
+                            <a href="../profile.html" class="nav-mobile-link">Hồ Sơ Của Tôi</a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+
+            <!-- Navbar PC -->
+            <div class="navbar-on-pc">
+                <ul class="navbar">
+                    <li><a href="../index.html">Trang Chủ</a></li>
+                    <li><a href="../courses.html">Khóa Học</a></li>
+                    <li><a class="active" href="../resources.html">Tài Nguyên</a></li>
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle">
+                            <i class="fas fa-user"></i>
+                            <span>Tài Khoản</span>
+                        </a>
+                        <div class="dropdown-content">
+                            <a href="../profile.html">Hồ Sơ</a>
+                            <a href="../login.html" id="logoutBtn">Đăng Xuất</a>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </header>
+
+    <div class="document-header">
+        <div class="container">
+            <h1>Tài Liệu JavaScript</h1>
+            <p>Tài liệu tham khảo đầy đủ cho ngôn ngữ JavaScript, cú pháp, phương thức và API</p>
+        </div>
+    </div>
+
+    <div class="document-content">
+        <div class="container">
+            <aside class="document-nav">
+                <h3>Mục lục</h3>
+                <ul>
+                    <li><a href="#introduction">Giới thiệu JavaScript</a></li>
+                    <li><a href="#syntax">Cú pháp cơ bản</a></li>
+                    <li><a href="#variables">Biến và Kiểu dữ liệu</a></li>
+                    <li><a href="#operators">Toán tử</a></li>
+                    <li><a href="#functions">Hàm</a></li>
+                    <li><a href="#objects">Đối tượng</a></li>
+                    <li><a href="#arrays">Mảng</a></li>
+                    <li><a href="#dom">DOM</a></li>
+                    <li><a href="#events">Sự kiện</a></li>
+                    <li><a href="#async">JavaScript Bất đồng bộ</a></li>
+                </ul>
+            </aside>
+
+            <main class="document-main">
+                <section id="introduction">
+                    <h2>Giới thiệu JavaScript</h2>
+                    <p>JavaScript là ngôn ngữ lập trình phổ biến nhất thế giới và là một trong ba công nghệ cốt lõi của
+                        Web, cùng với HTML và CSS.</p>
+                    <p>JavaScript là ngôn ngữ lập trình nhẹ, thông dịch, hoặc biên dịch just-in-time với các hàm hạng
+                        nhất. Mặc dù nó được biết đến nhiều nhất như là ngôn ngữ kịch bản cho các trang Web, nhưng nó
+                        cũng được sử dụng trong nhiều môi trường không phải trình duyệt.</p>
+                </section>
+
+                <section id="syntax">
+                    <h2>Cú pháp cơ bản</h2>
+                    <p>JavaScript có cú pháp tương tự như C, Java và Perl, với một số ảnh hưởng từ Python.</p>
+                    <div class="code-example">
+                        <pre><code>// Khai báo biến
+let greeting = 'Hello, World!';
+
+// In ra console
+console.log(greeting);
+
+// Khai báo hàm
+function sayHello(name) {
+  return `Hello, ${name}!`;
+}
+
+// Gọi hàm
+console.log(sayHello('JavaScript'));</code></pre>
+                    </div>
+                </section>
+
+                <section id="variables">
+                    <h2>Biến và Kiểu dữ liệu</h2>
+                    <p>JavaScript có ba từ khóa để khai báo biến: var, let và const.</p>
+                    <ul class="feature-list">
+                        <li><strong>var</strong> - Khai báo biến có phạm vi hàm</li>
+                        <li><strong>let</strong> - Khai báo biến có phạm vi khối</li>
+                        <li><strong>const</strong> - Khai báo hằng số với phạm vi khối</li>
+                    </ul>
+                    <p>Các kiểu dữ liệu cơ bản trong JavaScript:</p>
+                    <ul class="feature-list">
+                        <li><strong>String</strong> - Văn bản</li>
+                        <li><strong>Number</strong> - Số nguyên hoặc số thực</li>
+                        <li><strong>Boolean</strong> - true hoặc false</li>
+                        <li><strong>Null</strong> - Giá trị đặc biệt nghĩa là "không có gì"</li>
+                        <li><strong>Undefined</strong> - Biến không được gán giá trị</li>
+                        <li><strong>Object</strong> - Cấu trúc dữ liệu phức tạp</li>
+                        <li><strong>Symbol</strong> - Kiểu dữ liệu duy nhất và không thể thay đổi</li>
+                    </ul>
+                </section>
+
+                <section id="operators">
+                    <h2>Toán tử</h2>
+                    <p>JavaScript hỗ trợ nhiều loại toán tử khác nhau:</p>
+                    <table class="doc-table">
+                        <tr>
+                            <th>Loại toán tử</th>
+                            <th>Ví dụ</th>
+                        </tr>
+                        <tr>
+                            <td>Toán tử số học</td>
+                            <td>+, -, *, /, %, ++, --</td>
+                        </tr>
+                        <tr>
+                            <td>Toán tử gán</td>
+                            <td>=, +=, -=, *=, /=, %=</td>
+                        </tr>
+                        <tr>
+                            <td>Toán tử so sánh</td>
+                            <td>==, ===, !=, !==, >, <,>=, <=< /td>
+                        </tr>
+                        <tr>
+                            <td>Toán tử logic</td>
+                            <td>&&, ||, !</td>
+                        </tr>
+                        <tr>
+                            <td>Toán tử bit</td>
+                            <td>&, |, ~, ^, <<,>>, >>></td>
+                        </tr>
+                    </table>
+                </section>
+
+                <section id="functions">
+                    <h2>Hàm</h2>
+                    <p>Hàm là một khối mã được thiết kế để thực hiện một tác vụ cụ thể và có thể được gọi nhiều lần.</p>
+                    <div class="code-example">
+                        <pre><code>// Khai báo hàm
+function add(a, b) {
+  return a + b;
+}
+
+// Hàm arrow
+const multiply = (a, b) => a * b;
+
+// Hàm như tham số
+function calculate(operation, a, b) {
+  return operation(a, b);
+}
+
+console.log(calculate(add, 5, 3));      // 8
+console.log(calculate(multiply, 5, 3)); // 15</code></pre>
+                    </div>
+                </section>
+
+                <section id="objects">
+                    <h2>Đối tượng</h2>
+                    <p>Đối tượng là một tập hợp các thuộc tính, mỗi thuộc tính là một cặp khóa-giá trị.</p>
+                    <div class="code-example">
+                        <pre><code>// Tạo đối tượng
+const person = {
+  firstName: 'John',
+  lastName: 'Doe',
+  age: 30,
+  fullName: function() {
+    return this.firstName + ' ' + this.lastName;
+  }
+};
+
+// Truy cập thuộc tính
+console.log(person.firstName);        // John
+console.log(person['lastName']);      // Doe
+
+// Gọi phương thức
+console.log(person.fullName());       // John Doe</code></pre>
+                    </div>
+                </section>
+
+                <section id="arrays">
+                    <h2>Mảng</h2>
+                    <p>Mảng là một loại đối tượng đặc biệt dùng để lưu trữ nhiều giá trị trong một biến duy nhất.</p>
+                    <div class="code-example">
+                        <pre><code>// Tạo mảng
+const fruits = ['Apple', 'Banana', 'Orange'];
+
+// Truy cập phần tử
+console.log(fruits[0]); // Apple
+
+// Duyệt mảng
+fruits.forEach(fruit => console.log(fruit));
+
+// Thêm phần tử
+fruits.push('Mango');
+
+// Phương thức mảng hữu ích
+const numbers = [1, 2, 3, 4, 5];
+const doubled = numbers.map(num => num * 2);
+const sum = numbers.reduce((acc, curr) => acc + curr, 0);</code></pre>
+                    </div>
+                </section>
+
+                <section id="dom">
+                    <h2>DOM</h2>
+                    <p>DOM (Document Object Model) là một giao diện lập trình cho phép JavaScript truy cập và thay đổi
+                        cấu trúc và nội dung của một tài liệu HTML.</p>
+                    <div class="code-example">
+                        <pre><code>// Chọn phần tử
+const element = document.getElementById('myElement');
+const elements = document.querySelectorAll('.myClass');
+
+// Thay đổi nội dung
+element.textContent = 'Hello World';
+element.innerHTML = '<strong>Hello</strong> World';
+
+// Thay đổi style
+element.style.color = 'blue';
+element.style.backgroundColor = 'yellow';
+
+// Thêm/xóa class
+element.classList.add('highlight');
+element.classList.remove('hidden');
+
+// Tạo và thêm phần tử mới
+const newElement = document.createElement('div');
+newElement.textContent = 'Newly created element';
+document.body.appendChild(newElement);</code></pre>
+                    </div>
+                </section>
+
+                <section id="events">
+                    <h2>Sự kiện</h2>
+                    <p>JavaScript cho phép bạn lắng nghe và phản ứng với các sự kiện như nhấp chuột, di chuyển chuột,
+                        nhấn phím, v.v.</p>
+                    <div class="code-example">
+                        <pre><code>// Thêm trình xử lý sự kiện
+document.getElementById('myButton').addEventListener('click', function(event) {
+  alert('Button was clicked!');
+});
+
+// Sử dụng arrow function
+document.getElementById('myInput').addEventListener('keyup', (e) => {
+  console.log('Key pressed:', e.key);
+});
+
+// Xóa trình xử lý sự kiện
+function handleHover() {
+  console.log('Mouse over');
+}
+
+const element = document.getElementById('myElement');
+element.addEventListener('mouseover', handleHover);
+element.removeEventListener('mouseover', handleHover);</code></pre>
+                    </div>
+                </section>
+
+                <section id="async">
+                    <h2>JavaScript Bất đồng bộ</h2>
+                    <p>JavaScript là ngôn ngữ đơn luồng, nhưng có thể thực hiện các hoạt động bất đồng bộ bằng
+                        callbacks, Promises và async/await.</p>
+                    <div class="code-example">
+                        <pre><code>// Callbacks
+function fetchData(callback) {
+  setTimeout(() => {
+    callback('Data fetched');
+  }, 2000);
+}
+
+fetchData(data => console.log(data));
+
+// Promises
+function fetchDataPromise() {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      resolve('Data fetched with promise');
+    }, 2000);
+  });
+}
+
+fetchDataPromise()
+  .then(data => console.log(data))
+  .catch(error => console.error(error));
+
+// Async/Await
+async function fetchDataAsync() {
+  try {
+    const data = await fetchDataPromise();
+    console.log(data);
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+fetchDataAsync();</code></pre>
+                    </div>
+                </section>
+            </main>
+        </div>
+    </div>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <a href="../index.html"><img src="../assets/images/logo-01.svg" alt="CodeMaster Logo"></a>
+                    <p>Nền tảng học lập trình hàng đầu Việt Nam</p>
+                </div>
+                <div class="footer-links">
+                    <div class="link-group">
+                        <h4>Chương Trình Học</h4>
+                        <ul>
+                            <li><a href="../paths/frontend.html">Lộ trình Front-end</a></li>
+                            <li><a href="../paths/backend.html">Lộ trình Back-end</a></li>
+                            <li><a href="../paths/mobile.html">Lộ trình Mobile</a></li>
+                        </ul>
+                    </div>
+                    <div class="link-group">
+                        <h4>Tài Nguyên</h4>
+                        <ul>
+                            <li><a href="../resources.html">Tài liệu</a></li>
+                            <li><a href="../resources.html">Video hướng dẫn</a></li>
+                            <li><a href="../resources.html">Sách & Ebook</a></li>
+                            <li><a href="../resources.html">Công cụ phát triển</a></li>
+                        </ul>
+                    </div>
+                    <div class="link-group">
+                        <h4>Kết Nối</h4>
+                        <div class="social-links">
+                            <a href="#"><i class="fab fa-facebook-f"></i></a>
+                            <a href="#"><i class="fab fa-youtube"></i></a>
+                            <a href="#"><i class="fab fa-github"></i></a>
+                            <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2023 CodeMaster. Tất cả các quyền được bảo lưu.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="../assets/js/script.js"></script>
+    <script src="../assets/js/resources.js"></script>
+</body>
+
+</html>
