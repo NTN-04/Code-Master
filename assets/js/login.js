@@ -66,7 +66,7 @@ function HandlerLogin() {
             })
           );
           alert("Đăng nhập thành công!");
-          window.location.href = "profile.html";
+          window.location.href = "index.html";
         })
         .catch((error) => {
           alert("Lỗi :" + error.message);

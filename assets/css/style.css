@@ -163,6 +163,41 @@ p {
   border-color: var(--primary-color);
   transform: translateY(-3px);
 }
+/* nút đăng xuất */
+#logout-btn {
+  padding: 10px 20px;
+  background-color: transparent;
+  color: var(--primary-color);
+  font-weight: 500;
+  border: 1px solid var(--primary-color);
+  outline: none;
+  border-radius: var(--border-radius);
+  text-align: center;
+  cursor: pointer;
+  transition: color 0.55s linear;
+  position: relative;
+  overflow: hidden;
+}
+#logout-btn:hover {
+  color: #fff;
+}
+#logout-btn::after {
+  position: absolute;
+  content: "";
+  display: block;
+  right: 0;
+  /*  */
+  top: 0;
+  bottom: 0;
+  width: 0px;
+  background-color: var(--primary-color);
+  transition: width 0.4s linear;
+  z-index: -1;
+}
+#logout-btn:hover::after {
+  left: 0;
+  width: 100%;
+}
 
 /* Header */
 header {
@@ -186,6 +221,7 @@ header .container {
 
 .nav-pc ul {
   display: flex;
+  align-items: center;
 }
 
 .nav-pc ul li {
@@ -218,7 +254,9 @@ header .container {
 .nav-pc ul li a.active {
   color: var(--primary-color);
 }
-
+nav ul .icon {
+  margin-right: 6px;
+}
 /* Nav mobile */
 .navbar-on-mobile {
   display: none;
@@ -267,21 +305,24 @@ header .container {
   color: var(--text-color);
   padding: 5px 40% 5px 5px;
 }
-.nav-mobile-group {
+.nav-mobile-list li {
   display: flex;
   align-items: center;
   gap: 10px;
   margin-top: 10px;
 }
-.nav-mobile-group i {
+.nav-mobile-list li i {
   font-size: 1rem;
   color: #666;
 }
-.nav-mobile-group:hover {
-  background-color: #345bf6c6;
+.nav-mobile-list li .icon-logout {
+  display: inline-block;
 }
-.nav-mobile-group:hover a,
-.nav-mobile-group:hover i {
+.nav-mobile-list li:hover {
+  background-color: rgba(8, 21, 73, 0.5);
+}
+.nav-mobile-list li:hover a,
+.nav-mobile-list li:hover i {
   color: #fff;
   transition: var(--transition);
 }
@@ -630,6 +671,9 @@ footer {
   }
   .navbar-on-mobile {
     display: block;
+  }
+  .icon-logout {
+    display: inline-block;
   }
   .toggle-menu {
     display: block;

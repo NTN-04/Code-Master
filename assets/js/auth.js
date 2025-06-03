@@ -24,51 +24,78 @@ function getUserData() {
 
 // Cập nhật menu điều hướng dựa trên trạng thái đăng nhập
 function updateNavigationMenu(isLoggedIn) {
-  const navList = document.querySelector("nav ul");
-  if (!navList) return;
+  // Xử lý cho nav-pc
+  const navPC = document.querySelector(".nav-pc ul");
+  if (navPC) updateNavList(navPC, isLoggedIn);
 
-  let authNavItem = Array.from(navList.children).find((li) => {
+  // Xử lý cho nav-mobile nếu có
+  const navMobile = document.querySelector(".nav-mobile-list");
+  if (navMobile) updateNavList(navMobile, isLoggedIn);
+}
+
+function updateNavList(navList, isLoggedIn) {
+  // Xóa các mục login/profile/logout cũ
+  Array.from(navList.children).forEach((li) => {
     const link = li.querySelector("a");
-    return (
+    if (
       link &&
-      (link.href.includes("login.html") || link.href.includes("profile.html"))
-    );
+      (link.getAttribute("href") === "login.html" ||
+        link.getAttribute("href") === "profile.html" ||
+        link.id === "logout-btn")
+    ) {
+      navList.removeChild(li);
+    }
   });
 
-  if (!authNavItem) {
-    authNavItem = document.createElement("li");
-    navList.appendChild(authNavItem);
+  if (isLoggedIn) {
+    // Thêm "Hồ Sơ Của Tôi"
+    const profileLi = document.createElement("li");
+    const profileLink = document.createElement("a");
+    profileLink.href = "profile.html";
+    profileLink.innerHTML = `<i class="icon fa-solid fa-user"></i> Tài khoản`;
+    profileLi.appendChild(profileLink);
+    navList.appendChild(profileLi);
+
+    // Thêm "Đăng Xuất"
+    const logoutLi = document.createElement("li");
+    const logoutBtn = document.createElement("button");
+    logoutBtn.innerHTML = `<i class="icon fa-solid fa-right-from-bracket"></i> <span>Đăng Xuất</span>`;
+    logoutBtn.href = "#";
+    logoutBtn.id = "logout-btn";
+    logoutLi.appendChild(logoutBtn);
+    navList.appendChild(logoutLi);
+
+    // Gắn sự kiện đăng xuất
+    logoutBtn.onclick = function (e) {
+      e.preventDefault();
+      signOut(auth).then(() => {
+        localStorage.removeItem("codemaster_user");
+        updateNavigationMenu(false);
+        window.location.href = "index.html";
+      });
+    };
+  } else {
+    // Thêm "Đăng Nhập"
+    const loginLi = document.createElement("li");
+    const loginLink = document.createElement("a");
+    loginLink.href = "login.html";
+    loginLink.textContent = "Đăng Nhập";
+    loginLi.appendChild(loginLink);
+    navList.appendChild(loginLi);
   }
 
-  authNavItem.innerHTML = isLoggedIn
-    ? '<a href="profile.html">Hồ Sơ Của Tôi</a> <a href="#" id="logout-btn" style="margin-left:10px">Đăng Xuất</a>'
-    : '<a href="login.html">Đăng Nhập</a>';
-
-  // Đặt lớp active nếu đang ở trang hiện tại
+  // Đặt lớp active cho link hiện tại
   const navLinks = navList.querySelectorAll("a");
   const currentPath = window.location.pathname.split("/").pop();
 
   navLinks.forEach((link) => {
+    // Loại bỏ active cũ
+    link.classList.remove("active");
+    // Nếu href trùng với trang hiện tại thì thêm active
     if (link.getAttribute("href") === currentPath) {
       link.classList.add("active");
-    } else {
-      link.classList.remove("active");
     }
   });
-
-  // Gắn sự kiện đăng xuất nếu đã đăng nhập
-  if (isLoggedIn) {
-    const logoutBtn = document.getElementById("logout-btn");
-    if (logoutBtn) {
-      logoutBtn.onclick = function (e) {
-        e.preventDefault();
-        signOut(auth).then(() => {
-          localStorage.removeItem("codemaster_user");
-          window.location.href = "index.html";
-        });
-      };
-    }
-  }
 }
 
 // Hiển thị trạng thái đăng nhập trên trang đăng nhập
