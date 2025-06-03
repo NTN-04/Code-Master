@@ -93,11 +93,11 @@ function initScrollAnimations() {
 }
 
 // Navigation active link handling
-document.querySelectorAll("nav a").forEach((link) => {
-  if (link.getAttribute("href") === location.pathname.split("/").pop()) {
-    link.classList.add("active");
-  }
-});
+// document.querySelectorAll("nav a").forEach((link) => {
+//   if (link.getAttribute("href") === location.pathname.split("/").pop()) {
+//     link.classList.add("active");
+//   }
+// });
 
 // Search functionality (for future implementation)
 function searchCourses(query) {

@@ -37,11 +37,12 @@ function updateNavList(navList, isLoggedIn) {
   // Xóa các mục login/profile/logout cũ
   Array.from(navList.children).forEach((li) => {
     const link = li.querySelector("a");
+    const button = li.querySelector("button");
     if (
-      link &&
-      (link.getAttribute("href") === "login.html" ||
-        link.getAttribute("href") === "profile.html" ||
-        link.id === "logout-btn")
+      (link &&
+        (link.getAttribute("href") === "login.html" ||
+          link.getAttribute("href") === "profile.html")) ||
+      (button && button.id === "logout-btn")
     ) {
       navList.removeChild(li);
     }
@@ -59,8 +60,7 @@ function updateNavList(navList, isLoggedIn) {
     // Thêm "Đăng Xuất"
     const logoutLi = document.createElement("li");
     const logoutBtn = document.createElement("button");
-    logoutBtn.innerHTML = `<i class="icon fa-solid fa-right-from-bracket"></i> <span>Đăng Xuất</span>`;
-    logoutBtn.href = "#";
+    logoutBtn.innerHTML = `<i class="icon fa-solid fa-right-from-bracket"></i> Đăng Xuất`;
     logoutBtn.id = "logout-btn";
     logoutLi.appendChild(logoutBtn);
     navList.appendChild(logoutLi);
@@ -79,7 +79,7 @@ function updateNavList(navList, isLoggedIn) {
     const loginLi = document.createElement("li");
     const loginLink = document.createElement("a");
     loginLink.href = "login.html";
-    loginLink.textContent = "Đăng Nhập";
+    loginLink.innerHTML = `<i class="icon fa-solid fa-right-to-bracket"></i> Đăng Nhập`;
     loginLi.appendChild(loginLink);
     navList.appendChild(loginLi);
   }
@@ -91,7 +91,7 @@ function updateNavList(navList, isLoggedIn) {
   navLinks.forEach((link) => {
     // Loại bỏ active cũ
     link.classList.remove("active");
-    // Nếu href trùng với trang hiện tại thì thêm active
+    // Nếu href trùng với trang hiện tại và không phải là nút đăng xuất thì thêm active
     if (link.getAttribute("href") === currentPath) {
       link.classList.add("active");
     }
