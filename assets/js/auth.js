@@ -3,6 +3,7 @@ import { signOut } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-auth
 
 // Cập nhật UI dựa trên trạng thái đăng nhập
 function updateUIBasedOnLoginState() {
+  console.log("Updating UI based on login state");
   const userData = getUserData();
   updateNavigationMenu(!!userData);
 
@@ -10,12 +11,10 @@ function updateUIBasedOnLoginState() {
   if (window.location.pathname.includes("profile.html") && !userData) {
     window.location.href = "login.html";
   }
-
-  // Nếu đang ở trang đăng nhập và đã đăng nhập, hiển thị thông báo
-  if (window.location.pathname.includes("login.html") && userData) {
-    showLoginStatus(userData);
-  }
 }
+
+// Export hàm để có thể gọi từ components.js
+window.updateUIBasedOnLoginState = updateUIBasedOnLoginState;
 
 // Lấy dữ liệu người dùng từ localStorage
 function getUserData() {
@@ -84,45 +83,10 @@ function updateNavList(navList, isLoggedIn) {
     navList.appendChild(loginLi);
   }
 
-  // Đặt lớp active cho link hiện tại
-  const navLinks = navList.querySelectorAll("a");
-  const currentPath = window.location.pathname.split("/").pop();
-
-  navLinks.forEach((link) => {
-    // Loại bỏ active cũ
-    link.classList.remove("active");
-    // Nếu href trùng với trang hiện tại và không phải là nút đăng xuất thì thêm active
-    if (link.getAttribute("href") === currentPath) {
-      link.classList.add("active");
-    }
-  });
-}
-
-// Hiển thị trạng thái đăng nhập trên trang đăng nhập
-function showLoginStatus(userData) {
-  const loginContainer = document.querySelector(".login-container");
-  if (!loginContainer) return;
-
-  const logoutNotice = document.createElement("div");
-  logoutNotice.className = "logout-notice";
-  logoutNotice.innerHTML = `
-        <p>Bạn đã đăng nhập với tài khoản <strong>${
-          userData ? userData.email : "Không xác định"
-        }</strong>.</p>
-        <div class="logout-actions">
-            <a href="profile.html" class="btn btn-primary">Đi đến Hồ Sơ</a>
-            <button class="btn btn-outline" id="logout-btn-page">Đăng Xuất</button>
-        </div>
-    `;
-  loginContainer.insertBefore(logoutNotice, loginContainer.firstChild);
-
-  // Gắn sự kiện đăng xuất trên trang login
-  document.getElementById("logout-btn-page").onclick = function () {
-    signOut(auth).then(() => {
-      localStorage.removeItem("codemaster_user");
-      window.location.href = "index.html";
-    });
-  };
+  // Gọi lại setActiveLink từ components.js để cập nhật trạng thái active
+  if (typeof setActiveLink === "function") {
+    setActiveLink();
+  }
 }
 
 // Khởi tạo khi DOM ready

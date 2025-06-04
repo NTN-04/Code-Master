@@ -92,13 +92,6 @@ function initScrollAnimations() {
   });
 }
 
-// Navigation active link handling
-// document.querySelectorAll("nav a").forEach((link) => {
-//   if (link.getAttribute("href") === location.pathname.split("/").pop()) {
-//     link.classList.add("active");
-//   }
-// });
-
 // Search functionality (for future implementation)
 function searchCourses(query) {
   // This function would be implemented when we have a search feature

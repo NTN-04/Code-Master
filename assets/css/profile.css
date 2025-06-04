@@ -488,6 +488,9 @@
   padding: 30px;
   box-shadow: var(--box-shadow);
 }
+.settings-section:nth-child(n + 2) {
+  margin-top: 40px;
+}
 
 .settings-form {
   max-width: 800px;
@@ -515,7 +518,7 @@
 }
 
 .form-group label {
-  display: block;
+  /* display: block; */
   margin-bottom: 8px;
   font-weight: 500;
 }

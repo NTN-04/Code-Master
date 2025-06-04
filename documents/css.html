@@ -1,106 +1,62 @@
 <!DOCTYPE html>
 <html lang="vi">
-
-<head>
+  <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Tài Liệu CSS | CodeMaster</title>
     <link rel="stylesheet" href="../assets/css/style.css" />
     <link rel="stylesheet" href="../assets/css/resources.css" />
-    <link rel="stylesheet" href="../assets/css/documents.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-</head>
+    <link rel="stylesheet" href="../assets/css/documents.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+  </head>
 
-<body>
-    <header>
-        <div class="container">
-            <div class="logo">
-                <a href="../index.html">
-                    <img src="../assets/images/logo-01.svg" alt="logo" /></a>
-            </div>
-            <!-- Navbar mobile -->
-            <div class="navbar-on-mobile">
-                <label for="nav-mobile-input" class="toggle-menu">
-                    <i class="fa-solid fa-bars"></i>
-                </label>
-                <input type="checkbox" id="nav-mobile-input" hidden />
-                <label for="nav-mobile-input" class="nav-overlay"></label>
-                <nav class="nav-mobile">
-                    <div class="nav-mobile-header">
-                        <a href="../index.html">
-                            <img src="../assets/images/logo-01.svg" alt="logo" /></a>
-                        <label for="nav-mobile-input"><i class="fa-solid fa-xmark"></i></label>
-                    </div>
-                    <ul class="nav-mobile-list">
-                        <li class="nav-mobile-group">
-                            <a href="../index.html" class="nav-mobile-link">Trang Chủ</a>
-                        </li>
-                        <li class="nav-mobile-group">
-                            <a href="../courses.html" class="nav-mobile-link">Khóa Học</a>
-                        </li>
-                        <li class="nav-mobile-group">
-                            <a href="../resources.html" class="active nav-mobile-link">Tài Nguyên</a>
-                        </li>
-                        <li class="nav-mobile-group">
-                            <a href="../profile.html" class="nav-mobile-link">Hồ Sơ Của Tôi</a>
-                        </li>
-                    </ul>
-                </nav>
-            </div>
-
-            <!-- Navbar PC -->
-            <div class="navbar-on-pc">
-                <ul class="navbar">
-                    <li><a href="../index.html">Trang Chủ</a></li>
-                    <li><a href="../courses.html">Khóa Học</a></li>
-                    <li><a class="active" href="../resources.html">Tài Nguyên</a></li>
-                    <li class="dropdown">
-                        <a href="#" class="dropdown-toggle">
-                            <i class="fas fa-user"></i>
-                            <span>Tài Khoản</span>
-                        </a>
-                        <div class="dropdown-content">
-                            <a href="../profile.html">Hồ Sơ</a>
-                            <a href="../login.html" id="logoutBtn">Đăng Xuất</a>
-                        </div>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </header>
+  <body>
+    <!-- load với component -->
+    <header id="header-placeholder"></header>
 
     <div class="document-header">
-        <div class="container">
-            <h1>Tài Liệu CSS</h1>
-            <p>Tài liệu hướng dẫn về thuộc tính CSS, bố cục và kỹ thuật bố cục hiện đại</p>
-        </div>
+      <div class="container">
+        <h1>Tài Liệu CSS</h1>
+        <p>
+          Tài liệu hướng dẫn về thuộc tính CSS, bố cục và kỹ thuật bố cục hiện
+          đại
+        </p>
+      </div>
     </div>
 
     <div class="document-content">
-        <div class="container">
-            <aside class="document-nav">
-                <h3>Mục lục</h3>
-                <ul>
-                    <li><a href="#introduction">Giới thiệu CSS</a></li>
-                    <li><a href="#selectors">Bộ chọn CSS</a></li>
-                    <li><a href="#box-model">Mô hình hộp</a></li>
-                    <li><a href="#layout">Bố cục CSS</a></li>
-                    <li><a href="#flexbox">Flexbox</a></li>
-                    <li><a href="#grid">CSS Grid</a></li>
-                    <li><a href="#responsive">Thiết kế đáp ứng</a></li>
-                </ul>
-            </aside>
+      <div class="container">
+        <aside class="document-nav">
+          <h3>Mục lục</h3>
+          <ul>
+            <li><a href="#introduction">Giới thiệu CSS</a></li>
+            <li><a href="#selectors">Bộ chọn CSS</a></li>
+            <li><a href="#box-model">Mô hình hộp</a></li>
+            <li><a href="#layout">Bố cục CSS</a></li>
+            <li><a href="#flexbox">Flexbox</a></li>
+            <li><a href="#grid">CSS Grid</a></li>
+            <li><a href="#responsive">Thiết kế đáp ứng</a></li>
+          </ul>
+        </aside>
 
-            <main class="document-main">
-                <section id="introduction">
-                    <h2>Giới thiệu CSS</h2>
-                    <p>CSS (Cascading Style Sheets) là ngôn ngữ được sử dụng để tạo kiểu cho trang web HTML. CSS mô tả
-                        cách các phần tử HTML nên được hiển thị trên màn hình, trên giấy, hoặc trong các phương tiện
-                        khác.</p>
-                    <p>CSS tiết kiệm rất nhiều công việc. Nó có thể kiểm soát bố cục của nhiều trang web cùng lúc.</p>
+        <main class="document-main">
+          <section id="introduction">
+            <h2>Giới thiệu CSS</h2>
+            <p>
+              CSS (Cascading Style Sheets) là ngôn ngữ được sử dụng để tạo kiểu
+              cho trang web HTML. CSS mô tả cách các phần tử HTML nên được hiển
+              thị trên màn hình, trên giấy, hoặc trong các phương tiện khác.
+            </p>
+            <p>
+              CSS tiết kiệm rất nhiều công việc. Nó có thể kiểm soát bố cục của
+              nhiều trang web cùng lúc.
+            </p>
 
-                    <div class="code-example">
-                        <pre><code>/* Đây là một bình luận CSS */
+            <div class="code-example">
+              <pre><code>/* Đây là một bình luận CSS */
 body {
   background-color: lightblue;
 }
@@ -110,149 +66,156 @@ h1 {
   margin-left: 20px;
 }
 </code></pre>
-                    </div>
-                </section>
+            </div>
+          </section>
 
-                <section id="selectors">
-                    <h2>Bộ chọn CSS</h2>
-                    <p>Bộ chọn CSS được sử dụng để "tìm" (hoặc chọn) các phần tử HTML bạn muốn tạo kiểu.</p>
-                    <p>Chúng ta có thể chia các bộ chọn CSS thành năm danh mục:</p>
-                    <ul class="feature-list">
-                        <li><strong>Bộ chọn đơn giản</strong> (chọn phần tử dựa trên tên, id, lớp)</li>
-                        <li><strong>Bộ chọn kết hợp</strong> (chọn phần tử dựa trên mối quan hệ cụ thể giữa chúng)</li>
-                        <li><strong>Bộ chọn lớp giả</strong> (chọn phần tử dựa trên một trạng thái nhất định)</li>
-                        <li><strong>Bộ chọn phần tử giả</strong> (chọn và tạo kiểu cho một phần của phần tử)</li>
-                        <li><strong>Bộ chọn thuộc tính</strong> (chọn phần tử dựa trên thuộc tính hoặc giá trị thuộc
-                            tính)</li>
-                    </ul>
-                </section>
+          <section id="selectors">
+            <h2>Bộ chọn CSS</h2>
+            <p>
+              Bộ chọn CSS được sử dụng để "tìm" (hoặc chọn) các phần tử HTML bạn
+              muốn tạo kiểu.
+            </p>
+            <p>Chúng ta có thể chia các bộ chọn CSS thành năm danh mục:</p>
+            <ul class="feature-list">
+              <li>
+                <strong>Bộ chọn đơn giản</strong> (chọn phần tử dựa trên tên,
+                id, lớp)
+              </li>
+              <li>
+                <strong>Bộ chọn kết hợp</strong> (chọn phần tử dựa trên mối quan
+                hệ cụ thể giữa chúng)
+              </li>
+              <li>
+                <strong>Bộ chọn lớp giả</strong> (chọn phần tử dựa trên một
+                trạng thái nhất định)
+              </li>
+              <li>
+                <strong>Bộ chọn phần tử giả</strong> (chọn và tạo kiểu cho một
+                phần của phần tử)
+              </li>
+              <li>
+                <strong>Bộ chọn thuộc tính</strong> (chọn phần tử dựa trên thuộc
+                tính hoặc giá trị thuộc tính)
+              </li>
+            </ul>
+          </section>
 
-                <section id="box-model">
-                    <h2>Mô hình hộp</h2>
-                    <p>Trong CSS, mô hình hộp là một hộp bao quanh mọi phần tử HTML. Nó bao gồm: lề (margins), đường
-                        viền (borders), phần đệm (padding) và nội dung thực tế.</p>
-                    <p>Mô hình hộp cho phép chúng ta thêm đường viền xung quanh phần tử và xác định không gian xung
-                        quanh phần tử.</p>
+          <section id="box-model">
+            <h2>Mô hình hộp</h2>
+            <p>
+              Trong CSS, mô hình hộp là một hộp bao quanh mọi phần tử HTML. Nó
+              bao gồm: lề (margins), đường viền (borders), phần đệm (padding) và
+              nội dung thực tế.
+            </p>
+            <p>
+              Mô hình hộp cho phép chúng ta thêm đường viền xung quanh phần tử
+              và xác định không gian xung quanh phần tử.
+            </p>
 
-                    <div class="code-example">
-                        <pre><code>div {
+            <div class="code-example">
+              <pre><code>div {
   width: 300px;
   padding: 25px;
   border: 5px solid navy;
   margin: 25px;
 }</code></pre>
-                    </div>
-                </section>
+            </div>
+          </section>
 
-                <section id="layout">
-                    <h2>Bố cục CSS</h2>
-                    <p>CSS cung cấp nhiều thuộc tính khác nhau để kiểm soát cách các phần tử được bố trí trong trang
-                        web:</p>
-                    <ul class="feature-list">
-                        <li><strong>display</strong> - Xác định loại hộp hiển thị của phần tử</li>
-                        <li><strong>position</strong> - Xác định phương pháp định vị được sử dụng cho phần tử</li>
-                        <li><strong>float</strong> - Xác định cách phần tử nên float</li>
-                        <li><strong>clear</strong> - Xác định bên nào của phần tử không được phép nổi</li>
-                    </ul>
-                </section>
+          <section id="layout">
+            <h2>Bố cục CSS</h2>
+            <p>
+              CSS cung cấp nhiều thuộc tính khác nhau để kiểm soát cách các phần
+              tử được bố trí trong trang web:
+            </p>
+            <ul class="feature-list">
+              <li>
+                <strong>display</strong> - Xác định loại hộp hiển thị của phần
+                tử
+              </li>
+              <li>
+                <strong>position</strong> - Xác định phương pháp định vị được sử
+                dụng cho phần tử
+              </li>
+              <li><strong>float</strong> - Xác định cách phần tử nên float</li>
+              <li>
+                <strong>clear</strong> - Xác định bên nào của phần tử không được
+                phép nổi
+              </li>
+            </ul>
+          </section>
 
-                <section id="flexbox">
-                    <h2>Flexbox</h2>
-                    <p>Mô-đun Bố cục Flexbox làm cho việc thiết kế cấu trúc bố cục linh hoạt dễ dàng hơn mà không cần sử
-                        dụng float hoặc định vị.</p>
-                    <p>Trước khi Flexbox Layout module, có bốn chế độ bố cục: Block (cho phần), Inline (cho văn bản),
-                        Table, và Positioned.</p>
+          <section id="flexbox">
+            <h2>Flexbox</h2>
+            <p>
+              Mô-đun Bố cục Flexbox làm cho việc thiết kế cấu trúc bố cục linh
+              hoạt dễ dàng hơn mà không cần sử dụng float hoặc định vị.
+            </p>
+            <p>
+              Trước khi Flexbox Layout module, có bốn chế độ bố cục: Block (cho
+              phần), Inline (cho văn bản), Table, và Positioned.
+            </p>
 
-                    <div class="code-example">
-                        <pre><code>.flex-container {
+            <div class="code-example">
+              <pre><code>.flex-container {
   display: flex;
   flex-direction: row;
   justify-content: center;
   align-items: center;
 }</code></pre>
-                    </div>
-                </section>
+            </div>
+          </section>
 
-                <section id="grid">
-                    <h2>CSS Grid</h2>
-                    <p>CSS Grid Layout cung cấp một hệ thống bố cục dựa trên lưới, với hàng và cột, giúp dễ dàng thiết
-                        kế các trang web mà không cần sử dụng float và định vị.</p>
-                    <p>CSS Grid là công nghệ mạnh mẽ nhất có sẵn trong CSS để tạo bố cục.</p>
+          <section id="grid">
+            <h2>CSS Grid</h2>
+            <p>
+              CSS Grid Layout cung cấp một hệ thống bố cục dựa trên lưới, với
+              hàng và cột, giúp dễ dàng thiết kế các trang web mà không cần sử
+              dụng float và định vị.
+            </p>
+            <p>
+              CSS Grid là công nghệ mạnh mẽ nhất có sẵn trong CSS để tạo bố cục.
+            </p>
 
-                    <div class="code-example">
-                        <pre><code>.grid-container {
+            <div class="code-example">
+              <pre><code>.grid-container {
   display: grid;
   grid-template-columns: auto auto auto;
   gap: 10px;
   background-color: #2196F3;
   padding: 10px;
 }</code></pre>
-                    </div>
-                </section>
+            </div>
+          </section>
 
-                <section id="responsive">
-                    <h2>Thiết kế đáp ứng</h2>
-                    <p>Thiết kế đáp ứng là về việc sử dụng CSS để làm cho một trang web trông đẹp trên tất cả các thiết
-                        bị.</p>
-                    <p>Thiết kế đáp ứng không phải là một chương trình hoặc plugin JavaScript. Nó chỉ sử dụng HTML và
-                        CSS.</p>
+          <section id="responsive">
+            <h2>Thiết kế đáp ứng</h2>
+            <p>
+              Thiết kế đáp ứng là về việc sử dụng CSS để làm cho một trang web
+              trông đẹp trên tất cả các thiết bị.
+            </p>
+            <p>
+              Thiết kế đáp ứng không phải là một chương trình hoặc plugin
+              JavaScript. Nó chỉ sử dụng HTML và CSS.
+            </p>
 
-                    <div class="code-example">
-                        <pre><code>@media only screen and (max-width: 600px) {
+            <div class="code-example">
+              <pre><code>@media only screen and (max-width: 600px) {
   body {
     background-color: lightblue;
   }
 }</code></pre>
-                    </div>
-                </section>
-            </main>
-        </div>
+            </div>
+          </section>
+        </main>
+      </div>
     </div>
 
-    <footer>
-        <div class="container">
-            <div class="footer-content">
-                <div class="footer-logo">
-                    <a href="../index.html"><img src="../assets/images/logo-01.svg" alt="CodeMaster Logo"></a>
-                    <p>Nền tảng học lập trình hàng đầu Việt Nam</p>
-                </div>
-                <div class="footer-links">
-                    <div class="link-group">
-                        <h4>Chương Trình Học</h4>
-                        <ul>
-                            <li><a href="../paths/frontend.html">Lộ trình Front-end</a></li>
-                            <li><a href="../paths/backend.html">Lộ trình Back-end</a></li>
-                            <li><a href="../paths/mobile.html">Lộ trình Mobile</a></li>
-                        </ul>
-                    </div>
-                    <div class="link-group">
-                        <h4>Tài Nguyên</h4>
-                        <ul>
-                            <li><a href="../resources.html">Tài liệu</a></li>
-                            <li><a href="../resources.html">Video hướng dẫn</a></li>
-                            <li><a href="../resources.html">Sách & Ebook</a></li>
-                            <li><a href="../resources.html">Công cụ phát triển</a></li>
-                        </ul>
-                    </div>
-                    <div class="link-group">
-                        <h4>Kết Nối</h4>
-                        <div class="social-links">
-                            <a href="#"><i class="fab fa-facebook-f"></i></a>
-                            <a href="#"><i class="fab fa-youtube"></i></a>
-                            <a href="#"><i class="fab fa-github"></i></a>
-                            <a href="#"><i class="fab fa-linkedin-in"></i></a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="footer-bottom">
-                <p>&copy; 2023 CodeMaster. Tất cả các quyền được bảo lưu.</p>
-            </div>
-        </div>
-    </footer>
+    <!-- load bằng components -->
+    <footer id="footer-placeholder"></footer>
 
-    <script src="../assets/js/script.js"></script>
+    <script src="../assets/js/components.js"></script>
+    <script type="module" src="../assets/js/auth.js"></script>
     <script src="../assets/js/resources.js"></script>
-</body>
-
+  </body>
 </html>

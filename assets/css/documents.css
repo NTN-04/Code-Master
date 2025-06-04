@@ -29,7 +29,7 @@
 
 .document-nav {
   position: sticky;
-  top: 20px;
+  top: 140px;
   background-color: white;
   border-radius: 8px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
@@ -92,6 +92,7 @@
 }
 
 .document-main p {
+  text-indent: 20px;
   line-height: 1.6;
   margin-bottom: 15px;
 }
@@ -109,7 +110,7 @@
 }
 
 .code-example code {
-  font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+  font-family: Consolas, Monaco, "Andale Mono", "Ubuntu Mono", monospace;
   font-size: 0.9rem;
   line-height: 1.4;
   color: #333;
@@ -151,20 +152,20 @@
   .document-content .container {
     grid-template-columns: 1fr;
   }
-  
+
   .document-nav {
     position: static;
     margin-bottom: 30px;
   }
-  
+
   .document-header {
     padding: 40px 0;
   }
-  
+
   .document-header h1 {
     font-size: 2rem;
   }
-  
+
   .document-main {
     padding: 20px;
   }

@@ -1,100 +1,66 @@
 <!DOCTYPE html>
 <html lang="vi">
-
-<head>
+  <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Tài Liệu HTML | CodeMaster</title>
     <link rel="stylesheet" href="../assets/css/style.css" />
     <link rel="stylesheet" href="../assets/css/resources.css" />
-    <link rel="stylesheet" href="../assets/css/documents.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-</head>
+    <link rel="stylesheet" href="../assets/css/documents.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+  </head>
 
-<body>
-    <header>
-        <div class="container">
-            <div class="logo">
-                <a href="../index.html">
-                    <img src="../assets/images/logo-01.svg" alt="logo" /></a>
-            </div>
-            <!-- Navbar mobile -->
-            <div class="navbar-on-mobile">
-                <label for="nav-mobile-input" class="toggle-menu">
-                    <i class="fa-solid fa-bars"></i>
-                </label>
-                <input type="checkbox" id="nav-mobile-input" hidden />
-                <label for="nav-mobile-input" class="nav-overlay"></label>
-                <nav class="nav-mobile">
-                    <div class="nav-mobile-header">
-                        <a href="../index.html">
-                            <img src="../assets/images/logo-01.svg" alt="logo" /></a>
-                        <label for="nav-mobile-input"><i class="fa-solid fa-xmark"></i></label>
-                    </div>
-                    <ul class="nav-mobile-list">
-                        <li class="nav-mobile-group">
-                            <a href="../index.html" class="nav-mobile-link">Trang Chủ</a>
-                        </li>
-                        <li class="nav-mobile-group">
-                            <a href="../courses.html" class="nav-mobile-link">Khóa Học</a>
-                        </li>
-                        <li class="nav-mobile-group">
-                            <a href="../resources.html" class="active nav-mobile-link">Tài Nguyên</a>
-                        </li>
-                        <li class="nav-mobile-group">
-                            <a href="../profile.html" class="nav-mobile-link">Hồ Sơ Của Tôi</a>
-                        </li>
-                    </ul>
-                </nav>
-            </div>
-
-            <!-- Navbar PC -->
-            <nav class="nav-pc">
-                <ul>
-                    <li><a href="../index.html">Trang Chủ</a></li>
-                    <li><a href="../courses.html">Khóa Học</a></li>
-                    <li><a href="../resources.html" class="active">Tài Nguyên</a></li>
-                    <li><a href="../profile.html">Hồ Sơ Của Tôi</a></li>
-                </ul>
-            </nav>
-        </div>
-    </header>
+  <body>
+    <!-- load với component -->
+    <header id="header-placeholder"></header>
 
     <section class="document-header">
-        <div class="container">
-            <h1>Tài Liệu HTML</h1>
-            <p>Tài liệu tham khảo chi tiết cho các phần tử, cấu trúc, thuộc tính và API HTML5.</p>
-        </div>
+      <div class="container">
+        <h1>Tài Liệu HTML</h1>
+        <p>
+          Tài liệu tham khảo chi tiết cho các phần tử, cấu trúc, thuộc tính và
+          API HTML5.
+        </p>
+      </div>
     </section>
 
     <section class="document-content">
-        <div class="container">
-            <div class="document-nav">
-                <h3>Mục lục</h3>
-                <ul>
-                    <li><a href="#intro">Giới thiệu HTML</a></li>
-                    <li><a href="#basic-tags">Các thẻ HTML cơ bản</a></li>
-                    <li><a href="#structure">Cấu trúc trang HTML</a></li>
-                    <li><a href="#forms">Biểu mẫu HTML</a></li>
-                    <li><a href="#semantic">HTML ngữ nghĩa</a></li>
-                    <li><a href="#media">Phương tiện trong HTML</a></li>
-                    <li><a href="#api">API HTML5</a></li>
-                </ul>
-            </div>
+      <div class="container">
+        <div class="document-nav">
+          <h3>Mục lục</h3>
+          <ul>
+            <li><a href="#intro">Giới thiệu HTML</a></li>
+            <li><a href="#basic-tags">Các thẻ HTML cơ bản</a></li>
+            <li><a href="#structure">Cấu trúc trang HTML</a></li>
+            <li><a href="#forms">Biểu mẫu HTML</a></li>
+            <li><a href="#semantic">HTML ngữ nghĩa</a></li>
+            <li><a href="#media">Phương tiện trong HTML</a></li>
+            <li><a href="#api">API HTML5</a></li>
+          </ul>
+        </div>
 
-            <div class="document-main">
-                <section id="intro">
-                    <h2>Giới thiệu HTML</h2>
-                    <p>HTML (HyperText Markup Language) là ngôn ngữ đánh dấu tiêu chuẩn để tạo trang web. HTML mô tả cấu
-                        trúc của trang web và bao gồm một loạt các phần tử. Các phần tử HTML cho trình duyệt biết cách
-                        hiển thị nội dung.</p>
-                    <p>HTML được phát triển bởi Tim Berners-Lee vào năm 1991. Phiên bản hiện tại là HTML5.</p>
-                </section>
+        <div class="document-main">
+          <section id="intro">
+            <h2>Giới thiệu HTML</h2>
+            <p>
+              HTML (HyperText Markup Language) là ngôn ngữ đánh dấu tiêu chuẩn
+              để tạo trang web. HTML mô tả cấu trúc của trang web và bao gồm một
+              loạt các phần tử. Các phần tử HTML cho trình duyệt biết cách hiển
+              thị nội dung.
+            </p>
+            <p>
+              HTML được phát triển bởi Tim Berners-Lee vào năm 1991. Phiên bản
+              hiện tại là HTML5.
+            </p>
+          </section>
 
-                <section id="basic-tags">
-                    <h2>Các thẻ HTML cơ bản</h2>
-                    <div class="code-example">
-                        <pre><code>&lt;!DOCTYPE html&gt;
+          <section id="basic-tags">
+            <h2>Các thẻ HTML cơ bản</h2>
+            <div class="code-example">
+              <pre><code>&lt;!DOCTYPE html&gt;
 &lt;html&gt;
 &lt;head&gt;
   &lt;title&gt;Tiêu đề trang&lt;/title&gt;
@@ -106,60 +72,60 @@
   &lt;img src="image.jpg" alt="Mô tả hình ảnh"&gt;
 &lt;/body&gt;
 &lt;/html&gt;</code></pre>
-                    </div>
-                    <table class="doc-table">
-                        <thead>
-                            <tr>
-                                <th>Thẻ</th>
-                                <th>Mô tả</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>&lt;!DOCTYPE html&gt;</td>
-                                <td>Xác định loại tài liệu HTML5</td>
-                            </tr>
-                            <tr>
-                                <td>&lt;html&gt;</td>
-                                <td>Phần tử gốc của trang HTML</td>
-                            </tr>
-                            <tr>
-                                <td>&lt;head&gt;</td>
-                                <td>Chứa thông tin meta về trang</td>
-                            </tr>
-                            <tr>
-                                <td>&lt;title&gt;</td>
-                                <td>Tiêu đề trang xuất hiện trên tab trình duyệt</td>
-                            </tr>
-                            <tr>
-                                <td>&lt;body&gt;</td>
-                                <td>Chứa nội dung trang web hiển thị</td>
-                            </tr>
-                            <tr>
-                                <td>&lt;h1&gt; đến &lt;h6&gt;</td>
-                                <td>Tiêu đề từ cấp 1 đến cấp 6</td>
-                            </tr>
-                            <tr>
-                                <td>&lt;p&gt;</td>
-                                <td>Đánh dấu đoạn văn</td>
-                            </tr>
-                            <tr>
-                                <td>&lt;a&gt;</td>
-                                <td>Tạo liên kết</td>
-                            </tr>
-                            <tr>
-                                <td>&lt;img&gt;</td>
-                                <td>Hiển thị hình ảnh</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </section>
+            </div>
+            <table class="doc-table">
+              <thead>
+                <tr>
+                  <th>Thẻ</th>
+                  <th>Mô tả</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>&lt;!DOCTYPE html&gt;</td>
+                  <td>Xác định loại tài liệu HTML5</td>
+                </tr>
+                <tr>
+                  <td>&lt;html&gt;</td>
+                  <td>Phần tử gốc của trang HTML</td>
+                </tr>
+                <tr>
+                  <td>&lt;head&gt;</td>
+                  <td>Chứa thông tin meta về trang</td>
+                </tr>
+                <tr>
+                  <td>&lt;title&gt;</td>
+                  <td>Tiêu đề trang xuất hiện trên tab trình duyệt</td>
+                </tr>
+                <tr>
+                  <td>&lt;body&gt;</td>
+                  <td>Chứa nội dung trang web hiển thị</td>
+                </tr>
+                <tr>
+                  <td>&lt;h1&gt; đến &lt;h6&gt;</td>
+                  <td>Tiêu đề từ cấp 1 đến cấp 6</td>
+                </tr>
+                <tr>
+                  <td>&lt;p&gt;</td>
+                  <td>Đánh dấu đoạn văn</td>
+                </tr>
+                <tr>
+                  <td>&lt;a&gt;</td>
+                  <td>Tạo liên kết</td>
+                </tr>
+                <tr>
+                  <td>&lt;img&gt;</td>
+                  <td>Hiển thị hình ảnh</td>
+                </tr>
+              </tbody>
+            </table>
+          </section>
 
-                <section id="structure">
-                    <h2>Cấu trúc trang HTML</h2>
-                    <p>Một trang HTML5 đầy đủ bao gồm các thành phần sau:</p>
-                    <div class="code-example">
-                        <pre><code>&lt;!DOCTYPE html&gt;
+          <section id="structure">
+            <h2>Cấu trúc trang HTML</h2>
+            <p>Một trang HTML5 đầy đủ bao gồm các thành phần sau:</p>
+            <div class="code-example">
+              <pre><code>&lt;!DOCTYPE html&gt;
 &lt;html lang="vi"&gt;
 &lt;head&gt;
   &lt;meta charset="UTF-8"&gt;
@@ -194,14 +160,17 @@
   &lt;/footer&gt;
 &lt;/body&gt;
 &lt;/html&gt;</code></pre>
-                    </div>
-                </section>
+            </div>
+          </section>
 
-                <section id="forms">
-                    <h2>Biểu mẫu HTML</h2>
-                    <p>HTML cung cấp nhiều phần tử để tạo biểu mẫu tương tác với người dùng:</p>
-                    <div class="code-example">
-                        <pre><code>&lt;form action="/submit" method="post"&gt;
+          <section id="forms">
+            <h2>Biểu mẫu HTML</h2>
+            <p>
+              HTML cung cấp nhiều phần tử để tạo biểu mẫu tương tác với người
+              dùng:
+            </p>
+            <div class="code-example">
+              <pre><code>&lt;form action="/submit" method="post"&gt;
   &lt;fieldset&gt;
     &lt;legend&gt;Thông tin cá nhân&lt;/legend&gt;
     
@@ -230,62 +199,67 @@
     &lt;button type="reset"&gt;Xóa&lt;/button&gt;
   &lt;/fieldset&gt;
 &lt;/form&gt;</code></pre>
-                    </div>
-                </section>
+            </div>
+          </section>
 
-                <section id="semantic">
-                    <h2>HTML ngữ nghĩa</h2>
-                    <p>HTML5 giới thiệu nhiều phần tử ngữ nghĩa giúp định nghĩa rõ ràng các phần của trang web:</p>
-                    <table class="doc-table">
-                        <thead>
-                            <tr>
-                                <th>Thẻ</th>
-                                <th>Mô tả</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>&lt;header&gt;</td>
-                                <td>Phần đầu của trang hoặc phần</td>
-                            </tr>
-                            <tr>
-                                <td>&lt;nav&gt;</td>
-                                <td>Phần điều hướng</td>
-                            </tr>
-                            <tr>
-                                <td>&lt;main&gt;</td>
-                                <td>Nội dung chính của trang</td>
-                            </tr>
-                            <tr>
-                                <td>&lt;article&gt;</td>
-                                <td>Nội dung độc lập, có thể phân phối riêng</td>
-                            </tr>
-                            <tr>
-                                <td>&lt;section&gt;</td>
-                                <td>Phần của trang có chủ đề liên quan</td>
-                            </tr>
-                            <tr>
-                                <td>&lt;aside&gt;</td>
-                                <td>Nội dung liên quan đến nội dung xung quanh</td>
-                            </tr>
-                            <tr>
-                                <td>&lt;footer&gt;</td>
-                                <td>Phần chân của trang hoặc phần</td>
-                            </tr>
-                            <tr>
-                                <td>&lt;figure&gt; và &lt;figcaption&gt;</td>
-                                <td>Hình ảnh hoặc minh họa và chú thích</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </section>
+          <section id="semantic">
+            <h2>HTML ngữ nghĩa</h2>
+            <p>
+              HTML5 giới thiệu nhiều phần tử ngữ nghĩa giúp định nghĩa rõ ràng
+              các phần của trang web:
+            </p>
+            <table class="doc-table">
+              <thead>
+                <tr>
+                  <th>Thẻ</th>
+                  <th>Mô tả</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>&lt;header&gt;</td>
+                  <td>Phần đầu của trang hoặc phần</td>
+                </tr>
+                <tr>
+                  <td>&lt;nav&gt;</td>
+                  <td>Phần điều hướng</td>
+                </tr>
+                <tr>
+                  <td>&lt;main&gt;</td>
+                  <td>Nội dung chính của trang</td>
+                </tr>
+                <tr>
+                  <td>&lt;article&gt;</td>
+                  <td>Nội dung độc lập, có thể phân phối riêng</td>
+                </tr>
+                <tr>
+                  <td>&lt;section&gt;</td>
+                  <td>Phần của trang có chủ đề liên quan</td>
+                </tr>
+                <tr>
+                  <td>&lt;aside&gt;</td>
+                  <td>Nội dung liên quan đến nội dung xung quanh</td>
+                </tr>
+                <tr>
+                  <td>&lt;footer&gt;</td>
+                  <td>Phần chân của trang hoặc phần</td>
+                </tr>
+                <tr>
+                  <td>&lt;figure&gt; và &lt;figcaption&gt;</td>
+                  <td>Hình ảnh hoặc minh họa và chú thích</td>
+                </tr>
+              </tbody>
+            </table>
+          </section>
 
-                <section id="media">
-                    <h2>Phương tiện trong HTML</h2>
-                    <p>HTML5 cung cấp các phần tử tích hợp để nhúng âm thanh, video và các phương tiện tương tác khác:
-                    </p>
-                    <div class="code-example">
-                        <pre><code>&lt;!-- Video --&gt;
+          <section id="media">
+            <h2>Phương tiện trong HTML</h2>
+            <p>
+              HTML5 cung cấp các phần tử tích hợp để nhúng âm thanh, video và
+              các phương tiện tương tác khác:
+            </p>
+            <div class="code-example">
+              <pre><code>&lt;!-- Video --&gt;
 &lt;video width="320" height="240" controls&gt;
   &lt;source src="movie.mp4" type="video/mp4"&gt;
   &lt;source src="movie.ogg" type="video/ogg"&gt;
@@ -303,94 +277,45 @@
 &lt;canvas id="myCanvas" width="200" height="100"&gt;
   Trình duyệt của bạn không hỗ trợ thẻ canvas.
 &lt;/canvas&gt;</code></pre>
-                    </div>
-                </section>
-
-                <section id="api">
-                    <h2>API HTML5</h2>
-                    <p>HTML5 đi kèm với nhiều API JavaScript để tạo ứng dụng web phong phú:</p>
-                    <ul class="feature-list">
-                        <li>
-                            <strong>Geolocation API</strong> - Xác định vị trí người dùng
-                        </li>
-                        <li>
-                            <strong>Drag and Drop API</strong> - Kéo và thả các phần tử
-                        </li>
-                        <li>
-                            <strong>Local Storage API</strong> - Lưu trữ dữ liệu cục bộ
-                        </li>
-                        <li>
-                            <strong>Session Storage API</strong> - Lưu trữ dữ liệu phiên
-                        </li>
-                        <li>
-                            <strong>Web Workers API</strong> - JavaScript đa luồng
-                        </li>
-                        <li>
-                            <strong>WebSocket API</strong> - Giao tiếp hai chiều
-                        </li>
-                        <li>
-                            <strong>Canvas API</strong> - Vẽ đồ họa 2D
-                        </li>
-                        <li>
-                            <strong>History API</strong> - Thao tác lịch sử trình duyệt
-                        </li>
-                    </ul>
-                </section>
             </div>
+          </section>
+
+          <section id="api">
+            <h2>API HTML5</h2>
+            <p>
+              HTML5 đi kèm với nhiều API JavaScript để tạo ứng dụng web phong
+              phú:
+            </p>
+            <ul class="feature-list">
+              <li>
+                <strong>Geolocation API</strong> - Xác định vị trí người dùng
+              </li>
+              <li>
+                <strong>Drag and Drop API</strong> - Kéo và thả các phần tử
+              </li>
+              <li>
+                <strong>Local Storage API</strong> - Lưu trữ dữ liệu cục bộ
+              </li>
+              <li>
+                <strong>Session Storage API</strong> - Lưu trữ dữ liệu phiên
+              </li>
+              <li><strong>Web Workers API</strong> - JavaScript đa luồng</li>
+              <li><strong>WebSocket API</strong> - Giao tiếp hai chiều</li>
+              <li><strong>Canvas API</strong> - Vẽ đồ họa 2D</li>
+              <li>
+                <strong>History API</strong> - Thao tác lịch sử trình duyệt
+              </li>
+            </ul>
+          </section>
         </div>
+      </div>
     </section>
 
-    <footer>
-        <div class="container">
-            <div class="footer-grid">
-                <div class="footer-column">
-                    <h3>CodeMaster</h3>
-                    <p>
-                        Nền tảng học lập trình trực tuyến hàng đầu với các khóa học chất
-                        lượng và tài nguyên phong phú.
-                    </p>
-                </div>
-                <div class="footer-column">
-                    <h3>Liên Kết</h3>
-                    <ul>
-                        <li><a href="../index.html">Trang Chủ</a></li>
-                        <li><a href="../courses.html">Khóa Học</a></li>
-                        <li><a href="../resources.html">Tài Nguyên</a></li>
-                        <li><a href="../profile.html">Hồ Sơ</a></li>
-                    </ul>
-                </div>
-                <div class="footer-column">
-                    <h3>Liên Hệ</h3>
-                    <ul>
-                        <li>
-                            <i class="fas fa-envelope"></i><a href="mailto:info@codemaster.vn">info@codemaster.vn</a>
-                        </li>
-                        <li>
-                            <i class="fas fa-phone"></i><a href="tel:+84123456789">+84 123 456 789</a>
-                        </li>
-                        <li>
-                            <i class="fas fa-map-marker-alt"></i> 123 Đường ABC, Quận XYZ,
-                            TP. Hồ Chí Minh
-                        </li>
-                    </ul>
-                </div>
-                <div class="footer-column">
-                    <h3>Theo Dõi</h3>
-                    <div class="social-links">
-                        <a href="#"><i class="fab fa-facebook"></i></a>
-                        <a href="#"><i class="fab fa-youtube"></i></a>
-                        <a href="#"><i class="fab fa-linkedin"></i></a>
-                        <a href="#"><i class="fab fa-github"></i></a>
-                    </div>
-                </div>
-            </div>
-            <div class="footer-bottom">
-                <p>&copy; 2023 CodeMaster. Tất cả các quyền được bảo lưu.</p>
-            </div>
-        </div>
-    </footer>
+    <!-- load bằng components -->
+    <footer id="footer-placeholder"></footer>
 
     <script src="../assets/js/resources.js"></script>
-</body>
-
+    <script src="../assets/js/components.js"></script>
+    <script type="module" src="../assets/js/auth.js"></script>
+  </body>
 </html>

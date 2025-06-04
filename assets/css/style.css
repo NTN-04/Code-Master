@@ -700,6 +700,22 @@ footer {
 }
 
 /* Media Queries */
+@media (min-width: 768px) and (max-width: 968px) {
+  .navbar-on-mobile {
+    display: block;
+  }
+
+  .toggle-menu {
+    display: block;
+  }
+  .nav-pc {
+    display: none;
+  }
+  .nav-mobile {
+    inset: 0 0 0 50%;
+  }
+}
+
 @media (max-width: 768px) {
   header .container {
     justify-content: space-between;
@@ -713,13 +729,6 @@ footer {
   }
   .nav-pc {
     display: none;
-  }
-  .nav-pc ul {
-    margin-top: 20px;
-  }
-
-  .nav-pc ul li {
-    margin: 0 15px;
   }
 
   .hero h1 {
@@ -736,7 +745,8 @@ footer {
   }
 
   .btn {
-    width: 100%;
+    margin: 0 auto;
+    width: 60%;
   }
 }
 
