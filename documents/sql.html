@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tài Liệu SQL | CodeMaster</title>
+    <link rel="stylesheet" href="../assets/css/style.css" />
+    <link rel="stylesheet" href="../assets/css/resources.css" />
+    <link rel="stylesheet" href="../assets/css/documents.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+  </head>
+
+  <body>
+    <!-- load với component -->
+    <header id="header-placeholder"></header>
+
+    <div class="document-header">
+      <div class="container">
+        <h1>Tài Liệu SQL</h1>
+        <p>
+          Tài liệu tham khảo đầy đủ cho cú pháp SQL, lệnh và thao tác cơ sở dữ
+          liệu
+        </p>
+      </div>
+    </div>
+
+    <div class="document-content">
+      <div class="container">
+        <aside class="document-nav">
+          <h3>Mục lục</h3>
+          <ul>
+            <li><a href="#introduction">Giới thiệu SQL</a></li>
+            <li><a href="#basic-sql">Cú pháp SQL Cơ bản</a></li>
+            <li><a href="#select">Câu lệnh SELECT</a></li>
+            <li><a href="#where">Mệnh đề WHERE</a></li>
+            <li><a href="#joins">JOIN</a></li>
+            <li><a href="#group-by">GROUP BY</a></li>
+            <li><a href="#having">HAVING</a></li>
+            <li><a href="#order-by">ORDER BY</a></li>
+            <li><a href="#insert-update-delete">INSERT, UPDATE, DELETE</a></li>
+            <li><a href="#create-alter-drop">CREATE, ALTER, DROP</a></li>
+            <li><a href="#constraints">Ràng buộc</a></li>
+          </ul>
+        </aside>
+
+        <main class="document-main">
+          <section id="introduction">
+            <h2>Giới thiệu SQL</h2>
+            <p>
+              SQL (Structured Query Language) là một ngôn ngữ tiêu chuẩn để
+              tương tác với các hệ quản trị cơ sở dữ liệu quan hệ (RDBMS). SQL
+              được sử dụng để truy vấn, chèn, cập nhật và sửa đổi dữ liệu.
+            </p>
+            <p>
+              SQL có thể được sử dụng để thực hiện nhiều tác vụ, chẳng hạn như
+              truy vấn dữ liệu từ cơ sở dữ liệu, chèn bản ghi mới, cập nhật bản
+              ghi và tạo các bảng và cơ sở dữ liệu mới.
+            </p>
+          </section>
+
+          <section id="basic-sql">
+            <h2>Cú pháp SQL Cơ bản</h2>
+            <p>SQL bao gồm nhiều phần khác nhau:</p>
+            <ul class="feature-list">
+              <li>
+                <strong>DDL (Data Definition Language)</strong> - Sử dụng để
+                định nghĩa cấu trúc cơ sở dữ liệu (CREATE, ALTER, DROP)
+              </li>
+              <li>
+                <strong>DML (Data Manipulation Language)</strong> - Sử dụng để
+                thao tác dữ liệu (SELECT, INSERT, UPDATE, DELETE)
+              </li>
+              <li>
+                <strong>DCL (Data Control Language)</strong> - Sử dụng để điều
+                khiển quyền truy cập (GRANT, REVOKE)
+              </li>
+              <li>
+                <strong>TCL (Transaction Control Language)</strong> - Sử dụng để
+                quản lý giao dịch (COMMIT, ROLLBACK)
+              </li>
+            </ul>
+          </section>
+
+          <section id="select">
+            <h2>Câu lệnh SELECT</h2>
+            <p>
+              Câu lệnh SELECT được sử dụng để chọn dữ liệu từ một cơ sở dữ liệu.
+              Dữ liệu được trả về được lưu trữ trong một bảng kết quả, được gọi
+              là tập kết quả.
+            </p>
+
+            <div class="code-example">
+              <pre><code>-- Chọn tất cả các cột
+SELECT * FROM customers;
+
+-- Chọn cột cụ thể
+SELECT first_name, last_name FROM customers;
+
+-- Chọn các cột khác nhau
+SELECT DISTINCT country FROM customers;
+
+-- Thêm bí danh cho cột
+SELECT first_name AS fname, last_name AS lname
+FROM customers;</code></pre>
+            </div>
+          </section>
+
+          <section id="where">
+            <h2>Mệnh đề WHERE</h2>
+            <p>
+              Mệnh đề WHERE được sử dụng để lọc các bản ghi. Nó chỉ trích xuất
+              những bản ghi đáp ứng điều kiện được chỉ định.
+            </p>
+
+            <div class="code-example">
+              <pre><code>-- Toán tử so sánh
+SELECT * FROM customers
+WHERE country = 'USA';
+
+-- Toán tử AND & OR
+SELECT * FROM customers
+WHERE country = 'USA' AND (age > 30 OR visits > 10);
+
+-- Toán tử IN
+SELECT * FROM customers
+WHERE country IN ('USA', 'UK', 'Canada');
+
+-- Toán tử BETWEEN
+SELECT * FROM products
+WHERE price BETWEEN 10 AND 50;
+
+-- Toán tử LIKE
+SELECT * FROM customers
+WHERE last_name LIKE 'Sm%'; -- Tìm last_name bắt đầu bằng "Sm"
+
+-- Toán tử IS NULL
+SELECT * FROM customers
+WHERE phone IS NULL;</code></pre>
+            </div>
+          </section>
+
+          <section id="joins">
+            <h2>JOIN</h2>
+            <p>
+              JOIN được sử dụng để kết hợp các hàng từ hai hoặc nhiều bảng, dựa
+              trên một cột liên quan giữa chúng.
+            </p>
+
+            <div class="code-example">
+              <pre><code>-- INNER JOIN (chỉ trả về các hàng khớp)
+SELECT orders.order_id, customers.first_name, customers.last_name
+FROM orders
+INNER JOIN customers ON orders.customer_id = customers.id;
+
+-- LEFT JOIN (trả về tất cả hàng từ bảng bên trái, và các hàng khớp từ bảng bên phải)
+SELECT customers.first_name, orders.order_id
+FROM customers
+LEFT JOIN orders ON customers.id = orders.customer_id;
+
+-- RIGHT JOIN (trả về tất cả hàng từ bảng bên phải, và các hàng khớp từ bảng bên trái)
+SELECT customers.first_name, orders.order_id
+FROM customers
+RIGHT JOIN orders ON customers.id = orders.customer_id;
+
+-- FULL JOIN (trả về tất cả hàng khi có khớp ở một trong hai bảng)
+SELECT customers.first_name, orders.order_id
+FROM customers
+FULL JOIN orders ON customers.id = orders.customer_id;</code></pre>
+            </div>
+          </section>
+
+          <section id="group-by">
+            <h2>GROUP BY</h2>
+            <p>
+              Mệnh đề GROUP BY nhóm các hàng có cùng giá trị vào các hàng tóm
+              tắt, thường được sử dụng với các hàm tổng hợp như COUNT, MAX, MIN,
+              SUM, AVG để nhóm tập kết quả theo một hoặc nhiều cột.
+            </p>
+
+            <div class="code-example">
+              <pre><code>-- Đếm số khách hàng theo quốc gia
+SELECT country, COUNT(*) AS total_customers
+FROM customers
+GROUP BY country;
+
+-- Tính tổng số lượng theo danh mục sản phẩm
+SELECT category, SUM(quantity) AS total_quantity
+FROM products
+GROUP BY category;
+
+-- Tìm giá cao nhất trong mỗi danh mục sản phẩm
+SELECT category, MAX(price) AS highest_price
+FROM products
+GROUP BY category;</code></pre>
+            </div>
+          </section>
+
+          <section id="having">
+            <h2>HAVING</h2>
+            <p>
+              Mệnh đề HAVING được thêm vào SQL vì từ khóa WHERE không thể được
+              sử dụng với các hàm tổng hợp.
+            </p>
+
+            <div class="code-example">
+              <pre><code>-- Chỉ hiển thị các quốc gia có nhiều hơn 5 khách hàng
+SELECT country, COUNT(*) AS total_customers
+FROM customers
+GROUP BY country
+HAVING COUNT(*) > 5;
+
+-- Chỉ hiển thị danh mục sản phẩm có giá trung bình > $50
+SELECT category, AVG(price) AS avg_price
+FROM products
+GROUP BY category
+HAVING AVG(price) > 50;</code></pre>
+            </div>
+          </section>
+
+          <section id="order-by">
+            <h2>ORDER BY</h2>
+            <p>
+              Mệnh đề ORDER BY được sử dụng để sắp xếp các bản ghi kết quả theo
+              thứ tự tăng dần hoặc giảm dần.
+            </p>
+
+            <div class="code-example">
+              <pre><code>-- Sắp xếp khách hàng theo tên (tăng dần)
+SELECT * FROM customers
+ORDER BY first_name;
+
+-- Sắp xếp khách hàng theo tên (giảm dần)
+SELECT * FROM customers
+ORDER BY first_name DESC;
+
+-- Sắp xếp theo nhiều cột
+SELECT * FROM customers
+ORDER BY country, first_name;</code></pre>
+            </div>
+          </section>
+
+          <section id="insert-update-delete">
+            <h2>INSERT, UPDATE, DELETE</h2>
+            <p>
+              Các câu lệnh INSERT, UPDATE và DELETE được sử dụng để sửa đổi dữ
+              liệu trong bảng.
+            </p>
+
+            <div class="code-example">
+              <pre><code>-- Chèn một bản ghi mới
+INSERT INTO customers (first_name, last_name, email)
+VALUES ('John', 'Doe', 'john.doe@example.com');
+
+-- Chèn nhiều bản ghi
+INSERT INTO customers (first_name, last_name, email)
+VALUES 
+('John', 'Doe', 'john.doe@example.com'),
+('Jane', 'Smith', 'jane.smith@example.com');
+
+-- Cập nhật bản ghi
+UPDATE customers
+SET email = 'new.email@example.com'
+WHERE id = 1;
+
+-- Xóa bản ghi
+DELETE FROM customers
+WHERE id = 1;</code></pre>
+            </div>
+          </section>
+
+          <section id="create-alter-drop">
+            <h2>CREATE, ALTER, DROP</h2>
+            <p>
+              Các câu lệnh CREATE, ALTER và DROP được sử dụng để tạo, sửa đổi và
+              xóa cấu trúc cơ sở dữ liệu.
+            </p>
+
+            <div class="code-example">
+              <pre><code>-- Tạo bảng
+CREATE TABLE customers (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    first_name VARCHAR(50) NOT NULL,
+    last_name VARCHAR(50) NOT NULL,
+    email VARCHAR(100) UNIQUE NOT NULL,
+    birth_date DATE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Thêm cột vào bảng
+ALTER TABLE customers
+ADD COLUMN phone VARCHAR(20);
+
+-- Sửa đổi cột
+ALTER TABLE customers
+MODIFY COLUMN phone VARCHAR(30);
+
+-- Xóa cột
+ALTER TABLE customers
+DROP COLUMN phone;
+
+-- Xóa bảng
+DROP TABLE customers;
+
+-- Tạo cơ sở dữ liệu
+CREATE DATABASE mydb;
+
+-- Xóa cơ sở dữ liệu
+DROP DATABASE mydb;</code></pre>
+            </div>
+          </section>
+
+          <section id="constraints">
+            <h2>Ràng buộc</h2>
+            <p>
+              Các ràng buộc được sử dụng để chỉ định các quy tắc cho dữ liệu
+              trong bảng.
+            </p>
+
+            <div class="code-example">
+              <pre><code>-- Ràng buộc thường được sử dụng:
+-- NOT NULL - Đảm bảo một cột không thể có giá trị NULL
+-- UNIQUE - Đảm bảo tất cả các giá trị trong một cột là khác nhau
+-- PRIMARY KEY - Kết hợp của NOT NULL và UNIQUE
+-- FOREIGN KEY - Đảm bảo tính toàn vẹn tham chiếu
+-- CHECK - Đảm bảo tất cả các giá trị trong một cột đáp ứng một điều kiện cụ thể
+-- DEFAULT - Đặt một giá trị mặc định cho một cột khi không có giá trị nào được chỉ định
+
+-- Ví dụ:
+CREATE TABLE products (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(100) NOT NULL,
+    price DECIMAL(10, 2) CHECK (price > 0),
+    category_id INT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (category_id) REFERENCES categories(id)
+);</code></pre>
+            </div>
+          </section>
+        </main>
+      </div>
+    </div>
+
+    <!-- load bằng components -->
+    <footer id="footer-placeholder"></footer>
+
+    <script src="../assets/js/script.js"></script>
+    <script src="../assets/js/components.js"></script>
+    <script type="module" src="../assets/js/auth.js"></script>
+    <script src="../assets/js/resources.js"></script>
+  </body>
+</html>

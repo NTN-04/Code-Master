@@ -1,0 +1,60 @@
+<!-- Navbar Component với đường dẫn động -->
+<header>
+  <div class="container">
+    <div class="logo">
+      <a href="{{rootPath}}index.html">
+        <img src="{{rootPath}}assets/images/logo-01.svg" alt="CodeMaster" />
+      </a>
+    </div>
+
+    <!-- Navbar mobile -->
+    <div class="navbar-on-mobile">
+      <label for="nav-mobile-input" class="toggle-menu">
+        <i class="fa-solid fa-bars"></i>
+      </label>
+
+      <input type="checkbox" hidden id="nav-mobile-input" />
+
+      <label for="nav-mobile-input" class="nav-overlay"></label>
+
+      <nav class="nav-mobile">
+        <div class="nav-mobile-header">
+          <a href="{{rootPath}}index.html">
+            <img src="{{rootPath}}assets/images/logo-01.svg" alt="logo" />
+          </a>
+          <label for="nav-mobile-input"
+            ><i class="fa-solid fa-xmark"></i
+          ></label>
+        </div>
+        <ul class="nav-mobile-list">
+          <li>
+            <a href="{{rootPath}}index.html">
+              <i class="icon fa-solid fa-house"></i>Trang Chủ
+            </a>
+          </li>
+          <li>
+            <a href="{{rootPath}}courses.html">
+              <i class="icon fa-solid fa-book"></i>Khóa Học
+            </a>
+          </li>
+          <li>
+            <a href="{{rootPath}}resources.html">
+              <i class="icon fa-solid fa-file"></i>Tài Nguyên
+            </a>
+          </li>
+          <!-- đăng nhập/hồ sơ/đăng xuất thêm vào bởi JavaScript -->
+        </ul>
+      </nav>
+    </div>
+
+    <!-- Navbar PC -->
+    <nav class="nav-pc">
+      <ul>
+        <li><a href="{{rootPath}}index.html">Trang Chủ</a></li>
+        <li><a href="{{rootPath}}courses.html">Khóa Học</a></li>
+        <li><a href="{{rootPath}}resources.html">Tài Nguyên</a></li>
+        <!-- đăng nhập/hồ sơ/đăng xuất sẽ được thêm vào bởi auth.js -->
+      </ul>
+    </nav>
+  </div>
+</header>

@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tài Liệu CSS | CodeMaster</title>
+    <link rel="stylesheet" href="../assets/css/style.css" />
+    <link rel="stylesheet" href="../assets/css/resources.css" />
+    <link rel="stylesheet" href="../assets/css/documents.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+  </head>
+
+  <body>
+    <!-- load với component -->
+    <header id="header-placeholder"></header>
+
+    <div class="document-header">
+      <div class="container">
+        <h1>Tài Liệu CSS</h1>
+        <p>
+          Tài liệu hướng dẫn về thuộc tính CSS, bố cục và kỹ thuật bố cục hiện
+          đại
+        </p>
+      </div>
+    </div>
+
+    <div class="document-content">
+      <div class="container">
+        <aside class="document-nav">
+          <h3>Mục lục</h3>
+          <ul>
+            <li><a href="#introduction">Giới thiệu CSS</a></li>
+            <li><a href="#selectors">Bộ chọn CSS</a></li>
+            <li><a href="#box-model">Mô hình hộp</a></li>
+            <li><a href="#layout">Bố cục CSS</a></li>
+            <li><a href="#flexbox">Flexbox</a></li>
+            <li><a href="#grid">CSS Grid</a></li>
+            <li><a href="#responsive">Thiết kế đáp ứng</a></li>
+          </ul>
+        </aside>
+
+        <main class="document-main">
+          <section id="introduction">
+            <h2>Giới thiệu CSS</h2>
+            <p>
+              CSS (Cascading Style Sheets) là ngôn ngữ được sử dụng để tạo kiểu
+              cho trang web HTML. CSS mô tả cách các phần tử HTML nên được hiển
+              thị trên màn hình, trên giấy, hoặc trong các phương tiện khác.
+            </p>
+            <p>
+              CSS tiết kiệm rất nhiều công việc. Nó có thể kiểm soát bố cục của
+              nhiều trang web cùng lúc.
+            </p>
+
+            <div class="code-example">
+              <pre><code>/* Đây là một bình luận CSS */
+body {
+  background-color: lightblue;
+}
+
+h1 {
+  color: navy;
+  margin-left: 20px;
+}
+</code></pre>
+            </div>
+          </section>
+
+          <section id="selectors">
+            <h2>Bộ chọn CSS</h2>
+            <p>
+              Bộ chọn CSS được sử dụng để "tìm" (hoặc chọn) các phần tử HTML bạn
+              muốn tạo kiểu.
+            </p>
+            <p>Chúng ta có thể chia các bộ chọn CSS thành năm danh mục:</p>
+            <ul class="feature-list">
+              <li>
+                <strong>Bộ chọn đơn giản</strong> (chọn phần tử dựa trên tên,
+                id, lớp)
+              </li>
+              <li>
+                <strong>Bộ chọn kết hợp</strong> (chọn phần tử dựa trên mối quan
+                hệ cụ thể giữa chúng)
+              </li>
+              <li>
+                <strong>Bộ chọn lớp giả</strong> (chọn phần tử dựa trên một
+                trạng thái nhất định)
+              </li>
+              <li>
+                <strong>Bộ chọn phần tử giả</strong> (chọn và tạo kiểu cho một
+                phần của phần tử)
+              </li>
+              <li>
+                <strong>Bộ chọn thuộc tính</strong> (chọn phần tử dựa trên thuộc
+                tính hoặc giá trị thuộc tính)
+              </li>
+            </ul>
+          </section>
+
+          <section id="box-model">
+            <h2>Mô hình hộp</h2>
+            <p>
+              Trong CSS, mô hình hộp là một hộp bao quanh mọi phần tử HTML. Nó
+              bao gồm: lề (margins), đường viền (borders), phần đệm (padding) và
+              nội dung thực tế.
+            </p>
+            <p>
+              Mô hình hộp cho phép chúng ta thêm đường viền xung quanh phần tử
+              và xác định không gian xung quanh phần tử.
+            </p>
+
+            <div class="code-example">
+              <pre><code>div {
+  width: 300px;
+  padding: 25px;
+  border: 5px solid navy;
+  margin: 25px;
+}</code></pre>
+            </div>
+          </section>
+
+          <section id="layout">
+            <h2>Bố cục CSS</h2>
+            <p>
+              CSS cung cấp nhiều thuộc tính khác nhau để kiểm soát cách các phần
+              tử được bố trí trong trang web:
+            </p>
+            <ul class="feature-list">
+              <li>
+                <strong>display</strong> - Xác định loại hộp hiển thị của phần
+                tử
+              </li>
+              <li>
+                <strong>position</strong> - Xác định phương pháp định vị được sử
+                dụng cho phần tử
+              </li>
+              <li><strong>float</strong> - Xác định cách phần tử nên float</li>
+              <li>
+                <strong>clear</strong> - Xác định bên nào của phần tử không được
+                phép nổi
+              </li>
+            </ul>
+          </section>
+
+          <section id="flexbox">
+            <h2>Flexbox</h2>
+            <p>
+              Mô-đun Bố cục Flexbox làm cho việc thiết kế cấu trúc bố cục linh
+              hoạt dễ dàng hơn mà không cần sử dụng float hoặc định vị.
+            </p>
+            <p>
+              Trước khi Flexbox Layout module, có bốn chế độ bố cục: Block (cho
+              phần), Inline (cho văn bản), Table, và Positioned.
+            </p>
+
+            <div class="code-example">
+              <pre><code>.flex-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}</code></pre>
+            </div>
+          </section>
+
+          <section id="grid">
+            <h2>CSS Grid</h2>
+            <p>
+              CSS Grid Layout cung cấp một hệ thống bố cục dựa trên lưới, với
+              hàng và cột, giúp dễ dàng thiết kế các trang web mà không cần sử
+              dụng float và định vị.
+            </p>
+            <p>
+              CSS Grid là công nghệ mạnh mẽ nhất có sẵn trong CSS để tạo bố cục.
+            </p>
+
+            <div class="code-example">
+              <pre><code>.grid-container {
+  display: grid;
+  grid-template-columns: auto auto auto;
+  gap: 10px;
+  background-color: #2196F3;
+  padding: 10px;
+}</code></pre>
+            </div>
+          </section>
+
+          <section id="responsive">
+            <h2>Thiết kế đáp ứng</h2>
+            <p>
+              Thiết kế đáp ứng là về việc sử dụng CSS để làm cho một trang web
+              trông đẹp trên tất cả các thiết bị.
+            </p>
+            <p>
+              Thiết kế đáp ứng không phải là một chương trình hoặc plugin
+              JavaScript. Nó chỉ sử dụng HTML và CSS.
+            </p>
+
+            <div class="code-example">
+              <pre><code>@media only screen and (max-width: 600px) {
+  body {
+    background-color: lightblue;
+  }
+}</code></pre>
+            </div>
+          </section>
+        </main>
+      </div>
+    </div>
+
+    <!-- load bằng components -->
+    <footer id="footer-placeholder"></footer>
+
+    <script src="../assets/js/components.js"></script>
+    <script type="module" src="../assets/js/auth.js"></script>
+    <script src="../assets/js/resources.js"></script>
+  </body>
+</html>

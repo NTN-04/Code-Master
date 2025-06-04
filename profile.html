@@ -13,59 +13,8 @@
   </head>
 
   <body>
-    <header>
-      <div class="container">
-        <div class="logo">
-          <a href="index.html">
-            <img src="./assets/images/logo-01.svg" alt="logo"
-          /></a>
-        </div>
-        <!-- Navbar mobile -->
-        <div class="navbar-on-mobile">
-          <label for="nav-mobile-input" class="toggle-menu">
-            <i class="fa-solid fa-bars"></i>
-          </label>
-          <input type="checkbox" id="nav-mobile-input" hidden />
-          <label for="nav-mobile-input" class="nav-overlay"></label>
-          <nav class="nav-mobile">
-            <div class="nav-mobile-header">
-              <a href="index.html">
-                <img src="./assets/images/logo-01.svg" alt="logo"
-              /></a>
-              <label for="nav-mobile-input"
-                ><i class="fa-solid fa-xmark"></i
-              ></label>
-            </div>
-            <ul class="nav-mobile-list">
-              <li class="nav-mobile-group">
-                <a href="index.html" class="active nav-mobile-link"
-                  >Trang Chủ</a
-                >
-              </li>
-              <li class="nav-mobile-group">
-                <a href="courses.html" class="nav-mobile-link">Khóa Học</a>
-              </li>
-              <li class="nav-mobile-group">
-                <a href="resources.html" class="nav-mobile-link">Tài Nguyên</a>
-              </li>
-              <li class="nav-mobile-group">
-                <a href="profile.html" class="nav-mobile-link">Hồ Sơ Của Tôi</a>
-              </li>
-            </ul>
-          </nav>
-        </div>
-
-        <!-- Navbar PC -->
-        <nav class="nav-pc">
-          <ul>
-            <li><a href="index.html">Trang Chủ</a></li>
-            <li><a href="courses.html">Khóa Học</a></li>
-            <li><a href="resources.html">Tài Nguyên</a></li>
-            <li><a href="profile.html" class="active">Hồ Sơ Của Tôi</a></li>
-          </ul>
-        </nav>
-      </div>
-    </header>
+    <!-- load với component -->
+    <header id="header-placeholder"></header>
 
     <section class="profile-header">
       <div class="container">
@@ -624,7 +573,7 @@ Tôi là một lập trình viên web đam mê học hỏi các công nghệ m�
               </form>
             </div>
 
-            <div class="settings-section danger-zone">
+            <!-- <div class="settings-section danger-zone">
               <h3>Vùng Nguy Hiểm</h3>
               <div class="danger-zone-actions">
                 <div class="action">
@@ -648,49 +597,17 @@ Tôi là một lập trình viên web đam mê học hỏi các công nghệ m�
                   <button class="btn btn-danger">Xóa Tài Khoản</button>
                 </div>
               </div>
-            </div>
+            </div> -->
           </div>
         </div>
       </div>
     </section>
 
-    <footer>
-      <div class="container">
-        <div class="footer-content">
-          <div class="footer-logo">
-            <a href="index.html">
-              <img src="./assets/images/logo-02.svg" alt="logo"
-            /></a>
-            <p>Hành trình làm chủ lập trình của bạn bắt đầu từ đây.</p>
-          </div>
-          <div class="footer-links">
-            <h3>Liên Kết Nhanh</h3>
-            <ul>
-              <li><a href="index.html">Trang Chủ</a></li>
-              <li><a href="courses.html">Khóa Học</a></li>
-              <li><a href="resources.html">Tài Nguyên</a></li>
-              <li><a href="profile.html">Hồ Sơ Của Tôi</a></li>
-            </ul>
-          </div>
-          <div class="footer-contact">
-            <h3>Liên Hệ</h3>
-            <p>Email: info@codemaster.com</p>
-            <p>Điện thoại: +84 909 123 456</p>
-            <div class="social-icons">
-              <a href="#"><i class="fab fa-facebook"></i></a>
-              <a href="#"><i class="fab fa-twitter"></i></a>
-              <a href="#"><i class="fab fa-instagram"></i></a>
-              <a href="#"><i class="fab fa-github"></i></a>
-            </div>
-          </div>
-        </div>
-        <div class="footer-bottom">
-          <p>&copy; 2025 CodeMaster. Đã đăng ký bản quyền.</p>
-        </div>
-      </div>
-    </footer>
+    <!-- load bằng components -->
+    <footer id="footer-placeholder"></footer>
 
     <script src="./assets/js/script.js"></script>
+    <script src="./assets/js/components.js"></script>
     <script type="module" src="./assets/js/auth.js"></script>
     <script src="./assets/js/profile.js"></script>
   </body>
