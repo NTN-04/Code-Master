@@ -1,6 +1,26 @@
 /* Trang Đăng Nhập */
+.login-home a {
+  position: fixed;
+  top: 30px;
+  left: 50px;
+  width: 50px;
+  height: 50px;
+  background-color: rgba(1, 148, 228, 0.5);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.login-home a:hover {
+  scale: 0.9;
+}
+.login-home i {
+  font-size: 1.2rem;
+  color: #fff;
+  padding: 10px;
+}
 .login-section {
-  padding: 80px 0;
+  /* padding: 80px 0; */
   min-height: calc(100vh - 300px);
   display: flex;
   align-items: center;
@@ -255,6 +275,86 @@ input[type="password"]::-webkit-reveal {
   color: #fff;
 }
 
+/* Modal quên mật khẩu */
+.modal {
+  z-index: 100;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: none;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-content {
+  padding: 20px;
+  background-color: #fff;
+  width: 100%;
+  max-width: 400px;
+  border-radius: var(--border-radius);
+  animation: fadeIn 0.6s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+.modal-header h3 {
+  margin-bottom: unset;
+  color: #0193e4;
+  font-size: 1.5rem;
+}
+.modal-header .close-modal {
+  background: none;
+  border: none;
+  color: var(--gray-dark);
+  font-size: 1.5rem;
+  padding: 4px;
+  cursor: pointer;
+}
+.modal-header .close-modal:hover {
+  color: #0193e4;
+  scale: 1.1;
+}
+.modal-body p {
+  color: var(--gray-dark);
+}
+.modal-body label {
+  font-weight: 600;
+}
+.modal-body .form-actions {
+  margin: 30px 0 10px;
+}
+/* Spinner animation */
+.fa-spinner {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
 /* Responsive Styles */
 @media (max-width: 576px) {
   .login-container {
@@ -277,5 +377,8 @@ input[type="password"]::-webkit-reveal {
 
   .login-header {
     padding: 20px;
+  }
+  .modal-content {
+    margin: 0 15px;
   }
 }
