@@ -3,7 +3,7 @@ import { signOut } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-auth
 
 // Cập nhật UI dựa trên trạng thái đăng nhập
 function updateUIBasedOnLoginState() {
-  console.log("Updating UI based on login state");
+  console.log("Cập nhật UI dựa trên trạng thái đăng nhập");
   const userData = getUserData();
   updateNavigationMenu(!!userData);
 
@@ -33,6 +33,9 @@ function updateNavigationMenu(isLoggedIn) {
 }
 
 function updateNavList(navList, isLoggedIn) {
+  // Lấy rootPath đúng cho trang hiện tại
+  const rootPath = typeof getRootPath === "function" ? getRootPath() : "./";
+
   // Xóa các mục login/profile/logout cũ
   Array.from(navList.children).forEach((li) => {
     const link = li.querySelector("a");
@@ -51,7 +54,7 @@ function updateNavList(navList, isLoggedIn) {
     // Thêm "Hồ Sơ Của Tôi"
     const profileLi = document.createElement("li");
     const profileLink = document.createElement("a");
-    profileLink.href = "profile.html";
+    profileLink.href = rootPath + "profile.html";
     profileLink.innerHTML = `<i class="icon fa-solid fa-user"></i> Tài khoản`;
     profileLi.appendChild(profileLink);
     navList.appendChild(profileLi);
@@ -70,14 +73,14 @@ function updateNavList(navList, isLoggedIn) {
       signOut(auth).then(() => {
         localStorage.removeItem("codemaster_user");
         updateNavigationMenu(false);
-        window.location.href = "index.html";
+        window.location.href = rootPath + "index.html";
       });
     };
   } else {
     // Thêm "Đăng Nhập"
     const loginLi = document.createElement("li");
     const loginLink = document.createElement("a");
-    loginLink.href = "login.html";
+    loginLink.href = rootPath + "login.html";
     loginLink.innerHTML = `<i class="icon fa-solid fa-right-to-bracket"></i> Đăng Nhập`;
     loginLi.appendChild(loginLink);
     navList.appendChild(loginLi);

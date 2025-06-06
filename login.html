@@ -13,59 +13,12 @@
   </head>
 
   <body>
-    <header>
-      <div class="container">
-        <div class="logo">
-          <a href="index.html">
-            <img src="../assets/images/logo-01.svg" alt="logo"
-          /></a>
-        </div>
-        <!-- Navbar mobile -->
-        <div class="navbar-on-mobile">
-          <label for="nav-mobile-input" class="toggle-menu">
-            <i class="fa-solid fa-bars"></i>
-          </label>
-          <input type="checkbox" id="nav-mobile-input" hidden />
-          <label for="nav-mobile-input" class="nav-overlay"></label>
-          <nav class="nav-mobile">
-            <div class="nav-mobile-header">
-              <a href="index.html">
-                <img src="./assets/images/logo-01.svg" alt="logo"
-              /></a>
-              <label for="nav-mobile-input"
-                ><i class="fa-solid fa-xmark"></i
-              ></label>
-            </div>
-            <ul class="nav-mobile-list">
-              <li class="nav-mobile-group">
-                <a href="index.html" class="active nav-mobile-link"
-                  >Trang Chủ</a
-                >
-              </li>
-              <li class="nav-mobile-group">
-                <a href="courses.html" class="nav-mobile-link">Khóa Học</a>
-              </li>
-              <li class="nav-mobile-group">
-                <a href="resources.html" class="nav-mobile-link">Tài Nguyên</a>
-              </li>
-              <li class="nav-mobile-group">
-                <a href="profile.html" class="nav-mobile-link">Hồ Sơ Của Tôi</a>
-              </li>
-            </ul>
-          </nav>
-        </div>
-
-        <!-- Navbar PC -->
-        <nav class="nav-pc">
-          <ul>
-            <li><a href="index.html">Trang Chủ</a></li>
-            <li><a href="courses.html">Khóa Học</a></li>
-            <li><a href="resources.html">Tài Nguyên</a></li>
-            <li><a href="login.html" class="active">Đăng Nhập</a></li>
-          </ul>
-        </nav>
-      </div>
-    </header>
+    <!-- Nút home -->
+    <div class="login-home">
+      <a href="index.html">
+        <i class="fa-solid fa-house"></i>
+      </a>
+    </div>
 
     <section class="login-section">
       <div class="container">
@@ -228,41 +181,37 @@
       </div>
     </section>
 
-    <footer>
-      <div class="container">
-        <div class="footer-content">
-          <div class="footer-logo">
-            <a href="index.html">
-              <img src="../assets/images/logo-02.svg" alt="logo"
-            /></a>
-            <p>Hành trình làm chủ lập trình của bạn bắt đầu từ đây.</p>
-          </div>
-          <div class="footer-links">
-            <h3>Liên Kết Nhanh</h3>
-            <ul>
-              <li><a href="index.html">Trang Chủ</a></li>
-              <li><a href="courses.html">Khóa Học</a></li>
-              <li><a href="resources.html">Tài Nguyên</a></li>
-              <li><a href="login.html">Đăng Nhập</a></li>
-            </ul>
-          </div>
-          <div class="footer-contact">
-            <h3>Liên Hệ</h3>
-            <p>Email: info@codemaster.com</p>
-            <p>Điện thoại: +84 909 123 456</p>
-            <div class="social-icons">
-              <a href="#"><i class="fab fa-facebook"></i></a>
-              <a href="#"><i class="fab fa-twitter"></i></a>
-              <a href="#"><i class="fab fa-instagram"></i></a>
-              <a href="#"><i class="fab fa-github"></i></a>
-            </div>
-          </div>
+    <!-- Modal quên mật khẩu -->
+    <div class="modal" id="forgot-password-modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3>Đặt lại mật khẩu</h3>
+          <button class="close-modal">&times;</button>
         </div>
-        <div class="footer-bottom">
-          <p>&copy; 2025 CodeMaster. Đã đăng ký bản quyền.</p>
+        <div class="modal-body">
+          <p>Nhập địa chỉ email của bạn để nhận hướng dẫn đặt lại mật khẩu.</p>
+          <form id="forgot-password-form">
+            <div class="form-group">
+              <label for="reset-email">Email</label>
+              <div class="input-with-icon">
+                <i class="fas fa-envelope"></i>
+                <input
+                  type="email"
+                  id="reset-email"
+                  placeholder="Nhập email của bạn"
+                  required
+                />
+              </div>
+            </div>
+            <div class="form-actions">
+              <button type="submit" class="btn btn-primary btn-block">
+                Gửi yêu cầu đặt lại mật khẩu
+              </button>
+            </div>
+          </form>
         </div>
       </div>
-    </footer>
+    </div>
 
     <script src="./assets/js/script.js"></script>
     <script type="module" src="./assets/js/login.js"></script>
