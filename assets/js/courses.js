@@ -1,13 +1,13 @@
-// Courses page functionality
+// Chức năng trang khóa học
 document.addEventListener("DOMContentLoaded", function () {
-  // Initialize progress bars
+  // Khởi tạo thanh tiến trình
   initProgressBars();
 
-  // Initialize course filtering
+  // Khởi tạo bộ lọc khóa học
   initCourseFiltering();
 });
 
-// Initialize progress bars with stored values
+// Khởi tạo thanh tiến trình với giá trị đã lưu
 function initProgressBars() {
   const progressBars = document.querySelectorAll(".progress-bar");
 
@@ -36,7 +36,7 @@ function initProgressBars() {
   });
 }
 
-// Initialize course filtering and search
+// Khởi tạo bộ lọc và tìm kiếm khóa học
 function initCourseFiltering() {
   const searchInput = document.getElementById("course-search");
   const levelFilter = document.getElementById("filter-level");
@@ -44,7 +44,7 @@ function initCourseFiltering() {
   const courseCards = document.querySelectorAll(".course-card");
   const noResults = document.querySelector(".no-results");
 
-  // Function to filter courses based on search and filter criteria
+  // Hàm lọc khóa học dựa trên tiêu chí tìm kiếm và bộ lọc
   function filterCourses() {
     const searchTerm = searchInput.value.toLowerCase();
     const levelValue = levelFilter.value;
@@ -58,14 +58,14 @@ function initCourseFiltering() {
       const level = card.getAttribute("data-level");
       const category = card.getAttribute("data-category");
 
-      // Check if card matches all criteria
+      // Kiểm tra xem thẻ có khớp với tất cả tiêu chí hay không
       const matchesSearch =
         title.includes(searchTerm) || description.includes(searchTerm);
       const matchesLevel = levelValue === "all" || level === levelValue;
       const matchesCategory =
         categoryValue === "all" || category === categoryValue;
 
-      // Show or hide the card based on matching criteria
+      // Hiển thị hoặc ẩn thẻ dựa trên tiêu chí khớp
       if (matchesSearch && matchesLevel && matchesCategory) {
         card.style.display = "block";
         visibleCount++;
@@ -74,7 +74,7 @@ function initCourseFiltering() {
       }
     });
 
-    // Show or hide the "no results" message
+    // Hiển thị hoặc ẩn thông báo "không có kết quả"
     if (visibleCount === 0) {
       noResults.style.display = "flex";
       noResults.style.gap = "5px";
@@ -83,26 +83,26 @@ function initCourseFiltering() {
     }
   }
 
-  // Add event listeners to inputs and selects
+  // Thêm sự kiện lắng nghe cho các input và select
   searchInput.addEventListener("input", filterCourses);
   levelFilter.addEventListener("change", filterCourses);
   categoryFilter.addEventListener("change", filterCourses);
 
-  // Apply animations to cards
+  // Áp dụng hiệu ứng cho các thẻ
   courseCards.forEach((card) => {
     card.classList.add("animated");
   });
 }
 
-// Calculate and update course completion based on completed lessons
+// Tính toán và cập nhật mức độ hoàn thành khóa học dựa trên các bài học đã hoàn thành
 function updateCourseCompletion(courseId) {
-  // Get completed lessons for this course
+  // Lấy các bài học đã hoàn thành cho khóa học này
   const completedLessons = JSON.parse(
     localStorage.getItem(`${courseId}-completed-lessons`) || "[]"
   );
 
-  // In a real application, we would know the total number of lessons per course
-  // For now, we'll use a hardcoded mapping
+  // Trong ứng dụng thực tế, chúng ta sẽ biết tổng số bài học cho mỗi khóa học
+  // Hiện tại, chúng ta sẽ sử dụng một mapping cứng
   const totalLessonsMap = {
     "html-css": 15,
     javascript: 18,
@@ -115,18 +115,18 @@ function updateCourseCompletion(courseId) {
     "machine-learning": 30,
   };
 
-  const totalLessons = totalLessonsMap[courseId] || 15; // Default to 15 if not found
+  const totalLessons = totalLessonsMap[courseId] || 15; // Mặc định là 15 nếu không tìm thấy
 
-  // Calculate progress percentage
+  // Tính toán phần trăm tiến trình
   const progressPercentage =
     totalLessons > 0
       ? Math.round((completedLessons.length / totalLessons) * 100)
       : 0;
 
-  // Update progress in localStorage
+  // Cập nhật tiến trình trong localStorage
   localStorage.setItem(`course-progress-${courseId}`, progressPercentage);
 
-  // Update UI if on courses page
+  // Cập nhật giao diện nếu đang ở trang khóa học
   const courseCard = document.querySelector(
     `.course-card a[href="courses/${courseId}.html"]`
   );
@@ -148,9 +148,9 @@ function updateCourseCompletion(courseId) {
   return progressPercentage;
 }
 
-// Add course recommendation system (simplified version)
+// Thêm hệ thống gợi ý khóa học (phiên bản đơn giản)
 function recommendCourses() {
-  // Get all courses the user has started
+  // Lấy tất cả các khóa học mà người dùng đã bắt đầu
   const allCourses = [
     "html-css",
     "javascript",
@@ -176,14 +176,14 @@ function recommendCourses() {
     }
   });
 
-  // Sort by progress
+  // Sắp xếp theo tiến trình
   startedCourses.sort((a, b) => b.progress - a.progress);
 
-  // Get related courses to recommend based on the most advanced course
+  // Lấy các khóa học liên quan để gợi ý dựa trên khóa học tiến bộ nhất
   if (startedCourses.length > 0) {
     const topCourse = startedCourses[0].id;
 
-    // Define related courses (in a real app, this would come from a recommendation engine)
+    // Định nghĩa các khóa học liên quan (trong ứng dụng thực tế, điều này sẽ đến từ một engine gợi ý)
     const relatedCoursesMap = {
       "html-css": ["javascript", "react"],
       javascript: ["react", "nodejs"],
