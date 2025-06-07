@@ -32,7 +32,7 @@
   margin-bottom: 5px;
 }
 
-.profile-title {
+.profile-email {
   font-size: 1.2rem;
   opacity: 0.8;
   margin-bottom: 20px;
@@ -518,15 +518,25 @@
 }
 
 .form-group label {
-  /* display: block; */
   margin-bottom: 8px;
   font-weight: 500;
+}
+
+.checkbox-group {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-direction: row-reverse;
+}
+.form-group.checkbox-group input {
+  width: 20%;
 }
 
 .form-group input,
 .form-group textarea {
   width: 100%;
   padding: 12px 15px;
+  margin-bottom: 10px;
   border: 1px solid var(--gray-medium);
   border-radius: var(--border-radius);
   font-family: inherit;
@@ -550,6 +560,7 @@
   width: 100px;
   height: 100px;
   border-radius: 50%;
+  border: 1px solid #2196f3;
   object-fit: cover;
 }
 
@@ -577,6 +588,124 @@
   justify-content: flex-end;
   gap: 15px;
   margin-top: 30px;
+}
+
+/* Vùng Nguy Hiểm đơn giản */
+.danger-zone {
+  border: 2px solid #ff6b6b;
+  border-radius: 10px;
+  background: #fff8f8;
+  padding: 2rem 1.5rem;
+  margin-top: 2rem;
+}
+
+.danger-zone h3 {
+  color: #d63031;
+  font-size: 1.2rem;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.danger-zone-description {
+  color: #b71c1c;
+  background: #ffeaea;
+  border-radius: 6px;
+  padding: 0.75rem 1rem;
+  margin-bottom: 1.5rem;
+  font-size: 0.97rem;
+}
+
+.danger-zone-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+.danger-zone-actions .btn-warning,
+.danger-zone-actions .btn-danger {
+  background-color: #e17055;
+  border: none;
+  color: #ffffff;
+}
+
+.action-card {
+  background: #fff;
+  border: 1px solid #ffd6d6;
+  border-radius: 8px;
+  padding: 1.2rem 1rem;
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  box-shadow: none;
+}
+
+.action-icon {
+  color: #d63031;
+  font-size: 1.6rem;
+  margin-top: 2px;
+}
+
+.action-content h4 {
+  margin: 0 0 0.3rem 0;
+  font-size: 1.05rem;
+  color: #d63031;
+}
+
+.action-content p {
+  margin: 0 0 0.7rem 0;
+  color: #444;
+  font-size: 0.97rem;
+}
+
+.action-details {
+  margin-bottom: 0.7rem;
+  font-size: 0.93rem;
+  color: #888;
+}
+
+.danger-inline-confirm {
+  background: #fff0f0;
+  border: 1px solid #ffb3b3;
+  border-radius: 8px;
+  padding: 1rem;
+  margin-top: 0.7rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+}
+
+.danger-inline-confirm label {
+  font-weight: 500;
+  color: #d63031;
+  margin-bottom: 0.2rem;
+}
+
+.danger-inline-confirm input {
+  padding: 0.6rem 1rem;
+  border: 1px solid #ffd6d6;
+  border-radius: 6px;
+  font-size: 1rem;
+}
+
+.danger-inline-confirm .danger-actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 0.5rem;
+}
+
+.danger-inline-confirm .btn {
+  min-width: 110px;
+}
+
+.danger-inline-confirm .validation-message {
+  color: #d63031;
+  font-size: 0.95rem;
+  min-height: 1.2em;
+}
+
+.danger-inline-confirm .validation-message.valid {
+  color: #00b894;
 }
 
 /* Responsive Styles */
@@ -656,12 +785,55 @@
   .profile-picture-upload {
     flex-direction: column;
   }
+  .danger-zone {
+    padding: 1rem 0.5rem;
+  }
+  .action-card {
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 1rem 0.5rem;
+  }
 }
 
-/* Notification Component */
+/* hiệu ứng load đang xử lý */
+.fa-spinner {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Ẩn/hiện form change password */
+.info-message {
+  background-color: #e3f2fd;
+  border: 1px solid #2196f3;
+  border-radius: var(--border-radius);
+  padding: 15px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.info-message i {
+  color: #2196f3;
+  font-size: 1.2rem;
+}
+
+.info-message p {
+  margin: 0;
+  color: #1976d2;
+}
+
+/* Thông báo toast */
 .notification {
   position: fixed;
-  bottom: 30px;
+  top: 135px;
   right: 30px;
   padding: 15px 25px;
   background-color: var(--success-color);
@@ -669,7 +841,7 @@
   border-radius: var(--border-radius);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   z-index: 1000;
-  transform: translateY(100px);
+  transform: translateX(100px);
   opacity: 0;
   transition: transform 0.3s, opacity 0.3s;
 }
@@ -683,7 +855,7 @@
 }
 
 .notification.show {
-  transform: translateY(0);
+  transform: translateX(0);
   opacity: 1;
 }
 

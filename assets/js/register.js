@@ -47,8 +47,9 @@ const handleRegister = function (event) {
         role: role,
         username: userName,
         email: email,
-        password: "", // mã hóa trước khi lưu vào db
-        joinDate: new Date().toISOString().slice(0, 10), // yyyy-mm-dd
+        bio: "",
+        avatar: "assets/images/avatar-default.jpg",
+        createAt: new Date().toISOString().slice(0, 10), // yyyy-mm-dd
       })
         .then(() => {
           alert("Đăng ký thành công!");
