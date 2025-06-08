@@ -1,300 +1,391 @@
-// DOM Elements for Course Page
-document.addEventListener('DOMContentLoaded', function() {
-    // Initialize module toggles
-    initModuleToggles();
-    
-    // Initialize lesson navigation
-    initLessonNavigation();
-    
-    // Initialize progress tracking
-    initCourseProgress();
+import { auth, database } from "./firebaseConfig.js";
+import {
+  ref,
+  get,
+  set,
+} from "https://www.gstatic.com/firebasejs/11.8.0/firebase-database.js";
+import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-auth.js";
+
+// Các phần tử DOM cho trang khóa học
+document.addEventListener("DOMContentLoaded", function () {
+  // Khởi tạo chức năng thu gọn/mở rộng module
+  initModuleToggles();
+
+  // Khởi tạo điều hướng bài học
+  initLessonNavigation();
+
+  // Khởi tạo theo dõi tiến trình học
+  initCourseProgress();
 });
 
-// Initialize module toggles to expand/collapse lesson lists
+// Khởi tạo chức năng thu gọn/mở rộng danh sách bài học trong module
 function initModuleToggles() {
-    const moduleHeaders = document.querySelectorAll('.module-header');
-    
-    moduleHeaders.forEach(header => {
-        const moduleId = header.getAttribute('data-toggle');
-        const lessonList = document.getElementById(moduleId);
-        
-        // Set initial states
-        header.setAttribute('aria-expanded', 'false');
-        lessonList.classList.remove('expanded');
-        
-        // Add click event
-        header.addEventListener('click', () => {
-            const expanded = header.getAttribute('aria-expanded') === 'true';
-            
-            // Toggle the state
-            header.setAttribute('aria-expanded', !expanded);
-            
-            if (expanded) {
-                lessonList.classList.remove('expanded');
-            } else {
-                lessonList.classList.add('expanded');
-            }
-        });
+  const moduleHeaders = document.querySelectorAll(".module-header");
+
+  moduleHeaders.forEach((header) => {
+    const moduleId = header.getAttribute("data-toggle");
+    const lessonList = document.getElementById(moduleId);
+
+    // Kiểm tra lessonList tồn tại
+    if (!lessonList) return;
+
+    // Thiết lập trạng thái ban đầu
+    header.setAttribute("aria-expanded", "false");
+    lessonList.classList.remove("expanded");
+
+    // Thêm sự kiện click
+    header.addEventListener("click", () => {
+      const expanded = header.getAttribute("aria-expanded") === "true";
+
+      // Đảo trạng thái
+      header.setAttribute("aria-expanded", !expanded);
+
+      if (expanded) {
+        lessonList.classList.remove("expanded");
+      } else {
+        lessonList.classList.add("expanded");
+      }
     });
-    
-    // Open the first module by default
-    if (moduleHeaders.length > 0) {
-        const firstHeader = moduleHeaders[0];
-        const firstModuleId = firstHeader.getAttribute('data-toggle');
-        const firstLessonList = document.getElementById(firstModuleId);
-        
-        firstHeader.setAttribute('aria-expanded', 'true');
-        firstLessonList.classList.add('expanded');
+  });
+
+  // Mở module đầu tiên mặc định
+  if (moduleHeaders.length > 0) {
+    const firstHeader = moduleHeaders[0];
+    const firstModuleId = firstHeader.getAttribute("data-toggle");
+    const firstLessonList = document.getElementById(firstModuleId);
+
+    // Kiểm tra firstLessonList tồn tại
+    if (firstLessonList) {
+      firstHeader.setAttribute("aria-expanded", "true");
+      firstLessonList.classList.add("expanded");
     }
+  }
 }
 
-// Initialize lesson navigation
+// Khởi tạo điều hướng bài học
 function initLessonNavigation() {
-    const lessonLinks = document.querySelectorAll('.lesson-link');
-    const startCourseBtn = document.getElementById('start-course');
-    
-    // Start course button click
-    if (startCourseBtn) {
-        startCourseBtn.addEventListener('click', (e) => {
-            e.preventDefault();
-            
-            // Load the first lesson if available
-            if (lessonLinks.length > 0) {
-                const firstLesson = lessonLinks[0];
-                activateLesson(firstLesson.getAttribute('data-lesson'));
-                
-                // Mark the first lesson as active
-                firstLesson.classList.add('active');
-            }
-        });
-    }
-    
-    // Lesson link clicks
-    lessonLinks.forEach(link => {
-        link.addEventListener('click', (e) => {
-            e.preventDefault();
-            
-            // Remove active class from all links
-            lessonLinks.forEach(l => l.classList.remove('active'));
-            
-            // Add active class to clicked link
-            link.classList.add('active');
-            
-            // Load the lesson content
-            const lessonId = link.getAttribute('data-lesson');
-            activateLesson(lessonId);
-        });
+  const lessonLinks = document.querySelectorAll(".lesson-link");
+  const startCourseBtn = document.getElementById("start-course");
+
+  // Sự kiện click nút bắt đầu học
+  if (startCourseBtn) {
+    startCourseBtn.addEventListener("click", (e) => {
+      e.preventDefault();
+
+      // Tải bài học đầu tiên nếu có
+      if (lessonLinks.length > 0) {
+        const firstLesson = lessonLinks[0];
+        activateLesson(firstLesson.getAttribute("data-lesson"));
+
+        // Đánh dấu bài học đầu tiên là active
+        firstLesson.classList.add("active");
+      }
     });
+  }
+
+  // Sự kiện click các liên kết bài học
+  lessonLinks.forEach((link) => {
+    link.addEventListener("click", (e) => {
+      e.preventDefault();
+
+      // Bỏ class active khỏi tất cả liên kết
+      lessonLinks.forEach((l) => l.classList.remove("active"));
+
+      // Thêm class active cho liên kết được click
+      link.classList.add("active");
+
+      // Tải nội dung bài học
+      const lessonId = link.getAttribute("data-lesson");
+      activateLesson(lessonId);
+    });
+  });
 }
 
-// Load and display a lesson's content
+// Tải và hiển thị nội dung bài học
 function activateLesson(lessonId) {
-    // In a real implementation, we would load the lesson content from a server
-    // or from pre-loaded content in the HTML
-    
-    // For demonstration, we'll simulate loading content
-    const lessonContainer = document.querySelector('.lesson-container');
-    
-    if (lessonContainer) {
-        // Show loading state
-        lessonContainer.innerHTML = '<div class="loading"><i class="fas fa-spinner fa-spin"></i> Đang tải bài học...</div>';
-        
-        // Simulate API call delay
-        setTimeout(() => {
-            // Get a sample lesson based on the ID
-            const lessonContent = getSampleLessonContent(lessonId);
-            
-            // Update the container
-            lessonContainer.innerHTML = lessonContent;
-            
-            // Initialize any interactive elements in the new content
-            initLessonInteractivity();
-            
-            // Track the lesson as viewed
-            trackLessonProgress(lessonId);
-        }, 500);
-    }
+  // Trong thực tế, sẽ tải nội dung bài học từ server hoặc từ dữ liệu đã preload trong HTML
+
+  // Ở đây mô phỏng việc tải nội dung
+  const lessonContainer = document.querySelector(".lesson-container");
+
+  if (lessonContainer) {
+    // Hiển thị trạng thái đang tải
+    lessonContainer.innerHTML =
+      '<div class="loading"><i class="fas fa-spinner fa-spin"></i> Đang tải bài học...</div>';
+
+    // Mô phỏng độ trễ gọi API
+    setTimeout(() => {
+      // Lấy nội dung mẫu dựa trên ID
+      const lessonContent = getSampleLessonContent(lessonId);
+
+      // Cập nhật nội dung vào container
+      lessonContainer.innerHTML = lessonContent;
+
+      // Khởi tạo các thành phần tương tác trong nội dung mới
+      initLessonInteractivity();
+
+      // Đánh dấu bài học đã xem
+      trackLessonProgress(lessonId);
+    }, 500);
+  }
 }
 
-// Initialize interactive elements in lesson content
+// Khởi tạo các thành phần tương tác trong nội dung bài học
 function initLessonInteractivity() {
-    // Initialize code snippets highlighting
-    // In a real implementation, you might use libraries like Prism.js
-    
-    // Initialize quizzes
-    const quizOptions = document.querySelectorAll('.quiz-option');
-    const checkAnswerBtns = document.querySelectorAll('.check-answer');
-    
-    quizOptions.forEach(option => {
-        option.addEventListener('click', () => {
-            // Get all options in this quiz
-            const quizQuestion = option.closest('.quiz-question');
-            const options = quizQuestion.querySelectorAll('.quiz-option');
-            
-            // Remove selected class from all options
-            options.forEach(opt => opt.classList.remove('selected'));
-            
-            // Add selected class to clicked option
-            option.classList.add('selected');
-            
-            // Select the radio button
-            const radio = option.querySelector('input[type="radio"]');
-            if (radio) {
-                radio.checked = true;
-            }
-        });
+  // Khởi tạo highlight cho code (nếu có)
+  // Trong thực tế có thể dùng Prism.js hoặc thư viện tương tự
+
+  // Khởi tạo quiz
+  const quizOptions = document.querySelectorAll(".quiz-option");
+  const checkAnswerBtns = document.querySelectorAll(".check-answer");
+
+  quizOptions.forEach((option) => {
+    option.addEventListener("click", () => {
+      // Lấy tất cả option trong quiz này
+      const quizQuestion = option.closest(".quiz-question");
+      const options = quizQuestion.querySelectorAll(".quiz-option");
+
+      // Bỏ class selected khỏi tất cả option
+      options.forEach((opt) => opt.classList.remove("selected"));
+
+      // Thêm class selected cho option được chọn
+      option.classList.add("selected");
+
+      // Chọn radio button
+      const radio = option.querySelector('input[type="radio"]');
+      if (radio) {
+        radio.checked = true;
+      }
     });
-    
-    checkAnswerBtns.forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            e.preventDefault();
-            
-            const quizQuestion = btn.closest('.quiz-question');
-            const selectedOption = quizQuestion.querySelector('.quiz-option.selected');
-            const feedback = quizQuestion.querySelector('.quiz-feedback');
-            
-            if (selectedOption && feedback) {
-                const isCorrect = selectedOption.getAttribute('data-correct') === 'true';
-                
-                // Reset classes
-                quizQuestion.querySelectorAll('.quiz-option').forEach(opt => {
-                    opt.classList.remove('correct', 'incorrect');
-                });
-                
-                // Add appropriate classes
-                if (isCorrect) {
-                    selectedOption.classList.add('correct');
-                    feedback.classList.add('correct');
-                    feedback.classList.remove('incorrect');
-                    feedback.textContent = 'Chính xác! Làm tốt lắm!';
-                } else {
-                    selectedOption.classList.add('incorrect');
-                    feedback.classList.add('incorrect');
-                    feedback.classList.remove('correct');
-                    feedback.textContent = 'Không chính xác. Hãy thử lại!';
-                }
-            }
+  });
+
+  checkAnswerBtns.forEach((btn) => {
+    btn.addEventListener("click", (e) => {
+      e.preventDefault();
+
+      const quizQuestion = btn.closest(".quiz-question");
+      const selectedOption = quizQuestion.querySelector(
+        ".quiz-option.selected"
+      );
+      const feedback = quizQuestion.querySelector(".quiz-feedback");
+
+      if (selectedOption && feedback) {
+        const isCorrect =
+          selectedOption.getAttribute("data-correct") === "true";
+
+        // Reset class
+        quizQuestion.querySelectorAll(".quiz-option").forEach((opt) => {
+          opt.classList.remove("correct", "incorrect");
         });
+
+        // Thêm class phù hợp
+        if (isCorrect) {
+          selectedOption.classList.add("correct");
+          feedback.classList.add("correct");
+          feedback.classList.remove("incorrect");
+          feedback.textContent = "Chính xác! Làm tốt lắm!";
+        } else {
+          selectedOption.classList.add("incorrect");
+          feedback.classList.add("incorrect");
+          feedback.classList.remove("correct");
+          feedback.textContent = "Không chính xác. Hãy thử lại!";
+        }
+      }
     });
-    
-    // Initialize exercise submission
-    const exerciseSubmitBtns = document.querySelectorAll('.submit-exercise');
-    
-    exerciseSubmitBtns.forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            e.preventDefault();
-            
-            // In a real implementation, you would process the exercise submission
-            // For now, show a success message
-            alert('Bài tập đã được gửi thành công!');
-            
-            // Mark this exercise as completed
-            const exercise = btn.closest('.exercise-section');
-            if (exercise) {
-                exercise.classList.add('completed');
-            }
-        });
+  });
+
+  // Khởi tạo nộp bài tập
+  const exerciseSubmitBtns = document.querySelectorAll(".submit-exercise");
+
+  exerciseSubmitBtns.forEach((btn) => {
+    btn.addEventListener("click", (e) => {
+      e.preventDefault();
+
+      // Trong thực tế sẽ xử lý gửi bài tập lên server
+      // Ở đây chỉ hiển thị thông báo thành công
+      alert("Bài tập đã được gửi thành công!");
+
+      // Đánh dấu bài tập đã hoàn thành
+      const exercise = btn.closest(".exercise-section");
+      if (exercise) {
+        exercise.classList.add("completed");
+      }
     });
+  });
 }
 
-// Track lesson progress
+// Lấy động courseID từ URL
+function getCourseIdFromUrl() {
+  // Lấy tên file, ví dụ: html-css.html
+  const path = window.location.pathname;
+  const fileName = path.substring(path.lastIndexOf("/") + 1);
+  // Lấy phần trước .html
+  return fileName.replace(".html", "");
+}
+
+// Đánh dấu tiến trình học bài
 function trackLessonProgress(lessonId) {
-    // Get the lesson link to mark as completed
-    const lessonLink = document.querySelector(`.lesson-link[data-lesson="${lessonId}"]`);
-    
-    if (lessonLink) {
-        // Mark as completed in UI
-        lessonLink.classList.add('completed');
-        
-        // Change the check icon
-        const checkIcon = lessonLink.querySelector('.lesson-check i');
-        if (checkIcon) {
-            checkIcon.classList.remove('fa-circle');
-            checkIcon.classList.add('fa-check-circle');
-        }
-        
-        // Store progress in local storage
-        const courseId = 'html-css'; // Would be dynamic in a real implementation
-        saveLessonCompletion(courseId, lessonId);
-        
-        // Update overall course progress
-        updateOverallProgress(courseId);
+  // Lấy liên kết bài học để đánh dấu đã hoàn thành
+  const lessonLink = document.querySelector(
+    `.lesson-link[data-lesson="${lessonId}"]`
+  );
+
+  if (lessonLink) {
+    // Đánh dấu đã hoàn thành trên UI
+    lessonLink.classList.add("completed");
+
+    // Đổi icon check
+    const checkIcon = lessonLink.querySelector(".lesson-check i");
+    if (checkIcon) {
+      checkIcon.classList.remove("fa-circle");
+      checkIcon.classList.add("fa-check-circle");
     }
+
+    // Lưu tiến trình vào localStorage
+    const courseId = getCourseIdFromUrl(); // Thực tế sẽ lấy động
+    saveLessonCompletionToDB(courseId, lessonId);
+
+    // Cập nhật tiến trình tổng thể
+    // updateProgressUI(progressPercentage);
+  }
 }
 
-// Save lesson completion status
-function saveLessonCompletion(courseId, lessonId) {
-    // Get existing completed lessons
-    let completedLessons = JSON.parse(localStorage.getItem(`${courseId}-completed-lessons`) || '[]');
-    
-    // Add this lesson if not already included
-    if (!completedLessons.includes(lessonId)) {
-        completedLessons.push(lessonId);
-        localStorage.setItem(`${courseId}-completed-lessons`, JSON.stringify(completedLessons));
-    }
-}
+// Lưu trạng thái hoàn thành bài học vào Firebase cho từng khóa học
+async function saveLessonCompletionToDB(courseId, lessonId) {
+  return new Promise((resolve, reject) => {
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        alert("Bạn cần đăng nhập để lưu tiến trình!");
+        reject("Chưa đăng nhập");
+        return;
+      }
+      try {
+        // Lấy danh sách bài học đã hoàn thành từ DB
+        const progressRef = ref(
+          database,
+          `userProgress/${user.uid}/courses/${courseId}/completedLessons`
+        );
+        const snapshot = await get(progressRef);
+        let completedLessons = [];
 
-// Initialize course progress from saved data
-function initCourseProgress() {
-    const courseId = 'html-css'; // Would be dynamic in a real implementation
-    
-    // Get completed lessons
-    let completedLessons = JSON.parse(localStorage.getItem(`${courseId}-completed-lessons`) || '[]');
-    
-    // Mark each completed lesson in the UI
-    completedLessons.forEach(lessonId => {
-        const lessonLink = document.querySelector(`.lesson-link[data-lesson="${lessonId}"]`);
-        
-        if (lessonLink) {
-            lessonLink.classList.add('completed');
-            
-            const checkIcon = lessonLink.querySelector('.lesson-check i');
-            if (checkIcon) {
-                checkIcon.classList.remove('fa-circle');
-                checkIcon.classList.add('fa-check-circle');
-            }
+        if (snapshot.exists()) {
+          completedLessons = snapshot.val();
+          // Đảm bảo completedLessons là array
+          if (!Array.isArray(completedLessons)) {
+            completedLessons = [];
+          }
         }
+        // Thêm bài học nếu chưa có
+        if (!completedLessons.includes(lessonId)) {
+          completedLessons.push(lessonId);
+        }
+
+        // Cập nhật bài học đã hoàn thành lên DB
+        await set(progressRef, completedLessons);
+
+        // Tính phần trăm hoàn thành và cập nhật
+        const totalLessons = document.querySelectorAll(".lesson-link").length;
+        const progressPercentage =
+          totalLessons > 0
+            ? Math.round((completedLessons.length / totalLessons) * 100)
+            : 0;
+
+        // cập nhật progress
+        const percentRef = ref(
+          database,
+          `userProgress/${user.uid}/courses/${courseId}/progress`
+        );
+        await set(percentRef, progressPercentage);
+
+        // cập nhật thời gian truy cập lần cuối
+        const lastAccessedRef = ref(
+          database,
+          `userProgress/${user.uid}/courses/${courseId}/lastAccessed`
+        );
+        await set(lastAccessedRef, new Date().toISOString());
+
+        // Cập nhật UI
+        updateProgressUI(progressPercentage);
+
+        resolve(progressPercentage);
+      } catch (err) {
+        console.error("Chi tiết lỗi khi lưu tiến trình:", err);
+        console.error("Error code:", err.code);
+        console.error("Error message:", err.message);
+
+        reject(err);
+      }
     });
-    
-    // Update overall progress
-    updateOverallProgress(courseId);
+  });
 }
 
-// Update overall course progress
-function updateOverallProgress(courseId) {
-    // Get completed lessons
-    let completedLessons = JSON.parse(localStorage.getItem(`${courseId}-completed-lessons`) || '[]');
-    
-    // Count total lessons
-    const totalLessons = document.querySelectorAll('.lesson-link').length;
-    
-    // Calculate progress percentage
-    const progressPercentage = totalLessons > 0 ? Math.round((completedLessons.length / totalLessons) * 100) : 0;
-    
-    // Update progress bar
-    const progressBar = document.getElementById('course-main-progress');
-    if (progressBar) {
-        const progressElement = progressBar.querySelector('.progress');
-        const progressText = progressBar.nextElementSibling;
-        
-        if (progressElement && progressText) {
-            progressElement.style.width = `${progressPercentage}%`;
-            progressText.textContent = `${progressPercentage}% Hoàn Thành`;
+// Khởi tạo tiến trình học từ dữ liệu đã lưu
+async function initCourseProgress() {
+  const courseId = getCourseIdFromUrl();
+  onAuthStateChanged(auth, async (user) => {
+    if (!user) return;
+    try {
+      const progressRef = ref(
+        database,
+        `userProgress/${user.uid}/courses/${courseId}/completedLessons`
+      );
+      const snapshot = await get(progressRef);
+      let completedLessons = [];
+      if (snapshot.exists()) {
+        completedLessons = snapshot.val();
+      }
+      completedLessons.forEach((lessonId) => {
+        const lessonLink = document.querySelector(
+          `.lesson-link[data-lesson="${lessonId}"]`
+        );
+        if (lessonLink) {
+          lessonLink.classList.add("completed");
+          const checkIcon = lessonLink.querySelector(".lesson-check i");
+          if (checkIcon) {
+            checkIcon.classList.remove("fa-circle");
+            checkIcon.classList.add("fa-check-circle");
+          }
         }
+      });
+      // Lấy phần trăm hoàn thành từ DB
+      const percentRef = ref(
+        database,
+        `userProgress/${user.uid}/courses/${courseId}/progress`
+      );
+      const percentSnap = await get(percentRef);
+      let progressPercentage = 0;
+      if (percentSnap.exists()) {
+        progressPercentage = percentSnap.val();
+      }
+      //   cập nhật UI
+      updateProgressUI(progressPercentage);
+    } catch (err) {
+      console.error("Lỗi khi tải tiến trình từ server:", err);
     }
-    
-    // Save overall progress
-    localStorage.setItem(`course-progress-${courseId}`, progressPercentage);
+  });
 }
 
-// Sample lesson content (in a real app, this would come from a database or API)
+// Cập nhật tiến trình tổng thể của khóa học
+function updateProgressUI(progressPercentage) {
+  const progressBar = document.getElementById("course-main-progress");
+  if (progressBar) {
+    const progressElement = progressBar.querySelector(".progress");
+    const progressText = progressBar.nextElementSibling;
+    if (progressElement && progressText) {
+      progressElement.style.width = `${progressPercentage}%`;
+      progressText.textContent = `${progressPercentage}% Hoàn Thành`;
+    }
+  }
+}
+
+// Nội dung bài học mẫu (trong thực tế sẽ lấy từ database hoặc API)
 function getSampleLessonContent(lessonId) {
-    // Parse the lesson ID to get module and lesson numbers
-    const [module, lesson] = lessonId.split('.');
-    
-    // Sample content for specific lessons
-    if (module === '1' && lesson === '1') {
-        return `
+  // Phân tích lessonId để lấy chương và số bài
+  const [module, lesson] = lessonId.split(".");
+
+  // Nội dung mẫu cho một số bài học cụ thể
+  if (module === "1" && lesson === "1") {
+    return `
             <div class="lesson-content" id="lesson-1-1">
                 <h2>HTML là gì?</h2>
                 <div class="lesson-video">
@@ -354,8 +445,8 @@ function getSampleLessonContent(lessonId) {
                 </div>
             </div>
         `;
-    } else if (module === '1' && lesson === '2') {
-        return `
+  } else if (module === "1" && lesson === "2") {
+    return `
             <div class="lesson-content" id="lesson-1-2">
                 <h2>Cấu Trúc Tài Liệu HTML</h2>
                 <div class="lesson-video">
@@ -402,9 +493,9 @@ function getSampleLessonContent(lessonId) {
                 </div>
             </div>
         `;
-    } else {
-        // For other lessons, return a generic template
-        return `
+  } else {
+    // Các bài học khác trả về template chung
+    return `
             <div class="lesson-content" id="lesson-${module}-${lesson}">
                 <h2>Chương ${module}, Bài ${lesson}</h2>
                 <div class="lesson-video">
@@ -431,5 +522,5 @@ function getSampleLessonContent(lessonId) {
                 </div>
             </div>
         `;
-    }
-} 
+  }
+}

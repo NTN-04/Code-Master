@@ -1,23 +1,34 @@
 // DOM Elements
 document.addEventListener("DOMContentLoaded", function () {
-  // Progress Bar Initialization
+  // Khởi tạo thanh tiến trình
   initProgressBars();
 
   // Animation on scroll
   initScrollAnimations();
 });
 
-// Initialize progress bars with stored values or defaults
+// Khởi tạo thanh tiến trình với giá trị đã lưu
 function initProgressBars() {
   const progressBars = document.querySelectorAll(".progress-bar");
 
   progressBars.forEach((bar) => {
-    const courseId = getCourseIdFromBar(bar);
-    const storedProgress =
-      localStorage.getItem(`course-progress-${courseId}`) || 0;
-    const progressValue = parseInt(storedProgress);
+    const courseId = bar.getAttribute("data-course-id");
 
-    updateProgressBar(bar, progressValue);
+    if (courseId) {
+      const storedProgress =
+        localStorage.getItem(`course-progress-${courseId}`) || 0;
+      const progressValue = parseInt(storedProgress);
+
+      const progressElement = bar.querySelector(".progress");
+      const progressText = bar.nextElementSibling;
+
+      if (progressElement && progressText) {
+        progressElement.style.width = `${progressValue}%`;
+        progressText.textContent = `${progressValue}% Hoàn Thành`;
+      }
+
+      bar.setAttribute("data-progress", progressValue);
+    }
   });
 }
 
@@ -37,34 +48,6 @@ function getCourseIdFromBar(bar) {
   // If we can't find a proper ID, generate one based on the bar's position
   const allBars = document.querySelectorAll(".progress-bar");
   return Array.from(allBars).indexOf(bar).toString();
-}
-
-// Update progress bar width and text
-function updateProgressBar(bar, progressValue) {
-  const progressElement = bar.querySelector(".progress");
-  const progressText = bar.nextElementSibling;
-
-  if (progressElement && progressText) {
-    progressElement.style.width = `${progressValue}%`;
-    progressText.textContent = `${progressValue}% Hoàn Thành`;
-  }
-
-  // Also update the data attribute for future reference
-  bar.setAttribute("data-progress", progressValue);
-}
-
-// Simulate progress update (this would be called from course pages)
-function updateCourseProgress(courseId, newProgress) {
-  localStorage.setItem(`course-progress-${courseId}`, newProgress);
-
-  // If we're on a page with progress bars, update them
-  const progressBars = document.querySelectorAll(".progress-bar");
-  progressBars.forEach((bar) => {
-    const barCourseId = getCourseIdFromBar(bar);
-    if (barCourseId === courseId) {
-      updateProgressBar(bar, newProgress);
-    }
-  });
 }
 
 // Animation on scroll
@@ -97,14 +80,4 @@ function searchCourses(query) {
   // This function would be implemented when we have a search feature
   console.log(`Đang tìm kiếm: ${query}`);
   // Implementation would filter courses based on the query
-}
-
-// Sample function to simulate course completion for demo purposes
-function completeCourseDemo(courseId, percentage) {
-  updateCourseProgress(courseId, percentage);
-
-  // Show a congratulatory message if course is complete
-  if (percentage >= 100) {
-    alert(`Chúc mừng! Bạn đã hoàn thành khóa học.`);
-  }
 }
