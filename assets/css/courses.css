@@ -217,6 +217,21 @@
   .courses-grid {
     grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
   }
+  /* loading */
+  .loading-courses,
+  .no-courses-message,
+  .error-message {
+    padding: 3rem 1rem;
+  }
+
+  .loading-spinner {
+    font-size: 1.5rem;
+  }
+
+  .no-courses-message i,
+  .error-message i {
+    font-size: 2rem;
+  }
 }
 
 @media (max-width: 576px) {

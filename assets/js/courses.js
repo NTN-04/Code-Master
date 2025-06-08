@@ -1,39 +1,159 @@
+import { database } from "./firebaseConfig.js";
+import {
+  ref,
+  get,
+} from "https://www.gstatic.com/firebasejs/11.8.0/firebase-database.js";
+import progressManager from "./progress-manager.js";
+
 // Chức năng trang khóa học
 document.addEventListener("DOMContentLoaded", function () {
-  // Khởi tạo thanh tiến trình
-  initProgressBars();
+  // Tải khóa học từ database
+  loadCoursesFromDatabase();
 
-  // Khởi tạo bộ lọc khóa học
+  // Khởi tạo bộ lọc khóa học (sẽ chạy sau khi tải xong dữ liệu)
   initCourseFiltering();
+  // Khởi tạo đồng bộ tiến trình
+  progressManager.initAuth();
 });
 
-// Khởi tạo thanh tiến trình với giá trị đã lưu
-function initProgressBars() {
-  const progressBars = document.querySelectorAll(".progress-bar");
+// Tải khóa học từ Firebase Realtime Database
+async function loadCoursesFromDatabase() {
+  try {
+    // Hiển thị loading
+    showCoursesLoading();
 
-  progressBars.forEach((bar) => {
-    const courseLink = bar
-      .closest(".course-card")
-      .querySelector('a[href^="courses/"]');
-    if (courseLink) {
-      const href = courseLink.getAttribute("href");
-      const courseId = href.split("/").pop().replace(".html", "");
+    // Lấy dữ liệu khóa học từ database
+    const coursesRef = ref(database, "courses");
+    const snapshot = await get(coursesRef);
 
-      const storedProgress =
-        localStorage.getItem(`course-progress-${courseId}`) || 0;
-      const progressValue = parseInt(storedProgress);
+    if (snapshot.exists()) {
+      const coursesData = snapshot.val();
 
-      const progressElement = bar.querySelector(".progress");
-      const progressText = bar.nextElementSibling;
+      // Tải thêm dữ liệu categories để lấy thông tin màu sắc
+      const categoriesRef = ref(database, "categories");
+      const categoriesSnapshot = await get(categoriesRef);
+      const categoriesData = categoriesSnapshot.exists()
+        ? categoriesSnapshot.val()
+        : {};
 
-      if (progressElement && progressText) {
-        progressElement.style.width = `${progressValue}%`;
-        progressText.textContent = `${progressValue}% Hoàn Thành`;
-      }
+      // Render khóa học
+      renderCourses(coursesData, categoriesData);
 
-      bar.setAttribute("data-progress", progressValue);
+      // Khởi tạo thanh tiến trình từ firebase
+      progressManager.initProgressBars();
+    } else {
+      showNoCoursesMessage();
     }
+  } catch (error) {
+    console.error("Lỗi khi tải khóa học:", error);
+    showErrorMessage();
+  }
+}
+
+// Hiển thị loading state
+function showCoursesLoading() {
+  const coursesGrid = document.querySelector(".courses-grid");
+  if (coursesGrid) {
+    coursesGrid.innerHTML = `
+      <div class="loading-courses">
+        <div class="loading-spinner">
+          <i class="fas fa-spinner fa-spin"></i>
+        </div>
+        <p>Đang tải khóa học...</p>
+      </div>
+    `;
+  }
+}
+
+// Render khóa học từ dữ liệu database
+function renderCourses(coursesData, categoriesData) {
+  const coursesGrid = document.querySelector(".courses-grid");
+  if (!coursesGrid) return;
+
+  // Convert object to array và sắp xếp
+  const coursesArray = Object.values(coursesData).sort((a, b) => {
+    // Sắp xếp theo thời gian tạo (mới nhất trước)
+    return new Date(b.createdAt) - new Date(a.createdAt);
   });
+
+  // Tạo HTML cho tất cả khóa học
+  const coursesHTML = coursesArray
+    .map((course) => createCourseCard(course, categoriesData))
+    .join("");
+
+  coursesGrid.innerHTML = coursesHTML;
+}
+
+// Tạo HTML cho một thẻ khóa học
+function createCourseCard(course, categoriesData) {
+  const category = categoriesData[course.category] || {};
+  const categoryName = category.name || course.category;
+  const categoryIcon = category.icon || "📚";
+
+  // Map level sang tiếng Việt
+  const levelMap = {
+    beginner: "Người Mới",
+    intermediate: "Trung Cấp",
+    advanced: "Nâng Cao",
+  };
+
+  const levelText = levelMap[course.level] || course.level;
+
+  return `
+    <div class="course-card" data-level="${course.level}" data-category="${course.category}">
+      <div class="course-image">
+        <img src="${course.image}" alt="${course.title}" loading="lazy" />
+        <div class="course-tag">${categoryIcon} ${categoryName}</div>
+      </div>
+      <div class="course-info">
+        <h3>${course.title}</h3>
+        <div class="skill-level">
+          <span class="level ${course.level}">${levelText}</span>
+        </div>
+        <p class="line-clamp-2">${course.description}</p>
+        <div class="course-meta">
+          <span><i class="far fa-clock"></i> ${course.duration}</span>
+          <span><i class="far fa-file-alt"></i> ${course.lessons} bài học</span>
+        </div>
+        <div class="progress-container">
+          <div class="progress-bar" data-progress="0" data-course-id="${course.id}">
+            <div class="progress"></div>
+          </div>
+          <span class="progress-text">0% Hoàn Thành</span>
+        </div>
+        <a href="${course.url}" class="btn btn-primary">Bắt Đầu Học</a>
+      </div>
+    </div>
+  `;
+}
+
+// Hiển thị thông báo khi không có khóa học
+function showNoCoursesMessage() {
+  const coursesGrid = document.querySelector(".courses-grid");
+  if (coursesGrid) {
+    coursesGrid.innerHTML = `
+      <div class="no-courses-message">
+        <i class="fas fa-graduation-cap"></i>
+        <h3>Chưa có khóa học nào</h3>
+        <p>Các khóa học sẽ sớm được cập nhật. Hãy quay lại sau!</p>
+      </div>
+    `;
+  }
+}
+
+// Hiển thị thông báo lỗi
+function showErrorMessage() {
+  const coursesGrid = document.querySelector(".courses-grid");
+  if (coursesGrid) {
+    coursesGrid.innerHTML = `
+      <div class="error-message">
+        <i class="fas fa-exclamation-triangle"></i>
+        <h3>Không thể tải khóa học</h3>
+        <p>Đã xảy ra lỗi khi tải dữ liệu. Vui lòng thử lại sau.</p>
+        <button class="btn btn-primary" onclick="location.reload()">Thử Lại</button>
+      </div>
+    `;
+  }
 }
 
 // Khởi tạo bộ lọc và tìm kiếm khóa học
@@ -41,31 +161,38 @@ function initCourseFiltering() {
   const searchInput = document.getElementById("course-search");
   const levelFilter = document.getElementById("filter-level");
   const categoryFilter = document.getElementById("filter-category");
-  const courseCards = document.querySelectorAll(".course-card");
-  const noResults = document.querySelector(".no-results");
 
-  // Hàm lọc khóa học dựa trên tiêu chí tìm kiếm và bộ lọc
+  // Tải danh mục cho dropdown filter
+  loadCategoriesForFilter();
+
+  // Hàm lọc khóa học
   function filterCourses() {
-    const searchTerm = searchInput.value.toLowerCase();
-    const levelValue = levelFilter.value;
-    const categoryValue = categoryFilter.value;
+    const courseCards = document.querySelectorAll(".course-card");
+    const noResults = document.querySelector(".no-results");
+
+    if (!courseCards.length) return;
+
+    const searchTerm = searchInput ? searchInput.value.toLowerCase() : "";
+    const levelValue = levelFilter ? levelFilter.value : "all";
+    const categoryValue = categoryFilter ? categoryFilter.value : "all";
 
     let visibleCount = 0;
 
     courseCards.forEach((card) => {
-      const title = card.querySelector("h3").textContent.toLowerCase();
-      const description = card.querySelector("p").textContent.toLowerCase();
+      const title = card.querySelector("h3")?.textContent.toLowerCase() || "";
+      const description =
+        card.querySelector("p")?.textContent.toLowerCase() || "";
       const level = card.getAttribute("data-level");
       const category = card.getAttribute("data-category");
 
-      // Kiểm tra xem thẻ có khớp với tất cả tiêu chí hay không
+      // Kiểm tra điều kiện lọc
       const matchesSearch =
         title.includes(searchTerm) || description.includes(searchTerm);
       const matchesLevel = levelValue === "all" || level === levelValue;
       const matchesCategory =
         categoryValue === "all" || category === categoryValue;
 
-      // Hiển thị hoặc ẩn thẻ dựa trên tiêu chí khớp
+      // Hiển thị hoặc ẩn thẻ
       if (matchesSearch && matchesLevel && matchesCategory) {
         card.style.display = "block";
         visibleCount++;
@@ -74,130 +201,61 @@ function initCourseFiltering() {
       }
     });
 
-    // Hiển thị hoặc ẩn thông báo "không có kết quả"
-    if (visibleCount === 0) {
-      noResults.style.display = "flex";
-      noResults.style.gap = "5px";
-    } else {
-      noResults.style.display = "none";
-    }
-  }
-
-  // Thêm sự kiện lắng nghe cho các input và select
-  searchInput.addEventListener("input", filterCourses);
-  levelFilter.addEventListener("change", filterCourses);
-  categoryFilter.addEventListener("change", filterCourses);
-
-  // Áp dụng hiệu ứng cho các thẻ
-  courseCards.forEach((card) => {
-    card.classList.add("animated");
-  });
-}
-
-// Tính toán và cập nhật mức độ hoàn thành khóa học dựa trên các bài học đã hoàn thành
-function updateCourseCompletion(courseId) {
-  // Lấy các bài học đã hoàn thành cho khóa học này
-  const completedLessons = JSON.parse(
-    localStorage.getItem(`${courseId}-completed-lessons`) || "[]"
-  );
-
-  // Trong ứng dụng thực tế, chúng ta sẽ biết tổng số bài học cho mỗi khóa học
-  // Hiện tại, chúng ta sẽ sử dụng một mapping cứng
-  const totalLessonsMap = {
-    "html-css": 15,
-    javascript: 18,
-    react: 20,
-    "react-native": 22,
-    flutter: 25,
-    sql: 14,
-    mongodb: 16,
-    python: 18,
-    "machine-learning": 30,
-  };
-
-  const totalLessons = totalLessonsMap[courseId] || 15; // Mặc định là 15 nếu không tìm thấy
-
-  // Tính toán phần trăm tiến trình
-  const progressPercentage =
-    totalLessons > 0
-      ? Math.round((completedLessons.length / totalLessons) * 100)
-      : 0;
-
-  // Cập nhật tiến trình trong localStorage
-  localStorage.setItem(`course-progress-${courseId}`, progressPercentage);
-
-  // Cập nhật giao diện nếu đang ở trang khóa học
-  const courseCard = document.querySelector(
-    `.course-card a[href="courses/${courseId}.html"]`
-  );
-  if (courseCard) {
-    const progressBar = courseCard
-      .closest(".course-card")
-      .querySelector(".progress-bar");
-    if (progressBar) {
-      const progressElement = progressBar.querySelector(".progress");
-      const progressText = progressBar.nextElementSibling;
-
-      if (progressElement && progressText) {
-        progressElement.style.width = `${progressPercentage}%`;
-        progressText.textContent = `${progressPercentage}% Hoàn Thành`;
+    // Hiển thị thông báo "không có kết quả"
+    if (noResults) {
+      if (visibleCount === 0 && courseCards.length > 0) {
+        noResults.style.display = "flex";
+        noResults.style.gap = "5px";
+      } else {
+        noResults.style.display = "none";
       }
     }
   }
 
-  return progressPercentage;
+  // Thêm event listeners
+  if (searchInput) {
+    searchInput.addEventListener("input", filterCourses);
+  }
+  if (levelFilter) {
+    levelFilter.addEventListener("change", filterCourses);
+  }
+  if (categoryFilter) {
+    categoryFilter.addEventListener("change", filterCourses);
+  }
 }
 
-// Thêm hệ thống gợi ý khóa học (phiên bản đơn giản)
-function recommendCourses() {
-  // Lấy tất cả các khóa học mà người dùng đã bắt đầu
-  const allCourses = [
-    "html-css",
-    "javascript",
-    "react",
-    "react-native",
-    "flutter",
-    "sql",
-    "mongodb",
-    "python",
-    "machine-learning",
-  ];
-  const startedCourses = [];
+// Tải danh mục để hiển thị trong dropdown filter
+async function loadCategoriesForFilter() {
+  try {
+    const categoriesRef = ref(database, "categories");
+    const snapshot = await get(categoriesRef);
 
-  allCourses.forEach((courseId) => {
-    const progress = parseInt(
-      localStorage.getItem(`course-progress-${courseId}`) || "0"
-    );
-    if (progress > 0) {
-      startedCourses.push({
-        id: courseId,
-        progress: progress,
-      });
+    if (snapshot.exists()) {
+      const categoriesData = snapshot.val();
+      updateCategoryFilter(categoriesData);
     }
-  });
+  } catch (error) {
+    console.error("Lỗi khi tải danh mục:", error);
+  }
+}
 
-  // Sắp xếp theo tiến trình
-  startedCourses.sort((a, b) => b.progress - a.progress);
+// Cập nhật dropdown filter danh mục
+function updateCategoryFilter(categoriesData) {
+  const categoryFilter = document.getElementById("filter-category");
+  if (!categoryFilter) return;
 
-  // Lấy các khóa học liên quan để gợi ý dựa trên khóa học tiến bộ nhất
-  if (startedCourses.length > 0) {
-    const topCourse = startedCourses[0].id;
-
-    // Định nghĩa các khóa học liên quan (trong ứng dụng thực tế, điều này sẽ đến từ một engine gợi ý)
-    const relatedCoursesMap = {
-      "html-css": ["javascript", "react"],
-      javascript: ["react", "nodejs"],
-      react: ["react-native", "redux"],
-      "react-native": ["flutter", "mobile-design"],
-      flutter: ["mobile-design", "dart"],
-      sql: ["mongodb", "database-design"],
-      mongodb: ["nodejs", "database-design"],
-      python: ["machine-learning", "data-science"],
-      "machine-learning": ["deep-learning", "ai-ethics"],
-    };
-
-    return relatedCoursesMap[topCourse] || [];
+  // Giữ lại option "Tất Cả Danh Mục"
+  const defaultOption = categoryFilter.querySelector('option[value="all"]');
+  categoryFilter.innerHTML = "";
+  if (defaultOption) {
+    categoryFilter.appendChild(defaultOption);
   }
 
-  return [];
+  // Thêm các danh mục từ database
+  Object.values(categoriesData).forEach((category) => {
+    const option = document.createElement("option");
+    option.value = category.id;
+    option.textContent = `${category.icon} ${category.name}`;
+    categoryFilter.appendChild(option);
+  });
 }

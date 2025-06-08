@@ -44,11 +44,7 @@
 
             <select id="filter-category">
               <option value="all">Tất Cả Danh Mục</option>
-              <option value="web">Phát Triển Web</option>
-              <option value="mobile">Phát Triển Di Động</option>
-              <option value="database">Cơ Sở Dữ Liệu</option>
-              <option value="devops">DevOps</option>
-              <option value="data-science">Khoa Học Dữ Liệu</option>
+              <!-- Các option sẽ được tải động từ database -->
             </select>
           </div>
         </div>
@@ -61,7 +57,7 @@
 
         <div class="courses-grid">
           <!-- Web Development Courses -->
-          <div class="course-card" data-level="beginner" data-category="web">
+          <!-- <div class="course-card" data-level="beginner" data-category="web">
             <div class="course-image">
               <img
                 src="./assets/images/img-course/html-css.png"
@@ -89,288 +85,9 @@
                 >Bắt Đầu Học</a
               >
             </div>
-          </div>
+          </div> -->
 
-          <div
-            class="course-card"
-            data-level="intermediate"
-            data-category="web"
-          >
-            <div class="course-image">
-              <img
-                src="./assets/images/img-course/javascript.png"
-                alt="Khóa Học JavaScript"
-              />
-              <div class="course-tag">Phát Triển Web</div>
-            </div>
-            <div class="course-info">
-              <h3>Lập Trình JavaScript</h3>
-              <div class="skill-level">
-                <span class="level intermediate">Trung Cấp</span>
-              </div>
-              <p>Xây dựng trang web và ứng dụng tương tác với JavaScript.</p>
-              <div class="course-meta">
-                <span><i class="far fa-clock"></i> 25 giờ</span>
-                <span><i class="far fa-file-alt"></i> 18 bài học</span>
-              </div>
-              <div class="progress-container">
-                <div class="progress-bar" data-progress="0">
-                  <div class="progress"></div>
-                </div>
-                <span class="progress-text">0% Hoàn Thành</span>
-              </div>
-              <a href="courses/javascript.html" class="btn btn-primary"
-                >Bắt Đầu Học</a
-              >
-            </div>
-          </div>
-
-          <div class="course-card" data-level="advanced" data-category="web">
-            <div class="course-image">
-              <img
-                src="./assets/images/img-course/react-js.png"
-                alt="Khóa Học React"
-              />
-              <div class="course-tag">Phát Triển Web</div>
-            </div>
-            <div class="course-info">
-              <h3>Phát Triển React.js</h3>
-              <div class="skill-level">
-                <span class="level advanced">Nâng Cao</span>
-              </div>
-              <p>Tạo ứng dụng web hiện đại với framework React.</p>
-              <div class="course-meta">
-                <span><i class="far fa-clock"></i> 30 giờ</span>
-                <span><i class="far fa-file-alt"></i> 20 bài học</span>
-              </div>
-              <div class="progress-container">
-                <div class="progress-bar" data-progress="0">
-                  <div class="progress"></div>
-                </div>
-                <span class="progress-text">0% Hoàn Thành</span>
-              </div>
-              <a href="courses/react.html" class="btn btn-primary"
-                >Bắt Đầu Học</a
-              >
-            </div>
-          </div>
-
-          <!-- Mobile Development Courses -->
-          <div
-            class="course-card"
-            data-level="intermediate"
-            data-category="mobile"
-          >
-            <div class="course-image">
-              <img
-                src="./assets/images/img-course/react-navtive.png"
-                alt="Khóa Học React Native"
-              />
-              <div class="course-tag">Phát Triển Di Động</div>
-            </div>
-            <div class="course-info">
-              <h3>Ứng Dụng Di Động React Native</h3>
-              <div class="skill-level">
-                <span class="level intermediate">Trung Cấp</span>
-              </div>
-              <p>
-                Xây dựng ứng dụng di động cho iOS và Android sử dụng React
-                Native.
-              </p>
-              <div class="course-meta">
-                <span><i class="far fa-clock"></i> 28 giờ</span>
-                <span><i class="far fa-file-alt"></i> 22 bài học</span>
-              </div>
-              <div class="progress-container">
-                <div class="progress-bar" data-progress="0">
-                  <div class="progress"></div>
-                </div>
-                <span class="progress-text">0% Hoàn Thành</span>
-              </div>
-              <a href="courses/react-native.html" class="btn btn-primary"
-                >Bắt Đầu Học</a
-              >
-            </div>
-          </div>
-
-          <div class="course-card" data-level="advanced" data-category="mobile">
-            <div class="course-image">
-              <img
-                src="./assets/images/img-course/flutter.png"
-                alt="Khóa Học Flutter"
-              />
-              <div class="course-tag">Phát Triển Di Động</div>
-            </div>
-            <div class="course-info">
-              <h3>Phát Triển Ứng Dụng Flutter</h3>
-              <div class="skill-level">
-                <span class="level advanced">Nâng Cao</span>
-              </div>
-              <p>
-                Tạo ứng dụng đẹp, biên dịch native cho di động từ một codebase
-                duy nhất.
-              </p>
-              <div class="course-meta">
-                <span><i class="far fa-clock"></i> 32 giờ</span>
-                <span><i class="far fa-file-alt"></i> 25 bài học</span>
-              </div>
-              <div class="progress-container">
-                <div class="progress-bar" data-progress="0">
-                  <div class="progress"></div>
-                </div>
-                <span class="progress-text">0% Hoàn Thành</span>
-              </div>
-              <a href="courses/flutter.html" class="btn btn-primary"
-                >Bắt Đầu Học</a
-              >
-            </div>
-          </div>
-
-          <!-- Database Courses -->
-          <div
-            class="course-card"
-            data-level="beginner"
-            data-category="database"
-          >
-            <div class="course-image">
-              <img
-                src="./assets/images/img-course/sql.png"
-                alt="Khóa Học SQL"
-              />
-              <div class="course-tag">Cơ Sở Dữ Liệu</div>
-            </div>
-            <div class="course-info">
-              <h3>Nền Tảng Cơ Sở Dữ Liệu SQL</h3>
-              <div class="skill-level">
-                <span class="level beginner">Người Mới</span>
-              </div>
-              <p>
-                Học cách tạo, quản lý và truy vấn cơ sở dữ liệu quan hệ với SQL.
-              </p>
-              <div class="course-meta">
-                <span><i class="far fa-clock"></i> 18 giờ</span>
-                <span><i class="far fa-file-alt"></i> 14 bài học</span>
-              </div>
-              <div class="progress-container">
-                <div class="progress-bar" data-progress="0">
-                  <div class="progress"></div>
-                </div>
-                <span class="progress-text">0% Hoàn Thành</span>
-              </div>
-              <a href="courses/sql.html" class="btn btn-primary">Bắt Đầu Học</a>
-            </div>
-          </div>
-
-          <div
-            class="course-card"
-            data-level="intermediate"
-            data-category="database"
-          >
-            <div class="course-image">
-              <img
-                src="./assets/images/img-course/mongodb.png"
-                alt="Khóa Học MongoDB"
-              />
-              <div class="course-tag">Cơ Sở Dữ Liệu</div>
-            </div>
-            <div class="course-info">
-              <h3>MongoDB cho Nhà Phát Triển</h3>
-              <div class="skill-level">
-                <span class="level intermediate">Trung Cấp</span>
-              </div>
-              <p>
-                Làm chủ cơ sở dữ liệu NoSQL phổ biến cho ứng dụng web hiện đại.
-              </p>
-              <div class="course-meta">
-                <span><i class="far fa-clock"></i> 22 giờ</span>
-                <span><i class="far fa-file-alt"></i> 16 bài học</span>
-              </div>
-              <div class="progress-container">
-                <div class="progress-bar" data-progress="0">
-                  <div class="progress"></div>
-                </div>
-                <span class="progress-text">0% Hoàn Thành</span>
-              </div>
-              <a href="courses/mongodb.html" class="btn btn-primary"
-                >Bắt Đầu Học</a
-              >
-            </div>
-          </div>
-
-          <!-- Data Science Courses -->
-          <div
-            class="course-card"
-            data-level="beginner"
-            data-category="data-science"
-          >
-            <div class="course-image">
-              <img
-                src="./assets/images/img-course/python.png"
-                alt="Khóa Học Python"
-              />
-              <div class="course-tag">Khoa Học Dữ Liệu</div>
-            </div>
-            <div class="course-info">
-              <h3>Python cho Khoa Học Dữ Liệu</h3>
-              <div class="skill-level">
-                <span class="level beginner">Người Mới</span>
-              </div>
-              <p>
-                Học lập trình Python cho việc phân tích và trực quan hóa dữ
-                liệu.
-              </p>
-              <div class="course-meta">
-                <span><i class="far fa-clock"></i> 24 giờ</span>
-                <span><i class="far fa-file-alt"></i> 18 bài học</span>
-              </div>
-              <div class="progress-container">
-                <div class="progress-bar" data-progress="0">
-                  <div class="progress"></div>
-                </div>
-                <span class="progress-text">0% Hoàn Thành</span>
-              </div>
-              <a href="courses/python.html" class="btn btn-primary"
-                >Bắt Đầu Học</a
-              >
-            </div>
-          </div>
-
-          <div
-            class="course-card"
-            data-level="advanced"
-            data-category="data-science"
-          >
-            <div class="course-image">
-              <img
-                src="./assets/images/img-course/machine-learning.png"
-                alt="Khóa Học Máy Học"
-              />
-              <div class="course-tag">Khoa Học Dữ Liệu</div>
-            </div>
-            <div class="course-info">
-              <h3>Nền Tảng Máy Học</h3>
-              <div class="skill-level">
-                <span class="level advanced">Nâng Cao</span>
-              </div>
-              <p>
-                Hiểu và triển khai các thuật toán học máy cho các vấn đề thực
-                tế.
-              </p>
-              <div class="course-meta">
-                <span><i class="far fa-clock"></i> 40 giờ</span>
-                <span><i class="far fa-file-alt"></i> 30 bài học</span>
-              </div>
-              <div class="progress-container">
-                <div class="progress-bar" data-progress="0">
-                  <div class="progress"></div>
-                </div>
-                <span class="progress-text">0% Hoàn Thành</span>
-              </div>
-              <a href="courses/machine-learning.html" class="btn btn-primary"
-                >Bắt Đầu Học</a
-              >
-            </div>
-          </div>
+          <!-- Các card sẽ được render từ database bằng js -->
         </div>
 
         <div class="no-results" style="display: none">
@@ -387,6 +104,6 @@
     <script src="./assets/js/script.js"></script>
     <script type="module" src="./assets/js/auth.js"></script>
     <script src="./assets/js/components.js"></script>
-    <script src="./assets/js/courses.js"></script>
+    <script type="module" src="./assets/js/courses.js"></script>
   </body>
 </html>

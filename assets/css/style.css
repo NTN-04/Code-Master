@@ -425,7 +425,22 @@ nav .icon {
   box-shadow: var(--box-shadow);
   transition: var(--transition);
 }
-
+.course-card .featured-badge {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: linear-gradient(135deg, #40c057, #0ca678);
+  color: #fff;
+  padding: 0.3rem 0.8rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  z-index: 2;
+  box-shadow: 0 2px 8px rgba(255, 215, 0, 0.3);
+}
+.featured-badge i {
+  margin-right: 0.3rem;
+}
 .course-card:hover {
   transform: translateY(-10px);
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
@@ -498,7 +513,7 @@ nav .icon {
 
 .progress {
   height: 100%;
-  background-color: var(--primary-color);
+  background-color: var(--success-color);
   border-radius: 4px;
   width: 0%;
   transition: width 0.5s ease;
@@ -763,4 +778,67 @@ footer {
   .nav-mobile {
     inset: 0 0 0 25%;
   }
+}
+
+/* Loading States */
+.loading-courses {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2rem;
+  grid-column: 1 / -1;
+}
+
+.loading-spinner {
+  font-size: 2rem;
+  color: var(--primary-color);
+  margin-bottom: 1rem;
+}
+
+.loading-spinner i {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+/* No Courses Message */
+.no-courses-message,
+.error-message {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2rem;
+  grid-column: 1 / -1;
+  text-align: center;
+  color: var(--gray-dark);
+}
+
+.no-courses-message i,
+.error-message i {
+  font-size: 3rem;
+  color: var(--gray-light);
+  margin-bottom: 1rem;
+}
+
+.no-courses-message h3,
+.error-message h3 {
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+  color: var(--text-primary);
+}
+
+.error-message {
+  color: var(--danger-color);
+}
+
+.error-message i {
+  color: var(--danger-color);
 }
