@@ -4,22 +4,22 @@
       ".read": true,
       ".write": "auth != null && auth.token.admin == true"
     },
-    
+
     "categories": {
       ".read": true,
       ".write": "auth != null && auth.token.admin == true"
     },
-    
+
     "learningPaths": {
       ".read": true,
       ".write": "auth != null && auth.token.admin == true"
     },
-    
+
     "resources": {
       ".read": true,
       ".write": "auth != null && auth.token.admin == true"
     },
-    
+
     "settings": {
       ".read": true,
       ".write": "auth != null && auth.token.admin == true"
@@ -29,71 +29,27 @@
       "$userId": {
         ".read": "auth != null && (auth.uid == $userId || auth.token.admin == true)",
         ".write": "auth != null && (auth.uid == $userId || auth.token.admin == true)",
-        
-        ".validate": "newData.hasChildren(['id', 'name', 'email', 'username'])",
-        
+        ".validate": "newData.hasChildren(['id', 'email', 'username', 'avatar', 'role', 'bio', 'createAt'])",
+
         "id": {
           ".validate": "newData.isString() && newData.val() == $userId"
         },
-        
-        "name": {
-          ".validate": "newData.isString() && newData.val().length > 0 && newData.val().length <= 100"
-        },
-        
         "email": {
           ".validate": "newData.isString() && newData.val().matches(/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,}$/i)"
         },
-        
         "username": {
-          ".validate": "newData.isString() && newData.val().length >= 3 && newData.val().length <= 30 && newData.val().matches(/^[a-zA-Z0-9_]+$/)"
+          ".validate": "newData.isString() && newData.val().length >= 3 && newData.val().length <= 30"
         },
-        
         "bio": {
           ".validate": "newData.isString() && newData.val().length <= 500"
         },
-        
         "avatar": {
           ".validate": "newData.isString()"
         },
-        
-        "joinDate": {
-          ".validate": "newData.isString()"
+        "role": {
+          ".validate": "newData.isNumber()"
         },
-        
-        "learningPath": {
-          ".validate": "newData.isString()"
-        },
-        
-        "enrolledCourses": {
-          "$courseId": {
-            ".validate": "newData.isBoolean() || (newData.hasChildren(['enrolledAt', 'progress']) && newData.child('enrolledAt').isString() && newData.child('progress').isNumber() && newData.child('progress').val() >= 0 && newData.child('progress').val() <= 100)"
-          }
-        },
-        
-        "completedCourses": {
-          "$courseId": {
-            ".validate": "newData.hasChildren(['completedAt']) && newData.child('completedAt').isString()"
-          }
-        },
-        
-        "profileSettings": {
-          ".validate": "newData.hasChildren(['isPublic', 'emailNotifications', 'darkMode'])",
-          "isPublic": {
-            ".validate": "newData.isBoolean()"
-          },
-          "emailNotifications": {
-            ".validate": "newData.isBoolean()"
-          },
-          "darkMode": {
-            ".validate": "newData.isBoolean()"
-          }
-        },
-        
-        "createdAt": {
-          ".validate": "newData.isString()"
-        },
-        
-        "updatedAt": {
+        "createAt": {
           ".validate": "newData.isString()"
         }
       }
@@ -103,21 +59,32 @@
       "$userId": {
         ".read": "auth != null && (auth.uid == $userId || auth.token.admin == true)",
         ".write": "auth != null && (auth.uid == $userId || auth.token.admin == true)",
-        
+
         "courses": {
           "$courseId": {
-            ".validate": "newData.hasChildren(['progress', 'timeSpent', 'lastAccessed']) && newData.child('progress').isNumber() && newData.child('progress').val() >= 0 && newData.child('progress').val() <= 100 && newData.child('timeSpent').isNumber() && newData.child('timeSpent').val() >= 0 && newData.child('lastAccessed').isString()"
+            "completedLessons": {
+              ".validate": "newData.hasChildren() || newData.val() == null"
+            },
+            "progress": {
+              ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 100"
+            },
+            "timeSpent": {
+              ".validate": "newData.isNumber() && newData.val() >= 0"
+            },
+            "lastAccessed": {
+              ".validate": "newData.isString()"
+            }
           }
         },
-        
+
         "totalLessonsCompleted": {
           ".validate": "newData.isNumber() && newData.val() >= 0"
         },
-        
+
         "totalTimeSpent": {
           ".validate": "newData.isNumber() && newData.val() >= 0"
         },
-        
+
         "lastActiveDate": {
           ".validate": "newData.isString()"
         }
@@ -140,7 +107,7 @@
         "$reviewId": {
           ".write": "auth != null",
           ".validate": "newData.hasChildren(['userId', 'rating', 'comment', 'createdAt']) && newData.child('userId').isString() && newData.child('rating').isNumber() && newData.child('rating').val() >= 1 && newData.child('rating').val() <= 5 && newData.child('comment').isString() && newData.child('comment').val().length <= 1000 && newData.child('createdAt').isString()",
-          
+
           "userId": {
             ".validate": "newData.val() == auth.uid"
           }
@@ -157,7 +124,7 @@
       "$userId": {
         ".read": "auth != null && (auth.uid == $userId || auth.token.admin == true)",
         ".write": "auth != null && auth.token.admin == true",
-        
+
         "$notificationId": {
           ".validate": "newData.hasChildren(['title', 'message', 'type', 'isRead', 'createdAt']) && newData.child('title').isString() && newData.child('message').isString() && newData.child('type').isString() && newData.child('isRead').isBoolean() && newData.child('createdAt').isString()"
         }
@@ -173,19 +140,19 @@
       "$courseId": {
         ".read": "auth != null",
         ".write": "auth != null && auth.token.admin == true",
-        
+
         "lessons": {
           "$lessonId": {
             ".validate": "newData.hasChildren(['id', 'title', 'content', 'order']) && newData.child('id').isString() && newData.child('title').isString() && newData.child('content').isString() && newData.child('order').isNumber()"
           }
         },
-        
+
         "videos": {
           "$videoId": {
             ".validate": "newData.hasChildren(['id', 'title', 'url', 'duration', 'order']) && newData.child('id').isString() && newData.child('title').isString() && newData.child('url').isString() && newData.child('duration').isNumber() && newData.child('order').isNumber()"
           }
         },
-        
+
         "assignments": {
           "$assignmentId": {
             ".validate": "newData.hasChildren(['id', 'title', 'description', 'order']) && newData.child('id').isString() && newData.child('title').isString() && newData.child('description').isString() && newData.child('order').isNumber()"
@@ -198,7 +165,7 @@
       "$userId": {
         ".read": "auth != null && (auth.uid == $userId || auth.token.admin == true)",
         ".write": "auth != null && auth.uid == $userId",
-        
+
         "$courseId": {
           "$assignmentId": {
             ".validate": "newData.hasChildren(['submissionText', 'submittedAt']) && newData.child('submissionText').isString() && newData.child('submittedAt').isString()"
@@ -211,7 +178,7 @@
       "$userId": {
         ".read": "auth != null && (auth.uid == $userId || auth.token.admin == true)",
         ".write": "auth != null && auth.token.admin == true",
-        
+
         "$certificateId": {
           ".validate": "newData.hasChildren(['courseId', 'issuedAt', 'certificateUrl']) && newData.child('courseId').isString() && newData.child('issuedAt').isString() && newData.child('certificateUrl').isString()"
         }

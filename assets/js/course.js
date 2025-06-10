@@ -270,10 +270,6 @@ async function saveLessonCompletionToDB(courseId, lessonId) {
 
         if (snapshot.exists()) {
           completedLessons = snapshot.val();
-          // Đảm bảo completedLessons là array
-          if (!Array.isArray(completedLessons)) {
-            completedLessons = [];
-          }
         }
         // Thêm bài học nếu chưa có
         if (!completedLessons.includes(lessonId)) {
@@ -304,6 +300,15 @@ async function saveLessonCompletionToDB(courseId, lessonId) {
         );
         await set(lastAccessedRef, new Date().toISOString());
 
+        // Cập nhật thời gian lần đầu học
+        const firstAccessedRef = ref(
+          database,
+          `userProgress/${user.uid}/courses/${courseId}/firstAccessed`
+        );
+        const firstSnap = await get(firstAccessedRef);
+        if (!firstSnap.exists()) {
+          await set(firstAccessedRef, new Date().toISOString());
+        }
         // Cập nhật UI
         updateProgressUI(progressPercentage);
 

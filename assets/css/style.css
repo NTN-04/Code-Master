@@ -643,11 +643,6 @@ footer {
   max-height: 40px;
   width: auto;
 }
-/* .footer-logo h2 {
-  font-size: 1.8rem;
-  margin-bottom: 15px;
-  text-align: left;
-} */
 
 .footer-logo p {
   opacity: 0.8;
@@ -763,6 +758,9 @@ footer {
     margin: 0 auto;
     width: 60%;
   }
+  .footer-content {
+    grid-template-columns: 1fr;
+  }
 }
 
 @media (max-width: 576px) {
@@ -827,7 +825,10 @@ footer {
   color: var(--gray-light);
   margin-bottom: 1rem;
 }
-
+/* không có khóa học trong profile */
+.no-courses-message .fa-graduation-cap {
+  color: var(--primary-color);
+}
 .no-courses-message h3,
 .error-message h3 {
   font-size: 1.5rem;

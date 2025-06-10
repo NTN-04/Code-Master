@@ -11,28 +11,31 @@ import {
   ref,
   get,
   update,
+  remove,
 } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-database.js";
+import progressManager from "./progress-manager.js";
 
 // Chức năng Trang Hồ Sơ
 document.addEventListener("DOMContentLoaded", function () {
   // Khởi tạo tabs
   initTabs();
 
-  // Khởi tạo bộ lọc khóa học
-  initCourseFilters();
+  // Load khóa học của tôi
+  loadUserCourses();
 
   // Khởi tạo bộ lọc tài nguyên
   initResourceFilters();
-
   // Khởi tạo chức năng tìm kiếm
   initSearch();
 
   // Khởi tạo xử lý biểu mẫu cài đặt
-  loadUserProfile();
+  loadUserSetting();
   initSettingsForms();
-
   // xác thực form thay đổi password
   checkFormPasswordChange();
+
+  // Khởi tạo xác thực user progress bar
+  progressManager.initAuth();
 });
 
 // Khởi tạo điều hướng tab
@@ -60,35 +63,41 @@ function initTabs() {
   });
 }
 
-// Khởi tạo bộ lọc khóa học
+// Khởi tạo lọc/tìm kiếm khóa học trong profile
 function initCourseFilters() {
-  const filterButtons = document.querySelectorAll(
-    ".courses-filter .filter-btn"
-  );
-  const courseCards = document.querySelectorAll(".course-card");
-
-  // Thêm sự kiện click cho các nút lọc
-  filterButtons.forEach((button) => {
-    button.addEventListener("click", () => {
-      // Loại bỏ lớp active từ tất cả các nút
-      filterButtons.forEach((btn) => btn.classList.remove("active"));
-
-      // Thêm lớp active cho nút được nhấp vào
-      button.classList.add("active");
-
-      // Lọc khóa học
-      const filterValue = button.getAttribute("data-filter");
-
+  // Lọc theo trạng thái
+  const filterBtns = document.querySelectorAll(".courses-filter .filter-btn");
+  const courseCards = document.querySelectorAll(".user-courses .course-card");
+  filterBtns.forEach((btn) => {
+    btn.addEventListener("click", function () {
+      filterBtns.forEach((b) => b.classList.remove("active"));
+      btn.classList.add("active");
+      const filter = btn.getAttribute("data-filter");
       courseCards.forEach((card) => {
-        if (filterValue === "all") {
-          card.style.display = "flex";
+        if (filter === "all" || card.getAttribute("data-status") === filter) {
+          card.style.display = "";
         } else {
-          const cardStatus = card.getAttribute("data-status");
-          card.style.display = cardStatus === filterValue ? "flex" : "none";
+          card.style.display = "none";
         }
       });
     });
   });
+  // Tìm kiếm
+  const searchInput = document.getElementById("course-search");
+  if (searchInput) {
+    searchInput.addEventListener("input", function () {
+      const searchTerm = this.value.toLowerCase().trim();
+      courseCards.forEach((card) => {
+        const title = card.querySelector("h3")?.textContent.toLowerCase() || "";
+        const desc = card.querySelector("p")?.textContent.toLowerCase() || "";
+        if (title.includes(searchTerm) || desc.includes(searchTerm)) {
+          card.style.display = "";
+        } else {
+          card.style.display = "none";
+        }
+      });
+    });
+  }
 }
 
 // Khởi tạo bộ lọc tài nguyên
@@ -124,21 +133,6 @@ function initResourceFilters() {
 
 // Khởi tạo chức năng tìm kiếm
 function initSearch() {
-  // Tìm kiếm khóa học
-  const courseSearchInput = document.getElementById("course-search");
-  if (courseSearchInput) {
-    courseSearchInput.addEventListener("input", function () {
-      const searchTerm = this.value.toLowerCase().trim();
-      const courseCards = document.querySelectorAll(".course-card");
-
-      courseCards.forEach((card) => {
-        const courseTitle = card.querySelector("h3").textContent.toLowerCase();
-        const shouldShow = courseTitle.includes(searchTerm);
-        card.style.display = shouldShow ? "flex" : "none";
-      });
-    });
-  }
-
   // Tìm kiếm tài nguyên
   const resourceSearchInput = document.getElementById("resource-search");
   if (resourceSearchInput) {
@@ -160,8 +154,9 @@ function initSearch() {
   }
 }
 
+/* ===  CÀI ĐẶT TÀI KHOẢN === */
 // Tải dữ liệu người dùng từ Realtime Database và hiển thị lên form
-function loadUserProfile() {
+function loadUserSetting() {
   onAuthStateChanged(auth, async (user) => {
     if (user) {
       const userRef = ref(database, "users/" + user.uid);
@@ -180,10 +175,10 @@ function loadUserProfile() {
       document.getElementById("email").value = data.email || user.email || "";
       document.getElementById("username").value = data.username || "";
       document.getElementById("bio").value = data.bio || "";
-      //  ảnh đại diện
+      // Lấy ảnh đại diện từ local
+      const base64Image = localStorage.getItem("profile-avatar-" + user.uid);
       const avatarImg = document.querySelector(".profile-avatar img");
-      avatarImg.src =
-        data.avatar || user.photoURL || "assets/images/avatar-default.jpg";
+      avatarImg.src = base64Image;
     } else {
       window.location.href = "login.html";
     }
@@ -196,6 +191,29 @@ function initSettingsForms() {
   const personalInfoForm = document.querySelector(
     "#settings .settings-section:nth-child(1) form"
   );
+
+  // Nếu người dùng chọn ảnh mới
+  const fileInput = document.getElementById("profile-picture");
+  let base64Image = null; // Lưu tạm base64 để dùng khi submit
+
+  // Khi chọn ảnh, hiển thị review ngay
+  if (fileInput) {
+    fileInput.addEventListener("change", function () {
+      if (fileInput.files && fileInput.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          base64Image = e.target.result;
+          // Hiển thị review
+          const avatarReview = document.querySelector(
+            ".profile-picture-upload img"
+          );
+          if (avatarReview) avatarReview.src = base64Image;
+        };
+        reader.readAsDataURL(fileInput.files[0]);
+      }
+    });
+  }
+
   if (personalInfoForm) {
     personalInfoForm.addEventListener("submit", async function (e) {
       e.preventDefault();
@@ -203,9 +221,6 @@ function initSettingsForms() {
       const displayName = document.getElementById("full-name").value.trim();
       const bio = document.getElementById("bio").value.trim();
       const username = document.getElementById("username").value.trim();
-      const fileInput = document.getElementById("profile-picture");
-      let avatarDefault = "assets/images/avatar-default.jpg";
-      let avatar = null;
 
       // Hiển thị trạng thái đang xử lý
       const submitBtn = personalInfoForm.querySelector('button[type="submit"]');
@@ -215,28 +230,26 @@ function initSettingsForms() {
         '<i class="fas fa-spinner fa-spin"></i> Đang cập nhật...';
 
       try {
-        // Nếu người dùng chọn ảnh mới
-        if (fileInput && fileInput.files && fileInput.files[0]) {
-          // Tạm thời dùng URL cho xem trước (load sẽ mất)
-          avatar = URL.createObjectURL(fileInput.files[0]);
+        // Khi submit, có base64 thì lưu vào local
+        if (base64Image) {
+          localStorage.setItem("profile-avatar-" + user.uid, base64Image);
+          // hiển thị ra giao diện
           const avatarImg = document.querySelector(".profile-avatar img");
-          if (avatarImg) avatarImg.src = avatar;
+          if (avatarImg) avatarImg.src = base64Image;
         }
 
         const user = auth.currentUser;
         if (user) {
-          // Cập nhật trên Firebase Auth (tên, ảnh)
+          // Cập nhật trên Firebase Auth
           await updateProfile(user, {
             displayName: displayName,
-            photoURL: avatar || user.photoURL || avatarDefault,
           });
 
-          // Cập nhật trên Realtime Database (avatar, username, bio)
+          // Cập nhật trên Realtime Database ( username, bio)
           const userRef = ref(database, "users/" + user.uid);
           await update(userRef, {
             username: username,
             bio: bio,
-            avatar: avatar || user.photoURL || avatarDefault,
           });
 
           showNotification("Thông tin cá nhân đã được cập nhật thành công!");
@@ -360,43 +373,6 @@ function initSettingsForms() {
   handleSuspendAccount();
   // xử lý xóa tài khoản
   handleDeleteAccount();
-}
-
-// Kiểm tra và hiển thị form thay đổi mật khẩu chỉ cho user đăng nhập bằng email/password
-function checkFormPasswordChange() {
-  onAuthStateChanged(auth, (user) => {
-    const passwordSection = document.querySelector(
-      "#settings .settings-section:nth-child(2)"
-    );
-
-    if (user && passwordSection) {
-      const providerData = user.providerData[0];
-      if (providerData.providerId !== "password") {
-        // Ẩn form khi đăng nhập bằng Google/GitHub
-        passwordSection.style.display = "none";
-
-        // Thêm thông báo
-        const infoDiv = document.createElement("div");
-        infoDiv.className = "settings-section";
-        infoDiv.innerHTML = `
-          <h3>Thay Đổi Mật Khẩu</h3>
-          <div class="info-message">
-            <i class="fas fa-info-circle"></i>
-            <p>Tài khoản của bạn đăng nhập bằng ${
-              providerData.providerId === "google.com" ? "Google" : "GitHub"
-            }. 
-            Để thay đổi mật khẩu, vui lòng truy cập trang cài đặt của ${
-              providerData.providerId === "google.com" ? "Google" : "GitHub"
-            }.</p>
-          </div>
-        `;
-        passwordSection.parentNode.insertBefore(
-          infoDiv,
-          passwordSection.nextSibling
-        );
-      }
-    }
-  });
 }
 
 // Xử lý xóa tài khoản
@@ -655,6 +631,176 @@ function handleSuspendAccount() {
   });
 }
 
+// Kiểm tra và ẩn form thay đổi password khi login gg/github
+function checkFormPasswordChange() {
+  onAuthStateChanged(auth, (user) => {
+    const passwordSection = document.querySelector(
+      "#settings .settings-section:nth-child(2)"
+    );
+
+    if (user && passwordSection) {
+      const providerData = user.providerData[0];
+      if (providerData.providerId !== "password") {
+        // Ẩn form khi đăng nhập bằng Google/GitHub
+        passwordSection.style.display = "none";
+
+        // Thêm thông báo
+        const infoDiv = document.createElement("div");
+        infoDiv.className = "settings-section";
+        infoDiv.innerHTML = `
+          <h3>Thay Đổi Mật Khẩu</h3>
+          <div class="info-message">
+            <i class="fas fa-info-circle"></i>
+            <p>Tài khoản của bạn đăng nhập bằng ${
+              providerData.providerId === "google.com" ? "Google" : "GitHub"
+            }. 
+            Để thay đổi mật khẩu, vui lòng truy cập trang cài đặt của ${
+              providerData.providerId === "google.com" ? "Google" : "GitHub"
+            }.</p>
+          </div>
+        `;
+        passwordSection.parentNode.insertBefore(
+          infoDiv,
+          passwordSection.nextSibling
+        );
+      }
+    }
+  });
+}
+
+/* === COURSE HỌC CỦA TÔI === */
+
+async function loadUserCourses() {
+  const userCoursesContainer = document.querySelector(".user-courses");
+  if (!userCoursesContainer) return;
+  userCoursesContainer.innerHTML =
+    '<div class="loading-courses"><i class="loading-spinner fas fa-spinner fa-spin"></i> Đang tải khóa học của bạn...</div>';
+
+  // Đảm bảo user đã đăng nhập
+  onAuthStateChanged(auth, async (user) => {
+    if (!user) {
+      window.location.href = "login.html";
+    }
+    try {
+      // Lấy danh sách courseId user đã học
+      const progressRef = ref(database, `userProgress/${user.uid}/courses`);
+      const progressSnap = await get(progressRef);
+      if (!progressSnap.exists()) {
+        userCoursesContainer.innerHTML = `<div class="no-courses-message">
+            <i class="fas fa-graduation-cap"></i>
+            <h3>Bạn chưa học khóa học nào</h3>
+          </div>`;
+        return;
+      }
+      // {courseId: {progress, lastAccessed, ...}}
+      const userCoursesProgress = progressSnap.val();
+      const courseIds = Object.keys(userCoursesProgress);
+      if (courseIds.length === 0) {
+        userCoursesContainer.innerHTML =
+          '<div class="no-courses-message"><i class="fas fa-graduation-cap" ></i><h3>Bạn chưa học khóa học nào</h3></div>';
+        return;
+      }
+      // Lấy thông tin chi tiết các khóa học
+      const coursesRef = ref(database, "courses");
+      const coursesSnap = await get(coursesRef);
+      const allCourses = coursesSnap.exists() ? coursesSnap.val() : {};
+      // Lấy categories để hiển thị icon/tên
+      const categoriesRef = ref(database, "categories");
+      const categoriesSnap = await get(categoriesRef);
+      const categoriesData = categoriesSnap.exists()
+        ? categoriesSnap.val()
+        : {};
+
+      // Render danh sách
+      let html = "";
+      courseIds.forEach((courseId) => {
+        const course = allCourses[courseId];
+        if (!course) return;
+        const progress = userCoursesProgress[courseId]?.progress || 0;
+        const firstAccessed =
+          userCoursesProgress[courseId]?.firstAccessed || null;
+        const lastAccessed =
+          userCoursesProgress[courseId]?.lastAccessed || null;
+        const isCompleted = progress >= 100;
+        const category = categoriesData[course.category] || {};
+        const categoryName = category.name || course.category;
+        const categoryIcon = category.icon || "📚";
+        // Map level
+        const levelMap = {
+          beginner: "Người Mới",
+          intermediate: "Trung Cấp",
+          advanced: "Nâng Cao",
+        };
+        const levelText = levelMap[course.level] || course.level;
+        html += `
+        <div class="course-card" data-status="${
+          isCompleted ? "completed" : "in-progress"
+        }" data-course-id="${courseId}">
+          <div class="course-image">
+            <img src="${course.image}" alt="${course.title}" loading="lazy" />
+            <div class="course-tag">${categoryIcon} ${categoryName}</div>
+          </div>
+          <div class="course-info">
+            <h3>${course.title}</h3>
+            <div class="skill-level"><span class="level ${
+              course.level
+            }">${levelText}</span></div>
+            <p class="line-clamp-2">${course.description}</p>
+            <div class="course-meta">
+              <span><i class="far fa-clock"></i> Truy cập gần nhất: ${formatDate(
+                lastAccessed
+              )}</span>
+              <span><i class="far fa-file-alt"></i> Bắt đầu học: ${formatDate(
+                firstAccessed
+              )}</span>
+            </div>
+            <div class="progress-container">
+              <div class="progress-bar" data-progress="${progress}" data-course-id="${courseId}">
+                <div class="progress"></div>
+              </div>
+              <span class="progress-text">${progress}% Hoàn Thành</span>
+            </div>
+            <div class="course-actions">
+              <a href="${course.url}" class="btn btn-primary">${
+          isCompleted ? "Xem lại" : "Tiếp tục học"
+        }
+              </a> 
+             </div>
+          </div>
+          ${
+            isCompleted
+              ? `<div class="course-completion-badge"><i class="fas fa-certificate"></i> Đã hoàn thành</div>`
+              : ""
+          }
+        </div>
+        `;
+      });
+      userCoursesContainer.innerHTML = html;
+
+      // Khởi tạo progress bar UI
+      progressManager.initProgressBars(".user-courses .progress-bar");
+
+      // Khởi tạo filter/tìm kiếm sau khi load
+      initCourseFilters();
+    } catch (err) {
+      userCoursesContainer.innerHTML =
+        '<div class="error-message"><i class="fas fa-exclamation-triangle"></i> Lỗi khi tải khóa học của bạn.</div>';
+      console.error(err);
+    }
+  });
+}
+
+// Định dạng ngày tháng
+function formatDate(timestamp) {
+  if (!timestamp) return "";
+  const d = new Date(timestamp);
+  return d.toLocaleDateString("vi-VN", {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  });
+}
+
 // Hiển thị thông báo
 function showNotification(message, type = "success") {
   // Kiểm tra xem đã có thông báo nào chưa
@@ -681,7 +827,7 @@ function showNotification(message, type = "success") {
   }, 4000);
 }
 
-// Xử lý xóa dấu trang
+// Xử lý xóa tài nguyên đã lưu
 const removeBookmarkButtons = document.querySelectorAll(".remove-bookmark");
 if (removeBookmarkButtons) {
   removeBookmarkButtons.forEach((button) => {

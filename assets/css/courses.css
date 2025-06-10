@@ -81,18 +81,7 @@
 }
 
 .courses-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 30px;
   margin-top: 40px;
-}
-
-.course-card {
-  background: white;
-  border-radius: var(--border-radius);
-  overflow: hidden;
-  box-shadow: var(--box-shadow);
-  transition: var(--transition);
 }
 
 .course-image {
@@ -215,7 +204,8 @@
   }
 
   .courses-grid {
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    grid-template-columns: 1fr;
+    margin: 0 20px;
   }
   /* loading */
   .loading-courses,
@@ -242,13 +232,7 @@
   .courses-filter {
     padding: 15px;
   }
-
-  .search-box {
-    flex-direction: column;
-  }
-
   .search-box button {
-    width: 100%;
     padding: 12px;
   }
 }
