@@ -49,8 +49,19 @@ function updateNavList(navList, isLoggedIn) {
       navList.removeChild(li);
     }
   });
-
   if (isLoggedIn) {
+    // Kiểm tra role để hiển thị link Admin
+    const userData = getUserData();
+    if (userData && userData.role === 1) {
+      // Thêm "Quản Trị"
+      const adminLi = document.createElement("li");
+      const adminLink = document.createElement("a");
+      adminLink.href = rootPath + "admin.html";
+      adminLink.innerHTML = `<i class="icon fa-solid fa-cog"></i> Quản Trị`;
+      adminLi.appendChild(adminLink);
+      navList.appendChild(adminLi);
+    }
+
     // Thêm "Hồ Sơ Của Tôi"
     const profileLi = document.createElement("li");
     const profileLink = document.createElement("a");

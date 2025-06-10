@@ -323,6 +323,7 @@ async function saveUserData(user, provider) {
     photoURL: user.photoURL,
     provider: provider,
     bio: "",
+    role: 2, // default role
   };
   try {
     const snapshot = await get(userRef);
@@ -336,6 +337,7 @@ async function saveUserData(user, provider) {
         photoURL: dbUser.avatar || user.photoURL,
         provider: dbUser.provider || provider,
         bio: dbUser.bio || "",
+        role: dbUser.role || 2, // Include role from database
       };
     }
   } catch (e) {
