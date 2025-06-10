@@ -6,11 +6,6 @@ function updateUIBasedOnLoginState() {
   console.log("Cập nhật UI dựa trên trạng thái đăng nhập");
   const userData = getUserData();
   updateNavigationMenu(!!userData);
-
-  // Nếu đang ở trang hồ sơ và chưa đăng nhập, chuyển hướng đến trang đăng nhập
-  if (window.location.pathname.includes("profile.html") && !userData) {
-    window.location.href = "login.html";
-  }
 }
 
 // Export hàm để có thể gọi từ components.js
@@ -27,7 +22,7 @@ function updateNavigationMenu(isLoggedIn) {
   const navPC = document.querySelector(".nav-pc ul");
   if (navPC) updateNavList(navPC, isLoggedIn);
 
-  // Xử lý cho nav-mobile nếu có
+  // Xử lý cho nav-mobile
   const navMobile = document.querySelector(".nav-mobile-list");
   if (navMobile) updateNavList(navMobile, isLoggedIn);
 }
