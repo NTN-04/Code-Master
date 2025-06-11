@@ -57,13 +57,16 @@ function updateNavList(navList, isLoggedIn) {
       navList.appendChild(adminLi);
     }
 
-    // Thêm "Hồ Sơ Của Tôi"
-    const profileLi = document.createElement("li");
-    const profileLink = document.createElement("a");
-    profileLink.href = rootPath + "profile.html";
-    profileLink.innerHTML = `<i class="icon fa-solid fa-user"></i> Tài khoản`;
-    profileLi.appendChild(profileLink);
-    navList.appendChild(profileLi);
+    // ẩn link nếu là admin
+    if (!userData || userData.role !== 1) {
+      // Thêm "Hồ Sơ Của Tôi"
+      const profileLi = document.createElement("li");
+      const profileLink = document.createElement("a");
+      profileLink.href = rootPath + "profile.html";
+      profileLink.innerHTML = `<i class="icon fa-solid fa-user"></i> Tài khoản`;
+      profileLi.appendChild(profileLink);
+      navList.appendChild(profileLi);
+    }
 
     // Thêm "Đăng Xuất"
     const logoutLi = document.createElement("li");

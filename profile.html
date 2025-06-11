@@ -16,474 +16,485 @@
     <!-- load với component -->
     <header id="header-placeholder"></header>
 
-    <section class="profile-header">
-      <div class="container">
-        <div class="profile-info">
-          <div class="profile-avatar">
-            <img src="images/profile-avatar.jpg" alt="Ảnh Đại Diện" />
-          </div>
-          <div class="profile-details">
-            <h1 class="profile-username">Nguyễn Văn A</h1>
-            <p class="profile-email">Lập Trình Viên Web</p>
-            <div class="profile-stats">
-              <div class="stat">
-                <span class="stat-value">4</span>
-                <span class="stat-label">Khóa Học Đang Học</span>
-              </div>
-              <div class="stat">
-                <span class="stat-value">2</span>
-                <span class="stat-label">Khóa Học Đã Hoàn Thành</span>
-              </div>
-              <div class="stat">
-                <span class="stat-value">65%</span>
-                <span class="stat-label">Tiến Độ Trung Bình</span>
-              </div>
+    <div class="main-content">
+      <section class="profile-header">
+        <div class="container">
+          <div class="profile-info">
+            <div class="profile-avatar">
+              <img src="images/profile-avatar.jpg" alt="Ảnh Đại Diện" />
             </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="profile-content">
-      <div class="container">
-        <div class="profile-tabs">
-          <button class="tab-btn active" data-tab="my-courses">
-            Khóa Học Của Tôi
-          </button>
-          <button class="tab-btn" data-tab="saved-resources">
-            Tài Nguyên Đã Lưu
-          </button>
-          <button class="tab-btn" data-tab="achievements">Thành Tích</button>
-          <button class="tab-btn" data-tab="settings">Cài Đặt Tài Khoản</button>
-        </div>
-
-        <div class="tab-content active" id="my-courses">
-          <h2>Khóa Học Của Tôi</h2>
-
-          <div class="courses-filter">
-            <div class="filter-options">
-              <button class="filter-btn active" data-filter="all">
-                Tất Cả Khóa Học
-              </button>
-              <button class="filter-btn" data-filter="in-progress">
-                Đang Học
-              </button>
-              <button class="filter-btn" data-filter="completed">
-                Đã Hoàn Thành
-              </button>
-            </div>
-
-            <div class="search-box">
-              <input
-                type="text"
-                placeholder="Tìm kiếm khóa học..."
-                id="course-search"
-              />
-              <button><i class="fas fa-search"></i></button>
-            </div>
-          </div>
-
-          <div class="user-courses">
-            <!-- Load các course đã học từ database bằng js -->
-          </div>
-        </div>
-
-        <div class="tab-content" id="saved-resources">
-          <h2>Tài Nguyên Đã Lưu</h2>
-
-          <div class="resources-filter">
-            <div class="filter-options">
-              <button class="filter-btn active" data-filter="all">
-                Tất Cả Tài Nguyên
-              </button>
-              <button class="filter-btn" data-filter="documentation">
-                Tài Liệu
-              </button>
-              <button class="filter-btn" data-filter="examples">
-                Ví Dụ Mã Nguồn
-              </button>
-              <button class="filter-btn" data-filter="videos">Video</button>
-              <button class="filter-btn" data-filter="books">Sách</button>
-            </div>
-
-            <div class="search-box">
-              <input
-                type="text"
-                placeholder="Tìm kiếm tài nguyên đã lưu..."
-                id="resource-search"
-              />
-              <button><i class="fas fa-search"></i></button>
-            </div>
-          </div>
-
-          <div class="saved-resources">
-            <div class="resource-item" data-type="documentation">
-              <div class="resource-icon">
-                <i class="fab fa-js"></i>
-              </div>
-              <div class="resource-details">
-                <h3>Tài Liệu JavaScript</h3>
-                <p>
-                  Tài liệu tham khảo đầy đủ cho ngôn ngữ JavaScript, cú pháp,
-                  phương thức và API.
-                </p>
-                <div class="resource-meta">
-                  <span
-                    ><i class="far fa-bookmark"></i> Đã lưu vào 15/07/2023</span
-                  >
+            <div class="profile-details">
+              <h1 class="profile-username">Nguyễn Văn A</h1>
+              <p class="profile-email">Lập Trình Viên Web</p>
+              <div class="profile-stats">
+                <div class="stat">
+                  <span class="stat-value">4</span>
+                  <span class="stat-label">Khóa Học Đang Học</span>
                 </div>
-              </div>
-              <div class="resource-actions">
-                <a href="#" class="btn btn-outline">Xem</a>
-                <button class="btn-icon remove-bookmark">
-                  <i class="fas fa-times"></i>
-                </button>
-              </div>
-            </div>
-
-            <div class="resource-item" data-type="examples">
-              <div class="resource-icon">
-                <i class="fas fa-code"></i>
-              </div>
-              <div class="resource-details">
-                <h3>Thanh Điều Hướng Responsive</h3>
-                <p>
-                  Thanh điều hướng responsive chuyển thành menu di động trên màn
-                  hình nhỏ hơn.
-                </p>
-                <div class="resource-meta">
-                  <span
-                    ><i class="far fa-bookmark"></i> Đã lưu vào 10/07/2023</span
-                  >
+                <div class="stat">
+                  <span class="stat-value">2</span>
+                  <span class="stat-label">Khóa Học Đã Hoàn Thành</span>
                 </div>
-              </div>
-              <div class="resource-actions">
-                <a href="#" class="btn btn-outline">Xem</a>
-                <button class="btn-icon remove-bookmark">
-                  <i class="fas fa-times"></i>
-                </button>
-              </div>
-            </div>
-
-            <div class="resource-item" data-type="videos">
-              <div class="resource-icon">
-                <i class="fas fa-video"></i>
-              </div>
-              <div class="resource-details">
-                <h3>Hướng Dẫn Hoàn Chỉnh về CSS Flexbox</h3>
-                <p>
-                  Làm chủ bố cục CSS Flexbox với hướng dẫn toàn diện và các ví
-                  dụ.
-                </p>
-                <div class="resource-meta">
-                  <span
-                    ><i class="far fa-bookmark"></i> Đã lưu vào 05/07/2023</span
-                  >
+                <div class="stat">
+                  <span class="stat-value">65%</span>
+                  <span class="stat-label">Tiến Độ Trung Bình</span>
                 </div>
-              </div>
-              <div class="resource-actions">
-                <a href="#" class="btn btn-outline">Xem</a>
-                <button class="btn-icon remove-bookmark">
-                  <i class="fas fa-times"></i>
-                </button>
-              </div>
-            </div>
-
-            <div class="resource-item" data-type="books">
-              <div class="resource-icon">
-                <i class="fas fa-book"></i>
-              </div>
-              <div class="resource-details">
-                <h3>Eloquent JavaScript</h3>
-                <p>
-                  Một giới thiệu hiện đại về lập trình với JavaScript, bao gồm
-                  từ nền tảng ngôn ngữ đến các khái niệm nâng cao.
-                </p>
-                <div class="resource-meta">
-                  <span
-                    ><i class="far fa-bookmark"></i> Đã lưu vào 28/06/2023</span
-                  >
-                </div>
-              </div>
-              <div class="resource-actions">
-                <a href="#" class="btn btn-outline">Xem</a>
-                <button class="btn-icon remove-bookmark">
-                  <i class="fas fa-times"></i>
-                </button>
               </div>
             </div>
           </div>
         </div>
+      </section>
 
-        <div class="tab-content" id="achievements">
-          <h2>Thành Tích</h2>
+      <section class="profile-content">
+        <div class="container">
+          <div class="profile-tabs">
+            <button class="tab-btn active" data-tab="my-courses">
+              Khóa Học Của Tôi
+            </button>
+            <button class="tab-btn" data-tab="saved-resources">
+              Tài Nguyên Đã Lưu
+            </button>
+            <button class="tab-btn" data-tab="achievements">Thành Tích</button>
+            <button class="tab-btn" data-tab="settings">
+              Cài Đặt Tài Khoản
+            </button>
+          </div>
 
-          <div class="achievements-grid">
-            <div class="achievement-card">
-              <div class="achievement-icon">
-                <i class="fas fa-certificate"></i>
+          <div class="tab-content active" id="my-courses">
+            <h2>Khóa Học Của Tôi</h2>
+
+            <div class="courses-filter">
+              <div class="filter-options">
+                <button class="filter-btn active" data-filter="all">
+                  Tất Cả Khóa Học
+                </button>
+                <button class="filter-btn" data-filter="in-progress">
+                  Đang Học
+                </button>
+                <button class="filter-btn" data-filter="completed">
+                  Đã Hoàn Thành
+                </button>
               </div>
-              <div class="achievement-details">
-                <h3>Nhà Lập Trình Bắt Đầu</h3>
-                <p>Hoàn thành khóa học đầu tiên của bạn.</p>
-                <div class="achievement-date">
-                  <span
-                    ><i class="far fa-calendar-check"></i> Đạt được vào:
-                    20/04/2023</span
-                  >
-                </div>
+
+              <div class="search-box">
+                <input
+                  type="text"
+                  placeholder="Tìm kiếm khóa học..."
+                  id="course-search"
+                />
+                <button><i class="fas fa-search"></i></button>
               </div>
             </div>
 
-            <div class="achievement-card">
-              <div class="achievement-icon">
-                <i class="fas fa-fire"></i>
+            <div class="user-courses">
+              <!-- Load các course đã học từ database bằng js -->
+            </div>
+          </div>
+
+          <div class="tab-content" id="saved-resources">
+            <h2>Tài Nguyên Đã Lưu</h2>
+
+            <div class="resources-filter">
+              <div class="filter-options">
+                <button class="filter-btn active" data-filter="all">
+                  Tất Cả Tài Nguyên
+                </button>
+                <button class="filter-btn" data-filter="documentation">
+                  Tài Liệu
+                </button>
+                <button class="filter-btn" data-filter="examples">
+                  Ví Dụ Mã Nguồn
+                </button>
+                <button class="filter-btn" data-filter="videos">Video</button>
+                <button class="filter-btn" data-filter="books">Sách</button>
               </div>
-              <div class="achievement-details">
-                <h3>Người Học Chăm Chỉ</h3>
-                <p>Học tập 7 ngày liên tiếp.</p>
-                <div class="achievement-date">
-                  <span
-                    ><i class="far fa-calendar-check"></i> Đạt được vào:
-                    10/05/2023</span
-                  >
-                </div>
+
+              <div class="search-box">
+                <input
+                  type="text"
+                  placeholder="Tìm kiếm tài nguyên đã lưu..."
+                  id="resource-search"
+                />
+                <button><i class="fas fa-search"></i></button>
               </div>
             </div>
 
-            <div class="achievement-card">
-              <div class="achievement-icon">
-                <i class="fas fa-code"></i>
+            <div class="saved-resources">
+              <div class="resource-item" data-type="documentation">
+                <div class="resource-icon">
+                  <i class="fab fa-js"></i>
+                </div>
+                <div class="resource-details">
+                  <h3>Tài Liệu JavaScript</h3>
+                  <p>
+                    Tài liệu tham khảo đầy đủ cho ngôn ngữ JavaScript, cú pháp,
+                    phương thức và API.
+                  </p>
+                  <div class="resource-meta">
+                    <span
+                      ><i class="far fa-bookmark"></i> Đã lưu vào
+                      15/07/2023</span
+                    >
+                  </div>
+                </div>
+                <div class="resource-actions">
+                  <a href="#" class="btn btn-outline">Xem</a>
+                  <button class="btn-icon remove-bookmark">
+                    <i class="fas fa-times"></i>
+                  </button>
+                </div>
               </div>
-              <div class="achievement-details">
-                <h3>Chuyên Gia Front-End</h3>
-                <p>
-                  Hoàn thành tất cả các bài tập thực hành trong khóa học HTML &
-                  CSS.
-                </p>
-                <div class="achievement-date">
-                  <span
-                    ><i class="far fa-calendar-check"></i> Đạt được vào:
-                    15/06/2023</span
-                  >
+
+              <div class="resource-item" data-type="examples">
+                <div class="resource-icon">
+                  <i class="fas fa-code"></i>
+                </div>
+                <div class="resource-details">
+                  <h3>Thanh Điều Hướng Responsive</h3>
+                  <p>
+                    Thanh điều hướng responsive chuyển thành menu di động trên
+                    màn hình nhỏ hơn.
+                  </p>
+                  <div class="resource-meta">
+                    <span
+                      ><i class="far fa-bookmark"></i> Đã lưu vào
+                      10/07/2023</span
+                    >
+                  </div>
+                </div>
+                <div class="resource-actions">
+                  <a href="#" class="btn btn-outline">Xem</a>
+                  <button class="btn-icon remove-bookmark">
+                    <i class="fas fa-times"></i>
+                  </button>
+                </div>
+              </div>
+
+              <div class="resource-item" data-type="videos">
+                <div class="resource-icon">
+                  <i class="fas fa-video"></i>
+                </div>
+                <div class="resource-details">
+                  <h3>Hướng Dẫn Hoàn Chỉnh về CSS Flexbox</h3>
+                  <p>
+                    Làm chủ bố cục CSS Flexbox với hướng dẫn toàn diện và các ví
+                    dụ.
+                  </p>
+                  <div class="resource-meta">
+                    <span
+                      ><i class="far fa-bookmark"></i> Đã lưu vào
+                      05/07/2023</span
+                    >
+                  </div>
+                </div>
+                <div class="resource-actions">
+                  <a href="#" class="btn btn-outline">Xem</a>
+                  <button class="btn-icon remove-bookmark">
+                    <i class="fas fa-times"></i>
+                  </button>
+                </div>
+              </div>
+
+              <div class="resource-item" data-type="books">
+                <div class="resource-icon">
+                  <i class="fas fa-book"></i>
+                </div>
+                <div class="resource-details">
+                  <h3>Eloquent JavaScript</h3>
+                  <p>
+                    Một giới thiệu hiện đại về lập trình với JavaScript, bao gồm
+                    từ nền tảng ngôn ngữ đến các khái niệm nâng cao.
+                  </p>
+                  <div class="resource-meta">
+                    <span
+                      ><i class="far fa-bookmark"></i> Đã lưu vào
+                      28/06/2023</span
+                    >
+                  </div>
+                </div>
+                <div class="resource-actions">
+                  <a href="#" class="btn btn-outline">Xem</a>
+                  <button class="btn-icon remove-bookmark">
+                    <i class="fas fa-times"></i>
+                  </button>
                 </div>
               </div>
             </div>
+          </div>
 
-            <div class="achievement-card">
-              <div class="achievement-icon">
-                <i class="fas fa-project-diagram"></i>
-              </div>
-              <div class="achievement-details">
-                <h3>Nhà Phát Triển Đa Kỹ Năng</h3>
-                <p>Hoàn thành khóa học trong ít nhất 2 lĩnh vực khác nhau.</p>
-                <div class="achievement-date">
-                  <span
-                    ><i class="far fa-calendar-check"></i> Đạt được vào:
-                    10/07/2023</span
-                  >
+          <div class="tab-content" id="achievements">
+            <h2>Thành Tích</h2>
+
+            <div class="achievements-grid">
+              <div class="achievement-card">
+                <div class="achievement-icon">
+                  <i class="fas fa-certificate"></i>
+                </div>
+                <div class="achievement-details">
+                  <h3>Nhà Lập Trình Bắt Đầu</h3>
+                  <p>Hoàn thành khóa học đầu tiên của bạn.</p>
+                  <div class="achievement-date">
+                    <span
+                      ><i class="far fa-calendar-check"></i> Đạt được vào:
+                      20/04/2023</span
+                    >
+                  </div>
                 </div>
               </div>
-            </div>
 
-            <div class="achievement-card locked">
-              <div class="achievement-icon">
-                <i class="fas fa-star"></i>
+              <div class="achievement-card">
+                <div class="achievement-icon">
+                  <i class="fas fa-fire"></i>
+                </div>
+                <div class="achievement-details">
+                  <h3>Người Học Chăm Chỉ</h3>
+                  <p>Học tập 7 ngày liên tiếp.</p>
+                  <div class="achievement-date">
+                    <span
+                      ><i class="far fa-calendar-check"></i> Đạt được vào:
+                      10/05/2023</span
+                    >
+                  </div>
+                </div>
               </div>
-              <div class="achievement-details">
-                <h3>Nhà Phát Triển Toàn Diện</h3>
-                <p>Hoàn thành ít nhất 5 khóa học.</p>
-                <div class="achievement-progress">
-                  <span>Tiến độ: 2/5 khóa học</span>
-                  <div class="progress-bar" data-progress="40">
-                    <div class="progress" style="width: 40%"></div>
+
+              <div class="achievement-card">
+                <div class="achievement-icon">
+                  <i class="fas fa-code"></i>
+                </div>
+                <div class="achievement-details">
+                  <h3>Chuyên Gia Front-End</h3>
+                  <p>
+                    Hoàn thành tất cả các bài tập thực hành trong khóa học HTML
+                    & CSS.
+                  </p>
+                  <div class="achievement-date">
+                    <span
+                      ><i class="far fa-calendar-check"></i> Đạt được vào:
+                      15/06/2023</span
+                    >
+                  </div>
+                </div>
+              </div>
+
+              <div class="achievement-card">
+                <div class="achievement-icon">
+                  <i class="fas fa-project-diagram"></i>
+                </div>
+                <div class="achievement-details">
+                  <h3>Nhà Phát Triển Đa Kỹ Năng</h3>
+                  <p>Hoàn thành khóa học trong ít nhất 2 lĩnh vực khác nhau.</p>
+                  <div class="achievement-date">
+                    <span
+                      ><i class="far fa-calendar-check"></i> Đạt được vào:
+                      10/07/2023</span
+                    >
+                  </div>
+                </div>
+              </div>
+
+              <div class="achievement-card locked">
+                <div class="achievement-icon">
+                  <i class="fas fa-star"></i>
+                </div>
+                <div class="achievement-details">
+                  <h3>Nhà Phát Triển Toàn Diện</h3>
+                  <p>Hoàn thành ít nhất 5 khóa học.</p>
+                  <div class="achievement-progress">
+                    <span>Tiến độ: 2/5 khóa học</span>
+                    <div class="progress-bar" data-progress="40">
+                      <div class="progress" style="width: 40%"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="achievement-card locked">
+                <div class="achievement-icon">
+                  <i class="fas fa-trophy"></i>
+                </div>
+                <div class="achievement-details">
+                  <h3>Lập Trình Viên Chuyên Nghiệp</h3>
+                  <p>Hoàn thành ít nhất một lộ trình học đầy đủ.</p>
+                  <div class="achievement-progress">
+                    <span>Hoàn thành 0/1 lộ trình</span>
+                    <div class="progress-bar" data-progress="0">
+                      <div class="progress" style="width: 0%"></div>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
-
-            <div class="achievement-card locked">
-              <div class="achievement-icon">
-                <i class="fas fa-trophy"></i>
-              </div>
-              <div class="achievement-details">
-                <h3>Lập Trình Viên Chuyên Nghiệp</h3>
-                <p>Hoàn thành ít nhất một lộ trình học đầy đủ.</p>
-                <div class="achievement-progress">
-                  <span>Hoàn thành 0/1 lộ trình</span>
-                  <div class="progress-bar" data-progress="0">
-                    <div class="progress" style="width: 0%"></div>
-                  </div>
-                </div>
-              </div>
-            </div>
           </div>
-        </div>
 
-        <div class="tab-content" id="settings">
-          <h2>Cài Đặt Tài Khoản</h2>
+          <div class="tab-content" id="settings">
+            <h2>Cài Đặt Tài Khoản</h2>
 
-          <div class="settings-container">
-            <div class="settings-section">
-              <h3>Thông Tin Cá Nhân</h3>
-              <form class="settings-form">
-                <div class="form-group">
-                  <label for="full-name">Họ và Tên</label>
-                  <input type="text" id="full-name" value="Nguyễn Văn A" />
-                </div>
-                <div class="form-group">
-                  <label for="email">Email</label>
-                  <input
-                    type="email"
-                    id="email"
-                    value="nguyenvana@example.com"
-                  />
-                </div>
-                <div class="form-group">
-                  <label for="username">Tên Người Dùng</label>
-                  <input type="text" id="username" value="nguyenvana" />
-                </div>
-                <div class="form-group">
-                  <label for="bio">Giới Thiệu</label>
-                  <textarea id="bio" rows="4">
-Tôi là một lập trình viên web đam mê học hỏi các công nghệ mới và xây dựng ứng dụng web tuyệt vời.</textarea
-                  >
-                </div>
-                <div class="form-group">
-                  <label for="profile-picture">Ảnh Đại Diện</label>
-                  <div class="profile-picture-upload">
-                    <img
-                      src="./assets/images/avatar-default.jpg"
-                      alt="Ảnh Đại Diện Hiện Tại"
+            <div class="settings-container">
+              <div class="settings-section">
+                <h3>Thông Tin Cá Nhân</h3>
+                <form class="settings-form">
+                  <div class="form-group">
+                    <label for="full-name">Họ và Tên</label>
+                    <input type="text" id="full-name" value="Nguyễn Văn A" />
+                  </div>
+                  <div class="form-group">
+                    <label for="email">Email</label>
+                    <input
+                      type="email"
+                      id="email"
+                      value="nguyenvana@example.com"
                     />
-                    <div class="upload-controls">
-                      <input
-                        type="file"
-                        id="profile-picture"
-                        class="file-input"
+                  </div>
+                  <div class="form-group">
+                    <label for="username">Tên Người Dùng</label>
+                    <input type="text" id="username" value="nguyenvana" />
+                  </div>
+                  <div class="form-group">
+                    <label for="bio">Giới Thiệu</label>
+                    <textarea id="bio" rows="4">
+  Tôi là một lập trình viên web đam mê học hỏi các công nghệ mới và xây dựng ứng dụng web tuyệt vời.</textarea
+                    >
+                  </div>
+                  <div class="form-group">
+                    <label for="profile-picture">Ảnh Đại Diện</label>
+                    <div class="profile-picture-upload">
+                      <img
+                        src="./assets/images/avatar-default.jpg"
+                        alt="Ảnh Đại Diện Hiện Tại"
                       />
-                      <label for="profile-picture" class="btn btn-outline"
-                        >Chọn Ảnh</label
-                      >
+                      <div class="upload-controls">
+                        <input
+                          type="file"
+                          id="profile-picture"
+                          class="file-input"
+                        />
+                        <label for="profile-picture" class="btn btn-outline"
+                          >Chọn Ảnh</label
+                        >
+                      </div>
                     </div>
                   </div>
-                </div>
-                <button type="submit" class="btn btn-primary">
-                  Lưu Thay Đổi
-                </button>
-              </form>
-            </div>
+                  <button type="submit" class="btn btn-primary">
+                    Lưu Thay Đổi
+                  </button>
+                </form>
+              </div>
 
-            <div class="settings-section">
-              <h3>Thay Đổi Mật Khẩu</h3>
-              <form class="settings-form">
-                <div class="form-group">
-                  <label for="current-password">Mật Khẩu Hiện Tại</label>
-                  <input type="password" id="current-password" />
-                </div>
-                <div class="form-group">
-                  <label for="new-password">Mật Khẩu Mới</label>
-                  <input type="password" id="new-password" />
-                </div>
-                <div class="form-group">
-                  <label for="confirm-password">Xác Nhận Mật Khẩu Mới</label>
-                  <input type="password" id="confirm-password" />
-                </div>
-                <button type="submit" class="btn btn-primary">
-                  Cập Nhật Mật Khẩu
-                </button>
-              </form>
-            </div>
-
-            <div class="settings-section">
-              <h3>Tùy Chọn Thông Báo</h3>
-              <form class="settings-form">
-                <div class="form-group checkbox-group">
-                  <input type="checkbox" id="email-notifications" checked />
-                  <label for="email-notifications"
-                    >Nhận thông báo qua email</label
-                  >
-                </div>
-                <div class="form-group checkbox-group">
-                  <input type="checkbox" id="course-updates" checked />
-                  <label for="course-updates">Cập nhật khóa học</label>
-                </div>
-                <div class="form-group checkbox-group">
-                  <input type="checkbox" id="new-courses" checked />
-                  <label for="new-courses">Khóa học mới</label>
-                </div>
-                <div class="form-group checkbox-group">
-                  <input type="checkbox" id="promotions" />
-                  <label for="promotions">Khuyến mãi và ưu đãi</label>
-                </div>
-                <button type="submit" class="btn btn-primary">
-                  Lưu Tùy Chọn
-                </button>
-              </form>
-            </div>
-
-            <div class="settings-section danger-zone">
-              <h3>
-                <i class="fas fa-exclamation-triangle"></i> Vùng Nguy Hiểm
-              </h3>
-              <p class="danger-zone-description">
-                Các hành động dưới đây có thể ảnh hưởng nghiêm trọng đến tài
-                khoản của bạn. Vui lòng cân nhắc kỹ trước khi thực hiện.
-              </p>
-
-              <div class="danger-zone-actions">
-                <!-- Tạm ngưng tài khoản -->
-                <div class="action-card warning">
-                  <div class="action-icon warning">
-                    <i class="fas fa-pause-circle"></i>
+              <div class="settings-section">
+                <h3>Thay Đổi Mật Khẩu</h3>
+                <form class="settings-form">
+                  <div class="form-group">
+                    <label for="current-password">Mật Khẩu Hiện Tại</label>
+                    <input type="password" id="current-password" />
                   </div>
-                  <div class="action-content">
-                    <h4>Tạm Ngưng Tài Khoản</h4>
-                    <p>
-                      Tạm thời vô hiệu hóa tài khoản. Bạn có thể kích hoạt lại
-                      bất cứ lúc nào.
-                    </p>
-                    <div class="action-details">
-                      <ul>
-                        <li>Không thể đăng nhập trong thời gian tạm ngưng</li>
-                        <li>Dữ liệu học tập được bảo toàn</li>
-                        <li>Có thể khôi phục qua email</li>
-                        <li>Các khóa học đang học sẽ được tạm dừng</li>
-                      </ul>
+                  <div class="form-group">
+                    <label for="new-password">Mật Khẩu Mới</label>
+                    <input type="password" id="new-password" />
+                  </div>
+                  <div class="form-group">
+                    <label for="confirm-password">Xác Nhận Mật Khẩu Mới</label>
+                    <input type="password" id="confirm-password" />
+                  </div>
+                  <button type="submit" class="btn btn-primary">
+                    Cập Nhật Mật Khẩu
+                  </button>
+                </form>
+              </div>
+
+              <div class="settings-section">
+                <h3>Tùy Chọn Thông Báo</h3>
+                <form class="settings-form">
+                  <div class="form-group checkbox-group">
+                    <input type="checkbox" id="email-notifications" checked />
+                    <label for="email-notifications"
+                      >Nhận thông báo qua email</label
+                    >
+                  </div>
+                  <div class="form-group checkbox-group">
+                    <input type="checkbox" id="course-updates" checked />
+                    <label for="course-updates">Cập nhật khóa học</label>
+                  </div>
+                  <div class="form-group checkbox-group">
+                    <input type="checkbox" id="new-courses" checked />
+                    <label for="new-courses">Khóa học mới</label>
+                  </div>
+                  <div class="form-group checkbox-group">
+                    <input type="checkbox" id="promotions" />
+                    <label for="promotions">Khuyến mãi và ưu đãi</label>
+                  </div>
+                  <button type="submit" class="btn btn-primary">
+                    Lưu Tùy Chọn
+                  </button>
+                </form>
+              </div>
+
+              <div class="settings-section danger-zone">
+                <h3>
+                  <i class="fas fa-exclamation-triangle"></i> Vùng Nguy Hiểm
+                </h3>
+                <p class="danger-zone-description">
+                  Các hành động dưới đây có thể ảnh hưởng nghiêm trọng đến tài
+                  khoản của bạn. Vui lòng cân nhắc kỹ trước khi thực hiện.
+                </p>
+
+                <div class="danger-zone-actions">
+                  <!-- Tạm ngưng tài khoản -->
+                  <div class="action-card warning">
+                    <div class="action-icon warning">
+                      <i class="fas fa-pause-circle"></i>
                     </div>
-                    <button class="btn btn-warning" id="suspend-account-btn">
-                      <i
-                        class="fas fa-pause-circle"
-                        style="margin-right: 5px"
-                      ></i>
-                      Tạm Ngưng Tài Khoản
-                    </button>
+                    <div class="action-content">
+                      <h4>Tạm Ngưng Tài Khoản</h4>
+                      <p>
+                        Tạm thời vô hiệu hóa tài khoản. Bạn có thể kích hoạt lại
+                        bất cứ lúc nào.
+                      </p>
+                      <div class="action-details">
+                        <ul>
+                          <li>Không thể đăng nhập trong thời gian tạm ngưng</li>
+                          <li>Dữ liệu học tập được bảo toàn</li>
+                          <li>Có thể khôi phục qua email</li>
+                          <li>Các khóa học đang học sẽ được tạm dừng</li>
+                        </ul>
+                      </div>
+                      <button class="btn btn-warning" id="suspend-account-btn">
+                        <i
+                          class="fas fa-pause-circle"
+                          style="margin-right: 5px"
+                        ></i>
+                        Tạm Ngưng Tài Khoản
+                      </button>
+                    </div>
                   </div>
-                </div>
 
-                <!-- Xóa tài khoản -->
-                <div class="action-card critical">
-                  <div class="action-icon critical">
-                    <i class="fas fa-trash-alt"></i>
-                  </div>
-                  <div class="action-content">
-                    <h4>Xóa Tài Khoản Vĩnh Viễn</h4>
-                    <p>
-                      Xóa hoàn toàn tài khoản và tất cả dữ liệu liên quan.
-                      <strong>Không thể hoàn tác!</strong>
-                    </p>
-                    <button class="btn btn-danger" id="delete-account-btn">
-                      <i class="fas fa-trash-alt" style="margin-right: 5px"></i>
-                      Xóa Tài Khoản
-                    </button>
+                  <!-- Xóa tài khoản -->
+                  <div class="action-card critical">
+                    <div class="action-icon critical">
+                      <i class="fas fa-trash-alt"></i>
+                    </div>
+                    <div class="action-content">
+                      <h4>Xóa Tài Khoản Vĩnh Viễn</h4>
+                      <p>
+                        Xóa hoàn toàn tài khoản và tất cả dữ liệu liên quan.
+                        <strong>Không thể hoàn tác!</strong>
+                      </p>
+                      <button class="btn btn-danger" id="delete-account-btn">
+                        <i
+                          class="fas fa-trash-alt"
+                          style="margin-right: 5px"
+                        ></i>
+                        Xóa Tài Khoản
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
-    </section>
+      </section>
+    </div>
 
     <!-- load bằng components -->
     <footer id="footer-placeholder"></footer>

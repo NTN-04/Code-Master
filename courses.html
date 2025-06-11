@@ -16,87 +16,89 @@
     <!-- load với component -->
     <header id="header-placeholder"></header>
 
-    <section class="courses-header">
-      <div class="container">
-        <h1>Khám Phá Các Khóa Học</h1>
-        <p>
-          Khám phá nhiều khóa học lập trình được thiết kế để đưa bạn từ người
-          mới đến chuyên gia.
-        </p>
+    <div class="main-content">
+      <section class="courses-header">
+        <div class="container">
+          <h1>Khám Phá Các Khóa Học</h1>
+          <p>
+            Khám phá nhiều khóa học lập trình được thiết kế để đưa bạn từ người
+            mới đến chuyên gia.
+          </p>
 
-        <div class="courses-filter">
-          <div class="search-box">
-            <input
-              type="text"
-              placeholder="Tìm kiếm khóa học..."
-              id="course-search"
-            />
-            <button><i class="fas fa-search"></i></button>
-          </div>
-
-          <div class="filter-options">
-            <select id="filter-level">
-              <option value="all">Tất Cả Trình Độ</option>
-              <option value="beginner">Người Mới</option>
-              <option value="intermediate">Trung Cấp</option>
-              <option value="advanced">Nâng Cao</option>
-            </select>
-
-            <select id="filter-category">
-              <option value="all">Tất Cả Danh Mục</option>
-              <!-- Các option sẽ được tải động từ database -->
-            </select>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="courses-grid-section">
-      <div class="container">
-        <h2>Tất Cả Khóa Học</h2>
-
-        <div class="courses-grid">
-          <!-- Web Development Courses -->
-          <!-- <div class="course-card" data-level="beginner" data-category="web">
-            <div class="course-image">
-              <img
-                src="./assets/images/img-course/html-css.png"
-                alt="Khóa Học HTML & CSS"
+          <div class="courses-filter">
+            <div class="search-box">
+              <input
+                type="text"
+                placeholder="Tìm kiếm khóa học..."
+                id="course-search"
               />
-              <div class="course-tag">Phát Triển Web</div>
+              <button><i class="fas fa-search"></i></button>
             </div>
-            <div class="course-info">
-              <h3>Nền Tảng HTML & CSS</h3>
-              <div class="skill-level">
-                <span class="level beginner">Người Mới</span>
+
+            <div class="filter-options">
+              <select id="filter-level">
+                <option value="all">Tất Cả Trình Độ</option>
+                <option value="beginner">Người Mới</option>
+                <option value="intermediate">Trung Cấp</option>
+                <option value="advanced">Nâng Cao</option>
+              </select>
+
+              <select id="filter-category">
+                <option value="all">Tất Cả Danh Mục</option>
+                <!-- Các option sẽ được tải động từ database -->
+              </select>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="courses-grid-section">
+        <div class="container">
+          <h2>Tất Cả Khóa Học</h2>
+
+          <div class="courses-grid">
+            <!-- Web Development Courses -->
+            <!-- <div class="course-card" data-level="beginner" data-category="web">
+              <div class="course-image">
+                <img
+                  src="./assets/images/img-course/html-css.png"
+                  alt="Khóa Học HTML & CSS"
+                />
+                <div class="course-tag">Phát Triển Web</div>
               </div>
-              <p>Học các khối nền tảng của phát triển web với HTML và CSS.</p>
-              <div class="course-meta">
-                <span><i class="far fa-clock"></i> 20 giờ</span>
-                <span><i class="far fa-file-alt"></i> 15 bài học</span>
-              </div>
-              <div class="progress-container">
-                <div class="progress-bar" data-progress="0">
-                  <div class="progress"></div>
+              <div class="course-info">
+                <h3>Nền Tảng HTML & CSS</h3>
+                <div class="skill-level">
+                  <span class="level beginner">Người Mới</span>
                 </div>
-                <span class="progress-text">0% Hoàn Thành</span>
+                <p>Học các khối nền tảng của phát triển web với HTML và CSS.</p>
+                <div class="course-meta">
+                  <span><i class="far fa-clock"></i> 20 giờ</span>
+                  <span><i class="far fa-file-alt"></i> 15 bài học</span>
+                </div>
+                <div class="progress-container">
+                  <div class="progress-bar" data-progress="0">
+                    <div class="progress"></div>
+                  </div>
+                  <span class="progress-text">0% Hoàn Thành</span>
+                </div>
+                <a href="courses/html-css.html" class="btn btn-primary"
+                  >Bắt Đầu Học</a
+                >
               </div>
-              <a href="courses/html-css.html" class="btn btn-primary"
-                >Bắt Đầu Học</a
-              >
-            </div>
-          </div> -->
+            </div> -->
 
-          <!-- Các card sẽ được render từ database bằng js -->
-        </div>
+            <!-- Các card sẽ được render từ database bằng js -->
+          </div>
 
-        <div class="no-results" style="display: none">
-          <i class="fas fa-search"></i>
-          <h3>Không tìm thấy khóa học</h3>
-          <p>Hãy điều chỉnh tiêu chí tìm kiếm hoặc bộ lọc của bạn</p>
+          <div class="no-results" style="display: none">
+            <i class="fas fa-search"></i>
+            <h3>Không tìm thấy khóa học</h3>
+            <p>Hãy điều chỉnh tiêu chí tìm kiếm hoặc bộ lọc của bạn</p>
+          </div>
         </div>
-      </div>
-    </section>
+      </section>
+    </div>
 
     <!-- load bằng components -->
     <footer id="footer-placeholder"></footer>

@@ -132,7 +132,7 @@ class AdminGuard {
 
     document.body.insertAdjacentHTML("afterbegin", deniedHTML);
 
-    // Auto redirect after 10 seconds
+    // Tự động trở về trang index sau 10s
     setTimeout(() => {
       window.location.href = "index.html";
     }, 10000);

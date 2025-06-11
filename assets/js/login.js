@@ -82,7 +82,6 @@ function handlerLoginEmailPassword() {
       e.preventDefault();
       const email = document.getElementById("login-email").value.trim();
       const password = document.getElementById("login-password").value.trim();
-      const rememberMe = document.getElementById("remember-me").checked;
 
       // validate form
       if (!email || !password) {
@@ -314,9 +313,9 @@ async function saveUserToDatabase(user, provider) {
 // Lưu người dùng vào localStorage (đồng bộ từ Database nếu có)
 async function saveUserData(user, provider) {
   const userRef = ref(database, "users/" + user.uid);
+  // khởi tạo mặc định từ Auth
   let userData = {
     uid: user.uid,
-    email: user.email || `${user.displayName}@${provider}.user`,
     displayName:
       user.displayName ||
       (user.email ? user.email.split("@")[0] : `Người dùng ${provider}`),
@@ -329,19 +328,20 @@ async function saveUserData(user, provider) {
     const snapshot = await get(userRef);
     if (snapshot.exists()) {
       const dbUser = snapshot.val();
+      // ghi đè từ realtime db
       userData = {
-        uid: dbUser.id || user.uid,
-        email: dbUser.email || user.email,
+        uid: user.uid,
         displayName:
           dbUser.username || user.displayName || user.email?.split("@")[0],
         photoURL: dbUser.avatar || user.photoURL,
         provider: dbUser.provider || provider,
         bio: dbUser.bio || "",
-        role: dbUser.role || 2, // Include role from database
+        role: dbUser.role || 2, // role từ database
       };
     }
   } catch (e) {
-    // fallback giữ nguyên userData
+    // Nếu lỗi, userData sẽ là null
+    console.error("Lỗi khi lấy dữ liệu user từ Realtime DB:", e);
   }
   localStorage.setItem("codemaster_user", JSON.stringify(userData));
 }

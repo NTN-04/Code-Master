@@ -200,10 +200,31 @@ p {
 }
 
 /* Header */
+
+/* hiệu ứng chuyển mượt cho component */
+.main-content {
+  visibility: hidden;
+}
+.main-content.visible {
+  visibility: visible;
+  transition: visibility 0s, opacity 0.3s;
+  opacity: 1;
+}
+#header-placeholder,
+#footer-placeholder {
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+#header-placeholder.loaded,
+#footer-placeholder.loaded {
+  opacity: 1;
+}
+
 header {
+  min-height: 80px;
   background-color: white;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  padding: 15px 0;
+  padding: 15px 0 10px;
   position: sticky;
   top: 0;
   z-index: 100;

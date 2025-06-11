@@ -2,8 +2,17 @@
  * Script để tải các components chung (header, footer) vào tất cả các trang
  */
 document.addEventListener("DOMContentLoaded", function () {
-  // Xác định đường dẫn gốc dựa vào cấu trúc URL
-  const rootPath = getRootPath();
+  const rootPath = typeof getRootPath === "function" ? getRootPath() : "./";
+  let headerLoaded = false;
+  let footerLoaded = false;
+
+  // hiển thị main content khi đã load header và footer
+  function showMainContentIfReady() {
+    if (headerLoaded && footerLoaded) {
+      const mainContent = document.querySelector(".main-content");
+      if (mainContent) mainContent.classList.add("visible");
+    }
+  }
 
   // Load Header
   const headerPlaceholder = document.querySelector("#header-placeholder");
@@ -11,20 +20,23 @@ document.addEventListener("DOMContentLoaded", function () {
     fetch(rootPath + "components/header.html")
       .then((response) => response.text())
       .then((data) => {
-        // Thay thế {{rootPath}} bằng đường dẫn gốc thực tế
         data = data.replace(/\{\{rootPath\}\}/g, rootPath);
         headerPlaceholder.innerHTML = data;
+        headerPlaceholder.classList.add("loaded");
+        headerLoaded = true;
+        showMainContentIfReady();
 
-        // Sau khi load xong header, cập nhật UI dựa trên trạng thái đăng nhập
-        // Hàm này được định nghĩa trong auth.js
         if (typeof updateUIBasedOnLoginState === "function") {
           updateUIBasedOnLoginState();
         }
-
-        // Đánh dấu link active dựa vào trang hiện tại
-        setActiveLink();
+        if (typeof setActiveLink === "function") {
+          setActiveLink();
+        }
       })
       .catch((error) => console.error("Error loading header:", error));
+  } else {
+    headerLoaded = true;
+    showMainContentIfReady();
   }
 
   // Load Footer
@@ -33,11 +45,16 @@ document.addEventListener("DOMContentLoaded", function () {
     fetch(rootPath + "components/footer.html")
       .then((response) => response.text())
       .then((data) => {
-        // Thay thế {{rootPath}} bằng đường dẫn gốc thực tế
         data = data.replace(/\{\{rootPath\}\}/g, rootPath);
         footerPlaceholder.innerHTML = data;
+        footerPlaceholder.classList.add("loaded");
+        footerLoaded = true;
+        showMainContentIfReady();
       })
       .catch((error) => console.error("Error loading footer:", error));
+  } else {
+    footerLoaded = true;
+    showMainContentIfReady();
   }
 });
 
