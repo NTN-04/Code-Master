@@ -163,6 +163,7 @@
 }
 
 .example-card {
+  position: relative;
   background-color: white;
   border-radius: var(--border-radius);
   padding: 25px;
@@ -202,6 +203,7 @@
 }
 
 .example-preview pre {
+  white-space: pre;
   max-height: 300px;
   overflow-y: auto;
   background-color: #282c34;
@@ -222,7 +224,7 @@
   font-size: 1.1rem;
   padding: 8px 16px;
   background-color: #cccccc;
-  color: var(--text-color);
+  color: var(--primary-color);
   border: none;
   outline: none;
   cursor: pointer;
@@ -246,6 +248,7 @@
 }
 
 .video-card {
+  position: relative;
   background-color: white;
   border-radius: var(--border-radius);
   overflow: hidden;
@@ -444,6 +447,54 @@
   font-size: 0.8rem;
   font-weight: 500;
 }
+/* Bookmark */
+.btn-bookmark {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 10;
+  background: transparent;
+  border: none;
+  outline: none;
+  font-size: 20px;
+  color: var(--primary-color);
+  cursor: pointer;
+}
+.video-card .btn-bookmark {
+  position: absolute;
+  top: unset;
+  bottom: 20px;
+  right: 20px;
+}
+
+/* Thông báo toast */
+.notification {
+  position: fixed;
+  top: 135px;
+  right: 30px;
+  padding: 15px 25px;
+  background-color: var(--success-color);
+  color: white;
+  border-radius: var(--border-radius);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+  transform: translateX(100px);
+  opacity: 0;
+  transition: transform 0.3s, opacity 0.3s;
+}
+
+.notification.error {
+  background-color: var(--danger-color);
+}
+
+.notification.warning {
+  background-color: var(--warning-color);
+}
+
+.notification.show {
+  transform: translateX(0);
+  opacity: 1;
+}
 
 /* No Results Message */
 .no-results {
@@ -498,6 +549,10 @@
   .book-cover {
     width: 100%;
     height: 200px;
+  }
+
+  .btn-bookmark {
+    color: #fff;
   }
 }
 

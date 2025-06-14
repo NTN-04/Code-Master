@@ -1,7 +1,18 @@
+import { auth, database } from "./firebaseConfig.js";
+import {
+  ref,
+  set,
+  get,
+} from "https://www.gstatic.com/firebasejs/11.8.0/firebase-database.js";
+import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-auth.js";
+
 // Chức năng trang Tài Nguyên
 document.addEventListener("DOMContentLoaded", function () {
   // Khởi tạo tab
   initTabs();
+
+  // Load data
+  loadResourcesFromFirebase();
 
   // Khởi tạo chức năng tìm kiếm
   initSearch();
@@ -79,9 +90,7 @@ let currentExamplePage = 1;
 function renderPagination(filtered = false) {
   const examplesTab = document.getElementById("examples");
   const examplesGrid = examplesTab.querySelector(".examples-grid");
-  const allExamples = Array.from(
-    examplesGrid.querySelectorAll(".example-card")
-  );
+  let allExamples = Array.from(examplesGrid.querySelectorAll(".example-card"));
 
   // lấy danh sách hiện thị đã lọc (tìm kiếm)
   if (filtered) {
@@ -262,65 +271,6 @@ function debounce(func, delay) {
   };
 }
 
-// Thêm chức năng đánh dấu bookmark
-function toggleBookmark(resourceId, resourceType) {
-  // Lấy bookmark hiện tại từ localStorage
-  let bookmarks = JSON.parse(
-    localStorage.getItem("resource-bookmarks") || "[]"
-  );
-
-  // Kiểm tra tài nguyên đã được bookmark chưa
-  const existingIndex = bookmarks.findIndex(
-    (bookmark) => bookmark.id === resourceId && bookmark.type === resourceType
-  );
-
-  if (existingIndex !== -1) {
-    // Xóa khỏi bookmark
-    bookmarks.splice(existingIndex, 1);
-    localStorage.setItem("resource-bookmarks", JSON.stringify(bookmarks));
-    return false; // Trả về false khi đã xóa
-  } else {
-    // Thêm vào bookmark
-    bookmarks.push({
-      id: resourceId,
-      type: resourceType,
-      date: new Date().toISOString(),
-    });
-    localStorage.setItem("resource-bookmarks", JSON.stringify(bookmarks));
-    return true; // Trả về true khi đã thêm
-  }
-}
-
-// Kiểm tra tài nguyên đã được bookmark chưa
-function isBookmarked(resourceId, resourceType) {
-  const bookmarks = JSON.parse(
-    localStorage.getItem("resource-bookmarks") || "[]"
-  );
-  return bookmarks.some(
-    (bookmark) => bookmark.id === resourceId && bookmark.type === resourceType
-  );
-}
-
-// Chức năng đánh giá tài nguyên
-function rateResource(resourceId, resourceType, rating) {
-  // Trong ứng dụng thực tế, sẽ gửi đánh giá lên server
-  // Ở đây chỉ lưu local
-  let ratings = JSON.parse(localStorage.getItem("resource-ratings") || "{}");
-
-  // Tạo key cho tài nguyên
-  const resourceKey = `${resourceType}-${resourceId}`;
-
-  // Lưu đánh giá
-  ratings[resourceKey] = rating;
-  localStorage.setItem("resource-ratings", JSON.stringify(ratings));
-
-  // Trả về thông báo thành công
-  return {
-    success: true,
-    message: "Rating saved successfully",
-  };
-}
-
 // Sao chép ví dụ code vào clipboard
 function copyCodeExample(codeBlockId) {
   const codeBlock = document.getElementById(codeBlockId);
@@ -364,5 +314,267 @@ function showNotification(message, type = "success") {
     setTimeout(() => {
       document.body.removeChild(notification);
     }, 300);
-  }, 3000);
+  }, 4000);
 }
+
+async function loadResourcesFromFirebase() {
+  try {
+    // Hiển thị loading cho tất cả tab
+    ["documentation", "examples", "videos"].forEach(showLoading);
+
+    // lấy data từ firebase
+    const resourcesRef = ref(database, "resources");
+    const snapshot = await get(resourcesRef);
+    const bookmarks = await getUserBookmarks(auth.currentUser?.uid); // Lấy bookmark trước khi render
+
+    if (snapshot.exists()) {
+      const resourcesData = snapshot.val();
+
+      // chuyển thành mảng
+      const resources = Object.values(resourcesData);
+
+      // render các tài nguyên
+      renderDocumentation(
+        resources.filter((r) => r.type === "documentation"),
+        bookmarks
+      );
+      renderExamples(
+        resources.filter((r) => r.type === "examples"),
+        bookmarks
+      );
+      renderVideos(
+        resources.filter((r) => r.type === "videos"),
+        bookmarks
+      );
+    } else {
+      showNoResourceMessage();
+    }
+  } catch (e) {
+    console.error("Lỗi khi tải tài nguyên: ", e);
+    showErrorMessage();
+  }
+}
+// Hiệu ứng loading
+function showLoading(tabId) {
+  const grid = document.querySelector(
+    `#${tabId} .resources-grid, #${tabId} .examples-grid, #${tabId} .videos-grid, #${tabId} .books-grid, #${tabId} .tools-grid`
+  );
+  if (grid) {
+    grid.innerHTML = `
+      <div class="loading-courses">
+        <span class="loading-spinner"><i class="fas fa-spinner fa-spin"></i></span>
+        <span>Đang tải dữ liệu...</span>
+      </div>
+    `;
+  }
+}
+
+// Xóa hiệu ứng loading nếu có
+function hideLoading(tabId) {
+  const grid = document.querySelector(
+    `#${tabId} .resources-grid, #${tabId} .examples-grid, #${tabId} .videos-grid, #${tabId} .books-grid, #${tabId} .tools-grid`
+  );
+  if (grid && grid.querySelector(".loading-courses")) {
+    grid.innerHTML = "";
+  }
+}
+// Hiển thị thông báo khi k có tài nguyên
+function showNoResourceMessage() {
+  ["documentation", "examples", "videos", "books", "tools"].forEach((tabId) => {
+    const grid = document.querySelector(
+      `#${tabId} .resources-grid, #${tabId} .examples-grid, #${tabId} .videos-grid, #${tabId} .books-grid, #${tabId} .tools-grid`
+    );
+    if (grid)
+      grid.innerHTML = `<div class="no-courses-message"><i class="fas fa-folder-open"></i> Không có dữ liệu tài nguyên.</div>`;
+  });
+}
+// Hiện thị thông báo lỗi
+function showErrorMessage() {
+  ["documentation", "examples", "videos", "books", "tools"].forEach((tabId) => {
+    const grid = document.querySelector(
+      `#${tabId} .resources-grid, #${tabId} .examples-grid, #${tabId} .videos-grid, #${tabId} .books-grid, #${tabId} .tools-grid`
+    );
+    if (grid)
+      grid.innerHTML = `<div class="error-message"><i class="fas fa-exclamation-triangle"></i> Không thể tải dữ liệu từ máy chủ.</div>`;
+  });
+}
+
+// hiển thị tài liệu
+function renderDocumentation(list, bookmarks = {}) {
+  // ẩn hiệu ứng load
+  hideLoading("documentation");
+
+  const grid = document.querySelector("#documentation .resources-grid");
+  if (!grid) return;
+  if (list.length === 0) {
+    grid.innerHTML = `<div class="no-courses-message"><i class="fas fa-folder-open"></i> Không có tài liệu nào.</div>`;
+    return;
+  }
+  grid.innerHTML = list
+    .map((item) => {
+      const isBookmarked = bookmarks && bookmarks[item.id];
+      return `
+    <div class="resource-card">
+      <div class="resource-icon"><i class="fab fa-html5"></i></div>
+      <div class="resource-info">
+        <h3>${item.title}</h3>
+        <p class="line-clamp-3">${item.description}</p>
+        <a href="${
+          item.url
+        }" class="btn btn-outline" target="_blank">Xem Tài Liệu</a>
+        <button class="btn-bookmark" onclick="handleBookmark('${item.id}','${
+        item.type
+      }')"> 
+            <i class="${isBookmarked ? "fas" : "far"} fa-bookmark"></i>
+        </button>
+      </div>
+    </div>
+  `;
+    })
+    .join("");
+}
+// hiển thị ví dụ
+function renderExamples(list, bookmarks = {}) {
+  hideLoading("examples");
+  const grid = document.querySelector("#examples .examples-grid");
+  if (!grid) return;
+  if (list.length === 0) {
+    grid.innerHTML = `<div class="no-courses-message"><i class="fas fa-folder-open"></i> Không có ví dụ nào.</div>`;
+    return;
+  }
+  grid.innerHTML = list
+    .map((item) => {
+      const isBookmarked = bookmarks && bookmarks[item.id];
+      return `
+    <div class="example-card">
+      <h3>${item.title}</h3>
+      <div class="example-tags">${(item.tags || [])
+        .map((tag) => `<span>${tag}</span>`)
+        .join("")}</div>
+      <p>${item.description}</p>
+      ${
+        item.code
+          ? `<div class="example-preview">
+              <pre><code>${escapeHtml(item.code)}</code></pre>
+            </div>`
+          : ""
+      }
+      <a href="${
+        item.url
+      }" class="btn btn-outline" target="_blank">Xem Đầy Đủ Ví Dụ</a>
+      <button class="btn-bookmark" onclick="handleBookmark('${item.id}','${
+        item.type
+      }')"> 
+            <i class="${isBookmarked ? "fas" : "far"} fa-bookmark"></i>
+      </button>
+    </div>
+  `;
+    })
+    .join("");
+
+  // Khởi tạo phân trang sau khi render
+  setTimeout(() => {
+    handleExampleTabPaging();
+  }, 100);
+}
+
+// Hàm escape để hiển thị code an toàn
+function escapeHtml(str) {
+  if (!str) return "";
+  return str
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/\\n/g, "\n"); // Thêm dòng này!
+}
+
+// hiển thị video
+function renderVideos(list, bookmarks = {}) {
+  hideLoading("videos");
+  const grid = document.querySelector("#videos .videos-grid");
+  if (!grid) return;
+  if (list.length === 0) {
+    grid.innerHTML = `<div class="no-courses-message"><i class="fas fa-folder-open"></i> Không có video nào.</div>`;
+    return;
+  }
+  grid.innerHTML = list
+    .map((item) => {
+      const isBookmarked = bookmarks && bookmarks[item.id];
+      return `
+    <div class="video-card">
+      <div class="video-thumbnail">
+        <img src="${item.image}" alt="${item.title}" />
+        <div class="play-icon"><i class="fas fa-play"></i></div>
+      </div>
+      <div class="video-info">
+        <h3>${item.title}</h3>
+        <p class="line-clamp-2">${item.description}</p>
+        <div class="example-tags">${(item.tags || [])
+          .map((tag) => `<span>${tag}</span>`)
+          .join("")}</div>
+        <a href="${
+          item.url
+        }" class="btn btn-outline" target="_blank">Xem Video</a>
+        <button class="btn-bookmark" onclick="handleBookmark('${item.id}','${
+        item.type
+      }')"> 
+            <i class="${isBookmarked ? "fas" : "far"} fa-bookmark"></i>
+        </button>
+      </div>
+    </div>
+  `;
+    })
+    .join("");
+}
+
+// Lưu bookmark tài nguyên lên Firebase khi user click
+async function saveBookmark(resourceId, resourceType) {
+  return new Promise((resolve, reject) => {
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        window.location.href = "login.html";
+        return;
+      }
+      try {
+        const bookmarkRef = ref(
+          database,
+          `bookmarks/${user.uid}/${resourceId}`
+        );
+        await set(bookmarkRef, {
+          type: resourceType,
+          date: new Date().toISOString(),
+        });
+        showNotification("Đã lưu tài nguyên!");
+        resolve();
+      } catch (err) {
+        showNotification("Lỗi khi lưu tài nguyên!", "error");
+        reject(err);
+      }
+    });
+  });
+}
+
+// Lấy ds bookmark của user
+async function getUserBookmarks(uid) {
+  if (!uid) return {};
+  const bookmarkRef = ref(database, `bookmarks/${uid}`);
+  const snap = await get(bookmarkRef);
+  return snap.exists() ? snap.val() : {};
+}
+// Gọi hàm này khi user click nút Lưu/Bookmark trên từng tài nguyên
+// Ví dụ: <button onclick="handleBookmark('resourceId','type')">Lưu</button>
+window.handleBookmark = function (resourceId, resourceType) {
+  // đổi icon khi đã lưu
+  const btns = document.querySelectorAll(
+    `.btn-bookmark[onclick*="${resourceId}"]`
+  );
+  saveBookmark(resourceId, resourceType).then(() => {
+    btns.forEach((btn) => {
+      const icon = btn.querySelector("i");
+      if (icon) {
+        icon.classList.remove("far");
+        icon.classList.add("fas");
+      }
+    });
+  });
+};

@@ -1,4 +1,4 @@
-// Admin Guard - Middleware để bảo vệ trang admin
+// Admin Guard - kiểm tra xác thực và quyền truy cập
 import { auth, database } from "./firebaseConfig.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-auth.js";
 import {
@@ -37,9 +37,8 @@ class AdminGuard {
         left: 0;
         width: 100%;
         height: 100%;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(135deg, #283143 0%, #4b6584 100%);
         display: flex;
-        flex-direction: column;
         align-items: center;
         justify-content: center;
         z-index: 9999;
@@ -53,7 +52,7 @@ class AdminGuard {
             border-radius: 50%;
             border-top-color: white;
             animation: spin 1s ease-in-out infinite;
-            margin-bottom: 20px;
+            margin: 0 auto 20px;
           "></div>
           <h2 style="margin: 0; font-size: 1.5rem;">Đang kiểm tra quyền truy cập...</h2>
           <p style="margin: 10px 0 0 0; opacity: 0.8;">Vui lòng đợi trong giây lát</p>
@@ -78,6 +77,10 @@ class AdminGuard {
 
   showAccessDenied(message = "Bạn không có quyền truy cập trang này!") {
     this.hideLoadingScreen();
+
+    // Xóa overlay cũ nếu có
+    const oldDenied = document.getElementById("access-denied");
+    if (oldDenied) oldDenied.remove();
 
     const deniedHTML = `
       <div id="access-denied" style="
@@ -133,7 +136,9 @@ class AdminGuard {
     document.body.insertAdjacentHTML("afterbegin", deniedHTML);
 
     // Tự động trở về trang index sau 10s
+    console.log("Đã gọi setTimeout chuyển hướng về index.html sau 10s");
     setTimeout(() => {
+      console.log("Redirecting to index.html...");
       window.location.href = "index.html";
     }, 10000);
   }
@@ -218,9 +223,9 @@ class AdminGuard {
   }
 }
 
-// Initialize admin guard
-document.addEventListener("DOMContentLoaded", () => {
-  new AdminGuard();
-});
+// khởi tạo admin guard
+// document.addEventListener("DOMContentLoaded", () => {
+//   new AdminGuard();
+// });
 
 export default AdminGuard;
