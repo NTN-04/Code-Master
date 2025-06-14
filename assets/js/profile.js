@@ -20,13 +20,14 @@ document.addEventListener("DOMContentLoaded", function () {
   // Khởi tạo tabs
   initTabs();
 
+  // Load số liệu thống kê
+  loadProfileStats();
+
   // Load khóa học của tôi
   loadUserCourses();
 
-  // Khởi tạo bộ lọc tài nguyên
-  initResourceFilters();
-  // Khởi tạo chức năng tìm kiếm
-  initSearch();
+  // Load tài nguyên đã lưu
+  loadSavedResources();
 
   // Khởi tạo xử lý biểu mẫu cài đặt
   loadUserSetting();
@@ -63,7 +64,7 @@ function initTabs() {
   });
 }
 
-// Khởi tạo lọc/tìm kiếm khóa học trong profile
+// Khởi tạo lọc/tìm kiếm khóa học của tôi (khi render xong)
 function initCourseFilters() {
   // Lọc theo trạng thái
   const filterBtns = document.querySelectorAll(".courses-filter .filter-btn");
@@ -100,58 +101,87 @@ function initCourseFilters() {
   }
 }
 
-// Khởi tạo bộ lọc tài nguyên
+// Khởi tạo bộ lọ/tìm kiếm tài nguyên đã lưu
 function initResourceFilters() {
-  const filterButtons = document.querySelectorAll(
-    ".resources-filter .filter-btn"
+  // Lọc theo loại tài nguyên
+  const filterBtns = document.querySelectorAll(".resources-filter .filter-btn");
+  const resourceItems = document.querySelectorAll(
+    ".saved-resources .resource-item"
   );
-  const resourceItems = document.querySelectorAll(".resource-item");
-
-  // Thêm sự kiện click cho các nút lọc
-  filterButtons.forEach((button) => {
-    button.addEventListener("click", () => {
-      // Loại bỏ lớp active từ tất cả các nút
-      filterButtons.forEach((btn) => btn.classList.remove("active"));
-
-      // Thêm lớp active cho nút được nhấp vào
-      button.classList.add("active");
-
-      // Lọc tài nguyên
-      const filterValue = button.getAttribute("data-filter");
-
+  filterBtns.forEach((btn) => {
+    btn.addEventListener("click", function () {
+      filterBtns.forEach((b) => b.classList.remove("active"));
+      btn.classList.add("active");
+      const filter = btn.getAttribute("data-filter");
       resourceItems.forEach((item) => {
-        if (filterValue === "all") {
+        if (filter === "all" || item.getAttribute("data-type") === filter) {
           item.style.display = "flex";
         } else {
-          const itemType = item.getAttribute("data-type");
-          item.style.display = itemType === filterValue ? "flex" : "none";
+          item.style.display = "none";
         }
       });
     });
   });
-}
 
-// Khởi tạo chức năng tìm kiếm
-function initSearch() {
   // Tìm kiếm tài nguyên
-  const resourceSearchInput = document.getElementById("resource-search");
-  if (resourceSearchInput) {
-    resourceSearchInput.addEventListener("input", function () {
+  const searchInput = document.getElementById("resource-search");
+  if (searchInput) {
+    searchInput.addEventListener("input", function () {
       const searchTerm = this.value.toLowerCase().trim();
-      const resourceItems = document.querySelectorAll(".resource-item");
-
       resourceItems.forEach((item) => {
-        const resourceTitle = item
-          .querySelector("h3")
-          .textContent.toLowerCase();
-        const resourceDesc = item.querySelector("p").textContent.toLowerCase();
-        const shouldShow =
-          resourceTitle.includes(searchTerm) ||
-          resourceDesc.includes(searchTerm);
-        item.style.display = shouldShow ? "flex" : "none";
+        const title = item.querySelector("h3")?.textContent.toLowerCase() || "";
+        const desc = item.querySelector("p")?.textContent.toLowerCase() || "";
+        if (title.includes(searchTerm) || desc.includes(searchTerm)) {
+          item.style.display = "flex";
+        } else {
+          item.style.display = "none";
+        }
       });
     });
   }
+}
+
+// Hàm load số liệu thống kê profile
+function loadProfileStats() {
+  onAuthStateChanged(auth, async (user) => {
+    if (!user) return;
+    try {
+      const progressRef = ref(database, `userProgress/${user.uid}/courses`);
+      const progressSnap = await get(progressRef);
+      if (!progressSnap.exists()) return;
+
+      const userCoursesProgress = progressSnap.val();
+      const courseIds = Object.keys(userCoursesProgress);
+
+      let inProgress = 0;
+      let completed = 0;
+      let totalProgress = 0;
+
+      courseIds.forEach((courseId) => {
+        const progress = userCoursesProgress[courseId]?.progress || 0;
+        totalProgress += progress;
+        if (progress >= 100) {
+          completed++;
+        } else {
+          inProgress++;
+        }
+      });
+
+      // Tính tiến độ trung bình
+      const avgProgress =
+        courseIds.length > 0 ? Math.round(totalProgress / courseIds.length) : 0;
+
+      // Cập nhật vào giao diện
+      const stats = document.querySelectorAll(".profile-stats .stat-value");
+      if (stats.length >= 3) {
+        stats[0].textContent = inProgress; // Khóa học đang học
+        stats[1].textContent = completed; // Khóa học đã hoàn thành
+        stats[2].textContent = avgProgress + "%"; // Tiến độ trung bình
+      }
+    } catch (err) {
+      console.error("Lỗi khi load profile stats:", err);
+    }
+  });
 }
 
 /* ===  CÀI ĐẶT TÀI KHOẢN === */
@@ -479,9 +509,6 @@ function handleDeleteAccount() {
           case "auth/too-many-requests":
             errorMessage = "Quá nhiều yêu cầu. Vui lòng thử lại sau!";
             break;
-          case "auth/network-request-failed":
-            errorMessage = "Lỗi kết nối mạng. Vui lòng kiểm tra internet!";
-            break;
           default:
             errorMessage += err.message;
         }
@@ -790,6 +817,149 @@ async function loadUserCourses() {
   });
 }
 
+/** TÀI NGUYÊN ĐÃ LƯU */
+
+// Tải và render danh sách tài nguyên đã lưu trong tab "tài nguyên đã lưu"
+async function loadSavedResources() {
+  const savedResourcesContainer = document.querySelector(".saved-resources");
+  if (!savedResourcesContainer) return;
+  savedResourcesContainer.innerHTML =
+    '<div class="loading-courses"><i class="loading-spinner fas fa-spinner fa-spin"></i> Đang tải tài nguyên đã lưu...</div>';
+
+  onAuthStateChanged(auth, async (user) => {
+    if (!user) {
+      savedResourcesContainer.innerHTML =
+        '<div class="no-courses-message">Bạn cần đăng nhập để xem tài nguyên đã lưu.</div>';
+      return;
+    }
+    try {
+      // Lấy danh sách resourceId đã bookmark
+      const bookmarksRef = ref(database, `bookmarks/${user.uid}`);
+      const bookmarksSnap = await get(bookmarksRef);
+      if (!bookmarksSnap.exists()) {
+        savedResourcesContainer.innerHTML =
+          '<div class="no-courses-message">Bạn chưa lưu tài nguyên nào.</div>';
+        return;
+      }
+      const bookmarksObj = bookmarksSnap.val(); // { resourceId: {type, date} }
+      const bookmarkIds = Object.keys(bookmarksObj);
+
+      // Lấy toàn bộ resources
+      const resourcesRef = ref(database, "resources");
+      const resourcesSnap = await get(resourcesRef);
+      if (!resourcesSnap.exists()) {
+        savedResourcesContainer.innerHTML =
+          '<div class="no-courses-message">Không tìm thấy dữ liệu tài nguyên.</div>';
+        return;
+      }
+      const allResources = resourcesSnap.val();
+      // Lọc các resource đã lưu
+      const savedList = bookmarkIds
+        .map((id) => {
+          const resource = allResources[id];
+          if (!resource) return null;
+          return {
+            id,
+            ...resource,
+            type: bookmarksObj[id]?.type || resource.type,
+            date: bookmarksObj[id]?.date || "",
+          };
+        })
+        .filter((r) => r && r.title); // loại bỏ null
+      if (savedList.length === 0) {
+        savedResourcesContainer.innerHTML =
+          '<div class="no-courses-message">Bạn chưa lưu tài nguyên nào.</div>';
+        return;
+      }
+
+      const icons = {
+        documentation: "fa-solid fa-book",
+        examples: "fa-solid fa-explosion",
+        videos: "fa-solid fa-video",
+      };
+
+      // Render ra UI
+      savedResourcesContainer.innerHTML = savedList
+        .map(
+          (item) => `
+        <div class="resource-item" data-type="${item.type}">
+                <div class="resource-icon">
+                  <i class="${icons[item.type]}"></i>
+                </div>
+                <div class="resource-details">
+                  <h3>${item.title}</h3>
+                  <p>
+                    ${item.description || ""}
+                  </p>
+                  <div class="resource-meta">
+                    <span
+                      ><i class="far fa-bookmark"></i> Đã lưu vào: 
+                      ${formatDate(item.date)}</span
+                    >
+                  </div>
+                </div>
+                <div class="resource-actions">
+                  <a href="${item.url}" class="btn btn-outline">Xem</a>
+                  <button class="btn-icon remove-bookmark" data-id="${item.id}">
+                    <i class="fa-solid fa-trash"></i>
+                  </button>
+                </div>
+        </div>
+      `
+        )
+        .join("");
+
+      // Khởi tạo lọc/tìm kiếm tài nguyên
+      initResourceFilters();
+      // Xóa lưu
+      removeBookmark();
+    } catch (err) {
+      savedResourcesContainer.innerHTML =
+        '<div class="error-message">Lỗi tải tài nguyên đã lưu: ' +
+        err.message +
+        "</div>";
+    }
+  });
+}
+// Thêm sự kiện xóa bookmark
+function removeBookmark() {
+  document.querySelectorAll(".remove-bookmark").forEach((btn) => {
+    btn.addEventListener("click", async function () {
+      if (confirm("Bạn có chắc muốn xóa dấu trang này không?")) {
+        onAuthStateChanged(auth, async (user) => {
+          if (!user) {
+            showNotification("Bạn cần đăng nhập để xóa bookmark!", "error");
+            return;
+          }
+          try {
+            const bookmarkRef = ref(
+              database,
+              `bookmarks/${user.uid}/${btn.dataset.id}`
+            );
+            await remove(bookmarkRef);
+            showNotification("Đã xóa tài nguyên đã lưu.");
+            loadSavedResources();
+
+            // Đổi icon trên trang tài nguyên về chưa lưu (nếu đang mở)
+            const bookmarkBtn = document.querySelector(
+              `.btn-bookmark[onclick*="${btn.dataset.id}"]`
+            );
+            if (bookmarkBtn) {
+              const icon = bookmarkBtn.querySelector("i");
+              if (icon) {
+                icon.classList.remove("fas");
+                icon.classList.add("far");
+              }
+            }
+          } catch (err) {
+            showNotification("Lỗi khi xóa bookmark!", "error");
+          }
+        });
+      }
+    });
+  });
+}
+
 // Định dạng ngày tháng
 function formatDate(timestamp) {
   if (!timestamp) return "";
@@ -800,7 +970,6 @@ function formatDate(timestamp) {
     day: "2-digit",
   });
 }
-
 // Hiển thị thông báo
 function showNotification(message, type = "success") {
   // Kiểm tra xem đã có thông báo nào chưa
@@ -825,25 +994,4 @@ function showNotification(message, type = "success") {
   setTimeout(() => {
     notification.classList.remove("show");
   }, 4000);
-}
-
-// Xử lý xóa tài nguyên đã lưu
-const removeBookmarkButtons = document.querySelectorAll(".remove-bookmark");
-if (removeBookmarkButtons) {
-  removeBookmarkButtons.forEach((button) => {
-    button.addEventListener("click", function () {
-      const resourceItem = this.closest(".resource-item");
-      if (
-        resourceItem &&
-        confirm("Bạn có chắc muốn xóa dấu trang này không?")
-      ) {
-        resourceItem.classList.add("fade-out");
-
-        // Xóa phần tử sau khi hoàn thành hiệu ứng
-        setTimeout(() => {
-          resourceItem.remove();
-        }, 300);
-      }
-    });
-  });
 }

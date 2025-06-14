@@ -51,7 +51,7 @@
           <div class="tab-content active" id="documentation">
             <h2>Tài Liệu</h2>
             <div class="resources-grid">
-              <div class="resource-card">
+              <!-- <div class="resource-card">
                 <div class="resource-icon">
                   <i class="fab fa-html5"></i>
                 </div>
@@ -65,9 +65,9 @@
                     >Xem Tài Liệu</a
                   >
                 </div>
-              </div>
+              </div> -->
 
-              <div class="resource-card">
+              <!-- <div class="resource-card">
                 <div class="resource-icon">
                   <i class="fab fa-css3-alt"></i>
                 </div>
@@ -81,9 +81,9 @@
                     >Xem Tài Liệu</a
                   >
                 </div>
-              </div>
+              </div> -->
 
-              <div class="resource-card">
+              <!-- <div class="resource-card">
                 <div class="resource-icon">
                   <i class="fab fa-js"></i>
                 </div>
@@ -97,9 +97,9 @@
                     >Xem Tài Liệu</a
                   >
                 </div>
-              </div>
+              </div> -->
 
-              <div class="resource-card">
+              <!-- <div class="resource-card">
                 <div class="resource-icon">
                   <i class="fab fa-react"></i>
                 </div>
@@ -113,9 +113,9 @@
                     >Xem Tài Liệu</a
                   >
                 </div>
-              </div>
+              </div> -->
 
-              <div class="resource-card">
+              <!-- <div class="resource-card">
                 <div class="resource-icon">
                   <i class="fab fa-node-js"></i>
                 </div>
@@ -129,9 +129,9 @@
                     >Xem Tài Liệu</a
                   >
                 </div>
-              </div>
+              </div> -->
 
-              <div class="resource-card">
+              <!-- <div class="resource-card">
                 <div class="resource-icon">
                   <i class="fas fa-database"></i>
                 </div>
@@ -145,14 +145,14 @@
                     >Xem Tài Liệu</a
                   >
                 </div>
-              </div>
+              </div> -->
             </div>
           </div>
 
           <div class="tab-content" id="examples">
             <h2>Ví Dụ Mã Nguồn</h2>
             <div class="examples-grid">
-              <div class="example-card">
+              <!-- <div class="example-card">
                 <h3>Thanh Điều Hướng Responsive</h3>
                 <div class="example-tags">
                   <span>HTML</span>
@@ -180,9 +180,9 @@
   &lt;/nav&gt;</code></pre>
                 </div>
                 <a href="#" class="btn btn-outline">Xem Đầy Đủ Ví Dụ</a>
-              </div>
+              </div> -->
 
-              <div class="example-card">
+              <!-- <div class="example-card">
                 <h3>Xác Thực Form Tương Tác</h3>
                 <div class="example-tags">
                   <span>HTML</span>
@@ -230,9 +230,9 @@
   }</code></pre>
                 </div>
                 <a href="#" class="btn btn-outline">Xem Đầy Đủ Ví Dụ</a>
-              </div>
+              </div> -->
 
-              <div class="example-card">
+              <!-- <div class="example-card">
                 <h3>Ứng Dụng Todo React</h3>
                 <div class="example-tags">
                   <span>React</span>
@@ -282,160 +282,7 @@
   }</code></pre>
                 </div>
                 <a href="#" class="btn btn-outline">Xem Đầy Đủ Ví Dụ</a>
-              </div>
-              <div class="example-card">
-                <h3>Ứng Dụng Todo React</h3>
-                <div class="example-tags">
-                  <span>React</span>
-                  <span>JavaScript</span>
-                  <span>CSS</span>
-                </div>
-                <p>
-                  Một ứng dụng Todo đơn giản được xây dựng với React hooks và
-                  quản lý trạng thái.
-                </p>
-                <div class="example-preview">
-                  <pre><code>function App() {
-    const [todos, setTodos] = useState([]);
-    const [inputValue, setInputValue] = useState('');
-  
-    const addTodo = () => {
-      if (inputValue.trim() !== '') {
-        setTodos([
-          ...todos, 
-          { 
-            id: Date.now(), 
-            text: inputValue, 
-            completed: false 
-          }
-        ]);
-        setInputValue('');
-      }
-    };
-  
-    const toggleTodo = (id) => {
-      setTodos(
-        todos.map(todo => 
-          todo.id === id ? 
-          { ...todo, completed: !todo.completed } : 
-          todo
-        )
-      );
-    };
-  
-    return (
-      &lt;div className="app"&gt;
-        &lt;h1&gt;Ứng Dụng Todo&lt;/h1&gt;
-        {/* Form nhập liệu */}
-        {/* Danh sách todo */}
-      &lt;/div&gt;
-    );
-  }</code></pre>
-                </div>
-                <a href="#" class="btn btn-outline">Xem Đầy Đủ Ví Dụ</a>
-              </div>
-              <div class="example-card">
-                <h3>Ứng Dụng Todo React</h3>
-                <div class="example-tags">
-                  <span>React</span>
-                  <span>JavaScript</span>
-                  <span>CSS</span>
-                </div>
-                <p>
-                  Một ứng dụng Todo đơn giản được xây dựng với React hooks và
-                  quản lý trạng thái.
-                </p>
-                <div class="example-preview">
-                  <pre><code>function App() {
-    const [todos, setTodos] = useState([]);
-    const [inputValue, setInputValue] = useState('');
-  
-    const addTodo = () => {
-      if (inputValue.trim() !== '') {
-        setTodos([
-          ...todos, 
-          { 
-            id: Date.now(), 
-            text: inputValue, 
-            completed: false 
-          }
-        ]);
-        setInputValue('');
-      }
-    };
-  
-    const toggleTodo = (id) => {
-      setTodos(
-        todos.map(todo => 
-          todo.id === id ? 
-          { ...todo, completed: !todo.completed } : 
-          todo
-        )
-      );
-    };
-  
-    return (
-      &lt;div className="app"&gt;
-        &lt;h1&gt;Ứng Dụng Todo&lt;/h1&gt;
-        {/* Form nhập liệu */}
-        {/* Danh sách todo */}
-      &lt;/div&gt;
-    );
-  }</code></pre>
-                </div>
-                <a href="#" class="btn btn-outline">Xem Đầy Đủ Ví Dụ</a>
-              </div>
-              <div class="example-card">
-                <h3>Ứng Dụng Todo React</h3>
-                <div class="example-tags">
-                  <span>React</span>
-                  <span>JavaScript</span>
-                  <span>CSS</span>
-                </div>
-                <p>
-                  Một ứng dụng Todo đơn giản được xây dựng với React hooks và
-                  quản lý trạng thái.
-                </p>
-                <div class="example-preview">
-                  <pre><code>function App() {
-    const [todos, setTodos] = useState([]);
-    const [inputValue, setInputValue] = useState('');
-  
-    const addTodo = () => {
-      if (inputValue.trim() !== '') {
-        setTodos([
-          ...todos, 
-          { 
-            id: Date.now(), 
-            text: inputValue, 
-            completed: false 
-          }
-        ]);
-        setInputValue('');
-      }
-    };
-  
-    const toggleTodo = (id) => {
-      setTodos(
-        todos.map(todo => 
-          todo.id === id ? 
-          { ...todo, completed: !todo.completed } : 
-          todo
-        )
-      );
-    };
-  
-    return (
-      &lt;div className="app"&gt;
-        &lt;h1&gt;Ứng Dụng Todo&lt;/h1&gt;
-        {/* Form nhập liệu */}
-        {/* Danh sách todo */}
-      &lt;/div&gt;
-    );
-  }</code></pre>
-                </div>
-                <a href="#" class="btn btn-outline">Xem Đầy Đủ Ví Dụ</a>
-              </div>
+              </div> -->
             </div>
             <!--nút phân trang -->
             <div id="examples-pagination" class="pagination"></div>
@@ -446,7 +293,10 @@
             <div class="videos-grid">
               <div class="video-card">
                 <div class="video-thumbnail">
-                  <img src="images/video-html.jpg" alt="Hướng Dẫn HTML" />
+                  <img
+                    src="./assets/images/img-video/javascript.png"
+                    alt="Hướng Dẫn HTML"
+                  />
                   <div class="play-icon">
                     <i class="fas fa-play"></i>
                   </div>
@@ -707,12 +557,12 @@
       </section>
     </div>
 
-    <!-- load với component -->
-    <header id="header-placeholder"></header>
+    <!-- load bằng components -->
+    <footer id="footer-placeholder"></footer>
 
     <script src="./assets/js/script.js"></script>
     <script src="./assets/js/components.js"></script>
     <script type="module" src="./assets/js/auth.js"></script>
-    <script src="./assets/js/resources.js"></script>
+    <script type="module" src="./assets/js/resources.js"></script>
   </body>
 </html>

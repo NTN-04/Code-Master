@@ -1,6 +1,6 @@
 /* Admin Panel Styles */
 .admin-header {
-  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+  background: var(--color-admin);
   color: white;
   padding: 1rem 0;
   position: fixed;
@@ -111,13 +111,13 @@
 }
 
 .nav-item.active a {
-  background: var(--primary-color);
+  background: var(--color-admin);
   color: white;
   position: relative;
 }
 
 .nav-item.active a::after {
-  content: '';
+  content: "";
   position: absolute;
   right: 0;
   top: 0;
@@ -757,8 +757,12 @@
 
 /* Animations */
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 @keyframes slideUp {

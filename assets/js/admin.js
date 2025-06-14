@@ -12,6 +12,7 @@ import {
   push,
   onValue,
 } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-database.js";
+import AdminGuard from "./admin-guard.js";
 
 // Admin Panel Main Controller
 class AdminPanel {
@@ -26,9 +27,6 @@ class AdminPanel {
   }
 
   async init() {
-    // Check authentication
-    await this.checkAuth();
-
     // Initialize components
     this.initNavigation();
     this.initModals();
@@ -39,60 +37,6 @@ class AdminPanel {
 
     // Setup event listeners
     this.setupEventListeners();
-  }
-
-  // Authentication & Authorization
-  async checkAuth() {
-    return new Promise((resolve) => {
-      onAuthStateChanged(auth, async (user) => {
-        if (user) {
-          // Check if user is admin
-          const isAdmin = await this.checkAdminRole(user.uid);
-          if (isAdmin) {
-            this.currentUser = user;
-            this.updateAdminProfile();
-            resolve(true);
-          } else {
-            this.showNotification(
-              "Bạn không có quyền truy cập trang này!",
-              "error"
-            );
-            window.location.href = "index.html";
-          }
-        } else {
-          window.location.href = "login.html";
-        }
-      });
-    });
-  }
-
-  async checkAdminRole(userId) {
-    try {
-      const userRef = ref(database, `users/${userId}`);
-      const snapshot = await get(userRef);
-      if (snapshot.exists()) {
-        const userData = snapshot.val();
-        return userData.role === 1; // 1 = admin
-      }
-      return false;
-    } catch (error) {
-      console.error("Error checking admin role:", error);
-      return false;
-    }
-  }
-
-  updateAdminProfile() {
-    const adminAvatar = document.getElementById("admin-avatar");
-    const adminName = document.getElementById("admin-name");
-
-    if (adminAvatar) {
-      adminAvatar.src =
-        this.currentUser.photoURL || "./assets/images/avatar-default.jpg";
-    }
-
-    if (adminName) {
-      adminName.textContent = this.currentUser.displayName || "Admin";
-    }
   }
 
   // Navigation
@@ -1065,9 +1009,15 @@ class AdminPanel {
   }
 }
 
-// Initialize admin panel when DOM is loaded
+// Khởi tạo AdminPanel khi đã xác thực thành công
 document.addEventListener("DOMContentLoaded", () => {
-  window.adminPanel = new AdminPanel();
+  const guard = new AdminGuard();
+  guard.checkAccess().then((isAllowed) => {
+    if (isAllowed) {
+      window.adminPanel = new AdminPanel();
+    }
+    // Nếu không đủ quyền, admin-guard.js đã xử lý và chuyển hướng
+  });
 });
 
 // Close notification when clicking close button
