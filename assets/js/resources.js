@@ -419,9 +419,7 @@ function renderDocumentation(list, bookmarks = {}) {
       <div class="resource-info">
         <h3>${item.title}</h3>
         <p class="line-clamp-3">${item.description}</p>
-        <a href="${
-          item.url
-        }" class="btn btn-outline" target="_blank">Xem Tài Liệu</a>
+        <a href="${item.url}" class="btn btn-outline">Xem Tài Liệu</a>
         <button class="btn-bookmark" onclick="handleBookmark('${item.id}','${
         item.type
       }')"> 

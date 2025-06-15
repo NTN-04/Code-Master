@@ -7,7 +7,13 @@ import {
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-auth.js";
 
 // Các phần tử DOM cho trang khóa học
-document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener("DOMContentLoaded", async function () {
+  const courseId = getCourseIdFromUrl();
+  const modules = await fetchCourseModules(courseId);
+  renderSidebar(modules);
+
+  updateCourseMeta(modules);
+
   // Khởi tạo chức năng thu gọn/mở rộng module
   initModuleToggles();
 
@@ -67,151 +73,104 @@ function initLessonNavigation() {
   const lessonLinks = document.querySelectorAll(".lesson-link");
   const startCourseBtn = document.getElementById("start-course");
 
-  // Sự kiện click nút bắt đầu học
   if (startCourseBtn) {
     startCourseBtn.addEventListener("click", (e) => {
       e.preventDefault();
 
-      // Tải bài học đầu tiên nếu có
+      // xác thực
+      if (!auth.currentUser) {
+        window.location.href = "/login.html";
+        return;
+      }
+
       if (lessonLinks.length > 0) {
         const firstLesson = lessonLinks[0];
         activateLesson(firstLesson.getAttribute("data-lesson"));
-
-        // Đánh dấu bài học đầu tiên là active
         firstLesson.classList.add("active");
       }
     });
   }
 
-  // Sự kiện click các liên kết bài học
   lessonLinks.forEach((link) => {
     link.addEventListener("click", (e) => {
       e.preventDefault();
 
-      // Bỏ class active khỏi tất cả liên kết
+      // kiểm tra xác thực
+      if (!auth.currentUser) {
+        window.location.href = "/login.html";
+        return;
+      }
       lessonLinks.forEach((l) => l.classList.remove("active"));
-
-      // Thêm class active cho liên kết được click
       link.classList.add("active");
-
-      // Tải nội dung bài học
-      const lessonId = link.getAttribute("data-lesson");
-      activateLesson(lessonId);
+      activateLesson(link.getAttribute("data-lesson"));
     });
   });
 }
 
-// Tải và hiển thị nội dung bài học
-function activateLesson(lessonId) {
-  // Trong thực tế, sẽ tải nội dung bài học từ server hoặc từ dữ liệu đã preload trong HTML
+// Hàm xử lý sự kiện next/prev
+function initLessonNavButtons() {
+  const prevBtn = document.querySelector(".prev-lesson");
+  const nextBtn = document.querySelector(".next-lesson");
 
-  // Ở đây mô phỏng việc tải nội dung
-  const lessonContainer = document.querySelector(".lesson-container");
-
-  if (lessonContainer) {
-    // Hiển thị trạng thái đang tải
-    lessonContainer.innerHTML =
-      '<div class="loading"><i class="fas fa-spinner fa-spin"></i> Đang tải bài học...</div>';
-
-    // Mô phỏng độ trễ gọi API
-    setTimeout(() => {
-      // Lấy nội dung mẫu dựa trên ID
-      const lessonContent = getSampleLessonContent(lessonId);
-
-      // Cập nhật nội dung vào container
-      lessonContainer.innerHTML = lessonContent;
-
-      // Khởi tạo các thành phần tương tác trong nội dung mới
-      initLessonInteractivity();
-
-      // Đánh dấu bài học đã xem
-      trackLessonProgress(lessonId);
-    }, 500);
+  if (prevBtn) {
+    prevBtn.addEventListener("click", function (e) {
+      e.preventDefault();
+      const prevId = prevBtn.getAttribute("data-prev");
+      if (prevId) activateLesson(prevId);
+      // Cập nhật trạng thái active cho sidebar
+      setActiveLessonLink(prevId);
+    });
+  }
+  if (nextBtn) {
+    nextBtn.addEventListener("click", function (e) {
+      e.preventDefault();
+      const nextId = nextBtn.getAttribute("data-next");
+      if (nextId) activateLesson(nextId);
+      setActiveLessonLink(nextId);
+    });
   }
 }
 
-// Khởi tạo các thành phần tương tác trong nội dung bài học
-function initLessonInteractivity() {
-  // Khởi tạo highlight cho code (nếu có)
-  // Trong thực tế có thể dùng Prism.js hoặc thư viện tương tự
+function setActiveLessonLink(lessonId) {
+  const lessonLinks = document.querySelectorAll(".lesson-link");
+  lessonLinks.forEach((l) => l.classList.remove("active"));
+  const activeLink = document.querySelector(
+    `.lesson-link[data-lesson="${lessonId}"]`
+  );
+  if (activeLink) activeLink.classList.add("active");
+}
 
-  // Khởi tạo quiz
-  const quizOptions = document.querySelectorAll(".quiz-option");
-  const checkAnswerBtns = document.querySelectorAll(".check-answer");
+// Tải và hiển thị nội dung bài học
+async function activateLesson(lessonId) {
+  // Kiểm tra đăng nhập trước khi cho học
+  const user = auth.currentUser;
+  if (!user) {
+    window.location.href = "/login.html";
+    return;
+  }
 
-  quizOptions.forEach((option) => {
-    option.addEventListener("click", () => {
-      // Lấy tất cả option trong quiz này
-      const quizQuestion = option.closest(".quiz-question");
-      const options = quizQuestion.querySelectorAll(".quiz-option");
+  const courseId = getCourseIdFromUrl();
+  const modules = await fetchCourseModules(courseId);
 
-      // Bỏ class selected khỏi tất cả option
-      options.forEach((opt) => opt.classList.remove("selected"));
-
-      // Thêm class selected cho option được chọn
-      option.classList.add("selected");
-
-      // Chọn radio button
-      const radio = option.querySelector('input[type="radio"]');
-      if (radio) {
-        radio.checked = true;
-      }
-    });
+  // Tìm lesson theo id
+  let foundLesson = null;
+  Object.values(modules).forEach((module) => {
+    const lesson = module.lessons.find((l) => l.id === lessonId);
+    if (lesson) foundLesson = lesson;
   });
 
-  checkAnswerBtns.forEach((btn) => {
-    btn.addEventListener("click", (e) => {
-      e.preventDefault();
-
-      const quizQuestion = btn.closest(".quiz-question");
-      const selectedOption = quizQuestion.querySelector(
-        ".quiz-option.selected"
-      );
-      const feedback = quizQuestion.querySelector(".quiz-feedback");
-
-      if (selectedOption && feedback) {
-        const isCorrect =
-          selectedOption.getAttribute("data-correct") === "true";
-
-        // Reset class
-        quizQuestion.querySelectorAll(".quiz-option").forEach((opt) => {
-          opt.classList.remove("correct", "incorrect");
-        });
-
-        // Thêm class phù hợp
-        if (isCorrect) {
-          selectedOption.classList.add("correct");
-          feedback.classList.add("correct");
-          feedback.classList.remove("incorrect");
-          feedback.textContent = "Chính xác! Làm tốt lắm!";
-        } else {
-          selectedOption.classList.add("incorrect");
-          feedback.classList.add("incorrect");
-          feedback.classList.remove("correct");
-          feedback.textContent = "Không chính xác. Hãy thử lại!";
-        }
-      }
-    });
-  });
-
-  // Khởi tạo nộp bài tập
-  const exerciseSubmitBtns = document.querySelectorAll(".submit-exercise");
-
-  exerciseSubmitBtns.forEach((btn) => {
-    btn.addEventListener("click", (e) => {
-      e.preventDefault();
-
-      // Trong thực tế sẽ xử lý gửi bài tập lên server
-      // Ở đây chỉ hiển thị thông báo thành công
-      alert("Bài tập đã được gửi thành công!");
-
-      // Đánh dấu bài tập đã hoàn thành
-      const exercise = btn.closest(".exercise-section");
-      if (exercise) {
-        exercise.classList.add("completed");
-      }
-    });
-  });
+  const lessonContainer = document.querySelector(".lesson-container");
+  if (lessonContainer) {
+    if (foundLesson) {
+      lessonContainer.innerHTML = renderLessonContent(foundLesson, modules);
+      initQuizEvents(foundLesson);
+      initLessonNavButtons();
+      trackLessonProgress(lessonId);
+    } else {
+      lessonContainer.innerHTML =
+        "<div class='alert alert-warning'>Không tìm thấy bài học.</div>";
+    }
+  }
 }
 
 // Lấy động courseID từ URL
@@ -241,12 +200,9 @@ function trackLessonProgress(lessonId) {
       checkIcon.classList.add("fa-check-circle");
     }
 
-    // Lưu tiến trình vào localStorage
+    // Lưu tiến trình
     const courseId = getCourseIdFromUrl(); // Thực tế sẽ lấy động
     saveLessonCompletionToDB(courseId, lessonId);
-
-    // Cập nhật tiến trình tổng thể
-    // updateProgressUI(progressPercentage);
   }
 }
 
@@ -255,8 +211,7 @@ async function saveLessonCompletionToDB(courseId, lessonId) {
   return new Promise((resolve, reject) => {
     onAuthStateChanged(auth, async (user) => {
       if (!user) {
-        alert("Bạn cần đăng nhập để lưu tiến trình!");
-        reject("Chưa đăng nhập");
+        window.location.href = "/login.html";
         return;
       }
       try {
@@ -315,16 +270,13 @@ async function saveLessonCompletionToDB(courseId, lessonId) {
         resolve(progressPercentage);
       } catch (err) {
         console.error("Chi tiết lỗi khi lưu tiến trình:", err);
-        console.error("Error code:", err.code);
-        console.error("Error message:", err.message);
-
         reject(err);
       }
     });
   });
 }
 
-// Khởi tạo tiến trình học từ dữ liệu đã lưu
+// Khởi tạo tiến trình học từ dữ liệu đã lưu khi load trang
 async function initCourseProgress() {
   const courseId = getCourseIdFromUrl();
   onAuthStateChanged(auth, async (user) => {
@@ -362,7 +314,7 @@ async function initCourseProgress() {
       if (percentSnap.exists()) {
         progressPercentage = percentSnap.val();
       }
-      //   cập nhật UI
+      // cập nhật UI
       updateProgressUI(progressPercentage);
     } catch (err) {
       console.error("Lỗi khi tải tiến trình từ server:", err);
@@ -383,149 +335,196 @@ function updateProgressUI(progressPercentage) {
   }
 }
 
-// Nội dung bài học mẫu (trong thực tế sẽ lấy từ database hoặc API)
-function getSampleLessonContent(lessonId) {
-  // Phân tích lessonId để lấy chương và số bài
-  const [module, lesson] = lessonId.split(".");
+// Lấy dữ liệu module cho courseId
+async function fetchCourseModules(courseId) {
+  const modulesRef = ref(database, `course_modules/${courseId}`);
+  const snap = await get(modulesRef);
+  return snap.exists() ? snap.val() : {};
+}
 
-  // Nội dung mẫu cho một số bài học cụ thể
-  if (module === "1" && lesson === "1") {
-    return `
-            <div class="lesson-content" id="lesson-1-1">
-                <h2>HTML là gì?</h2>
-                <div class="lesson-video">
-                    <div class="video-placeholder">
-                        <i class="fas fa-play-circle"></i>
-                        <p>Bài học 1.1: HTML là gì?</p>
-                    </div>
-                </div>
-                <div class="lesson-text">
-                    <p>HTML (HyperText Markup Language) là ngôn ngữ đánh dấu tiêu chuẩn được sử dụng để tạo trang web. Nó mô tả cấu trúc của một trang web và bao gồm một loạt các phần tử giúp trình duyệt hiển thị nội dung.</p>
-                    
-                    <p>Các phần tử HTML được biểu diễn bằng thẻ, được viết bằng dấu ngoặc nhọn. Ví dụ:</p>
-                    
-                    <pre><code>&lt;h1&gt;Đây là một tiêu đề&lt;/h1&gt;
-&lt;p&gt;Đây là một đoạn văn.&lt;/p&gt;</code></pre>
-                    
-                    <p>Các thẻ HTML thường xuất hiện theo cặp như <code>&lt;p&gt;</code> và <code>&lt;/p&gt;</code>. Thẻ đầu tiên trong một cặp là thẻ mở, thẻ thứ hai là thẻ đóng. Thẻ đóng được viết giống như thẻ mở, nhưng có dấu gạch chéo phía trước tên thẻ.</p>
-                    
-                    <div class="exercise-section">
-                        <h3>Bài tập: Viết HTML đầu tiên của bạn</h3>
-                        <p>Hãy thử viết một tài liệu HTML đơn giản với một tiêu đề và một đoạn văn.</p>
-                        <textarea rows="6" class="code-editor" placeholder="Viết HTML của bạn tại đây..."></textarea>
-                        <button class="btn btn-primary submit-exercise">Nộp Bài Tập</button>
-                    </div>
-                    
-                    <div class="quiz-section">
-                        <h3>Câu Hỏi Nhanh</h3>
-                        <div class="quiz-question">
-                            <p>HTML là viết tắt của cụm từ nào?</p>
-                            <div class="quiz-options">
-                                <label class="quiz-option" data-correct="true">
-                                    <input type="radio" name="quiz1" value="a">
-                                    <span>HyperText Markup Language</span>
-                                </label>
-                                <label class="quiz-option">
-                                    <input type="radio" name="quiz1" value="b">
-                                    <span>High-level Text Management Language</span>
-                                </label>
-                                <label class="quiz-option">
-                                    <input type="radio" name="quiz1" value="c">
-                                    <span>Hyperlink and Text Markup Language</span>
-                                </label>
-                                <label class="quiz-option">
-                                    <input type="radio" name="quiz1" value="d">
-                                    <span>Home Tool Markup Language</span>
-                                </label>
-                            </div>
-                            <div class="quiz-feedback"></div>
-                            <button class="btn btn-primary check-answer">Kiểm Tra Đáp Án</button>
-                        </div>
-                    </div>
-                    
-                    <div class="lesson-navigation">
-                        <a href="#" class="btn btn-secondary prev-lesson">Bài Trước</a>
-                        <a href="#" class="btn btn-primary next-lesson" data-next="1.2">Bài Tiếp Theo</a>
-                    </div>
-                </div>
-            </div>
-        `;
-  } else if (module === "1" && lesson === "2") {
-    return `
-            <div class="lesson-content" id="lesson-1-2">
-                <h2>Cấu Trúc Tài Liệu HTML</h2>
-                <div class="lesson-video">
-                    <div class="video-placeholder">
-                        <i class="fas fa-play-circle"></i>
-                        <p>Bài học 1.2: Cấu Trúc Tài Liệu HTML</p>
-                    </div>
-                </div>
-                <div class="lesson-text">
-                    <p>Mỗi tài liệu HTML đều có một cấu trúc bắt buộc bao gồm các khai báo và phần tử sau:</p>
-                    
-                    <pre><code>&lt;!DOCTYPE html&gt;
-&lt;html&gt;
-&lt;head&gt;
-    &lt;title&gt;Tiêu Đề Trang&lt;/title&gt;
-&lt;/head&gt;
-&lt;body&gt;
-    &lt;h1&gt;Đây Là Một Tiêu Đề&lt;/h1&gt;
-    &lt;p&gt;Đây là một đoạn văn.&lt;/p&gt;
-&lt;/body&gt;
-&lt;/html&gt;</code></pre>
-                    
-                    <p>Hãy phân tích cấu trúc:</p>
-                    
-                    <ul>
-                        <li><code>&lt;!DOCTYPE html&gt;</code>: Khai báo định nghĩa tài liệu này là HTML5</li>
-                        <li><code>&lt;html&gt;</code>: Phần tử gốc của một trang HTML</li>
-                        <li><code>&lt;head&gt;</code>: Chứa thông tin meta về tài liệu</li>
-                        <li><code>&lt;title&gt;</code>: Chỉ định tiêu đề cho tài liệu</li>
-                        <li><code>&lt;body&gt;</code>: Chứa nội dung trang hiển thị</li>
-                    </ul>
-                    
-                    <div class="exercise-section">
-                        <h3>Bài tập: Tạo một Tài Liệu HTML hoàn chỉnh</h3>
-                        <p>Tạo một tài liệu HTML hoàn chỉnh với cấu trúc đúng, bao gồm tiêu đề, tiêu đề và nhiều đoạn văn.</p>
-                        <textarea rows="8" class="code-editor" placeholder="Viết tài liệu HTML của bạn tại đây..."></textarea>
-                        <button class="btn btn-primary submit-exercise">Nộp Bài Tập</button>
-                    </div>
-                    
-                    <div class="lesson-navigation">
-                        <a href="#" class="btn btn-secondary prev-lesson" data-prev="1.1">Bài Trước</a>
-                        <a href="#" class="btn btn-primary next-lesson" data-next="1.3">Bài Tiếp Theo</a>
-                    </div>
-                </div>
-            </div>
-        `;
-  } else {
-    // Các bài học khác trả về template chung
-    return `
-            <div class="lesson-content" id="lesson-${module}-${lesson}">
-                <h2>Chương ${module}, Bài ${lesson}</h2>
-                <div class="lesson-video">
-                    <div class="video-placeholder">
-                        <i class="fas fa-play-circle"></i>
-                        <p>Video Bài học ${module}.${lesson}</p>
-                    </div>
-                </div>
-                <div class="lesson-text">
-                    <p>Đây là nội dung mẫu cho Chương ${module}, Bài ${lesson}.</p>
-                    <p>Trong khóa học hoàn chỉnh, phần này sẽ chứa các giải thích chi tiết, ví dụ và bài tập liên quan đến chủ đề cụ thể của bài học này.</p>
-                    
-                    <div class="exercise-section">
-                        <h3>Bài tập</h3>
-                        <p>Đây là bài tập mẫu sẽ được điều chỉnh cho phù hợp với bài học cụ thể này.</p>
-                        <textarea rows="6" class="code-editor" placeholder="Viết mã của bạn tại đây..."></textarea>
-                        <button class="btn btn-primary submit-exercise">Nộp Bài Tập</button>
-                    </div>
-                    
-                    <div class="lesson-navigation">
-                        <a href="#" class="btn btn-secondary prev-lesson">Bài Trước</a>
-                        <a href="#" class="btn btn-primary next-lesson">Bài Tiếp Theo</a>
-                    </div>
-                </div>
-            </div>
-        `;
+// Render sidebar từ courses_module
+function renderSidebar(modules) {
+  const sidebar = document.querySelector(".module-list ul");
+  if (!sidebar) return;
+  sidebar.innerHTML = Object.entries(modules)
+    .map(
+      ([moduleKey, module]) => `
+      <li class="module">
+        <div class="module-header" data-toggle="${moduleKey}">
+          <span class="module-title">${module.title}</span>
+          <span class="module-toggle"><i class="fas fa-chevron-down"></i></span>
+        </div>
+        <ul class="lesson-list" id="${moduleKey}">
+          ${module.lessons
+            .map(
+              (lesson) => `
+            <li class="lesson">
+              <a href="#" class="lesson-link" data-lesson="${lesson.id}">
+                <span class="lesson-check"><i class="far fa-circle"></i></span>
+                <span class="lesson-title">${lesson.title}</span>
+                <span class="lesson-duration">${lesson.duration || ""}</span>
+              </a>
+            </li>
+          `
+            )
+            .join("")}
+        </ul>
+      </li>
+    `
+    )
+    .join("");
+}
+
+// Render nội dung bài học, video và quiz
+function renderLessonContent(lesson, modules) {
+  // Tìm vị trí bài học hiện tại trong modules
+  let prevLessonId = null;
+  let nextLessonId = null;
+  let lessonsFlat = [];
+  Object.values(modules).forEach((module) => {
+    module.lessons.forEach((l) => lessonsFlat.push(l));
+  });
+  for (let i = 0; i < lessonsFlat.length; i++) {
+    if (lessonsFlat[i].id === lesson.id) {
+      if (i > 0) prevLessonId = lessonsFlat[i - 1].id;
+      if (i < lessonsFlat.length - 1) nextLessonId = lessonsFlat[i + 1].id;
+      break;
+    }
   }
+
+  return `
+    <div class="lesson-content" id="lesson-${lesson.id}">
+      <h2>${lesson.title}</h2>
+      <div class="lesson-video">
+        ${lesson.video ? renderVideo(lesson.video) : ""}
+      </div>
+      <div class="lesson-text">
+        <p>${escapeHtml(lesson.content)}</p>
+        ${
+          lesson.quiz && lesson.quiz.length
+            ? renderQuiz(lesson.quiz, lesson.id)
+            : ""
+        }
+      </div>
+       <div class="lesson-navigation">
+        ${
+          prevLessonId
+            ? `<a href="#" class="btn btn-secondary prev-lesson" data-prev="${prevLessonId}">Bài Trước</a>`
+            : ""
+        }
+        ${
+          nextLessonId
+            ? `<a href="#" class="btn btn-primary next-lesson" data-next="${nextLessonId}">Bài Tiếp Theo</a>`
+            : ""
+        }
+      </div>
+    </div>
+  `;
+}
+
+function renderVideo(videoUrl) {
+  if (videoUrl.includes("youtube.com") || videoUrl.includes("youtu.be")) {
+    return `<iframe width="853" height="480" src="${videoUrl}" frameborder="0" allowfullscreen></iframe>`;
+  }
+  return `<video controls width="853"><source src="${videoUrl}" type="video/mp4"></video>`;
+}
+
+function renderQuiz(quiz, lessonId) {
+  return `
+    <div class="quiz-section" data-lesson="${lessonId}">
+      <h3>Câu hỏi trắc nghiệm</h3>
+      ${quiz
+        .map(
+          (q, idx) => `
+        <div class="quiz-question" data-qidx="${idx}">
+          <h4>${q.question}</h4>
+          <div class="quiz-options">
+            ${q.options
+              .map(
+                (opt, oidx) => `
+              <label class="quiz-option">
+                <input type="radio" name="quiz-${lessonId}-${idx}" value="${oidx}">
+                <span>${escapeHtml(opt)}</span>
+              </label>
+            `
+              )
+              .join("")}
+          </div>
+          <div class="quiz-feedback"></div>
+          <button class="btn btn-primary check-answer">Kiểm tra đáp án</button>
+        </div>
+      `
+        )
+        .join("")}
+    </div>
+  `;
+}
+
+// Khởi tạo xử lý tương tác quiz và phản hồi
+function initQuizEvents(lesson) {
+  document
+    .querySelectorAll(`.quiz-section[data-lesson="${lesson.id}"] .check-answer`)
+    .forEach((btn, idx) => {
+      btn.addEventListener("click", function () {
+        const question = lesson.quiz[idx];
+        const container = btn.closest(".quiz-question");
+        const selected = container.querySelector("input[type='radio']:checked");
+        const feedback = container.querySelector(".quiz-feedback");
+        if (!selected) {
+          feedback.textContent = "Vui lòng chọn đáp án!";
+          feedback.className = "quiz-feedback";
+          return;
+        }
+        if (parseInt(selected.value) === question.answer) {
+          feedback.textContent = "Chính xác!";
+          feedback.className = "quiz-feedback correct";
+        } else {
+          feedback.textContent = "Chưa đúng, hãy thử lại!";
+          feedback.className = "quiz-feedback incorrect";
+        }
+      });
+    });
+}
+
+// Cập nhật thông tin meta
+function updateCourseMeta(modules) {
+  // Tính tổng số bài học và tổng thời lượng
+  let totalLessons = 0;
+  let totalMinutes = 0;
+  Object.values(modules).forEach((module) => {
+    module.lessons.forEach((lesson) => {
+      totalLessons++;
+      // duration lưu dạng "10 phút"
+      if (lesson.duration) {
+        const match = lesson.duration.match(/(\d+)/);
+        if (match) totalMinutes += parseInt(match[1]);
+      }
+    });
+  });
+
+  // Chuyển phút thành giờ và phút
+  const hours = Math.floor(totalMinutes / 60);
+  const minutes = totalMinutes % 60;
+  let durationText = "";
+  if (hours > 0) durationText += `${hours} giờ `;
+  if (minutes > 0) durationText += `${minutes} `;
+  if (!durationText) durationText = "0"; // 0 phút
+
+  // Cập nhật số bài học
+  const lessonsSpan = document.querySelector(".course-meta .lessons");
+  if (lessonsSpan) {
+    lessonsSpan.innerHTML = `<i class="far fa-file-alt"></i> ${totalLessons} bài học`;
+  }
+
+  // Cập nhật tổng thời lượng
+  const durationSpan = document.querySelector(".course-meta .duration");
+  if (durationSpan) {
+    durationSpan.innerHTML = `<i class="far fa-clock"></i> ${durationText} phút`;
+  }
+}
+
+// biến đổi ký tự html
+function escapeHtml(str) {
+  if (!str) return "";
+  return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 }
