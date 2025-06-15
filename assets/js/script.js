@@ -74,10 +74,3 @@ function initScrollAnimations() {
     observer.observe(element);
   });
 }
-
-// Search functionality (for future implementation)
-function searchCourses(query) {
-  // This function would be implemented when we have a search feature
-  console.log(`Đang tìm kiếm: ${query}`);
-  // Implementation would filter courses based on the query
-}
