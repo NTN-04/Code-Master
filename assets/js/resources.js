@@ -16,6 +16,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Khởi tạo chức năng tìm kiếm
   initSearch();
+
+  // Hook và sự kiện chuyển tab
+  patchTabSwitchForPaging();
 });
 
 // Tự động kích hoạt tab nếu có dấu thăng (hash) trong URL
@@ -184,11 +187,6 @@ function patchTabSwitchForPaging() {
     });
   });
 }
-// Gọi khi dom sẳn sàng
-document.addEventListener("DOMContentLoaded", function () {
-  patchTabSwitchForPaging();
-  handleExampleTabPaging();
-});
 
 // Tìm kiếm tài nguyên dựa trên từ khóa
 function searchResources(query) {
@@ -270,31 +268,6 @@ function debounce(func, delay) {
     timeout = setTimeout(() => func.apply(context, args), delay);
   };
 }
-
-// Sao chép ví dụ code vào clipboard
-function copyCodeExample(codeBlockId) {
-  const codeBlock = document.getElementById(codeBlockId);
-
-  if (codeBlock) {
-    const codeText = codeBlock.textContent;
-
-    // Tạo textarea tạm để copy nội dung
-    const textarea = document.createElement("textarea");
-    textarea.value = codeText;
-    document.body.appendChild(textarea);
-    textarea.select();
-    document.execCommand("copy");
-    document.body.removeChild(textarea);
-
-    // Hiển thị thông báo
-    showNotification("Code copied to clipboard!");
-
-    return true;
-  }
-
-  return false;
-}
-
 // Hiển thị thông báo
 function showNotification(message, type = "success") {
   const notification = document.createElement("div");
@@ -315,6 +288,27 @@ function showNotification(message, type = "success") {
       document.body.removeChild(notification);
     }, 300);
   }, 4000);
+}
+
+// Xác thực khi không phải user
+function ResourceAuthButtons() {
+  // Các nút cần xác thực
+  const selector = [
+    "#documentation .btn.btn-outline",
+    "#examples .btn.btn-outline",
+    "#videos .btn.btn-outline",
+    "#books .btn.btn-outline",
+    "#tools .btn.btn-outline",
+  ].join(",");
+
+  document.querySelectorAll(selector).forEach((btn) => {
+    btn.addEventListener("click", function (e) {
+      if (!auth.currentUser) {
+        e.preventDefault();
+        window.location.href = "/login.html";
+      }
+    });
+  });
 }
 
 async function loadResourcesFromFirebase() {
@@ -346,6 +340,9 @@ async function loadResourcesFromFirebase() {
         resources.filter((r) => r.type === "videos"),
         bookmarks
       );
+
+      // xác thực login
+      ResourceAuthButtons();
     } else {
       showNoResourceMessage();
     }
@@ -431,6 +428,55 @@ function renderDocumentation(list, bookmarks = {}) {
     })
     .join("");
 }
+
+// --- Modal nhúng JSFiddle cho ví dụ mã nguồn ---
+function initExampleModal() {
+  // Thêm modal vào body nếu chưa có
+  if (!document.getElementById("example-modal")) {
+    const modal = document.createElement("div");
+    modal.id = "example-modal";
+    modal.innerHTML = `
+      <div class="modal-backdrop"></div>
+      <div class="modal-content">
+        <button class="modal-close">&times;</button>
+        <iframe width="100%" height="80vh" src="" frameborder="0" allowtransparency="true" allowfullscreen="true"></iframe>
+      </div>
+    `;
+    modal.style.display = "none";
+    modal.className = "example-modal";
+    document.body.appendChild(modal);
+
+    // Đóng modal khi click backdrop hoặc nút close
+    modal.querySelector(".modal-backdrop").onclick = closeExampleModal;
+    modal.querySelector(".modal-close").onclick = closeExampleModal;
+  }
+}
+function openExampleModal(url) {
+  const modal = document.getElementById("example-modal");
+  if (modal) {
+    modal.style.display = "flex";
+    modal.querySelector("iframe").src = url;
+  }
+}
+function closeExampleModal() {
+  const modal = document.getElementById("example-modal");
+  if (modal) {
+    modal.style.display = "none";
+    modal.querySelector("iframe").src = "";
+  }
+}
+// Gắn sự kiện cho nút "Xem Đầy Đủ Ví Dụ" sau khi render
+function attachExampleViewEvents() {
+  document.querySelectorAll("#examples .btn.btn-outline").forEach((btn) => {
+    btn.addEventListener("click", function (e) {
+      const url = btn.getAttribute("href");
+      if (url && url.includes("jsfiddle.net")) {
+        e.preventDefault();
+        openExampleModal(url);
+      }
+    });
+  });
+}
 // hiển thị ví dụ
 function renderExamples(list, bookmarks = {}) {
   hideLoading("examples");
@@ -473,6 +519,7 @@ function renderExamples(list, bookmarks = {}) {
   // Khởi tạo phân trang sau khi render
   setTimeout(() => {
     handleExampleTabPaging();
+    attachExampleViewEvents(); // Gắn sự kiện cho nút xem ví dụ
   }, 100);
 }
 
@@ -576,3 +623,6 @@ window.handleBookmark = function (resourceId, resourceType) {
     });
   });
 };
+
+// Khởi tạo modal khi load trang
+initExampleModal();

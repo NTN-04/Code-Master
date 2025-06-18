@@ -487,17 +487,21 @@ function initQuizEvents(lesson) {
 }
 
 // Cập nhật thông tin meta
-function updateCourseMeta(modules) {
+async function updateCourseMeta(modules) {
   // Tính tổng số bài học và tổng thời lượng
   let totalLessons = 0;
   let totalMinutes = 0;
   Object.values(modules).forEach((module) => {
     module.lessons.forEach((lesson) => {
       totalLessons++;
-      // duration lưu dạng "10 phút"
+      // kiểm tra và lấy số phút và số giây từ duration bằng regex
       if (lesson.duration) {
-        const match = lesson.duration.match(/(\d+)/);
-        if (match) totalMinutes += parseInt(match[1]);
+        const match = lesson.duration.match(/(\d+)(?::(\d+))?/);
+        if (match) {
+          const m = parseInt(match[1]);
+          const s = match[2] ? parseInt(match[2]) : 0;
+          totalMinutes += m + Math.round(s / 60);
+        }
       }
     });
   });
@@ -520,6 +524,37 @@ function updateCourseMeta(modules) {
   const durationSpan = document.querySelector(".course-meta .duration");
   if (durationSpan) {
     durationSpan.innerHTML = `<i class="far fa-clock"></i> ${durationText} phút`;
+  }
+
+  // Cập nhật title, description, level
+  const courseId = getCourseIdFromUrl();
+  const courseRef = ref(database, `courses/${courseId}`);
+  try {
+    const snap = await get(courseRef);
+    if (snap.exists()) {
+      const course = snap.val();
+      // Cập nhật title
+      const titleEl = document.querySelector(".course-info .course-info-title");
+      if (titleEl && course.title) titleEl.textContent = course.title;
+      // Cập nhật description
+      const descEl = document.querySelector(".course-info p");
+      if (descEl && course.description) descEl.textContent = course.description;
+      // Cập nhật level
+      const levelEl = document.querySelector(".course-meta .level");
+      if (levelEl && course.level) {
+        levelEl.textContent =
+          course.level === "beginner"
+            ? "Người Mới"
+            : course.level === "intermediate"
+            ? "Trung Cấp"
+            : course.level === "advanced"
+            ? "Nâng Cao"
+            : course.level;
+        levelEl.className = `level ${course.level}`;
+      }
+    }
+  } catch (err) {
+    console.error("Lỗi khi lấy thông tin course:", err);
   }
 }
 
