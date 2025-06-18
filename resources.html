@@ -182,108 +182,6 @@
                 </div>
                 <a href="#" class="btn btn-outline">Xem Đầy Đủ Ví Dụ</a>
               </div> -->
-
-              <!-- <div class="example-card">
-                <h3>Xác Thực Form Tương Tác</h3>
-                <div class="example-tags">
-                  <span>HTML</span>
-                  <span>CSS</span>
-                  <span>JavaScript</span>
-                </div>
-                <p>
-                  Xác thực form thời gian thực với JavaScript và phản hồi trực
-                  quan.
-                </p>
-                <div class="example-preview">
-                  <pre><code>const form = document.getElementById('form');
-  const username = document.getElementById('username');
-  const email = document.getElementById('email');
-  
-  form.addEventListener('submit', (e) => {
-    if (!validateInputs()) {
-      e.preventDefault();
-    }
-  });
-  
-  function validateInputs() {
-    const usernameValue = username.value.trim();
-    const emailValue = email.value.trim();
-    let isValid = true;
-    
-    if (usernameValue === '') {
-      setError(username, 'Tên người dùng là bắt buộc');
-      isValid = false;
-    } else {
-      setSuccess(username);
-    }
-    
-    if (emailValue === '') {
-      setError(email, 'Email là bắt buộc');
-      isValid = false;
-    } else if (!isValidEmail(emailValue)) {
-      setError(email, 'Vui lòng cung cấp địa chỉ email hợp lệ');
-      isValid = false;
-    } else {
-      setSuccess(email);
-    }
-    
-    return isValid;
-  }</code></pre>
-                </div>
-                <a href="#" class="btn btn-outline">Xem Đầy Đủ Ví Dụ</a>
-              </div> -->
-
-              <!-- <div class="example-card">
-                <h3>Ứng Dụng Todo React</h3>
-                <div class="example-tags">
-                  <span>React</span>
-                  <span>JavaScript</span>
-                  <span>CSS</span>
-                </div>
-                <p>
-                  Một ứng dụng Todo đơn giản được xây dựng với React hooks và
-                  quản lý trạng thái.
-                </p>
-                <div class="example-preview">
-                  <pre><code>function App() {
-    const [todos, setTodos] = useState([]);
-    const [inputValue, setInputValue] = useState('');
-  
-    const addTodo = () => {
-      if (inputValue.trim() !== '') {
-        setTodos([
-          ...todos, 
-          { 
-            id: Date.now(), 
-            text: inputValue, 
-            completed: false 
-          }
-        ]);
-        setInputValue('');
-      }
-    };
-  
-    const toggleTodo = (id) => {
-      setTodos(
-        todos.map(todo => 
-          todo.id === id ? 
-          { ...todo, completed: !todo.completed } : 
-          todo
-        )
-      );
-    };
-  
-    return (
-      &lt;div className="app"&gt;
-        &lt;h1&gt;Ứng Dụng Todo&lt;/h1&gt;
-        {/* Form nhập liệu */}
-        {/* Danh sách todo */}
-      &lt;/div&gt;
-    );
-  }</code></pre>
-                </div>
-                <a href="#" class="btn btn-outline">Xem Đầy Đủ Ví Dụ</a>
-              </div> -->
             </div>
             <!--nút phân trang -->
             <div id="examples-pagination" class="pagination"></div>
@@ -292,7 +190,7 @@
           <div class="tab-content" id="videos">
             <h2>Video Hướng Dẫn</h2>
             <div class="videos-grid">
-              <div class="video-card">
+              <!-- <div class="video-card">
                 <div class="video-thumbnail">
                   <img
                     src="./assets/images/img-video/javascript.png"
@@ -314,70 +212,7 @@
                   </div>
                   <a href="#" class="btn btn-outline">Xem Video</a>
                 </div>
-              </div>
-
-              <div class="video-card">
-                <div class="video-thumbnail">
-                  <img src="images/video-css.jpg" alt="Hướng Dẫn CSS" />
-                  <div class="play-icon">
-                    <i class="fas fa-play"></i>
-                  </div>
-                </div>
-                <div class="video-info">
-                  <h3>Hướng Dẫn Hoàn Chỉnh về CSS Flexbox</h3>
-                  <p class="line-clamp-2">
-                    Làm chủ bố cục CSS Flexbox với hướng dẫn toàn diện và các ví
-                    dụ.
-                  </p>
-                  <div class="video-meta">
-                    <span><i class="far fa-clock"></i> 45p</span>
-                    <span><i class="far fa-eye"></i> 850K lượt xem</span>
-                  </div>
-                  <a href="#" class="btn btn-outline">Xem Video</a>
-                </div>
-              </div>
-
-              <div class="video-card">
-                <div class="video-thumbnail">
-                  <img src="images/video-js.jpg" alt="Hướng Dẫn JavaScript" />
-                  <div class="play-icon">
-                    <i class="fas fa-play"></i>
-                  </div>
-                </div>
-                <div class="video-info">
-                  <h3>Giải Thích Tính Năng JavaScript ES6</h3>
-                  <p class="line-clamp-2">
-                    Tìm hiểu về các tính năng hiện đại của JavaScript ES6 và
-                    cách sử dụng chúng trong dự án của bạn.
-                  </p>
-                  <div class="video-meta">
-                    <span><i class="far fa-clock"></i> 1h 30p</span>
-                    <span><i class="far fa-eye"></i> 920K lượt xem</span>
-                  </div>
-                  <a href="#" class="btn btn-outline">Xem Video</a>
-                </div>
-              </div>
-
-              <div class="video-card">
-                <div class="video-thumbnail">
-                  <img src="images/video-react.jpg" alt="Hướng Dẫn React" />
-                  <div class="play-icon">
-                    <i class="fas fa-play"></i>
-                  </div>
-                </div>
-                <div class="video-info">
-                  <h3>Hướng Dẫn React Hooks</h3>
-                  <p class="line-clamp-2">
-                    Hướng dẫn toàn diện về sử dụng React Hooks như useState,
-                    useEffect và các hooks tùy chỉnh.
-                  </p>
-                  <div class="video-meta">
-                    <span><i class="far fa-clock"></i> 2h 05p</span>
-                    <span><i class="far fa-eye"></i> 750K lượt xem</span>
-                  </div>
-                  <a href="#" class="btn btn-outline">Xem Video</a>
-                </div>
-              </div>
+              </div> -->
             </div>
           </div>
 
