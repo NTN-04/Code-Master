@@ -71,7 +71,6 @@ function initTabs() {
 // Khởi tạo chức năng tìm kiếm
 function initSearch() {
   const searchInput = document.getElementById("resource-search");
-
   if (searchInput) {
     searchInput.addEventListener(
       "input",
@@ -519,7 +518,8 @@ function renderExamples(list, bookmarks = {}) {
   // Khởi tạo phân trang sau khi render
   setTimeout(() => {
     handleExampleTabPaging();
-    attachExampleViewEvents(); // Gắn sự kiện cho nút xem ví dụ
+    // Gắn sự kiện cho nút xem ví dụ
+    attachExampleViewEvents();
   }, 100);
 }
 

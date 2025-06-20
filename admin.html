@@ -38,6 +38,11 @@
       </div>
     </header>
 
+    <!-- toggle menu -->
+    <button class="sidebar-toggle" id="sidebar-toggle">
+      <i class="fas fa-bars"></i>
+    </button>
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
     <!-- Admin Sidebar -->
     <aside class="admin-sidebar">
       <nav class="admin-nav">
@@ -80,6 +85,11 @@
           </li>
         </ul>
       </nav>
+      <!-- Nút đăng xuất cho mobile/tablet -->
+      <button id="admin-logout-sidebar" class="btn-logout btn-logout-sidebar">
+        <i class="fas fa-sign-out-alt"></i>
+        Đăng xuất
+      </button>
     </aside>
 
     <!-- Admin Main Content -->
@@ -138,7 +148,7 @@
           </div>
           <div class="card-body">
             <div class="activity-list" id="recent-activities">
-              <!-- Activities will be loaded here -->
+              <!-- Hoạt động sẽ được load ở đây -->
             </div>
           </div>
         </div>
@@ -350,11 +360,30 @@ Nền tảng học lập trình trực tuyến</textarea
             <input type="hidden" id="user-id" />
             <div class="form-group">
               <label>Tên đầy đủ:</label>
-              <input type="text" id="user-name" required />
+              <input
+                type="text"
+                id="user-name"
+                required
+                placeholder="VD: Nguyễn Văn A"
+              />
             </div>
             <div class="form-group">
               <label>Email:</label>
-              <input type="email" id="user-email" required />
+              <input
+                type="email"
+                id="user-email"
+                required
+                placeholder="VD: abc@gmail.com"
+              />
+            </div>
+            <div class="form-group" id="user-password-group">
+              <label>Mật khẩu:</label>
+              <input
+                type="password"
+                id="user-password"
+                required
+                placeholder="VD: abc123"
+              />
             </div>
             <div class="form-group">
               <label>Vai trò:</label>
@@ -448,7 +477,7 @@ Nền tảng học lập trình trực tuyến</textarea
       </div>
     </div>
 
-    <!-- Notification -->
+    <!-- Thông báo -->
     <div class="notification" id="notification">
       <div class="notification-content">
         <span class="notification-message"></span>
