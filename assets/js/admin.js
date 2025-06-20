@@ -1,6 +1,9 @@
-import { auth, database } from "./firebaseConfig.js";
+import { auth, database, firebaseConfig } from "./firebaseConfig.js";
+// Tạo app phụ
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-app.js";
 import {
-  onAuthStateChanged,
+  createUserWithEmailAndPassword,
+  getAuth,
   signOut,
 } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-auth.js";
 import {
@@ -14,7 +17,7 @@ import {
 } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-database.js";
 import AdminGuard from "./admin-guard.js";
 
-// Admin Panel Main Controller
+// Bộ điều khiển chính cho trang Quản trị Admin
 class AdminPanel {
   constructor() {
     this.currentUser = null;
@@ -27,19 +30,19 @@ class AdminPanel {
   }
 
   async init() {
-    // Initialize components
+    // Khởi tạo các thành phần giao diện
     this.initNavigation();
     this.initModals();
     this.initNotifications();
 
-    // Load initial data
+    // Tải dữ liệu ban đầu
     await this.loadDashboardData();
 
-    // Setup event listeners
+    // Thiết lập các sự kiện lắng nghe
     this.setupEventListeners();
   }
 
-  // Navigation
+  // Điều hướng
   initNavigation() {
     const navItems = document.querySelectorAll(".nav-item");
 
@@ -49,7 +52,7 @@ class AdminPanel {
         const sectionName = item.querySelector("a").dataset.section;
         this.showSection(sectionName);
 
-        // Update active nav item
+        // Cập nhật trạng thái active cho menu
         navItems.forEach((nav) => nav.classList.remove("active"));
         item.classList.add("active");
       });
@@ -57,16 +60,16 @@ class AdminPanel {
   }
 
   showSection(sectionName) {
-    // Hide all sections
+    // Ẩn tất cả các section
     const sections = document.querySelectorAll(".admin-section");
     sections.forEach((section) => section.classList.remove("active"));
 
-    // Show target section
+    // Hiện section được chọn
     const targetSection = document.getElementById(sectionName);
     if (targetSection) {
       targetSection.classList.add("active");
 
-      // Load section-specific data
+      // Tải dữ liệu cho từng section
       switch (sectionName) {
         case "dashboard":
           this.loadDashboardData();
@@ -90,10 +93,10 @@ class AdminPanel {
   // Dashboard
   async loadDashboardData() {
     try {
-      // Load statistics
+      // Tải thống kê
       await this.loadStatistics();
 
-      // Load recent activities
+      // Tải hoạt động gần đây
       await this.loadRecentActivities();
     } catch (error) {
       console.error("Error loading dashboard data:", error);
@@ -102,28 +105,28 @@ class AdminPanel {
   }
   async loadStatistics() {
     try {
-      // Get users count from Firebase
+      // Lấy tổng số người dùng từ Firebase
       const usersRef = ref(database, "users");
       const usersSnapshot = await get(usersRef);
       const usersCount = usersSnapshot.exists()
         ? Object.keys(usersSnapshot.val()).length
         : 0;
 
-      // Get courses count from Firebase
+      // Lấy tổng số khóa học từ Firebase
       const coursesRef = ref(database, "courses");
       const coursesSnapshot = await get(coursesRef);
       const coursesCount = coursesSnapshot.exists()
         ? Object.keys(coursesSnapshot.val()).length
         : 0;
 
-      // Get resources count from Firebase
+      // Lấy tổng số tài liệu từ Firebase
       const resourcesRef = ref(database, "resources");
       const resourcesSnapshot = await get(resourcesRef);
       const resourcesCount = resourcesSnapshot.exists()
         ? Object.keys(resourcesSnapshot.val()).length
         : 0;
 
-      // Calculate active learners (users with progress > 0)
+      // Đếm số học viên đang học (user có trường courses)
       let activeLearners = 0;
       if (usersSnapshot.exists()) {
         const users = usersSnapshot.val();
@@ -134,7 +137,7 @@ class AdminPanel {
         });
       }
 
-      // Update UI
+      // Cập nhật giao diện
       document.getElementById("total-users").textContent = usersCount;
       document.getElementById("total-courses").textContent = coursesCount;
       document.getElementById("active-learners").textContent = activeLearners;
@@ -147,18 +150,16 @@ class AdminPanel {
     const activitiesContainer = document.getElementById("recent-activities");
     if (!activitiesContainer) return;
 
-    // Show loading state
+    // Hiển thị trạng thái đang tải
     activitiesContainer.innerHTML = `
-      <div class="activity-item loading">
-        <i class="fas fa-spinner fa-spin"></i>
-        <div class="activity-content">
-          <p>Đang tải hoạt động gần đây...</p>
-        </div>
+      <div class="loading-courses">
+        <span class="loading-spinner"><i class="fas fa-spinner fa-spin"></i></span>
+        <span>Đang tải hoạt động gần đây...</span>
       </div>
     `;
 
     try {
-      // Load recent activities from Firebase
+      // Lấy hoạt động gần đây từ Firebase
       const activitiesRef = ref(database, "activities");
       const snapshot = await get(activitiesRef);
 
@@ -168,7 +169,7 @@ class AdminPanel {
         const activities = Object.entries(snapshot.val())
           .map(([id, data]) => ({ id, ...data }))
           .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
-          .slice(0, 10); // Get latest 10 activities
+          .slice(0, 10); // Lấy 10 hoạt động mới nhất
 
         if (activities.length > 0) {
           activities.forEach((activity) => {
@@ -206,7 +207,7 @@ class AdminPanel {
     const div = document.createElement("div");
     div.className = `activity-item activity-${activity.type}`;
 
-    // Format time from timestamp if available
+    // Định dạng thời gian từ timestamp nếu có
     const timeText = activity.timestamp
       ? this.formatTimeAgo(activity.timestamp)
       : activity.time || "N/A";
@@ -242,7 +243,7 @@ class AdminPanel {
     return time.toLocaleDateString("vi-VN");
   }
 
-  // Users Management
+  // Quản lý người dùng
   async loadUsersData() {
     try {
       const usersRef = ref(database, "users");
@@ -329,7 +330,7 @@ class AdminPanel {
     const applyFilters = () => {
       let filteredUsers = [...this.users];
 
-      // Search filter
+      // Lọc theo từ khóa tìm kiếm
       const searchTerm = searchInput.value.toLowerCase();
       if (searchTerm) {
         filteredUsers = filteredUsers.filter(
@@ -340,13 +341,13 @@ class AdminPanel {
         );
       }
 
-      // Role filter
+      // Lọc theo vai trò
       const roleValue = roleFilter.value;
       if (roleValue) {
         filteredUsers = filteredUsers.filter((user) => user.role == roleValue);
       }
 
-      // Status filter
+      // Lọc theo trạng thái
       const statusValue = statusFilter.value;
       if (statusValue) {
         filteredUsers = filteredUsers.filter(
@@ -366,18 +367,20 @@ class AdminPanel {
     const user = this.users.find((u) => u.id === userId);
     if (!user) return;
 
-    // Fill modal with user data
+    // Đổ dữ liệu user vào modal
     document.getElementById("user-id").value = userId;
     document.getElementById("user-name").value = user.username || "";
     document.getElementById("user-email").value = user.email || "";
     document.getElementById("user-role").value = user.role || "2";
     document.getElementById("user-status").value = user.status || "active";
 
-    // Update modal title
+    // Cập nhật tiêu đề modal
     document.getElementById("user-modal-title").textContent =
       "Chỉnh sửa người dùng";
+    // Ẩn form password
+    document.getElementById("user-password-group").style.display = "none";
 
-    // Show modal
+    // Hiện modal
     this.showModal("user-modal");
   }
   async toggleUserStatus(userId) {
@@ -390,7 +393,7 @@ class AdminPanel {
       const userRef = ref(database, `users/${userId}`);
       await update(userRef, { status: newStatus });
 
-      // Log activity
+      // Ghi log hoạt động
       await this.logActivity(
         "user",
         `${newStatus === "suspended" ? "Tạm ngừng" : "Kích hoạt"} tài khoản`,
@@ -417,10 +420,14 @@ class AdminPanel {
     const user = this.users.find((u) => u.id === userId);
 
     try {
-      const userRef = ref(database, `users/${userId}`);
-      await remove(userRef);
+      // Xóa user trong bảng users
+      await remove(ref(database, `users/${userId}`));
+      // Xóa bookmarks của user
+      await remove(ref(database, `bookmarks/${userId}`));
+      // Xóa tiến trình học của user
+      await remove(ref(database, `userProgress/${userId}`));
 
-      // Log activity
+      // Ghi log hoạt động
       await this.logActivity(
         "user",
         "Xóa người dùng",
@@ -435,21 +442,21 @@ class AdminPanel {
       this.showNotification("Lỗi xóa người dùng", "error");
     }
   }
-  // Courses Management
+  // Quản lý khóa học
   async loadCoursesData() {
     try {
-      // Try to load from Firebase first
+      // Thử tải từ Firebase trước
       const coursesRef = ref(database, "courses");
       const snapshot = await get(coursesRef);
 
       if (snapshot.exists()) {
-        // Load from Firebase
+        // Lấy từ Firebase
         this.courses = Object.entries(snapshot.val()).map(([id, data]) => ({
           id,
           ...data,
         }));
       } else {
-        // Fallback to JSON file and import to Firebase
+        // Nếu không có thì import từ file JSON vào Firebase
         await this.importCoursesToFirebase();
       }
 
@@ -466,7 +473,7 @@ class AdminPanel {
       const data = await response.json();
       const courses = data.courses || [];
 
-      // Import courses to Firebase
+      // Import khóa học vào Firebase
       const coursesRef = ref(database, "courses");
       const coursesData = {};
 
@@ -527,7 +534,9 @@ class AdminPanel {
           <span><i class="fas fa-clock"></i> ${course.duration}</span>
           <span><i class="fas fa-book"></i> ${course.lessons} bài</span>
         </div>
-        <p class="course-card-description">${course.description}</p>
+        <p class="course-card-description line-clamp-2">${
+          course.description
+        }</p>
         <div class="course-card-actions">
           <div class="action-buttons">
             <button class="btn-action btn-edit" onclick="adminPanel.editCourse('${
@@ -560,7 +569,7 @@ class AdminPanel {
     const course = this.courses.find((c) => c.id === courseId);
     if (!course) return;
 
-    // Fill modal with course data
+    // Đổ dữ liệu khóa học vào modal
     document.getElementById("course-id").value = courseId;
     document.getElementById("course-title").value = course.title || "";
     document.getElementById("course-description").value =
@@ -571,11 +580,11 @@ class AdminPanel {
     document.getElementById("course-category").value = course.category || "web";
     document.getElementById("course-image").value = course.image || "";
 
-    // Update modal title
+    // Cập nhật tiêu đề modal
     document.getElementById("course-modal-title").textContent =
       "Chỉnh sửa khóa học";
 
-    // Show modal
+    // Hiện modal
     this.showModal("course-modal");
   }
   async deleteCourse(courseId) {
@@ -587,7 +596,7 @@ class AdminPanel {
       const courseRef = ref(database, `courses/${courseId}`);
       await remove(courseRef);
 
-      // Log activity
+      // Ghi log hoạt động
       await this.logActivity(
         "course",
         "Xóa khóa học",
@@ -602,21 +611,21 @@ class AdminPanel {
       this.showNotification("Lỗi xóa khóa học", "error");
     }
   }
-  // Resources Management
+  // Quản lý tài liệu
   async loadResourcesData() {
     try {
-      // Try to load from Firebase first
+      // Thử tải từ Firebase trước
       const resourcesRef = ref(database, "resources");
       const snapshot = await get(resourcesRef);
 
       if (snapshot.exists()) {
-        // Load from Firebase
+        // Lấy từ Firebase
         this.resources = Object.entries(snapshot.val()).map(([id, data]) => ({
           id,
           ...data,
         }));
       } else {
-        // Fallback to JSON file and import to Firebase
+        // Nếu không có thì import từ file JSON vào Firebase
         await this.importResourcesToFirebase();
       }
 
@@ -633,7 +642,7 @@ class AdminPanel {
       const data = await response.json();
       const resources = data.resources || [];
 
-      // Import resources to Firebase
+      // Import tài liệu vào Firebase
       const resourcesRef = ref(database, "resources");
       const resourcesData = {};
 
@@ -696,7 +705,7 @@ class AdminPanel {
     const resource = this.resources.find((r) => r.id === resourceId);
     if (!resource) return;
 
-    // For now, show a simple prompt to edit
+    // Hiện prompt để sửa tiêu đề (tạm thời)
     const newTitle = prompt("Nhập tiêu đề mới:", resource.title);
     if (newTitle && newTitle !== resource.title) {
       try {
@@ -706,7 +715,7 @@ class AdminPanel {
           updatedAt: new Date().toISOString().slice(0, 10),
         });
 
-        // Log activity
+        // Ghi log hoạt động
         await this.logActivity(
           "resource",
           "Cập nhật tài liệu",
@@ -732,7 +741,7 @@ class AdminPanel {
       const resourceRef = ref(database, `resources/${resourceId}`);
       await remove(resourceRef);
 
-      // Log activity
+      // Ghi log hoạt động
       await this.logActivity(
         "resource",
         "Xóa tài liệu",
@@ -748,13 +757,13 @@ class AdminPanel {
     }
   }
 
-  // Analytics
+  // Thống kê
   loadAnalyticsData() {
-    // Mock analytics data
+    // Hiện thông báo chức năng đang phát triển
     this.showNotification("Chức năng thống kê đang được phát triển", "warning");
   }
 
-  // Activity logging
+  // Ghi log hoạt động
   async logActivity(type, title, description, icon = null) {
     try {
       const activitiesRef = ref(database, "activities");
@@ -785,14 +794,19 @@ class AdminPanel {
     return icons[type] || "fas fa-info-circle";
   }
 
-  // Event Listeners
+  // Sự kiện lắng nghe
   setupEventListeners() {
-    // Logout button
+    // Nút đăng xuất
     document
       .getElementById("admin-logout")
       .addEventListener("click", this.handleLogout.bind(this));
 
-    // Add buttons
+    // Nút đăng xuất từ sidebar (mobile)
+    document
+      .getElementById("admin-logout-sidebar")
+      .addEventListener("click", this.handleLogout.bind(this));
+
+    // Nút thêm mới
     document.getElementById("add-user-btn").addEventListener("click", () => {
       this.showAddUserModal();
     });
@@ -807,7 +821,7 @@ class AdminPanel {
         this.showAddResourceModal();
       });
 
-    // Form submissions
+    // Xử lý submit form
     document
       .getElementById("user-form")
       .addEventListener("submit", this.handleUserFormSubmit.bind(this));
@@ -827,16 +841,17 @@ class AdminPanel {
   }
 
   showAddUserModal() {
-    // Clear form
+    // Xóa dữ liệu form
     document.getElementById("user-form").reset();
     document.getElementById("user-id").value = "";
     document.getElementById("user-modal-title").textContent = "Thêm người dùng";
+    document.getElementById("user-password-group").style.display = "block";
 
     this.showModal("user-modal");
   }
 
   showAddCourseModal() {
-    // Clear form
+    // Xóa dữ liệu form
     document.getElementById("course-form").reset();
     document.getElementById("course-id").value = "";
     document.getElementById("course-modal-title").textContent = "Thêm khóa học";
@@ -855,19 +870,18 @@ class AdminPanel {
     e.preventDefault();
 
     const userId = document.getElementById("user-id").value;
-    const userData = {
-      username: document.getElementById("user-name").value,
-      email: document.getElementById("user-email").value,
-      role: parseInt(document.getElementById("user-role").value),
-      status: document.getElementById("user-status").value,
-    };
+    const username = document.getElementById("user-name").value;
+    const email = document.getElementById("user-email").value;
+    const role = parseInt(document.getElementById("user-role").value);
+    const status = document.getElementById("user-status").value;
+    const password = document.getElementById("user-password")?.value;
     try {
       if (userId) {
-        // Update existing user
+        // Cập nhật user đã có
         const userRef = ref(database, `users/${userId}`);
-        await update(userRef, userData);
+        await update(userRef, { username, email, role, status });
 
-        // Log activity
+        // Ghi log hoạt động
         await this.logActivity(
           "user",
           "Cập nhật người dùng",
@@ -877,11 +891,46 @@ class AdminPanel {
 
         this.showNotification("Cập nhật người dùng thành công", "success");
       } else {
-        // Add new user (in real app, you would create auth account first)
-        this.showNotification(
-          "Chức năng thêm người dùng mới đang được phát triển",
-          "warning"
+        // Thêm mới user
+        if (!email || !password || !username) {
+          this.showNotification("Vui lòng nhập đầy đủ thông tin!", "warning");
+          return;
+        }
+        // Khởi tạo firebase app phụ cho xác thực tạo user mới
+        const secondaryApp = initializeApp(firebaseConfig, "Secondary");
+        const secondaryAuth = getAuth(secondaryApp);
+
+        // Tạo user trên firebase auth
+        const userCredential = await createUserWithEmailAndPassword(
+          secondaryAuth,
+          email,
+          password
         );
+        const newUser = userCredential.user;
+        // Lưu thông tin vào database
+        const userData = {
+          id: newUser.uid,
+          username,
+          email,
+          role,
+          status,
+          avatar: "/assets/images/avatar-default.jpg",
+          bio: "",
+          createAt: new Date().toISOString().slice(0, 10),
+        };
+        await set(ref(database, `users/${newUser.uid}`), userData);
+
+        // Ghi lại hoạt động
+        await this.logActivity(
+          "user",
+          "Thêm người dùng",
+          `Đã thêm người dùng mới ${username}`,
+          "fas fa-user-plus"
+        );
+
+        this.showNotification("Thêm user thành công", "success");
+        // Đăng xuất app phụ
+        await secondaryAuth.signOut();
       }
 
       this.hideModal("user-modal");
@@ -908,12 +957,12 @@ class AdminPanel {
 
     try {
       if (courseId) {
-        // Update existing course
+        // Cập nhật khóa học đã có
         const courseRef = ref(database, `courses/${courseId}`);
         await update(courseRef, courseData);
         this.showNotification("Cập nhật khóa học thành công", "success");
       } else {
-        // Add new course
+        // Thêm khóa học mới
         const newCourseId = `course-${Date.now()}`;
         const courseRef = ref(database, `courses/${newCourseId}`);
         await set(courseRef, {
@@ -945,9 +994,9 @@ class AdminPanel {
     return categories[category] || "Khác";
   }
 
-  // Modal Management
+  // Quản lý modal
   initModals() {
-    // Close modal when clicking outside or on close button
+    // Đóng modal khi click ra ngoài hoặc click nút đóng
     document.querySelectorAll(".modal").forEach((modal) => {
       modal.addEventListener("click", (e) => {
         if (e.target === modal) {
@@ -982,9 +1031,9 @@ class AdminPanel {
     }
   }
 
-  // Notifications
+  // Thông báo
   initNotifications() {
-    // Auto-hide notifications after 5 seconds
+    // Tự động ẩn thông báo sau 5 giây
     document.addEventListener("notification-shown", () => {
       setTimeout(() => {
         this.hideNotification();
@@ -1020,7 +1069,32 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 });
 
-// Close notification when clicking close button
+// Khởi tạo menu tablet/mobile
+document.addEventListener("DOMContentLoaded", () => {
+  const sidebar = document.querySelector(".admin-sidebar");
+  const overlay = document.getElementById("sidebar-overlay");
+  const toggleBtn = document.getElementById("sidebar-toggle");
+
+  if (toggleBtn && sidebar && overlay) {
+    toggleBtn.addEventListener("click", () => {
+      sidebar.classList.add("open");
+      overlay.classList.add("show");
+    });
+    overlay.addEventListener("click", () => {
+      sidebar.classList.remove("open");
+      overlay.classList.remove("show");
+    });
+    // Đóng sidebar khi chọn menu
+    sidebar.querySelectorAll("a").forEach((link) => {
+      link.addEventListener("click", () => {
+        sidebar.classList.remove("open");
+        overlay.classList.remove("show");
+      });
+    });
+  }
+});
+
+// Đóng thông báo khi click nút đóng
 document.addEventListener("click", (e) => {
   if (e.target.classList.contains("notification-close")) {
     document.getElementById("notification").classList.remove("show");

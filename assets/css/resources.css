@@ -607,8 +607,13 @@
     height: 200px;
   }
 
-  .btn-bookmark {
+  #documentation .btn-bookmark {
     color: #fff;
+  }
+  .btn-next,
+  .btn-prev {
+    margin: unset;
+    width: unset;
   }
   /* modal example */
   .example-modal .modal-content {
@@ -626,9 +631,42 @@
     grid-template-columns: 1fr;
   }
 
-  .example-preview pre {
-    font-size: 0.85rem;
+  .examples-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+    padding: 0 4px;
   }
+  .example-card {
+    width: 100%;
+    box-sizing: border-box;
+    margin: 0;
+    padding: 10px;
+    border-radius: 6px;
+    font-size: 0.97rem;
+    min-width: 0;
+    max-width: 100%;
+  }
+  .example-preview pre {
+    max-width: 100%;
+    overflow-x: auto;
+    word-break: break-all;
+    padding: 10px;
+    font-size: 0.8rem;
+    border-radius: 5px;
+    max-height: 180px;
+  }
+
+  #examples .btn.btn-outline {
+    font-size: 0.98rem;
+    padding: 8px 0;
+    width: 100%;
+    margin: 0 auto 8px;
+  }
+  /* .btn-bookmark {
+    top: 8px;
+    right: 8px;
+    font-size: 18px;
+  } */
   .example-modal .modal-content {
     border-radius: 0;
   }
