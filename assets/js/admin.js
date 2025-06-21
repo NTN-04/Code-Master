@@ -549,6 +549,11 @@ class AdminPanel {
             }')" title="Xóa">
               <i class="fas fa-trash"></i>
             </button>
+            <button class="btn-action btn-detail" onclick="adminPanel.openCourseDetailManager('${
+              course.id
+            }')" title="Quản lý chi tiết">
+              <i class="fas fa-tasks"></i>
+            </button>
           </div>
         </div>
       </div>
@@ -579,10 +584,16 @@ class AdminPanel {
     document.getElementById("course-lessons").value = course.lessons || "";
     document.getElementById("course-category").value = course.category || "web";
     document.getElementById("course-image").value = course.image || "";
+    document.getElementById("course-featured").checked = !!course.featured;
 
     // Cập nhật tiêu đề modal
     document.getElementById("course-modal-title").textContent =
       "Chỉnh sửa khóa học";
+
+    // Ẩn custom id và required
+    document.getElementById("form-custom-id").style.display = "none";
+    document.getElementById("course-custom-id").required = false;
+    document.getElementById("form-featured").style.display = "flex"; // Hiện trường featured
 
     // Hiện modal
     this.showModal("course-modal");
@@ -611,6 +622,387 @@ class AdminPanel {
       this.showNotification("Lỗi xóa khóa học", "error");
     }
   }
+  // Quản lý chi tiết cho khóa học
+  async openCourseDetailManager(courseId) {
+    // Lưu courseId đang quản lý
+    this.currentManagingCourseId = courseId;
+    // Hiện modal
+    this.showModal("course-detail-modal");
+    // Load dữ liệu module/bài học/quiz
+    await this.loadCourseModules(courseId);
+  }
+  // Load module/bài học/quiz từ Firebase
+  async loadCourseModules(courseId) {
+    const modulesContainer = document.getElementById("course-modules-list");
+    if (!modulesContainer) return;
+    modulesContainer.innerHTML =
+      '<div class="loading-courses"><span class="loading-spinner"><i class="fas fa-spinner fa-spin"></i></span> Đang tải module...</div>';
+    try {
+      const modulesRef = ref(database, `course_modules/${courseId}`);
+      const snapshot = await get(modulesRef);
+      modulesContainer.innerHTML = "";
+      if (snapshot.exists()) {
+        const modules = Object.entries(snapshot.val()).map(([id, data]) => ({
+          id,
+          ...data,
+        }));
+        modules.forEach((module) => {
+          const moduleDiv = document.createElement("div");
+          moduleDiv.className = "admin-module-item";
+          moduleDiv.innerHTML = `
+            <div class="module-card">
+              <span class="module-title">${module.title}</span>
+              <div class="module-actions">
+                <button class="btn-action btn-edit" onclick="adminPanel.editModule('${courseId}','${module.id}')" title="Sửa module"><i class="fas fa-edit"></i></button>
+                <button class="btn-action btn-delete" onclick="adminPanel.deleteModule('${courseId}','${module.id}')" title="Xóa module"><i class="fas fa-trash"></i></button>
+                <button class="btn-action btn-lesson" onclick="adminPanel.openLessonsManager('${courseId}','${module.id}')" title="Quản lý bài học"><i class="fas fa-list"></i></button>
+              </div>
+            </div>
+          `;
+          modulesContainer.appendChild(moduleDiv);
+        });
+      } else {
+        modulesContainer.innerHTML =
+          '<div class="no-modules">Chưa có module nào cho khóa học này.</div>';
+      }
+    } catch (error) {
+      modulesContainer.innerHTML =
+        '<div class="module-error">Lỗi tải module.</div>';
+    }
+  }
+
+  // Thêm module mới cho khóa học
+  async addModule(courseId, moduleTitle) {
+    if (!moduleTitle) return;
+    try {
+      const modulesRef = ref(database, `course_modules/${courseId}`);
+      const snapshot = await get(modulesRef);
+      // Tạo id module mới dạng moduleN
+      let nextId = 1;
+      if (snapshot.exists()) {
+        const keys = Object.keys(snapshot.val());
+        const nums = keys
+          .map((k) => parseInt(k.replace("module", "")))
+          .filter((n) => !isNaN(n));
+        nextId = nums.length > 0 ? Math.max(...nums) + 1 : 1;
+      }
+      const newModuleId = `module${nextId}`;
+      await set(ref(database, `course_modules/${courseId}/${newModuleId}`), {
+        title: moduleTitle,
+        lessons: [],
+      });
+      // await this.logActivity(
+      //   "course",
+      //   "Thêm module",
+      //   `Thêm module "${moduleTitle}" cho khóa học ${courseId}`
+      // );
+      this.showNotification("Đã thêm module mới", "success");
+      await this.loadCourseModules(courseId);
+    } catch (error) {
+      this.showNotification("Lỗi thêm module", "error");
+    }
+  }
+
+  // Sửa module (chỉ sửa title)
+  async editModule(courseId, moduleId) {
+    const newTitle = prompt("Nhập tiêu đề mới cho module:");
+    if (!newTitle) return;
+    try {
+      await update(ref(database, `course_modules/${courseId}/${moduleId}`), {
+        title: newTitle,
+      });
+      // await this.logActivity(
+      //   "course",
+      //   "Sửa module",
+      //   `Sửa module ${moduleId} thành "${newTitle}" cho khóa học ${courseId}`
+      // );
+
+      this.showNotification("Đã cập nhật module", "success");
+      await this.loadCourseModules(courseId);
+    } catch (error) {
+      this.showNotification("Lỗi cập nhật module", "error");
+    }
+  }
+
+  // Xóa module
+  async deleteModule(courseId, moduleId) {
+    if (!confirm("Bạn có chắc chắn muốn xóa module này?")) return;
+    try {
+      await remove(ref(database, `course_modules/${courseId}/${moduleId}`));
+      // await this.logActivity(
+      //   "course",
+      //   "Xóa module",
+      //   `Xóa module ${moduleId} khỏi khóa học ${courseId}`
+      // );
+      this.showNotification("Đã xóa module", "success");
+      await this.loadCourseModules(courseId);
+    } catch (error) {
+      this.showNotification("Lỗi xóa module", "error");
+    }
+  }
+
+  // Mở modal quản lý bài học cho module
+  async openLessonsManager(courseId, moduleId) {
+    this.currentManagingCourseId = courseId;
+    this.currentManagingModuleId = moduleId;
+    // Đặt tiêu đề modal
+    document.getElementById(
+      "lesson-manager-title"
+    ).textContent = `Quản lý bài học - ${moduleId}`;
+    // Hiện modal
+    this.showModal("lesson-manager-modal");
+    // Load danh sách bài học
+    await this.loadLessonsList(courseId, moduleId);
+    // Gắn sự kiện nút thêm bài học
+    const addLessonBtn = document.getElementById("add-lesson-btn");
+    if (addLessonBtn) {
+      addLessonBtn.onclick = async () => {
+        await this.showLessonForm("add");
+      };
+    }
+  }
+
+  // Load danh sách bài học vào modal
+  async loadLessonsList(courseId, moduleId) {
+    const lessonsList = document.getElementById("lessons-list");
+    lessonsList.innerHTML =
+      '<div class="loading-courses"><span class="loading-spinner"><i class="fas fa-spinner fa-spin"></i></span> Đang tải bài học...</div>';
+    try {
+      const moduleRef = ref(database, `course_modules/${courseId}/${moduleId}`);
+      const snapshot = await get(moduleRef);
+      lessonsList.innerHTML = "";
+      if (snapshot.exists() && Array.isArray(snapshot.val().lessons)) {
+        const lessons = snapshot.val().lessons;
+        if (lessons.length === 0) {
+          lessonsList.innerHTML =
+            '<div class="no-lessons">Chưa có bài học nào.</div>';
+        } else {
+          lessons.forEach((lesson, idx) => {
+            const div = document.createElement("div");
+            div.className = "admin-lesson-item";
+            div.innerHTML = `
+              <div class="lesson-card">
+                <span class="lesson-title">${lesson.title}</span>
+                <span class="lesson-duration">${lesson.duration || ""}</span>
+                <div class="lesson-actions">
+                  <button class="btn-action btn-edit" title="Sửa" onclick="adminPanel.showLessonForm('edit', ${idx})"><i class="fas fa-edit"></i></button>
+                  <button class="btn-action btn-delete" title="Xóa" onclick="adminPanel.deleteLesson('${courseId}','${moduleId}',${idx})"><i class="fas fa-trash"></i></button>
+                  <button class="btn-action btn-quiz" title="Quiz" onclick="adminPanel.openQuizManager('${courseId}','${moduleId}',${idx})"><i class="fas fa-question"></i></button>
+                </div>
+              </div>
+            `;
+            lessonsList.appendChild(div);
+          });
+        }
+      } else {
+        lessonsList.innerHTML =
+          '<div class="no-lessons">Chưa có bài học nào.</div>';
+      }
+    } catch (error) {
+      lessonsList.innerHTML =
+        '<div class="lesson-error">Lỗi tải bài học.</div>';
+    }
+  }
+
+  // Hiện form thêm/sửa bài học (dùng prompt đơn giản, có thể mở rộng thành form đẹp)
+  async showLessonForm(type, idx = null) {
+    const courseId = this.currentManagingCourseId;
+    const moduleId = this.currentManagingModuleId;
+    const moduleRef = ref(
+      database,
+      `course_modules/${courseId}/${moduleId}/lessons`
+    );
+    let lessons = [];
+    const snapshot = await get(moduleRef);
+    if (snapshot.exists()) lessons = snapshot.val();
+    if (!Array.isArray(lessons)) lessons = [];
+    let title = "",
+      content = "",
+      duration = "",
+      video = "";
+    if (type === "edit" && idx !== null && lessons[idx]) {
+      title = lessons[idx].title;
+      content = lessons[idx].content;
+      duration = lessons[idx].duration;
+      video = lessons[idx].video;
+    }
+    title = prompt("Tiêu đề bài học:", title) || title;
+    if (!title) return;
+    content = prompt("Nội dung bài học:", content) || content;
+    duration = prompt("Thời lượng:", duration) || duration;
+    video = prompt("Link video:", video) || video;
+    if (type === "add") {
+      lessons.push({
+        id: `${moduleId}.${lessons.length + 1}`,
+        title,
+        content,
+        duration,
+        video,
+        quiz: [],
+      });
+    } else if (type === "edit" && idx !== null && lessons[idx]) {
+      lessons[idx] = { ...lessons[idx], title, content, duration, video };
+    }
+    await set(moduleRef, lessons);
+    await this.loadLessonsList(courseId, moduleId);
+    this.showNotification(
+      type === "add" ? "Đã thêm bài học" : "Đã cập nhật bài học",
+      "success"
+    );
+  }
+
+  // Xóa bài học
+  async deleteLesson(courseId, moduleId, idx) {
+    const moduleRef = ref(
+      database,
+      `course_modules/${courseId}/${moduleId}/lessons`
+    );
+    const snapshot = await get(moduleRef);
+    if (!snapshot.exists()) return;
+    let lessons = snapshot.val();
+    if (!Array.isArray(lessons) || idx < 0 || idx >= lessons.length) return;
+    if (!confirm("Bạn có chắc chắn muốn xóa bài học này?")) return;
+    lessons.splice(idx, 1);
+    await set(moduleRef, lessons);
+    await this.loadLessonsList(courseId, moduleId);
+    this.showNotification("Đã xóa bài học", "success");
+  }
+
+  // Mở modal quản lý quiz cho bài học
+  async openQuizManager(courseId, moduleId, lessonIdx) {
+    this.currentManagingCourseId = courseId;
+    this.currentManagingModuleId = moduleId;
+    this.currentManagingLessonIdx = lessonIdx;
+    // Đặt tiêu đề modal
+    document.getElementById("quiz-manager-title").textContent =
+      "Quiz - " + (lessonIdx + 1);
+    this.showModal("quiz-manager-modal");
+    await this.loadQuizList(courseId, moduleId, lessonIdx);
+    // Gắn sự kiện nút thêm quiz
+    const addQuizBtn = document.getElementById("add-quiz-btn");
+    if (addQuizBtn) {
+      addQuizBtn.onclick = async () => {
+        await this.showQuizForm("add");
+      };
+    }
+  }
+
+  // Load danh sách quiz vào modal
+  async loadQuizList(courseId, moduleId, lessonIdx) {
+    const quizList = document.getElementById("quiz-list");
+    quizList.innerHTML =
+      '<div class="loading-courses"><span class="loading-spinner"><i class="fas fa-spinner fa-spin"></i></span> Đang tải quiz...</div>';
+    try {
+      const lessonRef = ref(
+        database,
+        `course_modules/${courseId}/${moduleId}/lessons`
+      );
+      const snapshot = await get(lessonRef);
+      quizList.innerHTML = "";
+      if (snapshot.exists()) {
+        const lessons = snapshot.val();
+        if (
+          Array.isArray(lessons) &&
+          lessons[lessonIdx] &&
+          Array.isArray(lessons[lessonIdx].quiz)
+        ) {
+          const quizArr = lessons[lessonIdx].quiz;
+          if (quizArr.length === 0) {
+            quizList.innerHTML = '<div class="no-quiz">Chưa có quiz nào.</div>';
+          } else {
+            quizArr.forEach((quiz, idx) => {
+              const div = document.createElement("div");
+              div.className = "admin-quiz-item";
+              div.innerHTML = `
+                <div class="quiz-card">
+                  <span class="quiz-question">${quiz.question}</span>
+                  <div class="quiz-actions">
+                    <button class="btn-action btn-edit" title="Sửa" onclick="adminPanel.showQuizForm('edit', ${idx})"><i class="fas fa-edit"></i></button>
+                    <button class="btn-action btn-delete" title="Xóa" onclick="adminPanel.deleteQuiz('${courseId}','${moduleId}',${lessonIdx},${idx})"><i class="fas fa-trash"></i></button>
+                  </div>
+                </div>
+              `;
+              quizList.appendChild(div);
+            });
+          }
+        } else {
+          quizList.innerHTML = '<div class="no-quiz">Chưa có quiz nào.</div>';
+        }
+      }
+    } catch (error) {
+      quizList.innerHTML = '<div class="quiz-error">Lỗi tải quiz.</div>';
+    }
+  }
+
+  // Hiện form thêm/sửa quiz (dùng prompt đơn giản, có thể mở rộng thành form đẹp)
+  async showQuizForm(type, idx = null) {
+    const courseId = this.currentManagingCourseId;
+    const moduleId = this.currentManagingModuleId;
+    const lessonIdx = this.currentManagingLessonIdx;
+    const lessonRef = ref(
+      database,
+      `course_modules/${courseId}/${moduleId}/lessons`
+    );
+    let lessons = [];
+    const snapshot = await get(lessonRef);
+    if (snapshot.exists()) lessons = snapshot.val();
+    if (!Array.isArray(lessons) || !lessons[lessonIdx]) return;
+    let quizArr = lessons[lessonIdx].quiz;
+    if (!Array.isArray(quizArr)) quizArr = [];
+    let question = "",
+      options = ["", "", "", ""],
+      answer = 0;
+    if (type === "edit" && idx !== null && quizArr[idx]) {
+      question = quizArr[idx].question;
+      options = quizArr[idx].options;
+      answer = quizArr[idx].answer;
+    }
+    question = prompt("Câu hỏi:", question) || question;
+    if (!question) return;
+    for (let i = 0; i < 4; i++) {
+      options[i] = prompt(`Đáp án ${i + 1}:`, options[i] || "") || options[i];
+    }
+    answer =
+      parseInt(
+        prompt("Số thứ tự đáp án đúng (1-4):", (answer + 1).toString())
+      ) - 1;
+    if (isNaN(answer) || answer < 0 || answer > 3) return;
+    if (type === "add") {
+      quizArr.push({ question, options, answer });
+    } else if (type === "edit" && idx !== null && quizArr[idx]) {
+      quizArr[idx] = { question, options, answer };
+    }
+    lessons[lessonIdx].quiz = quizArr;
+    await set(lessonRef, lessons);
+    await this.loadQuizList(courseId, moduleId, lessonIdx);
+    this.showNotification(
+      type === "add" ? "Đã thêm quiz" : "Đã cập nhật quiz",
+      "success"
+    );
+  }
+
+  // Xóa quiz
+  async deleteQuiz(courseId, moduleId, lessonIdx, quizIdx) {
+    const lessonRef = ref(
+      database,
+      `course_modules/${courseId}/${moduleId}/lessons`
+    );
+    const snapshot = await get(lessonRef);
+    if (!snapshot.exists()) return;
+    let lessons = snapshot.val();
+    if (
+      !Array.isArray(lessons) ||
+      !lessons[lessonIdx] ||
+      !Array.isArray(lessons[lessonIdx].quiz)
+    )
+      return;
+    if (!confirm("Bạn có chắc chắn muốn xóa quiz này?")) return;
+    lessons[lessonIdx].quiz.splice(quizIdx, 1);
+    await set(lessonRef, lessons);
+    await this.loadQuizList(courseId, moduleId, lessonIdx);
+    this.showNotification("Đã xóa quiz", "success");
+  }
+
   // Quản lý tài liệu
   async loadResourcesData() {
     try {
@@ -821,6 +1213,16 @@ class AdminPanel {
         this.showAddResourceModal();
       });
 
+    // Nút thêm module trong modal quản lý chi tiết
+    const addModuleBtn = document.getElementById("add-module-btn");
+    if (addModuleBtn) {
+      addModuleBtn.addEventListener("click", async () => {
+        const courseId = this.currentManagingCourseId;
+        const title = prompt("Nhập tiêu đề module mới:");
+        if (title) await this.addModule(courseId, title);
+      });
+    }
+
     // Xử lý submit form
     document
       .getElementById("user-form")
@@ -854,6 +1256,9 @@ class AdminPanel {
     // Xóa dữ liệu form
     document.getElementById("course-form").reset();
     document.getElementById("course-id").value = "";
+    document.getElementById("form-custom-id").style.display = "block"; // Ẩn id
+    document.getElementById("course-custom-id").required = true;
+    document.getElementById("form-featured").style.display = "none"; // Ẩn trường featured
     document.getElementById("course-modal-title").textContent = "Thêm khóa học";
 
     this.showModal("course-modal");
@@ -944,6 +1349,11 @@ class AdminPanel {
     e.preventDefault();
 
     const courseId = document.getElementById("course-id").value;
+    const customId = document
+      .getElementById("course-custom-id")
+      ?.value.toLowerCase()
+      .trim();
+
     const courseData = {
       title: document.getElementById("course-title").value,
       description: document.getElementById("course-description").value,
@@ -952,27 +1362,39 @@ class AdminPanel {
       lessons: parseInt(document.getElementById("course-lessons").value),
       category: document.getElementById("course-category").value,
       image: document.getElementById("course-image").value,
-      updatedAt: new Date().toISOString().slice(0, 10),
+      createdAt: new Date().toISOString().slice(0, 10),
     };
 
     try {
       if (courseId) {
-        // Cập nhật khóa học đã có
+        // Cập nhật khóa học đã có (edit course)
+        courseData.featured =
+          document.getElementById("course-featured").checked;
+
         const courseRef = ref(database, `courses/${courseId}`);
         await update(courseRef, courseData);
         this.showNotification("Cập nhật khóa học thành công", "success");
       } else {
         // Thêm khóa học mới
-        const newCourseId = `course-${Date.now()}`;
+        const newCourseId = customId || `course-${Date.now()}`;
         const courseRef = ref(database, `courses/${newCourseId}`);
         await set(courseRef, {
+          id: newCourseId,
           ...courseData,
           progress: 0,
           tag: this.getCategoryText(courseData.category),
           url: `courses/${newCourseId}.html`,
-          createdAt: new Date().toISOString().slice(0, 10),
-          status: "active",
+          updatedAt: new Date().toISOString().slice(0, 10),
+          featured: false,
         });
+
+        // Ghi lại hoạt động
+        await this.logActivity(
+          "user",
+          "Thêm khóa học",
+          `Đã thêm khóa học mới ${courseData.title}`,
+          "fas fa-book"
+        );
         this.showNotification("Thêm khóa học thành công", "success");
       }
 
@@ -1057,7 +1479,6 @@ class AdminPanel {
     notification.classList.remove("show");
   }
 }
-
 // Khởi tạo AdminPanel khi đã xác thực thành công
 document.addEventListener("DOMContentLoaded", () => {
   const guard = new AdminGuard();
