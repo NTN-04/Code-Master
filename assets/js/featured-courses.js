@@ -16,8 +16,15 @@ async function loadFeaturedCourses() {
   const grid = document.getElementById("featured-courses-grid");
   if (!grid) return;
 
-  // trang thái đang tải
-  grid.innerHTML = `<div class="loading-courses"><i class="loading-spinner fas fa-spinner fa-spin"></i> Đang tải...</div>`;
+  // loading skeleton cho course-card
+  let skeletonHTML = "";
+  for (let i = 0; i < 3; i++) {
+    skeletonHTML += `
+      <div class="skeleton skeleton-card">  
+      </div>
+    `;
+  }
+  grid.innerHTML = skeletonHTML;
 
   try {
     const coursesRef = ref(database, "courses");
@@ -86,13 +93,21 @@ function createFeaturedCourseCard(course) {
         </div>
         <p>${course.description}</p>
         <div class="progress-container">
-          <div class="progress-bar" data-progress="0" data-course-id="${course.id}">
+          <div class="progress-bar" data-progress="0" data-course-id="${
+            course.id
+          }">
             <div class="progress"></div>
           </div>
           <span class="progress-text">0% Hoàn Thành</span>
         </div>
-        <a href="${course.url}" class="btn btn-primary">Bắt Đầu Học</a>
+        <a href="${startCourse(
+          course.id
+        )}" class="btn btn-primary">Bắt Đầu Học</a>
       </div>
     </div>
   `;
+}
+// Khi click nút bắt đầu học
+function startCourse(courseId) {
+  return `course-detail.html?id=${courseId}`;
 }

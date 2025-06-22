@@ -12,7 +12,7 @@ document.addEventListener("DOMContentLoaded", async function () {
   const modules = await fetchCourseModules(courseId);
   renderSidebar(modules);
 
-  updateCourseMeta(modules);
+  updateCourseMeta();
 
   // Khởi tạo chức năng thu gọn/mở rộng module
   initModuleToggles();
@@ -23,6 +23,48 @@ document.addEventListener("DOMContentLoaded", async function () {
   // Khởi tạo theo dõi tiến trình học
   initCourseProgress();
 });
+
+// Biến lưu bộ nhớ đệm (cache)
+const moduleCache = new Map();
+
+// Banner chào mừng cho từng khóa học
+// const welcomeBanners = {
+//   "html-css": {
+//     title: "Nền Tảng HTML & CSS",
+//     subtitle:
+//       "Học các khối nền tảng của phát triển web. Khóa học toàn diện này sẽ dạy bạn cách tạo các trang web đẹp, responsive bằng HTML và CSS từ đầu.",
+//     image: "./assets/images/img-course/html-css.png",
+//   },
+//   javascript: {
+//     title: "JavaScript Cơ Bản",
+//     subtitle: "Làm chủ ngôn ngữ lập trình web phổ biến nhất thế giới.",
+//     image: "./assets/images/img-course/javascript.png",
+//   },
+//   // Thêm các khóa học khác nếu muốn
+// };
+
+// function renderWelcomeBanner() {
+//   const banner = {
+//     title: "Chào mừng bạn đến với khóa học!",
+//     subtitle: "Hãy bắt đầu hành trình học tập của bạn tại CodeMaster.",
+//     image: "assets/images/logo-01.svg",
+//   };
+//   const header = document.querySelector(".course-main .lesson-welcome");
+//   if (header) {
+//     header.innerHTML = `
+//       <div class="welcome-banner">
+//         <div class="banner-content">
+//           <h1 class="course-info-title">${banner.title}</h1>
+//           <p class="banner-subtitle">${banner.subtitle}</p>
+//           <a href="#" class="btn btn-primary" id="start-course">Bắt Đầu Khóa Học</a>
+//         </div>
+//         <div class="banner-image">
+//           <img src="${banner.image}" alt="${banner.title}" />
+//         </div>
+//       </div>
+//     `;
+//   }
+// }
 
 // Khởi tạo chức năng thu gọn/mở rộng danh sách bài học trong module
 function initModuleToggles() {
@@ -149,6 +191,12 @@ async function activateLesson(lessonId) {
     return;
   }
 
+  // Ẩn banner chào mừng khi hiển thị bài học
+  const welcomeBanner = document.getElementById("lesson-welcome");
+  if (welcomeBanner) {
+    welcomeBanner.style.display = "none";
+  }
+
   const courseId = getCourseIdFromUrl();
   const modules = await fetchCourseModules(courseId);
 
@@ -175,11 +223,8 @@ async function activateLesson(lessonId) {
 
 // Lấy động courseID từ URL
 function getCourseIdFromUrl() {
-  // Lấy tên file, ví dụ: html-css.html
-  const path = window.location.pathname;
-  const fileName = path.substring(path.lastIndexOf("/") + 1);
-  // Lấy phần trước .html
-  return fileName.replace(".html", "");
+  const params = new URLSearchParams(window.location.search);
+  return params.get("id");
 }
 
 // Đánh dấu tiến trình học bài
@@ -337,9 +382,18 @@ function updateProgressUI(progressPercentage) {
 
 // Lấy dữ liệu module cho courseId
 async function fetchCourseModules(courseId) {
+  // Kiểm tra cache trước
+  if (moduleCache.has(courseId)) {
+    return moduleCache.get(courseId);
+  }
+
   const modulesRef = ref(database, `course_modules/${courseId}`);
   const snap = await get(modulesRef);
-  return snap.exists() ? snap.val() : {};
+  const modules = snap.exists() ? snap.val() : {};
+
+  // Lưu vào cache khi lấy từ DB
+  moduleCache.set(courseId, modules);
+  return modules;
 }
 
 // Render sidebar từ courses_module
@@ -424,7 +478,7 @@ function renderLessonContent(lesson, modules) {
 
 function renderVideo(videoUrl) {
   if (videoUrl.includes("youtube.com") || videoUrl.includes("youtu.be")) {
-    return `<iframe width="853" height="480" src="${videoUrl}" frameborder="0" allowfullscreen></iframe>`;
+    return `<iframe width="853" height="480" src="${videoUrl}" loading="lazy" frameborder="0" allowfullscreen></iframe>`;
   }
   return `<video controls width="853"><source src="${videoUrl}" type="video/mp4"></video>`;
 }
@@ -487,45 +541,7 @@ function initQuizEvents(lesson) {
 }
 
 // Cập nhật thông tin meta
-async function updateCourseMeta(modules) {
-  // Tính tổng số bài học và tổng thời lượng
-  let totalLessons = 0;
-  let totalMinutes = 0;
-  Object.values(modules).forEach((module) => {
-    module.lessons.forEach((lesson) => {
-      totalLessons++;
-      // kiểm tra và lấy số phút và số giây từ duration bằng regex
-      if (lesson.duration) {
-        const match = lesson.duration.match(/(\d+)(?::(\d+))?/);
-        if (match) {
-          const m = parseInt(match[1]);
-          const s = match[2] ? parseInt(match[2]) : 0;
-          totalMinutes += m + Math.round(s / 60);
-        }
-      }
-    });
-  });
-
-  // Chuyển phút thành giờ và phút
-  const hours = Math.floor(totalMinutes / 60);
-  const minutes = totalMinutes % 60;
-  let durationText = "";
-  if (hours > 0) durationText += `${hours} giờ `;
-  if (minutes > 0) durationText += `${minutes} `;
-  if (!durationText) durationText = "0"; // 0 phút
-
-  // Cập nhật số bài học
-  const lessonsSpan = document.querySelector(".course-meta .lessons");
-  if (lessonsSpan) {
-    lessonsSpan.innerHTML = `<i class="far fa-file-alt"></i> ${totalLessons} bài học`;
-  }
-
-  // Cập nhật tổng thời lượng
-  const durationSpan = document.querySelector(".course-meta .duration");
-  if (durationSpan) {
-    durationSpan.innerHTML = `<i class="far fa-clock"></i> ${durationText} phút`;
-  }
-
+async function updateCourseMeta() {
   // Cập nhật title, description, level
   const courseId = getCourseIdFromUrl();
   const courseRef = ref(database, `courses/${courseId}`);
@@ -551,6 +567,16 @@ async function updateCourseMeta(modules) {
             ? "Nâng Cao"
             : course.level;
         levelEl.className = `level ${course.level}`;
+      }
+      // Cập nhật số bài học
+      const lessonsSpan = document.querySelector(".course-meta .lessons");
+      if (lessonsSpan) {
+        lessonsSpan.innerHTML = `<i class="far fa-file-alt"></i> ${course.lessons} bài học`;
+      }
+      // Cập nhật tổng thời lượng
+      const durationSpan = document.querySelector(".course-meta .duration");
+      if (durationSpan) {
+        durationSpan.innerHTML = `<i class="far fa-clock"></i> ${course.duration}`;
       }
     }
   } catch (err) {

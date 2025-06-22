@@ -356,12 +356,15 @@ function showLoading(tabId) {
     `#${tabId} .resources-grid, #${tabId} .examples-grid, #${tabId} .videos-grid, #${tabId} .books-grid, #${tabId} .tools-grid`
   );
   if (grid) {
-    grid.innerHTML = `
-      <div class="loading-courses">
-        <span class="loading-spinner"><i class="fas fa-spinner fa-spin"></i></span>
-        <span>Đang tải dữ liệu...</span>
-      </div>
-    `;
+    let skeletonHTML = "";
+    // tạo 6 skeleton
+    for (let i = 0; i < 6; i++) {
+      skeletonHTML += `
+        <div class="skeleton skeleton-resource-card">  
+        </div>
+      `;
+    }
+    grid.innerHTML = skeletonHTML;
   }
 }
 

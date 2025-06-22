@@ -50,18 +50,21 @@ async function loadCoursesFromDatabase() {
   }
 }
 
-// Hiển thị loading state
+// Hiển thị skeleton loading cho khóa học
 function showCoursesLoading() {
   const coursesGrid = document.querySelector(".courses-grid");
   if (coursesGrid) {
-    coursesGrid.innerHTML = `
-      <div class="loading-courses">
-        <div class="loading-spinner">
-          <i class="fas fa-spinner fa-spin"></i>
+    let skeletonHTML = "";
+
+    // Tạo 6 skeleton card
+    for (let i = 0; i < 6; i++) {
+      skeletonHTML += `
+        <div class="course-card skeleton skeleton-card">  
         </div>
-        <p>Đang tải khóa học...</p>
-      </div>
-    `;
+      `;
+    }
+
+    coursesGrid.innerHTML = skeletonHTML;
   }
 }
 
@@ -163,10 +166,17 @@ function createCourseCard(course, categoriesData, stats = {}) {
           </div>
           <span class="progress-text">0% Hoàn Thành</span>
         </div>
-        <a href="${course.url}" class="btn btn-primary">Bắt Đầu Học</a>
+        <a href="${startCourse(
+          course.id
+        )}" class="btn btn-primary">Bắt Đầu Học</a>
       </div>
     </div>
   `;
+}
+
+// Khi click nút bắt đầu học
+function startCourse(courseId) {
+  return `course-detail.html?id=${courseId}`;
 }
 
 // Hiển thị thông báo khi không có khóa học
