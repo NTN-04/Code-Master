@@ -11,6 +11,8 @@
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
     />
+    <!-- Thư viện vẻ biểu đồ thống kê -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   </head>
 
   <body>
@@ -290,6 +292,15 @@
       <section id="analytics" class="admin-section">
         <div class="section-header">
           <h1>Thống kê</h1>
+          <!-- bộ lọc -->
+          <div class="section-actions">
+            <select id="analytics-period" class="form-control">
+              <option value="week">7 ngày qua</option>
+              <option value="month">30 ngày qua</option>
+              <option value="year">365 ngày qua</option>
+              <option value="all" selected>Tất cả</option>
+            </select>
+          </div>
         </div>
 
         <!-- Charts -->
@@ -298,15 +309,15 @@
             <div class="card-header">
               <h3>Người dùng mới theo tháng</h3>
             </div>
-            <div class="card-body">
+            <div class="card-body chart-container">
               <canvas id="users-chart"></canvas>
             </div>
           </div>
           <div class="admin-card">
             <div class="card-header">
-              <h3>Khóa học phổ biến</h3>
+              <h3>Top 5 khóa học phổ biến</h3>
             </div>
-            <div class="card-body">
+            <div class="card-body chart-container">
               <canvas id="courses-chart"></canvas>
             </div>
           </div>
@@ -332,8 +343,9 @@
               <div class="form-group">
                 <label>Mô tả website:</label>
                 <textarea id="site-description" rows="3">
-                  Nền tảng học lập trình trực tuyến
-                </textarea>
+                    Nền tảng học lập trình trực tuyến
+                  </textarea
+                >
               </div>
               <div class="form-group">
                 <label>Email liên hệ:</label>

@@ -548,12 +548,25 @@
 /* Charts */
 .charts-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  grid-template-columns: 1fr;
   gap: 2rem;
 }
 
-.charts-grid .admin-card {
-  min-height: 400px;
+.chart-container {
+  height: 300px;
+  position: relative;
+}
+
+#analytics-period {
+  padding: 5px 10px;
+  border-radius: 4px;
+  border: 1px solid #ddd;
+  outline: none;
+  background-color: #fff;
+  cursor: pointer;
+}
+#analytics-period:focus {
+  border: 1px solid var(--primary-color);
 }
 
 /* Forms */
@@ -864,6 +877,9 @@
 
 .notification.warning {
   border-left: 4px solid var(--warning-color);
+}
+.notification.info {
+  border-left: 4px solid var(--primary-color);
 }
 
 /* Animations */
