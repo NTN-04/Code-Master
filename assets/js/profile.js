@@ -208,7 +208,7 @@ function loadUserSetting() {
       // Lấy ảnh đại diện từ local
       const base64Image = localStorage.getItem("profile-avatar-" + user.uid);
       const avatarImg = document.querySelector(".profile-avatar img");
-      avatarImg.src = base64Image;
+      avatarImg.src = base64Image || "assets/images/avatar-default.jpg";
     } else {
       window.location.href = "login.html";
     }

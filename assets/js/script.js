@@ -74,3 +74,13 @@ function initScrollAnimations() {
     observer.observe(element);
   });
 }
+
+// Lắng nghe thông điệp từ popup
+window.addEventListener("message", function (event) {
+  // Chỉ nhận từ cùng origin
+  if (event.origin !== window.location.origin) return;
+  if (event.data && event.data.type === "login-success") {
+    // Đăng nhập thành công, reload hoặc chuyển hướng
+    window.location.href = "index.html";
+  }
+});
