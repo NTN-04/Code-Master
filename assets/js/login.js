@@ -282,6 +282,16 @@ async function signInWithProvider(provider, providerName) {
     // Lưu thông tin người dùng vào local (đồng bộ từ Database)
     await saveUserData(user, providerName);
 
+    // Nếu là popup, gửi thông điệp về trang gốc rồi tự đóng (tránh lỗi window.close call)
+    if (window.opener) {
+      window.opener.postMessage(
+        { type: "login-success", provider: providerName },
+        window.location.origin
+      );
+      window.close();
+      return { success: true, user };
+    }
+
     // Thông báo và chuyển hướng
     window.location.href = "index.html";
     return { success: true, user };

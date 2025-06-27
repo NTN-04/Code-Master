@@ -1,0 +1,116 @@
+<!-- forum.html - Giao diện diễn đàn Q&A CodeMaster -->
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Blog | CodeMaster</title>
+    <link rel="icon" href="./assets/images/favicon.ico" type="image/x-icon" />
+    <link rel="stylesheet" href="./assets/css/blog.css" />
+    <link rel="stylesheet" href="./assets/css/style.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <!-- Markdown SimpleMDE cho nội dung -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.css"
+    />
+    <script src="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.js"></script>
+  </head>
+  <body>
+    <!-- load với component -->
+    <header id="header-placeholder"></header>
+
+    <main class="blog-container">
+      <div class="blog-search">
+        <input
+          type="text"
+          placeholder="Tìm kiếm tiêu đề, mô tả..."
+          id="blog-search"
+        />
+        <button><i class="fas fa-search"></i></button>
+      </div>
+
+      <div class="blog-header">
+        <div class="blog-heading">
+          <h1>Bài viết nổi bật</h1>
+          <p class="blog-desc">
+            Tổng hợp các bài viết chia sẻ về kinh nghiệm tự học lập trình online
+            và các kỹ thuật lập trình web.
+          </p>
+        </div>
+        <div class="blog-cta">
+          <button id="open-post-modal" class="btn btn-primary">
+            <i class="fa fa-plus"></i> Viết blog
+          </button>
+          <button
+            id="my-blog"
+            class="btn btn-primary"
+            onclick="window.location.href ='my-blog.html'"
+          >
+            My blog
+          </button>
+        </div>
+      </div>
+      <div class="main">
+        <section class="blog-list-section">
+          <ul class="blog-list" id="blog-list">
+            <!-- Danh sách bài viết sẽ render động bằng JS -->
+          </ul>
+          <!-- phân trang -->
+
+          <div class="blog-pagination" id="blog-pagination"></div>
+        </section>
+        <!-- sidebar -->
+        <aside class="blog-sidebar">
+          <h2>Xem các bài viết theo chủ đề</h2>
+          <div class="blog-topic-list">
+            <!-- render dộng -->
+          </div>
+        </aside>
+      </div>
+    </main>
+
+    <!-- Modal đăng bài -->
+    <div id="post-modal" class="modal" style="display: none">
+      <div class="modal-content">
+        <span class="close-modal" id="close-post-modal">&times;</span>
+        <h2>Đăng bài viết mới</h2>
+        <form id="blog-post-form">
+          <input type="text" id="post-title" placeholder="Tiêu đề" required />
+          <textarea id="post-desc" placeholder="Mô tả ngắn" required></textarea>
+          <textarea
+            id="post-content"
+            placeholder="Nội dung (Markdown)"
+          ></textarea>
+          <input
+            type="text"
+            id="post-tags"
+            placeholder="Tags (cách nhau bởi dấu phẩy)"
+          />
+          <input type="file" id="post-image" accept="image/*" />
+          <!-- review ảnh khi úp -->
+          <img
+            id="image-preview"
+            style="
+              display: none;
+              max-width: 100%;
+              margin: 10px 0;
+              border-radius: 8px;
+            "
+          />
+          <button type="submit" class="btn btn-success">Đăng bài</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- load bằng components -->
+    <footer id="footer-placeholder"></footer>
+
+    <script type="module" src="./assets/js/blog.js"></script>
+    <script src="./assets/js/components.js"></script>
+    <script type="module" src="./assets/js/auth.js"></script>
+  </body>
+</html>

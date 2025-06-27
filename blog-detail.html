@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Blog | CodeMaster</title>
+    <link rel="icon" href="./assets/images/favicon.ico" type="image/x-icon" />
+    <link rel="stylesheet" href="./assets/css/blog.css" />
+    <link rel="stylesheet" href="./assets/css/style.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+  </head>
+  <body>
+    <!-- load với component -->
+    <header id="header-placeholder"></header>
+    <div class="blog-back">&lt; Trở lại</div>
+    <main class="blog-detail-container">
+      <section class="blog-detail-content">
+        <div class="blog-header">
+          <h1>Bài viết nổi bật</h1>
+        </div>
+        <div class="blog-desc">
+          Tổng hợp các bài viết chia sẻ về kinh nghiệm tự học lập trình online
+          và các kỹ thuật lập trình web.
+        </div>
+        <ul class="blog-list" id="blog-list">
+          <!-- Danh sách bài viết sẽ render động bằng JS -->
+        </ul>
+      </section>
+    </main>
+
+    <!-- load bằng components -->
+    <footer id="footer-placeholder"></footer>
+
+    <script type="module" src="./assets/js/blog-detail.js"></script>
+    <!-- thư viện marked -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="./assets/js/components.js"></script>
+    <script type="module" src="./assets/js/auth.js"></script>
+  </body>
+</html>

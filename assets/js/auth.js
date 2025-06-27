@@ -3,7 +3,6 @@ import { signOut } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-auth
 
 // Cập nhật UI dựa trên trạng thái đăng nhập
 function updateUIBasedOnLoginState() {
-  console.log("Cập nhật UI dựa trên trạng thái đăng nhập");
   const userData = getUserData();
   updateNavigationMenu(!!userData);
 }
@@ -52,7 +51,7 @@ function updateNavList(navList, isLoggedIn) {
       const adminLi = document.createElement("li");
       const adminLink = document.createElement("a");
       adminLink.href = rootPath + "admin.html";
-      adminLink.innerHTML = `<i class="icon fa-solid fa-cog"></i> Quản Trị`;
+      adminLink.innerHTML = `<i class="icon fa-solid fa-cog"></i> Admin`;
       adminLi.appendChild(adminLink);
       navList.appendChild(adminLi);
     }
@@ -63,7 +62,9 @@ function updateNavList(navList, isLoggedIn) {
       const profileLi = document.createElement("li");
       const profileLink = document.createElement("a");
       profileLink.href = rootPath + "profile.html";
-      profileLink.innerHTML = `<i class="icon fa-solid fa-user"></i> Tài khoản`;
+      profileLink.innerHTML = `<i class="icon fa-solid fa-user"></i> ${
+        userData.displayName || "Tài Khoản"
+      } `;
       profileLi.appendChild(profileLink);
       navList.appendChild(profileLi);
     }

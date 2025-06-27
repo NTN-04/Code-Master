@@ -84,7 +84,6 @@ function setActiveLink() {
 
       if (hrefFile === currentPath && link.id !== "logout-btn") {
         link.classList.add("active");
-        console.log("Active desktop link:", href);
       } else {
         link.classList.remove("active");
       }
@@ -99,7 +98,6 @@ function setActiveLink() {
 
       if (hrefFile === currentPath && link.id !== "logout-btn") {
         link.classList.add("active");
-        console.log("Active mobile link:", href);
       } else {
         link.classList.remove("active");
       }

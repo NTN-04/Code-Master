@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bài viết của tôi | CodeMaster</title>
+    <link rel="icon" href="./assets/images/favicon.ico" type="image/x-icon" />
+    <link rel="stylesheet" href="./assets/css/style.css" />
+    <link rel="stylesheet" href="./assets/css/my-blog.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+  </head>
+  <body>
+    <!-- Header component -->
+    <header id="header-placeholder"></header>
+
+    <!-- Main content -->
+    <main class="my-blog-wrapper">
+      <div class="my-blog-header">
+        <h1 class="my-blog-title">Bài viết của tôi</h1>
+        <a class="blog-back">
+          <i class="fas fa-arrow-left"></i> Trở lại trang Blog
+        </a>
+      </div>
+
+      <div class="my-blog-content">
+        <!-- User sidebar -->
+        <aside class="user-profile-sidebar">
+          <div class="user-profile-header">
+            <div class="user-avatar-container">
+              <img id="user-avatar" src="" alt="User Avatar" />
+            </div>
+            <div class="user-info">
+              <h3 id="user-name">User Name</h3>
+              <p id="user-email">user@example.com</p>
+            </div>
+          </div>
+
+          <!-- Blog trạng thái lọc -->
+          <div class="status-filter">
+            <button data-status="all" class="active">
+              <span>Tất cả bài viết</span>
+              <span class="status-count" id="all-count">0</span>
+            </button>
+            <button data-status="published">
+              <span>Đã xuất bản</span>
+              <span class="status-count" id="published-count">0</span>
+            </button>
+            <button data-status="pending">
+              <span>Chờ duyệt</span>
+              <span class="status-count" id="pending-count">0</span>
+            </button>
+          </div>
+        </aside>
+
+        <!-- Nội dung blog -->
+        <div class="blog-content-area">
+          <!-- Search bar -->
+          <div class="blog-search-bar">
+            <input
+              type="text"
+              id="search-input"
+              placeholder="Tìm kiếm bài viết của bạn..."
+            />
+            <button id="search-btn">
+              <i class="fas fa-search"></i>
+            </button>
+          </div>
+
+          <!-- Danh sách blog -->
+          <ul class="blog-list" id="blog-list">
+            <!-- render động JS -->
+          </ul>
+
+          <!-- Thông báo k có blog -->
+          <div id="no-posts-message">
+            <i class="far fa-file-alt"></i>
+            <h3>Không có bài viết nào</h3>
+            <p>
+              Bạn chưa có bài viết nào hoặc không có bài viết nào phù hợp với bộ
+              lọc hiện tại.
+            </p>
+          </div>
+          <!-- phân trang -->
+          <div class="blog-pagination" id="blog-pagination"></div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Footer component -->
+    <footer id="footer-placeholder"></footer>
+
+    <!-- Scripts -->
+    <script src="./assets/js/components.js"></script>
+    <script type="module" src="./assets/js/auth.js"></script>
+    <script type="module" src="./assets/js/my-blog.js"></script>
+  </body>
+</html>
