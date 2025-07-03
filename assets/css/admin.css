@@ -371,6 +371,12 @@
   color: #4a148c;
 }
 
+/* Status badges for blogs */
+.status-badge.status-pending {
+  background-color: #ffc107;
+  color: #212529;
+}
+
 /* Action Buttons */
 .action-buttons,
 .module-actions {
@@ -416,6 +422,24 @@
 
 .btn-suspend:hover {
   background: #ffe0b2;
+}
+
+.btn-action.btn-approve {
+  background-color: #28a745;
+  color: white;
+}
+
+.btn-action.btn-approve:hover {
+  background-color: #218838;
+}
+
+.btn-action.btn-view {
+  background-color: #17a2b8;
+  color: white;
+}
+
+.btn-action.btn-view:hover {
+  background-color: #138496;
 }
 
 /* Courses Grid */
@@ -523,7 +547,9 @@
 .activity-system .activity-icon {
   background: var(--warning-color);
 }
-
+.activity-blog .activity-icon {
+  background: #38f9d7;
+}
 .activity-content {
   flex: 1;
 }
@@ -822,6 +848,187 @@
   gap: 0.5rem;
 }
 
+/* Lọc blog */
+#blog-search,
+#blog-category-filter,
+#blog-status-filter {
+  padding: 0.5rem;
+  border-radius: 4px;
+  border: 1px solid var(--gray-medium);
+  width: 100%;
+}
+/* Modal Blog */
+.modal-blog-content {
+  background: white;
+  border-radius: var(--border-radius);
+  width: 90%;
+  max-height: 90vh;
+  overflow-y: auto;
+  animation: slideUp 0.3s ease;
+}
+#admin-blog-form {
+  display: grid;
+  grid-template-columns: 0.5fr 1fr;
+  gap: 10px;
+}
+/* toolbar của simpleMde */
+.editor-toolbar {
+  position: sticky !important;
+  top: 10px;
+  z-index: 10;
+  background: #1f71f5ee;
+  opacity: 0.9 !important;
+}
+
+/* Modal xem chi tiết bài viết admin */
+#admin-blog-detail-modal .modal-content.modal-lg {
+  max-width: 900px;
+  width: 95vw;
+  padding: 0;
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
+  overflow: auto;
+}
+#admin-blog-detail-modal .modal-header {
+  background: var(--color-admin, #2563eb);
+
+  padding: 1.5rem 2rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+#admin-blog-detail-modal .modal-header h3 {
+  color: #fff;
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin: 0;
+}
+#admin-blog-detail-modal .close-modal {
+  color: #fff;
+  font-size: 2rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+#admin-blog-detail-modal .close-modal:hover {
+  color: #ff5252;
+}
+#admin-blog-detail-modal .modal-body {
+  padding: 2rem 2.5rem 1.5rem 2.5rem;
+  background: #fff;
+  color: var(--text-color, #222);
+  font-size: 1.1rem;
+  line-height: 1.7;
+}
+#admin-blog-detail-modal .modal-body img {
+  display: block;
+  margin: 18px auto 18px auto;
+  max-width: 100%;
+  border-radius: 8px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.07);
+}
+#admin-blog-detail-modal .modal-body b {
+  color: var(--color-admin, #2563eb);
+}
+#admin-blog-detail-modal .modal-footer {
+  padding: 1rem 2.5rem 1.5rem 2.5rem;
+  background: #f8f9fa;
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+  border-top: 1px solid #e5e7eb;
+}
+/* Định dạng nội dung chuyển từ markdown sang html */
+.blog-detail-content-view {
+  font-size: 1.08rem;
+  color: #222;
+  line-height: 1.7;
+  margin-top: 1.5rem;
+  word-break: break-word;
+}
+
+.blog-detail-content-view h1,
+.blog-detail-content-view h2,
+.blog-detail-content-view h3,
+.blog-detail-content-view h4 {
+  font-weight: 700;
+  margin: 1.2em 0 0.7em 0;
+  color: #1a237e;
+}
+
+.blog-detail-content-view p {
+  margin: 0.7em 0;
+}
+
+.blog-detail-content-view ul,
+.blog-detail-content-view ol {
+  list-style: unset;
+  margin: 1em 0 1em 2em;
+  padding-left: 1.2em;
+}
+
+.blog-detail-content-view blockquote {
+  border-left: 4px solid #007bff;
+  background: #f5f7fa;
+  color: #555;
+  margin: 1em 0;
+  padding: 0.7em 1em;
+  font-style: italic;
+  border-radius: 4px;
+}
+
+.blog-detail-content-view a {
+  color: #007bff;
+  text-decoration: underline;
+  word-break: break-all;
+}
+
+.blog-detail-content-view img {
+  max-width: 100%;
+  border-radius: 7px;
+  margin: 1em 0;
+  display: block;
+}
+
+.blog-detail-content-view table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 1em 0;
+  background: #fafbfc;
+}
+
+.blog-detail-content-view th,
+.blog-detail-content-view td {
+  border: 1px solid #e0e0e0;
+  padding: 0.5em 0.8em;
+  text-align: left;
+}
+
+.blog-detail-content-view pre {
+  background: #23272e;
+  color: #fff;
+  padding: 1em;
+  border-radius: 7px;
+  overflow-x: auto;
+  margin: 1.2em 0;
+  font-size: 1em;
+}
+
+.blog-detail-content-view code {
+  background: #f3f3f3;
+  color: #d63384;
+  padding: 0.2em 0.4em;
+  border-radius: 4px;
+  font-size: 0.98em;
+  font-family: "Fira Mono", "Consolas", "Menlo", monospace;
+}
+
+.blog-detail-content-view pre code {
+  background: none;
+  color: #fff;
+  padding: 0;
+  font-size: 1em;
+}
+
 /* Notifications */
 .notification {
   position: fixed;
@@ -951,6 +1158,10 @@
   .sidebar-toggle {
     display: block;
   }
+  #admin-blog-form {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
 }
 
 /* Responsive */
@@ -1061,5 +1272,17 @@
   }
   .sidebar-toggle {
     font-size: 1.5rem;
+  }
+}
+
+@media (max-width: 900px) {
+  #admin-blog-detail-modal .modal-content.modal-lg {
+    max-width: 99vw;
+    width: 99vw;
+    padding: 0;
+  }
+  #admin-blog-detail-modal .modal-body,
+  #admin-blog-detail-modal .modal-footer {
+    padding: 1rem 0.7rem;
   }
 }

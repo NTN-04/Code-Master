@@ -1,17 +1,18 @@
-import { auth, database, firebaseConfig } from "./firebaseConfig.js";
+import { auth, database } from "./firebaseConfig.js";
 import {
   ref,
-  push,
-  get,
   set,
 } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-database.js";
-import { signOut } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-auth.js";
+import {
+  signOut,
+  onAuthStateChanged,
+} from "https://www.gstatic.com/firebasejs/11.8.0/firebase-auth.js";
 import AdminGuard from "./admin-guard.js";
 
 // Import các module quản lý riêng biệt
 import UsersManager from "./admin/admin-user.js";
 import CoursesManager from "./admin/admin-courses.js";
-import ResourcesManager from "./admin/admin-resources.js";
+import BlogManager from "./admin/admin-blogs.js";
 import AnalyticsManager from "./admin/admin-analytics.js";
 import Dashboard from "./admin/admin-dashboard.js";
 
@@ -23,7 +24,7 @@ class AdminPanel {
     // Khởi tạo các module quản lý
     this.users = new UsersManager(this);
     this.courses = new CoursesManager(this);
-    this.resources = new ResourcesManager(this);
+    this.blogs = new BlogManager(this);
     this.analytics = new AnalyticsManager(this);
     this.dashboard = new Dashboard(this);
 
@@ -35,6 +36,13 @@ class AdminPanel {
   }
 
   async init() {
+    // Lấy user hiện tại từ Firebase Auth
+    await new Promise((resolve) => {
+      onAuthStateChanged(auth, (user) => {
+        this.currentUser = user;
+        resolve();
+      });
+    });
     // Khởi tạo các thành phần giao diện
     this.initNavigation();
     this.initModals();
@@ -50,7 +58,7 @@ class AdminPanel {
     // Thiết lập sự kiện cho các module
     this.users.setupEventListeners();
     this.courses.setupEventListeners();
-    this.resources.setupEventListeners();
+    this.blogs.setupEventListeners();
   }
 
   // Điều hướng
@@ -92,7 +100,7 @@ class AdminPanel {
           this.loadCoursesData();
           break;
         case "resources":
-          this.loadResourcesData();
+          this.loadBlogsData();
           break;
         case "analytics":
           // luôn hủy và tải lại biểu đồ khi chuyển tab
@@ -135,13 +143,13 @@ class AdminPanel {
     }
   }
 
-  // Quản lý tài liệu
-  async loadResourcesData() {
+  // Quản lý bài viết blog
+  async loadBlogsData() {
     try {
-      await this.resources.loadData();
+      await this.blogs.loadData();
     } catch (error) {
-      console.error("Error loading resources data:", error);
-      this.showNotification("Lỗi tải dữ liệu tài liệu", "error");
+      console.error("Error loading blog data:", error);
+      this.showNotification("Lỗi tải dữ liệu bài viết blog", "error");
     }
   }
 
@@ -182,6 +190,7 @@ class AdminPanel {
       resource: "fas fa-file-alt",
       system: "fas fa-cog",
       auth: "fas fa-sign-in-alt",
+      blog: "fas fa-blog",
     };
     return icons[type] || "fas fa-info-circle";
   }

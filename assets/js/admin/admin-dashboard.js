@@ -38,10 +38,10 @@ export default class Dashboard {
         : 0;
 
       // Lấy tổng số tài liệu từ Firebase
-      const resourcesRef = ref(database, "resources");
-      const resourcesSnapshot = await get(resourcesRef);
-      const resourcesCount = resourcesSnapshot.exists()
-        ? Object.keys(resourcesSnapshot.val()).length
+      const blogsRef = ref(database, "blogs");
+      const blogsSnapshot = await get(blogsRef);
+      const blogsCount = blogsSnapshot.exists()
+        ? Object.keys(blogsSnapshot.val()).length
         : 0;
 
       // Đếm số học viên đang học (user có trường courses)
@@ -59,7 +59,7 @@ export default class Dashboard {
       document.getElementById("total-users").textContent = usersCount;
       document.getElementById("total-courses").textContent = coursesCount;
       document.getElementById("active-learners").textContent = activeLearners;
-      document.getElementById("total-resources").textContent = resourcesCount;
+      document.getElementById("total-resources").textContent = blogsCount;
     } catch (error) {
       console.error("Error loading statistics:", error);
       this.adminPanel.showNotification("Lỗi tải thống kê", "error");

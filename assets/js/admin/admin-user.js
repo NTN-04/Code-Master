@@ -158,6 +158,7 @@ export default class UsersManager {
       "Chỉnh sửa người dùng";
     // Ẩn form password
     document.getElementById("user-password-group").style.display = "none";
+    document.getElementById("user-password").removeAttribute("required");
 
     // Hiện modal
     this.adminPanel.showModal("user-modal");
@@ -232,6 +233,7 @@ export default class UsersManager {
     document.getElementById("user-id").value = "";
     document.getElementById("user-modal-title").textContent = "Thêm người dùng";
     document.getElementById("user-password-group").style.display = "block";
+    document.getElementById("user-password").setAttribute("required");
 
     this.adminPanel.showModal("user-modal");
   }

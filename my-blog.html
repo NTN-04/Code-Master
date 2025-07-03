@@ -11,6 +11,14 @@
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
     />
+
+    <!-- SimpleMDE CSS -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.css"
+    />
+    <!-- SimpleMDE JS -->
+    <script src="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.js"></script>
   </head>
   <body>
     <!-- Header component -->
@@ -89,6 +97,42 @@
       </div>
     </main>
 
+    <!-- Modal edit blog -->
+    <div id="edit-blog-modal" class="modal" style="display: none">
+      <div class="modal-content">
+        <span class="close-modal" id="close-post-modal">&times;</span>
+        <h2>Đăng bài viết mới</h2>
+        <form id="blog-post-form">
+          <div>
+            <textarea id="edit-title" placeholder="Tiêu đề" required></textarea>
+            <input
+              type="text"
+              id="edit-tags"
+              placeholder="Tags (cách nhau bởi dấu phẩy)"
+            />
+
+            <input type="file" id="edit-image" accept="image/*" />
+            <!-- review ảnh khi úp -->
+            <img
+              id="image-preview"
+              style="
+                display: none;
+                max-width: 90%;
+                margin: 10px 0;
+                border-radius: 8px;
+              "
+            />
+          </div>
+          <div>
+            <textarea
+              id="edit-content"
+              placeholder="Nội dung (Markdown)"
+            ></textarea>
+            <button type="submit" class="btn btn-success">Lưu thay đổi</button>
+          </div>
+        </form>
+      </div>
+    </div>
     <!-- Footer component -->
     <footer id="footer-placeholder"></footer>
 

@@ -13,6 +13,12 @@
     />
     <!-- Thư viện vẻ biểu đồ thống kê -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Thư viện Markdown -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.css"
+    />
+    <script src="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.js"></script>
   </head>
 
   <body>
@@ -72,8 +78,8 @@
           </li>
           <li class="nav-item">
             <a href="#resources" data-section="resources">
-              <i class="fas fa-file-alt"></i>
-              <span>Quản lý tài liệu</span>
+              <i class="fas fa-blog"></i>
+              <span>Quản lý bài viết</span>
             </a>
           </li>
           <li class="nav-item">
@@ -137,11 +143,11 @@
           </div>
           <div class="stat-card">
             <div class="stat-icon">
-              <i class="fas fa-file-alt"></i>
+              <i class="fas fa-blog"></i>
             </div>
             <div class="stat-info">
               <h3 id="total-resources">0</h3>
-              <p>Tài liệu</p>
+              <p>Bài viết</p>
             </div>
           </div>
         </div>
@@ -252,19 +258,54 @@
         </div>
       </section>
 
-      <!-- Resources Management Section -->
+      <!-- Blog Management Section -->
       <section id="resources" class="admin-section">
         <div class="section-header">
-          <h1>Quản lý tài liệu</h1>
+          <h1>Quản lý bài viết</h1>
           <div class="section-actions">
-            <button class="btn btn-primary" id="add-resource-btn">
+            <button class="btn btn-primary" id="add-blog-btn">
               <i class="fas fa-plus"></i>
-              Thêm tài liệu
+              Thêm blog mới
             </button>
           </div>
         </div>
 
-        <!-- Resources Table -->
+        <!-- chọn bộ lọc cho blogs -->
+        <div class="admin-card">
+          <div class="card-header">
+            <h3>Bộ lọc bài viết</h3>
+          </div>
+          <div class="card-body">
+            <div class="filter-row">
+              <div class="filter-group">
+                <label>Tìm kiếm:</label>
+                <input
+                  type="text"
+                  id="blog-search"
+                  placeholder="Tìm theo tiêu đề, tác giả..."
+                />
+              </div>
+              <div class="filter-group">
+                <label>Chủ đề:</label>
+                <select id="blog-category-filter">
+                  <option value="">Tất cả</option>
+                  <!-- render -->
+                </select>
+              </div>
+              <div class="filter-group">
+                <label>Trạng thái:</label>
+                <select id="blog-status-filter">
+                  <option value="">Tất cả</option>
+                  <option value="published">Đã đăng</option>
+                  <option value="pending">Chờ duyệt</option>
+                  <option value="draft">Bản nháp</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Blogs Table -->
         <div class="admin-card">
           <div class="card-body">
             <div class="table-responsive">
@@ -272,15 +313,15 @@
                 <thead>
                   <tr>
                     <th>Tiêu đề</th>
-                    <th>Loại</th>
-                    <th>Cấp độ</th>
+                    <th>Tác giả</th>
+                    <th>Chủ đề</th>
                     <th>Ngày tạo</th>
                     <th>Trạng thái</th>
                     <th>Thao tác</th>
                   </tr>
                 </thead>
                 <tbody id="resources-table-body">
-                  <!-- Resources will be loaded here -->
+                  <!-- Blog posts will be loaded here -->
                 </tbody>
               </table>
             </div>
@@ -562,6 +603,87 @@
           <div id="quiz-list">
             <!-- Danh sách quiz sẽ được load ở đây -->
           </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal Blog -->
+    <div class="modal" id="admin-blog-modal">
+      <div class="modal-blog-content">
+        <div class="modal-header">
+          <h3>Thêm bài viết mới</h3>
+          <button class="close-modal" id="close-admin-blog-modal">
+            &times;
+          </button>
+        </div>
+        <div class="modal-body">
+          <form id="admin-blog-form">
+            <div class="blog-header">
+              <div class="form-group">
+                <label>Tiêu đề:</label>
+                <textarea id="admin-blog-title" rows="2" required></textarea>
+              </div>
+              <div class="form-group">
+                <label>Tags (phân cách bởi dấu phẩy):</label>
+                <input
+                  type="text"
+                  id="admin-blog-tags"
+                  placeholder="FontEnd, ReactJS,..."
+                />
+              </div>
+              <div class="form-group">
+                <label>Ảnh đại diện:</label>
+                <input type="file" id="admin-blog-image" accept="image/*" />
+                <img
+                  id="admin-blog-image-preview"
+                  style="
+                    width: 200px;
+                    height: 150px;
+                    object-fit: cover;
+                    display: none;
+                    margin-top: 8px;
+                  "
+                />
+              </div>
+            </div>
+            <div class="blog-main-content">
+              <div class="form-group">
+                <label>Nội dung:</label>
+                <textarea id="admin-blog-content"></textarea>
+              </div>
+              <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Đăng bài</button>
+                <button
+                  type="button"
+                  class="btn btn-secondary cancel-btn"
+                  id="cancel-admin-blog-modal"
+                >
+                  Hủy
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal xem chi tiết blog -->
+    <div class="modal" id="admin-blog-detail-modal">
+      <div class="modal-content modal-lg">
+        <div class="modal-header">
+          <h3 id="detail-title"></h3>
+          <button class="close-modal" id="close-detail-modal">&times;</button>
+        </div>
+        <div class="modal-body" id="detail-body"></div>
+        <div class="modal-footer" id="detail-footer">
+          <button
+            class="btn btn-primary"
+            id="approve-blog-btn"
+            style="display: none"
+          >
+            Duyệt bài
+          </button>
+          <button class="btn btn-secondary cancel-btn">Đóng</button>
         </div>
       </div>
     </div>

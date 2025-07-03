@@ -441,7 +441,7 @@ function initExampleModal() {
       <div class="modal-backdrop"></div>
       <div class="modal-content">
         <button class="modal-close">&times;</button>
-        <iframe width="100%" height="80vh" src="" frameborder="0" allowtransparency="true" allowfullscreen="true"></iframe>
+        <iframe width="100%" height="80vh" src="" frameborder="0" loading="lazy" allowtransparency="true" allowfullscreen="true"></iframe>
       </div>
     `;
     modal.style.display = "none";

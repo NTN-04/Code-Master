@@ -1,10 +1,9 @@
-import { database } from "./firebaseConfig.js";
+import { auth, database } from "./firebaseConfig.js";
 import {
   ref,
   get,
   push,
 } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-database.js";
-import { getAuth } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-auth.js";
 
 // Chức năng trang blog
 document.addEventListener("DOMContentLoaded", function () {
@@ -20,13 +19,27 @@ let filterTag = "";
 let searchTerm = "";
 let blogsArray = [];
 // Phân trang
-const BLOGS_PER_PAGE = 3;
+const BLOGS_PER_PAGE = 4;
 let currentPage = 1;
+// biến lưu users
+let usersMap = {};
+
+async function loadUsersMap() {
+  const usersRef = ref(database, "users");
+  const snap = await get(usersRef);
+  if (snap.exists()) {
+    usersMap = snap.val();
+  } else {
+    usersMap = {};
+  }
+}
 
 // Tải bài viết từ Firebase Realtime Database
 async function loadBlogsFromDatabase() {
   try {
     showBlogsLoading();
+
+    await loadUsersMap();
 
     const blogsRef = ref(database, "blogs");
     const snapshot = await get(blogsRef);
@@ -56,7 +69,12 @@ function renderBlogsData(blogsData) {
   if (blogsData) {
     dataArr = Object.entries(blogsData)
       .map(([id, b]) => ({ ...b, id })) // Gán id từ key
-      .sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+      .sort((a, b) => {
+        // Nếu createdAt là chuỗi "dd/mm/yyyy" chuyển về timestamp
+        const ta = Date.parse(a.createdAt.split("/").reverse().join("-"));
+        const tb = Date.parse(b.createdAt.split("/").reverse().join("-"));
+        return tb - ta;
+      });
     blogsArray = dataArr;
   } else {
     dataArr = blogsArray;
@@ -80,7 +98,7 @@ function renderBlogsData(blogsData) {
     filtered = filtered.filter(
       (b) =>
         (b.title && b.title.toLowerCase().includes(searchTerm)) ||
-        (b.description && b.description.toLowerCase().includes(searchTerm)) ||
+        (b.content && b.content.toLowerCase().includes(searchTerm)) ||
         (b.authorName && b.authorName.toLowerCase().includes(searchTerm))
     );
   }
@@ -195,13 +213,16 @@ function renderSidebarTags(blogsData) {
 
 // Tạo HTML cho một thẻ blog
 function createBlogCard(b) {
+  // lấy thông tin người dùng từ user nếu có
+  const user = usersMap[b.authorId] || {};
+  const authorAvatar =
+    user.avatar || b.authorAvatar || "assets/images/avatar-default.jpg";
+  const authorName = user.username || b.authorName || "Ẩn danh";
   return `
     <li class="blog-card" data-id="${b.id}">
-      <img class="blog-avatar" src="${
-        b.authorAvatar || "assets/images/avatar-default.jpg"
-      }" alt="avatar">
+      <img class="blog-avatar" src="${authorAvatar}" alt="avatar">
       <div class="blog-info">
-        <span>${escapeHTML(b.authorName || "Ẩn danh")}</span>
+        <span>${escapeHTML(authorName)}</span>
         <div class="blog-title">${escapeHTML(b.title)}</div>
         
         <div class="blog-tags">
@@ -218,16 +239,16 @@ function createBlogCard(b) {
           <span>${estimateReadTime(b.content)}</span>
           <span>${b.views || 0} lượt xem</span>
           <div class="blog-actions">
-          <span><i class="fa-regular fa-thumbs-up"></i> ${
-            (b.likes && Object.keys(b.likes).length) || 0
-          } thích</span>
+          <span><i class="fa-regular fa-thumbs-up"></i> ${b.likes || 0} </span>
         </div>
         </div>
         
       </div>
-      <img class="blog-image" src="${
-        b.image || "assets/images/img-blog/blog-default.jpg"
-      }" alt="blog">
+      ${
+        b.image
+          ? `<img src="${b.image}" alt="${b.title}" class="blog-image">`
+          : ""
+      }
     </li>
   `;
 }
@@ -296,10 +317,36 @@ function initBlogFiltering() {
     tagEl.addEventListener("click", function () {
       filterTag = this.textContent.trim().toLowerCase();
       currentPage = 1;
+      // Thay đổi title và mô tả
+      const label = this.textContent.trim();
+      const heading = document.querySelector(".blog-heading h1");
+      const desc = document.querySelector(".blog-desc");
+      if (heading)
+        heading.textContent = `Tag: ${
+          label.charAt(0).toUpperCase() + label.slice(1)
+        }`;
+      if (desc) desc.textContent = `Các bài viết thuộc chủ đề "${label}"`;
       renderBlogsData();
     });
   });
-
+  // Xem tất cả
+  const viewAllBtn = document.getElementById("view-all");
+  if (viewAllBtn) {
+    viewAllBtn.addEventListener("click", function (e) {
+      e.preventDefault();
+      filterTag = "";
+      currentPage = 1;
+      // Trả lại tiêu đề và mô tả mặc định
+      const heading = document.querySelector(".blog-heading h1");
+      const desc = document.querySelector(".blog-desc");
+      if (heading) heading.textContent = "Bài viết mới";
+      if (desc)
+        desc.textContent =
+          "Tổng hợp các bài viết chia sẻ về kinh nghiệm, kiến thức và kĩ năng học lập trình và các kỹ thuật lập trình web.";
+      renderBlogsData();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+  }
   // Tìm kiếm
   const searchInput = document.getElementById("blog-search");
   if (searchInput) {
@@ -350,7 +397,6 @@ function setupPostModal() {
   if (!openModalBtn || !postModal || !closeModalBtn || !postForm) return;
 
   // Luôn kiểm tra trạng thái đăng nhập khi DOMContentLoaded
-  const auth = getAuth();
   auth.onAuthStateChanged((user) => {
     if (!user) {
       blogCta.style.display = "none";
@@ -435,7 +481,10 @@ function setupPostModal() {
 async function handlePostFormSubmit(e) {
   e.preventDefault();
 
-  const auth = getAuth();
+  if (!simpleMde) {
+    alert("Vui lòng mở modal và nhập nội dung trước khi đăng bài!");
+    return;
+  }
   const user = auth.currentUser;
   if (!user) {
     alert("Bạn cần đăng nhập để đăng bài!");
@@ -444,7 +493,6 @@ async function handlePostFormSubmit(e) {
 
   // Chuẩn bị dữ liệu
   const title = document.getElementById("post-title").value.trim();
-  const description = document.getElementById("post-desc").value.trim();
   const content = simpleMde.value();
   if (!content.trim()) {
     alert("Vui lòng nhập nội dung bài viết!");
@@ -461,21 +509,25 @@ async function handlePostFormSubmit(e) {
     localStorage.getItem("blog-image-temp") ||
     sessionStorage.getItem("blog-image-temp") ||
     "";
+  // Lấy thông tin user avatar từ database
+  const userRef = ref(database, "users/" + user.uid);
+  const userSnap = await get(userRef);
+  const userData = userSnap.exists() ? userSnap.val() : {};
 
   const blogData = {
     title,
-    description,
     content,
     tags,
     image, // lưu base64
     authorId: user.uid,
     authorName: user.displayName || "Ẩn danh",
-    // Lấy ảnh đại diện từ local
+    // Lấy ảnh đại diện
     authorAvatar:
+      userData.avatar ||
       localStorage.getItem("profile-avatar-" + user.uid) ||
       "assets/images/avatar-default.jpg",
     createdAt: new Date().toLocaleDateString("vi-VN"),
-    status: "chờ duyệt",
+    status: "pending",
   };
 
   try {
