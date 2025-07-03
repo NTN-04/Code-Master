@@ -200,15 +200,17 @@ function loadUserSetting() {
         data.username || user.displayName || "";
       document.querySelector(".profile-email").textContent =
         data.email || user.email || "";
-      document.getElementById("full-name").value =
-        data.username || user.displayName || "";
+      // document.getElementById("full-name").value =
+      //   user.displayName || data.username || "";
       document.getElementById("email").value = data.email || user.email || "";
-      document.getElementById("username").value = data.username || "";
+      document.getElementById("username").value =
+        data.username || user.displayName || "";
       document.getElementById("bio").value = data.bio || "";
       // Lấy ảnh đại diện từ local
       const base64Image = localStorage.getItem("profile-avatar-" + user.uid);
       const avatarImg = document.querySelector(".profile-avatar img");
-      avatarImg.src = base64Image || "assets/images/avatar-default.jpg";
+      avatarImg.src =
+        data.avatar || base64Image || "assets/images/avatar-default.jpg";
     } else {
       window.location.href = "login.html";
     }
@@ -248,7 +250,7 @@ function initSettingsForms() {
     personalInfoForm.addEventListener("submit", async function (e) {
       e.preventDefault();
 
-      const displayName = document.getElementById("full-name").value.trim();
+      // const displayName = document.getElementById("full-name").value.trim();
       const bio = document.getElementById("bio").value.trim();
       const username = document.getElementById("username").value.trim();
 
@@ -260,27 +262,40 @@ function initSettingsForms() {
         '<i class="fas fa-spinner fa-spin"></i> Đang cập nhật...';
 
       try {
-        // Khi submit, có base64 thì lưu vào local
-        if (base64Image) {
-          localStorage.setItem("profile-avatar-" + user.uid, base64Image);
-          // hiển thị ra giao diện
-          const avatarImg = document.querySelector(".profile-avatar img");
-          if (avatarImg) avatarImg.src = base64Image;
-        }
-
         const user = auth.currentUser;
         if (user) {
+          // Khi submit, có base64 thì lưu vào local
+          if (base64Image) {
+            localStorage.setItem("profile-avatar-" + user.uid, base64Image);
+            // hiển thị ra giao diện
+            const avatarImg = document.querySelector(".profile-avatar img");
+            if (avatarImg) avatarImg.src = base64Image;
+          }
+
+          // Đồng bộ lại với local
+          let localStoreDataUser = localStorage.getItem("codemaster_user");
+          let userData = {};
+          if (localStoreDataUser) {
+            userData = JSON.parse(localStoreDataUser);
+          }
+          userData.displayName = username;
+          localStorage.setItem("codemaster_user", JSON.stringify(userData));
+
           // Cập nhật trên Firebase Auth
           await updateProfile(user, {
-            displayName: displayName,
+            displayName: username,
           });
 
-          // Cập nhật trên Realtime Database ( username, bio)
-          const userRef = ref(database, "users/" + user.uid);
-          await update(userRef, {
+          // Cập nhật trên Realtime Database ( username, bio, avatar)
+          const updateData = {
             username: username,
             bio: bio,
-          });
+          };
+          if (base64Image) {
+            updateData.avatar = base64Image;
+          }
+          const userRef = ref(database, "users/" + user.uid);
+          await update(userRef, updateData);
 
           showNotification("Thông tin cá nhân đã được cập nhật thành công!");
         }
@@ -399,8 +414,6 @@ function initSettingsForms() {
     });
   }
 
-  // Xử lý form tạm ngừng
-  handleSuspendAccount();
   // xử lý xóa tài khoản
   handleDeleteAccount();
 }
@@ -517,142 +530,6 @@ function handleDeleteAccount() {
       } finally {
         confirmBtn.disabled = false;
         confirmBtn.innerHTML = "Xác Nhận Xóa";
-      }
-    });
-  });
-}
-// Xử lý tạm ngừng tài khoản
-function handleSuspendAccount() {
-  const suspendBtn = document.getElementById("suspend-account-btn");
-  if (!suspendBtn) return;
-
-  suspendBtn.addEventListener("click", function (e) {
-    e.preventDefault();
-    // Nếu đã có form xác nhận thì không thêm nữa
-    if (document.querySelector(".danger-inline-confirm")) return;
-
-    // Tạo form xác nhận inline
-    const confirmDiv = document.createElement("div");
-    confirmDiv.className = "danger-inline-confirm";
-    confirmDiv.innerHTML = `
-      <label>Nhập <b>TẠM NGỪNG</b> để xác nhận:</label>
-      <input type="text" id="suspend-confirm-text" placeholder="Nhập TẠM NGỪNG">
-      <label>Nhập mật khẩu tài khoản:</label>
-      <input type="password" id="suspend-confirm-password" placeholder="Mật khẩu hiện tại">
-      <div class="validation-message" id="suspend-validation-message"></div>
-      <div class="danger-actions">
-        <button class="btn btn-warning" id="suspend-confirm-btn" disabled>Xác Nhận Tạm Ngừng</button>
-        <button class="btn btn-outline" id="suspend-cancel-btn">Hủy</button>
-      </div>
-    `;
-    suspendBtn.parentNode.appendChild(confirmDiv);
-
-    // Xử lý xác nhận
-    const confirmText = confirmDiv.querySelector("#suspend-confirm-text");
-    const confirmPassword = confirmDiv.querySelector(
-      "#suspend-confirm-password"
-    );
-    const confirmBtn = confirmDiv.querySelector("#suspend-confirm-btn");
-    const cancelBtn = confirmDiv.querySelector("#suspend-cancel-btn");
-    const validationMsg = confirmDiv.querySelector(
-      "#suspend-validation-message"
-    );
-
-    function validate() {
-      let valid = true;
-      if (confirmText.value.trim().toUpperCase() !== "TẠM NGỪNG") {
-        validationMsg.textContent = "Bạn phải nhập chính xác: TẠM NGỪNG";
-        valid = false;
-      } else if (confirmPassword.value.trim().length < 6) {
-        validationMsg.textContent = "Mật khẩu phải từ 6 ký tự trở lên";
-        valid = false;
-      } else {
-        validationMsg.textContent = "Xác nhận hợp lệ";
-        validationMsg.className = "validation-message valid";
-      }
-      confirmBtn.disabled = !valid;
-      if (!valid) validationMsg.className = "validation-message";
-    }
-
-    confirmText.addEventListener("input", validate);
-    confirmPassword.addEventListener("input", validate);
-
-    cancelBtn.addEventListener("click", function () {
-      confirmDiv.remove();
-    });
-
-    confirmBtn.addEventListener("click", async function () {
-      confirmBtn.disabled = true;
-      confirmBtn.innerHTML =
-        '<i class="fas fa-spinner fa-spin"></i> Đang tạm ngừng...';
-
-      try {
-        const user = auth.currentUser;
-        if (!user) throw new Error("Bạn chưa đăng nhập!");
-
-        //  Xác thực lại người dùng
-        const credential = EmailAuthProvider.credential(
-          user.email,
-          confirmPassword.value
-        );
-        await reauthenticateWithCredential(user, credential);
-
-        // Cập nhật trạng thái tạm ngừng trong Database
-        const userRef = ref(database, "users/" + user.uid);
-        await update(userRef, {
-          status: "suspended",
-          suspendedAt: new Date().toISOString(),
-          suspendedBy: user.uid,
-          suspendedReason: "User requested suspension",
-          // Giữ lại tất cả dữ liệu khác
-        });
-
-        showNotification(
-          "Tài khoản đã được tạm ngừng. Email khôi phục sẽ được gửi.",
-          "success"
-        );
-
-        // Đăng xuất sau 3 giây
-        setTimeout(async () => {
-          try {
-            await signOut(auth);
-            localStorage.clear();
-            sessionStorage.clear();
-            window.location.href = "login.html";
-          } catch (signOutError) {
-            console.error("Sign out error:", signOutError);
-            // Vẫn chuyển hướng dù có lỗi đăng xuất
-            window.location.href = "login.html";
-          }
-        }, 3000);
-      } catch (err) {
-        console.error("Lỗi tạm ngừng tài khoản:", err);
-
-        let errorMessage = "Có lỗi khi tạm ngừng tài khoản: ";
-
-        switch (err.code) {
-          case "auth/wrong-password":
-            errorMessage = "Mật khẩu không đúng!";
-            break;
-          case "auth/requires-recent-login":
-            errorMessage =
-              "Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại!";
-            setTimeout(() => (window.location.href = "login.html"), 2000);
-            break;
-          case "auth/too-many-requests":
-            errorMessage = "Quá nhiều yêu cầu. Vui lòng thử lại sau!";
-            break;
-          case "auth/network-request-failed":
-            errorMessage = "Lỗi kết nối mạng. Vui lòng kiểm tra internet!";
-            break;
-          default:
-            errorMessage += err.message;
-        }
-
-        showNotification(errorMessage, "error");
-      } finally {
-        confirmBtn.disabled = false;
-        confirmBtn.innerHTML = "Xác Nhận Tạm Ngừng";
       }
     });
   });

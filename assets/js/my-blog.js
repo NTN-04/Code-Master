@@ -1,11 +1,13 @@
 // Trang My Blog - Quản lý bài đăng cá nhân cho người dùng đã đăng nhập
 import {
   ref,
+  get,
   onValue,
   remove,
   update,
 } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-database.js";
-import { database } from "./firebaseConfig.js";
+import { auth, database } from "./firebaseConfig.js";
+import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-auth.js";
 
 // Các phần tử DOM
 const blogListEl = document.getElementById("blog-list");
@@ -24,30 +26,42 @@ const BLOGS_PER_PAGE = 4; // phân trang
 let currentPage = 1;
 
 // Kiểm tra trạng thái đăng nhập và chuyển hướng nếu chưa đăng nhập
-function checkAuth() {
-  const userData = localStorage.getItem("codemaster_user");
+async function checkAuth() {
+  // Lấy user từ Firebase Auth
+  onAuthStateChanged(auth, async (user) => {
+    if (!user) {
+      window.location.href = "login.html";
+      return;
+    }
+    currentUser = user;
+    // Lấy thông tin user từ database
+    const userRef = ref(database, "users/" + currentUser.uid);
+    const userSnap = await get(userRef);
+    const userData = userSnap.exists() ? userSnap.val() : {};
 
-  if (!userData) {
-    window.location.href = "login.html";
-    return;
-  }
-  currentUser = JSON.parse(userData);
+    document.getElementById("user-name").textContent =
+      currentUser.displayName || userData.username || "Ẩn danh";
+    document.getElementById("user-email").textContent = currentUser.email;
 
-  document.getElementById("user-name").textContent =
-    currentUser.displayName || "User";
-  document.getElementById("user-email").textContent = currentUser.email;
+    // Tải avatar người dùng
+    const userAvatar = document.getElementById("user-avatar");
+    const base64 = localStorage.getItem("profile-avatar-" + currentUser.uid);
+    if (userData.avatar) {
+      userAvatar.src = userData.avatar;
+      // Đồng bộ lại localStorage nếu cần
+      localStorage.setItem(
+        "profile-avatar-" + currentUser.uid,
+        userData.avatar
+      );
+    } else if (base64) {
+      userAvatar.src = base64;
+    } else {
+      userAvatar.src = "assets/images/avatar-default.jpg";
+    }
 
-  // Tải avatar người dùng
-  const userAvatar = document.getElementById("user-avatar");
-  const base64 = localStorage.getItem("profile-avatar-" + currentUser.uid);
-  if (base64) {
-    userAvatar.src = base64;
-  } else {
-    userAvatar.src = "assets/images/avatar-default.jpg";
-  }
-
-  // Lấy các bài viết của người dùng
-  fetchUserBlogs();
+    // Lấy các bài viết của người dùng
+    fetchUserBlogs();
+  });
 }
 
 // Lấy các blog thuộc về người dùng hiện tại
@@ -55,7 +69,7 @@ function fetchUserBlogs() {
   const blogsRef = ref(database, "blogs");
 
   onValue(blogsRef, (snapshot) => {
-    // userBlogs = [];
+    userBlogs = []; // reset mảng trước khi đỗ lại data
     const data = snapshot.val();
 
     if (data) {
@@ -169,7 +183,7 @@ function createBlogCard(blog) {
       break;
     default:
       statusClass = "status-pending";
-      statusText = "pending"; // chờ duyệt
+      statusText = "Chờ duyệt"; // chờ duyệt
   }
 
   // Tạo HTML cho blog card
@@ -184,7 +198,7 @@ function createBlogCard(blog) {
         </span>
       </div>
       <div class="blog-tags">${tagsHtml}</div>
-      <p class="blog-content">${blog.description}</p>
+      <p class="blog-content">${(blog.content || "").slice(0, 120)}</p>
       <div class="blog-actions">
         <a href="blog-detail.html?id=${
           blog.id
@@ -211,7 +225,7 @@ function createBlogCard(blog) {
   const deleteBtn = blogCard.querySelector(".blog-delete");
 
   editBtn.addEventListener("click", () => {
-    window.location.href = `blog-detail.html?id=${blog.id}&edit=true`;
+    handleEditBlog(blog);
   });
 
   deleteBtn.addEventListener("click", () => {
@@ -281,6 +295,148 @@ function renderPagination(totalPages) {
       }
     };
   }
+}
+
+// Sửa bài viết
+function handleEditBlog(blog) {
+  // DOM
+  const editBlogModal = document.getElementById("edit-blog-modal");
+  const closeEditModal = document.getElementById("close-post-modal");
+  const editBlogForm = document.getElementById("blog-post-form");
+  const editTitleInput = document.getElementById("edit-title");
+  const editContent = document.getElementById("edit-content");
+  const editTagsInput = document.getElementById("edit-tags");
+  const editImageInput = document.getElementById("edit-image");
+  const editImagePreview = document.getElementById("image-preview");
+
+  if (editBlogModal) {
+    editBlogModal.style.display = "flex";
+  }
+  // Đóng modal
+  closeEditModal.onclick = () => (editBlogModal.style.display = "none");
+  window.addEventListener("click", (e) => {
+    if (e.target === editBlogModal) editBlogModal.style.display = "none";
+  });
+
+  // SimpleMDE
+  if (!window.simpleMDE) {
+    window.simpleMDE = new window.SimpleMDE({
+      element: editContent,
+      toolbar: [
+        "bold",
+        "italic",
+        "heading",
+        "|",
+        "quote",
+        "unordered-list",
+        "ordered-list",
+        "|",
+        "link",
+        "image",
+        "code",
+        {
+          name: "inline-code",
+          action: function (editor) {
+            var cm = editor.codemirror;
+            var selection = cm.getSelection();
+            if (selection) {
+              cm.replaceSelection("`" + selection + "`");
+            } else {
+              cm.replaceSelection("`your code here`");
+            }
+          },
+          className: "fa fa-keyboard",
+          title: "Chèn code nội tuyến",
+        },
+        "|",
+        "preview",
+        "side-by-side",
+        "fullscreen",
+        "|",
+        "guide",
+      ],
+      placeholder: "Nhập nội dung Markdown của bạn ở đây...",
+      spellChecker: false,
+      status: false,
+    });
+  }
+  const mde = simpleMDE;
+
+  // đỗ dữ liệu vào form
+  editTitleInput.value = blog.title;
+  editTagsInput.value = (blog.tags || []).join(", ");
+  mde.value(blog.content || "");
+  if (blog.image) {
+    editImagePreview.src = blog.image;
+    editImagePreview.style.display = "block";
+  } else {
+    editImagePreview.style.display = "none";
+  }
+
+  // hiển thị ảnh preview
+  editImageInput.onchange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (evt) => {
+      editImagePreview.src = evt.target.result;
+      editImagePreview.style.display = "block";
+      localStorage.setItem("myBlog-edit-image", evt.target.result);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  // Xử lý submit
+  editBlogForm.onsubmit = async (e) => {
+    e.preventDefault();
+    // Validate
+    if (!editTitleInput.value.trim()) {
+      showToast("Vui lòng nhập tiêu đề!", "error");
+      return;
+    }
+    if (!mde.value().trim()) {
+      showToast("Vui lòng nhập nội dung!", "error");
+      return;
+    }
+    // Chuẩn bị dữ liệu
+    const tags = editTagsInput.value
+      .split(",")
+      .map((t) => t.trim().toLowerCase())
+      .filter(Boolean);
+
+    // Lấy ảnh mới từ localStorage (nếu có)
+    const newImage = localStorage.getItem("myBlog-edit-image");
+
+    // Tạo object dữ liệu update
+    const blogData = {
+      title: editTitleInput.value.trim(),
+      content: mde.value(),
+      tags,
+      updatedAt: new Date().toLocaleDateString("vi-VN"),
+      status: "pending",
+    };
+
+    // Nếu có ảnh mới thì cập nhật, không thì giữ nguyên ảnh cũ
+    if (newImage) {
+      blogData.image = newImage;
+    }
+    try {
+      // Cập nhật Firebase
+      const blogRef = ref(database, `blogs/${blog.id}`);
+      await update(blogRef, blogData);
+
+      e.target.reset();
+      // Xóa ảnh tạm trong localStorage sau khi lưu thành công
+      localStorage.removeItem("myBlog-edit-image");
+      showToast("Đã lưu thay đổi, chờ duyệt lại!", "success");
+
+      editBlogModal.style.display = "none";
+      fetchUserBlogs(); // reload lại danh sách
+    } catch (err) {
+      console.error("Lỗi: ", err);
+      showToast("Có lỗi khi lưu!", "error");
+    }
+  };
 }
 
 // Xóa blog khỏi Firebase

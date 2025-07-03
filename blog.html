@@ -35,7 +35,7 @@
 
       <div class="blog-header">
         <div class="blog-heading">
-          <h1>Bài viết nổi bật</h1>
+          <h1>Bài viết mới</h1>
           <p class="blog-desc">
             Tổng hợp các bài viết chia sẻ về kinh nghiệm tự học lập trình online
             và các kỹ thuật lập trình web.
@@ -60,8 +60,18 @@
             <!-- Danh sách bài viết sẽ render động bằng JS -->
           </ul>
           <!-- phân trang -->
-
           <div class="blog-pagination" id="blog-pagination"></div>
+          <a
+            href=""
+            id="view-all"
+            style="
+              justify-content: flex-end;
+              display: flex;
+              text-decoration: underline;
+              text-underline-offset: 1.5px;
+            "
+            >Xem tất cả</a
+          >
         </section>
         <!-- sidebar -->
         <aside class="blog-sidebar">
@@ -77,31 +87,35 @@
     <div id="post-modal" class="modal" style="display: none">
       <div class="modal-content">
         <span class="close-modal" id="close-post-modal">&times;</span>
-        <h2>Đăng bài viết mới</h2>
+        <h2>Chỉnh sửa bài viết</h2>
         <form id="blog-post-form">
-          <input type="text" id="post-title" placeholder="Tiêu đề" required />
-          <textarea id="post-desc" placeholder="Mô tả ngắn" required></textarea>
-          <textarea
-            id="post-content"
-            placeholder="Nội dung (Markdown)"
-          ></textarea>
-          <input
-            type="text"
-            id="post-tags"
-            placeholder="Tags (cách nhau bởi dấu phẩy)"
-          />
-          <input type="file" id="post-image" accept="image/*" />
-          <!-- review ảnh khi úp -->
-          <img
-            id="image-preview"
-            style="
-              display: none;
-              max-width: 100%;
-              margin: 10px 0;
-              border-radius: 8px;
-            "
-          />
-          <button type="submit" class="btn btn-success">Đăng bài</button>
+          <div>
+            <textarea id="post-title" placeholder="Tiêu đề" required></textarea>
+            <input
+              type="text"
+              id="post-tags"
+              placeholder="Tags (cách nhau bởi dấu phẩy)"
+            />
+
+            <input type="file" id="post-image" accept="image/*" />
+            <!-- review ảnh khi úp -->
+            <img
+              id="image-preview"
+              style="
+                display: none;
+                max-width: 90%;
+                margin: 10px 0;
+                border-radius: 8px;
+              "
+            />
+          </div>
+          <div>
+            <textarea
+              id="post-content"
+              placeholder="Nội dung (Markdown)"
+            ></textarea>
+            <button type="submit" class="btn btn-success">Đăng bài</button>
+          </div>
         </form>
       </div>
     </div>

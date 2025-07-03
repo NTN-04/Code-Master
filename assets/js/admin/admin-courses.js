@@ -256,6 +256,13 @@ export default class CoursesManager {
 
         const courseRef = ref(database, `courses/${courseId}`);
         await update(courseRef, courseData);
+        // Ghi lại hoạt động
+        await this.adminPanel.logActivity(
+          "course",
+          "Cập nhật khóa học",
+          `Đã cập nhật khóa học mới ${courseData.title}`,
+          "fas fa-edit"
+        );
         this.adminPanel.showNotification(
           "Cập nhật khóa học thành công",
           "success"

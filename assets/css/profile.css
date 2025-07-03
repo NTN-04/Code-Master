@@ -584,7 +584,6 @@
   flex-direction: column;
   gap: 1.5rem;
 }
-.danger-zone-actions .btn-warning,
 .danger-zone-actions .btn-danger {
   background-color: #e17055;
   border: none;
