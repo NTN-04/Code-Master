@@ -92,6 +92,13 @@ h2:after {
 p {
   margin-bottom: 15px;
 }
+
+input[type="radio"] {
+  width: 14px;
+  height: 14px;
+  accent-color: var(--color-admin);
+  cursor: pointer;
+}
 /* Giới hạn văn bản chỉ hiển thị 2 dòng */
 .line-clamp-2 {
   display: -webkit-box;

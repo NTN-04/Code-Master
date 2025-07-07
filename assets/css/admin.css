@@ -725,6 +725,13 @@
   animation: fadeIn 0.3s ease;
 }
 
+#lesson-form-modal,
+#lesson-manager-modal,
+#quiz-form-modal,
+#quiz-manager-modal {
+  background: rgba(0, 0, 0, 0.2);
+}
+
 .modal.show {
   display: flex;
   align-items: center;
@@ -846,6 +853,40 @@
 .quiz-actions {
   display: flex;
   gap: 0.5rem;
+}
+
+/* Định dạng cho form thêm/sửa bài học */
+#quiz-form textarea,
+#lesson-form textarea {
+  resize: vertical;
+  min-height: 120px;
+}
+
+#lesson-form input:focus,
+#lesson-form textarea:focus {
+  border-color: var(--color-admin);
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+  outline: none;
+}
+
+.option-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--gray-light);
+  padding: 10px;
+  border-radius: var(--border-radius);
+}
+
+.option-group input[type="radio"] {
+  width: 20px;
+  height: 20px;
+  accent-color: var(--color-admin);
+  cursor: pointer;
+}
+
+.option-group input[type="text"] {
+  flex: 1;
 }
 
 /* Lọc blog */

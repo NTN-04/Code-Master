@@ -20,7 +20,11 @@ const progressManager = {
     if (!bars.length) return;
 
     if (!this.currentUser) {
-      bars.forEach((bar) => this.updateProgressBarUI(bar, 0));
+      // Ẩn progress bar khi chưa đăng nhập
+      bars.forEach((bar) => {
+        const progressContainer = bar.closest(".progress-container");
+        if (progressContainer) progressContainer.style.display = "none";
+      });
       return;
     }
 
@@ -42,8 +46,13 @@ const progressManager = {
   },
 
   updateProgressBarUI(bar, progressValue) {
+    const progressContainer = bar.closest(".progress-container");
     const progressElement = bar.querySelector(".progress");
     const progressText = bar.nextElementSibling;
+    // Luôn hiển thị progress bar nếu đã đăng nhập
+    if (progressContainer) {
+      progressContainer.style.display = "block";
+    }
     if (progressElement && progressText) {
       progressElement.style.width = `${progressValue}%`;
       progressText.textContent = `${progressValue}% Hoàn Thành`;

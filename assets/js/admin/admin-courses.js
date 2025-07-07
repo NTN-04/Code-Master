@@ -299,7 +299,7 @@ export default class CoursesManager {
     }
   }
 
-  // Quản lý chi tiết cho khóa học
+  // Quản lý chi tiết cho khóa học (module)
   async openCourseDetailManager(courseId) {
     // Lưu courseId đang quản lý
     this.currentManagingCourseId = courseId;
@@ -423,10 +423,12 @@ export default class CoursesManager {
   async openLessonsManager(courseId, moduleId) {
     this.currentManagingCourseId = courseId;
     this.currentManagingModuleId = moduleId;
+    // Trích xuất số module từ moduleId (module1 -> '1')
+    const moduleNumber = moduleId.replace(/\D/g, "");
     // Đặt tiêu đề modal
     document.getElementById(
       "lesson-manager-title"
-    ).textContent = `Quản lý bài học - ${moduleId}`;
+    ).textContent = `Quản lý bài học - Chương ${moduleNumber}`;
     // Hiện modal
     this.adminPanel.showModal("lesson-manager-modal");
     // Load danh sách bài học
@@ -482,10 +484,11 @@ export default class CoursesManager {
     }
   }
 
-  // Hiện form thêm/sửa bài học (dùng prompt đơn giản, có thể mở rộng thành form đẹp)
+  // Hiện form thêm/sửa bài học
   async showLessonForm(type, idx = null) {
     const courseId = this.currentManagingCourseId;
     const moduleId = this.currentManagingModuleId;
+
     const moduleRef = ref(
       database,
       `course_modules/${courseId}/${moduleId}/lessons`
@@ -494,39 +497,101 @@ export default class CoursesManager {
     const snapshot = await get(moduleRef);
     if (snapshot.exists()) lessons = snapshot.val();
     if (!Array.isArray(lessons)) lessons = [];
-    let title = "",
-      content = "",
-      duration = "",
-      video = "";
-    if (type === "edit" && idx !== null && lessons[idx]) {
-      title = lessons[idx].title;
-      content = lessons[idx].content;
-      duration = lessons[idx].duration;
-      video = lessons[idx].video;
-    }
-    title = prompt("Tiêu đề bài học:", title) || title;
-    if (!title) return;
-    content = prompt("Nội dung bài học:", content) || content;
-    duration = prompt("Thời lượng:", duration) || duration;
-    video = prompt("Link video:", video) || video;
+
+    // Thiết lập tiêu đề modal và giá trị ban đầu
+    const formTitle = document.getElementById("lesson-form-title");
+    const titleInput = document.getElementById("lesson-title");
+    const contentTextarea = document.getElementById("lesson-content");
+    const durationInput = document.getElementById("lesson-duration");
+    const videoInput = document.getElementById("lesson-video");
+    const saveButton = document.getElementById("save-lesson-btn");
+
+    // Đặt tiêu đề và nội dung form
     if (type === "add") {
-      lessons.push({
-        id: `${moduleId}.${lessons.length + 1}`,
-        title,
-        content,
-        duration,
-        video,
-        quiz: [],
-      });
+      formTitle.textContent = "Thêm bài học mới";
+      titleInput.value = "";
+      contentTextarea.value = "";
+      durationInput.value = "";
+      videoInput.value = "";
     } else if (type === "edit" && idx !== null && lessons[idx]) {
-      lessons[idx] = { ...lessons[idx], title, content, duration, video };
+      formTitle.textContent = "Chỉnh sửa bài học";
+      titleInput.value = lessons[idx].title || "";
+      contentTextarea.value = lessons[idx].content || "";
+      durationInput.value = lessons[idx].duration || "";
+      videoInput.value = lessons[idx].video || "";
     }
-    await set(moduleRef, lessons);
-    await this.loadLessonsList(courseId, moduleId);
-    this.adminPanel.showNotification(
-      type === "add" ? "Đã thêm bài học" : "Đã cập nhật bài học",
-      "success"
-    );
+
+    // Hiện form
+    this.adminPanel.showModal("lesson-form-modal");
+
+    // Focus vào trường đầu tiên
+    setTimeout(() => titleInput.focus(), 300);
+
+    // Xử lý sự kiện submit form
+    const handleSubmit = async (e) => {
+      e.preventDefault();
+
+      const title = titleInput.value.trim();
+      const content = contentTextarea.value.trim();
+      const duration = durationInput.value.trim();
+      const video = videoInput.value.trim();
+
+      if (!title) {
+        this.adminPanel.showNotification(
+          "Vui lòng nhập đầy đủ trường",
+          "error"
+        );
+        return;
+      }
+
+      // Thay đổi nút lưu thành trạng thái loading
+      saveButton.disabled = true;
+      saveButton.innerHTML =
+        '<i class="fas fa-spinner fa-spin"></i> Đang lưu...';
+
+      try {
+        if (type === "add") {
+          lessons.push({
+            id: `${moduleId}.${lessons.length + 1}`,
+            title,
+            content,
+            duration,
+            video,
+            quiz: [],
+          });
+        } else if (type === "edit" && idx !== null && lessons[idx]) {
+          lessons[idx] = {
+            ...lessons[idx],
+            title,
+            content,
+            duration,
+            video,
+          };
+        }
+
+        await set(moduleRef, lessons);
+        await this.loadLessonsList(courseId, moduleId);
+
+        this.adminPanel.showNotification(
+          type === "add" ? "Đã thêm bài học mới" : "Đã cập nhật bài học",
+          "success"
+        );
+
+        this.adminPanel.hideModal("lesson-form-modal");
+      } catch (error) {
+        console.error("Lỗi khi lưu bài học:", error);
+        this.adminPanel.showNotification(
+          "Đã xảy ra lỗi khi lưu bài học",
+          "error"
+        );
+      } finally {
+        saveButton.disabled = false;
+        saveButton.innerHTML = '<i class="fas fa-save"></i> Lưu bài học';
+      }
+    };
+    // Gán sự kiện submit cho form
+    const form = document.getElementById("lesson-form");
+    form.addEventListener("submit", handleSubmit);
   }
 
   // Xóa bài học
@@ -611,10 +676,11 @@ export default class CoursesManager {
     }
   }
 
-  async showQuizForm(type, idx = null) {
+  async showQuizForm(type, quizIdx = null) {
     const courseId = this.currentManagingCourseId;
     const moduleId = this.currentManagingModuleId;
     const lessonIdx = this.currentManagingLessonIdx;
+
     const lessonRef = ref(
       database,
       `course_modules/${courseId}/${moduleId}/lessons`
@@ -623,38 +689,124 @@ export default class CoursesManager {
     const snapshot = await get(lessonRef);
     if (snapshot.exists()) lessons = snapshot.val();
     if (!Array.isArray(lessons) || !lessons[lessonIdx]) return;
-    let quizArr = lessons[lessonIdx].quiz;
+    let quizArr = lessons[lessonIdx].quiz || [];
     if (!Array.isArray(quizArr)) quizArr = [];
-    let question = "",
-      options = ["", "", "", ""],
-      answer = 0;
-    if (type === "edit" && idx !== null && quizArr[idx]) {
-      question = quizArr[idx].question;
-      options = quizArr[idx].options;
-      answer = quizArr[idx].answer;
-    }
-    question = prompt("Câu hỏi:", question) || question;
-    if (!question) return;
-    for (let i = 0; i < 4; i++) {
-      options[i] = prompt(`Đáp án ${i + 1}:`, options[i] || "") || options[i];
-    }
-    answer =
-      parseInt(
-        prompt("Số thứ tự đáp án đúng (1-4):", (answer + 1).toString())
-      ) - 1;
-    if (isNaN(answer) || answer < 0 || answer > 3) return;
-    if (type === "add") {
-      quizArr.push({ question, options, answer });
-    } else if (type === "edit" && idx !== null && quizArr[idx]) {
-      quizArr[idx] = { question, options, answer };
-    }
-    lessons[lessonIdx].quiz = quizArr;
-    await set(lessonRef, lessons);
-    await this.loadQuizList(courseId, moduleId, lessonIdx);
-    this.adminPanel.showNotification(
-      type === "add" ? "Đã thêm quiz" : "Đã cập nhật quiz",
-      "success"
+
+    // Thiết lập tiêu đề modal và giá trị ban đầu
+    const formTitle = document.getElementById("quiz-form-title");
+    const questionInput = document.getElementById("quiz-question");
+    const option1Input = document.getElementById("quiz-option1");
+    const option2Input = document.getElementById("quiz-option2");
+    const option3Input = document.getElementById("quiz-option3");
+    const option4Input = document.getElementById("quiz-option4");
+    const saveButton = document.getElementById("save-quiz-btn");
+    const radioButtons = document.querySelectorAll(
+      'input[name="correct-answer"]'
     );
+
+    // Đặt tiêu đề và nội dung form
+    if (type === "add") {
+      formTitle.textContent = "Thêm câu hỏi quiz";
+      questionInput.value = "";
+      option1Input.value = "";
+      option2Input.value = "";
+      option3Input.value = "";
+      option4Input.value = "";
+      radioButtons[0].checked = true;
+    } else if (type === "edit" && quizIdx !== undefined && quizArr[quizIdx]) {
+      const quiz = quizArr[quizIdx];
+      formTitle.textContent = "Chỉnh sửa câu hỏi quiz";
+      questionInput.value = quiz.question || "";
+
+      // đổ dữ liệu đáp án
+      option1Input.value = quiz.options[0] || "";
+      option2Input.value = quiz.options[1] || "";
+      option3Input.value = quiz.options[2] || "";
+      option4Input.value = quiz.options[3] || "";
+
+      // Chọn đáp án đúng
+      const correctAnswer = quiz.answer;
+      if (correctAnswer >= 0 && correctAnswer < 4) {
+        radioButtons[correctAnswer].checked = true;
+      }
+    }
+    // Hiện form
+    this.adminPanel.showModal("quiz-form-modal");
+
+    // Focus vào trường đầu tiên
+    setTimeout(() => questionInput.focus(), 300);
+
+    // Xử lý sự kiện submit form quiz
+    const handleQuizSubmit = async (e) => {
+      e.preventDefault();
+
+      const question = questionInput.value.trim();
+      const options = [
+        option1Input.value.trim(),
+        option2Input.value.trim(),
+        option3Input.value.trim(),
+        option4Input.value.trim(),
+      ];
+
+      // Lấy đáp án đúng từ radio button
+      let answer = 0;
+      for (let i = 0; i < radioButtons.length; i++) {
+        if (radioButtons[i].checked) {
+          answer = parseInt(radioButtons[i].value);
+          break;
+        }
+      }
+
+      // Kiểm tra dữ liệu hợp lệ
+      if (!question) {
+        this.adminPanel.showNotification("Vui lòng nhập câu hỏi", "error");
+        return;
+      }
+
+      if (options.some((opt) => !opt)) {
+        this.adminPanel.showNotification(
+          "Vui lòng nhập đầy đủ các đáp án",
+          "error"
+        );
+        return;
+      }
+
+      saveButton.disabled = true;
+      saveButton.innerHTML =
+        '<i class="fas fa-spinner fa-spin"></i> Đang lưu...';
+
+      try {
+        // Cập nhật dữ liệu quiz
+        if (type === "add") {
+          quizArr.push({ question, options, answer });
+        } else if (type === "edit" && quizIdx !== null && quizArr[quizIdx]) {
+          quizArr[quizIdx] = { question, options, answer };
+        }
+
+        // Cập nhật bài học với quiz mới vào firebase
+        lessons[lessonIdx].quiz = quizArr;
+        await set(lessonRef, lessons);
+
+        // Cập nhật UI
+        await this.loadQuizList(courseId, moduleId, lessonIdx);
+
+        this.adminPanel.showNotification(
+          type === "add" ? "Đã thêm quiz mới" : "Đã cập nhật quiz",
+          "success"
+        );
+
+        this.adminPanel.hideModal("quiz-form-modal");
+      } catch (error) {
+        console.error("Lỗi khi lưu quiz:", error);
+        this.adminPanel.showNotification("Đã xảy ra lỗi khi lưu quiz", "error");
+      } finally {
+        saveButton.disabled = false;
+        saveButton.innerHTML = '<i class="fas fa-save"></i> Lưu quiz';
+      }
+    };
+    // sự kiện submit
+    const quizForm = document.getElementById("quiz-form");
+    quizForm.addEventListener("submit", handleQuizSubmit);
   }
 
   async deleteQuiz(courseId, moduleId, lessonIdx, quizIdx) {

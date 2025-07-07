@@ -5,6 +5,7 @@ import {
   set,
 } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-database.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-auth.js";
+import CommentSystem from "./comment-system.js";
 
 // Các phần tử DOM cho trang khóa học
 document.addEventListener("DOMContentLoaded", async function () {
@@ -27,44 +28,8 @@ document.addEventListener("DOMContentLoaded", async function () {
 // Biến lưu bộ nhớ đệm (cache)
 const moduleCache = new Map();
 
-// Banner chào mừng cho từng khóa học
-// const welcomeBanners = {
-//   "html-css": {
-//     title: "Nền Tảng HTML & CSS",
-//     subtitle:
-//       "Học các khối nền tảng của phát triển web. Khóa học toàn diện này sẽ dạy bạn cách tạo các trang web đẹp, responsive bằng HTML và CSS từ đầu.",
-//     image: "./assets/images/img-course/html-css.png",
-//   },
-//   javascript: {
-//     title: "JavaScript Cơ Bản",
-//     subtitle: "Làm chủ ngôn ngữ lập trình web phổ biến nhất thế giới.",
-//     image: "./assets/images/img-course/javascript.png",
-//   },
-//   // Thêm các khóa học khác nếu muốn
-// };
-
-// function renderWelcomeBanner() {
-//   const banner = {
-//     title: "Chào mừng bạn đến với khóa học!",
-//     subtitle: "Hãy bắt đầu hành trình học tập của bạn tại CodeMaster.",
-//     image: "assets/images/logo-01.svg",
-//   };
-//   const header = document.querySelector(".course-main .lesson-welcome");
-//   if (header) {
-//     header.innerHTML = `
-//       <div class="welcome-banner">
-//         <div class="banner-content">
-//           <h1 class="course-info-title">${banner.title}</h1>
-//           <p class="banner-subtitle">${banner.subtitle}</p>
-//           <a href="#" class="btn btn-primary" id="start-course">Bắt Đầu Khóa Học</a>
-//         </div>
-//         <div class="banner-image">
-//           <img src="${banner.image}" alt="${banner.title}" />
-//         </div>
-//       </div>
-//     `;
-//   }
-// }
+// Biến lưu hệ thống bình luận
+let commentSystem = null;
 
 // Khởi tạo chức năng thu gọn/mở rộng danh sách bài học trong module
 function initModuleToggles() {
@@ -214,6 +179,13 @@ async function activateLesson(lessonId) {
       initQuizEvents(foundLesson);
       initLessonNavButtons();
       trackLessonProgress(lessonId);
+
+      // Khởi tạo hệ thống bình luận cho bài học
+      if (commentSystem) {
+        commentSystem.destroy();
+      }
+
+      commentSystem = new CommentSystem(courseId, lessonId);
     } else {
       lessonContainer.innerHTML =
         "<div class='alert alert-warning'>Không tìm thấy bài học.</div>";
@@ -453,7 +425,7 @@ function renderLessonContent(lesson, modules) {
         ${lesson.video ? renderVideo(lesson.video) : ""}
       </div>
       <div class="lesson-text">
-        <p>${escapeHtml(lesson.content)}</p>
+        <p class="lesson-main-content">${escapeHtml(lesson.content)}</p>
         ${
           lesson.quiz && lesson.quiz.length
             ? renderQuiz(lesson.quiz, lesson.id)

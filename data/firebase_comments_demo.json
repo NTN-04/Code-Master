@@ -1,0 +1,267 @@
+{
+  "comments": {
+    "html-css": {
+      "lesson-1": {
+        "comment_001": {
+          "id": "comment_001",
+          "userId": "user_123",
+          "userName": "Nguyễn Văn A",
+          "userAvatar": "./assets/images/avatar-1.jpg",
+          "content": "Bài học này thật sự rất hay! Giải thích rất dễ hiểu về cách sử dụng HTML semantic tags. Mình đã hiểu rõ hơn về việc sử dụng header, main, section, article.",
+          "timestamp": 1704067200000,
+          "likes": 8,
+          "dislikes": 0,
+          "reports": 0,
+          "status": "active",
+          "isEdited": false,
+          "editedAt": null,
+          "replies": {
+            "reply_001": {
+              "id": "reply_001",
+              "userId": "user_456",
+              "userName": "Trần Thị B",
+              "userAvatar": "./assets/images/avatar-default.jpg",
+              "content": "Mình cũng thấy vậy! Đặc biệt phần ví dụ về cách structure một trang web, rất thực tế.",
+              "timestamp": 1704067800000,
+              "likes": 3,
+              "dislikes": 0,
+              "reports": 0,
+              "status": "active",
+              "isEdited": false,
+              "editedAt": null,
+              "parentId": "comment_001"
+            },
+            "reply_002": {
+              "id": "reply_002",
+              "userId": "user_789",
+              "userName": "Lê Minh C",
+              "userAvatar": "./assets/images/avatar-default.jpg",
+              "content": "Có thể giải thích thêm về sự khác biệt giữa section và div được không ạ?",
+              "timestamp": 1704068400000,
+              "likes": 2,
+              "dislikes": 0,
+              "reports": 0,
+              "status": "active",
+              "isEdited": false,
+              "editedAt": null,
+              "parentId": "comment_001"
+            }
+          }
+        },
+        "comment_002": {
+          "id": "comment_002",
+          "userId": "user_456",
+          "userName": "Trần Thị B",
+          "userAvatar": "./assets/images/avatar-default.jpg",
+          "content": "Mình có thắc mắc về phần accessibility. Khi nào thì nên sử dụng aria-label và khi nào nên sử dụng aria-describedby?",
+          "timestamp": 1704066600000,
+          "likes": 5,
+          "dislikes": 0,
+          "reports": 0,
+          "status": "active",
+          "isEdited": false,
+          "editedAt": null,
+          "replies": {
+            "reply_003": {
+              "id": "reply_003",
+              "userId": "user_999",
+              "userName": "Giáo viên CodeMaster",
+              "userAvatar": "./assets/images/avatar-default.jpg",
+              "content": "Câu hỏi rất hay! aria-label dùng khi cần thay thế hoàn toàn text của element, còn aria-describedby dùng để cung cấp thêm thông tin mô tả. Mình sẽ làm một video riêng về accessibility nhé!",
+              "timestamp": 1704070000000,
+              "likes": 12,
+              "dislikes": 0,
+              "reports": 0,
+              "status": "active",
+              "isEdited": false,
+              "editedAt": null,
+              "parentId": "comment_002"
+            }
+          }
+        },
+        "comment_003": {
+          "id": "comment_003",
+          "userId": "user_789",
+          "userName": "Lê Minh C",
+          "userAvatar": "./assets/images/avatar-default.jpg",
+          "content": "Bài học hay nhưng mình thấy âm thanh hơi nhỏ, có thể tăng volume một chút không ạ?",
+          "timestamp": 1704065400000,
+          "likes": 2,
+          "dislikes": 1,
+          "reports": 0,
+          "status": "active",
+          "isEdited": false,
+          "editedAt": null,
+          "replies": {}
+        }
+      },
+      "lesson-2": {
+        "comment_004": {
+          "id": "comment_004",
+          "userId": "user_111",
+          "userName": "Phạm Thị D",
+          "userAvatar": "./assets/images/avatar-default.jpg",
+          "content": "CSS Flexbox thật sự là game changer! Trước đây mình hay dùng float để layout, giờ với flexbox mọi thứ đơn giản hơn rất nhiều.",
+          "timestamp": 1704155200000,
+          "likes": 15,
+          "dislikes": 0,
+          "reports": 0,
+          "status": "active",
+          "isEdited": false,
+          "editedAt": null,
+          "replies": {
+            "reply_004": {
+              "id": "reply_004",
+              "userId": "user_222",
+              "userName": "Hoàng Văn E",
+              "userAvatar": "./assets/images/avatar-default.jpg",
+              "content": "Đúng vậy! Đặc biệt là khi làm responsive design, flexbox giúp mình tiết kiệm rất nhiều thời gian.",
+              "timestamp": 1704155800000,
+              "likes": 7,
+              "dislikes": 0,
+              "reports": 0,
+              "status": "active",
+              "isEdited": false,
+              "editedAt": null,
+              "parentId": "comment_004"
+            }
+          }
+        }
+      }
+    },
+    "javascript": {
+      "lesson-1": {
+        "comment_005": {
+          "id": "comment_005",
+          "userId": "user_333",
+          "userName": "Ngô Thị F",
+          "userAvatar": "./assets/images/avatar-default.jpg",
+          "content": "JavaScript closure là một khái niệm hơi khó hiểu. Có thể giải thích thêm bằng ví dụ thực tế được không ạ?",
+          "timestamp": 1704241200000,
+          "likes": 9,
+          "dislikes": 0,
+          "reports": 0,
+          "status": "active",
+          "isEdited": false,
+          "editedAt": null,
+          "replies": {
+            "reply_005": {
+              "id": "reply_005",
+              "userId": "user_444",
+              "userName": "Bùi Văn G",
+              "userAvatar": "./assets/images/avatar-default.jpg",
+              "content": "Mình cũng thấy closure khó hiểu lúc đầu. Theo mình hiểu thì closure giống như một 'túi' chứa function và các biến mà function đó có thể truy cập được.",
+              "timestamp": 1704241800000,
+              "likes": 4,
+              "dislikes": 0,
+              "reports": 0,
+              "status": "active",
+              "isEdited": false,
+              "editedAt": null,
+              "parentId": "comment_005"
+            }
+          }
+        }
+      }
+    }
+  },
+  "commentVotes": {
+    "comment_001": {
+      "user_456": "like",
+      "user_789": "like",
+      "user_111": "like",
+      "user_222": "like",
+      "user_333": "like",
+      "user_444": "like",
+      "user_555": "like",
+      "user_666": "like"
+    },
+    "comment_002": {
+      "user_123": "like",
+      "user_789": "like",
+      "user_111": "like",
+      "user_222": "like",
+      "user_333": "like"
+    },
+    "comment_003": {
+      "user_456": "like",
+      "user_111": "like",
+      "user_999": "dislike"
+    },
+    "comment_004": {
+      "user_123": "like",
+      "user_456": "like",
+      "user_789": "like",
+      "user_222": "like",
+      "user_333": "like",
+      "user_444": "like",
+      "user_555": "like",
+      "user_666": "like",
+      "user_777": "like",
+      "user_888": "like",
+      "user_999": "like",
+      "user_1111": "like",
+      "user_2222": "like",
+      "user_3333": "like",
+      "user_4444": "like"
+    },
+    "comment_005": {
+      "user_123": "like",
+      "user_456": "like",
+      "user_789": "like",
+      "user_111": "like",
+      "user_222": "like",
+      "user_333": "like",
+      "user_444": "like",
+      "user_555": "like",
+      "user_666": "like"
+    },
+    "reply_001": {
+      "user_123": "like",
+      "user_789": "like",
+      "user_111": "like"
+    },
+    "reply_002": {
+      "user_456": "like",
+      "user_111": "like"
+    },
+    "reply_003": {
+      "user_123": "like",
+      "user_456": "like",
+      "user_789": "like",
+      "user_111": "like",
+      "user_222": "like",
+      "user_333": "like",
+      "user_444": "like",
+      "user_555": "like",
+      "user_666": "like",
+      "user_777": "like",
+      "user_888": "like",
+      "user_999": "like"
+    },
+    "reply_004": {
+      "user_123": "like",
+      "user_456": "like",
+      "user_789": "like",
+      "user_111": "like",
+      "user_333": "like",
+      "user_444": "like",
+      "user_555": "like"
+    },
+    "reply_005": {
+      "user_123": "like",
+      "user_456": "like",
+      "user_789": "like",
+      "user_111": "like"
+    }
+  },
+  "commentReports": {
+    "comment_003": {
+      "user_999": {
+        "reason": "inappropriate",
+        "timestamp": 1704070000000,
+        "description": "Nội dung không liên quan đến bài học"
+      }
+    }
+  }
+}

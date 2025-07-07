@@ -106,17 +106,19 @@ async function renderCourses(coursesData, categoriesData) {
   });
 
   // Tạo HTML cho tất cả khóa học (chờ stats từng khóa học)
-  let coursesHTML = "";
-  for (const course of coursesArray) {
-    // stats lưu totalLessons và totalDuration
-    const stats = await getCourseStats(course.id);
-    coursesHTML += createCourseCard(course, categoriesData, stats);
-  }
-  coursesGrid.innerHTML = coursesHTML;
+  // let coursesHTML = "";
+  // for (const course of coursesArray) {
+  //   // stats lưu totalLessons và totalDuration
+  //   const stats = await getCourseStats(course.id);
+  //   coursesHTML += createCourseCard(course, categoriesData, stats);
+  // }
+  coursesGrid.innerHTML = coursesArray
+    .map((course) => createCourseCard(course, categoriesData))
+    .join("");
 }
 
 // Tạo HTML cho một thẻ khóa học
-function createCourseCard(course, categoriesData, stats = {}) {
+function createCourseCard(course, categoriesData) {
   const category = categoriesData[course.category] || {};
   const categoryName = category.name || course.category;
   const categoryIcon = category.icon || "📚";
@@ -131,14 +133,14 @@ function createCourseCard(course, categoriesData, stats = {}) {
   const levelText = levelMap[course.level] || course.level;
 
   // Sử dụng stats động nếu có, fallback về dữ liệu tĩnh nếu chưa có
-  const lessonsCount = stats.totalLessons || course.lessons || 0;
-  const totalMinutes = stats.totalMinutes || 0;
-  const hours = Math.floor(totalMinutes / 60);
-  const minutes = totalMinutes % 60;
-  let durationText = "";
-  if (hours > 0) durationText += `${hours} giờ `;
-  if (minutes > 0) durationText += `${minutes} phút`;
-  if (!durationText) durationText = course.duration || "0 phút";
+  // const lessonsCount = stats.totalLessons || course.lessons || 0;
+  // const totalMinutes = stats.totalMinutes || 0;
+  // const hours = Math.floor(totalMinutes / 60);
+  // const minutes = totalMinutes % 60;
+  // let durationText = "";
+  // if (hours > 0) durationText += `${hours} giờ `;
+  // if (minutes > 0) durationText += `${minutes} phút`;
+  // if (!durationText) durationText = course.duration || "0 phút";
 
   return `
     <div class="course-card" data-level="${course.level}" data-category="${
@@ -155,10 +157,10 @@ function createCourseCard(course, categoriesData, stats = {}) {
         </div>
         <p class="line-clamp-2">${course.description}</p>
         <div class="course-meta">
-          <span><i class="far fa-clock"></i> ${durationText.trim()}</span>
-          <span><i class="far fa-file-alt"></i> ${lessonsCount} bài học</span>
+          <span><i class="far fa-clock"></i> ${course.duration}</span>
+          <span><i class="far fa-file-alt"></i> ${course.lessons} bài học</span>
         </div>
-        <div class="progress-container">
+        <div class="progress-container" >
           <div class="progress-bar" data-progress="0" data-course-id="${
             course.id
           }">

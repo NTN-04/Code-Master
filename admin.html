@@ -557,7 +557,7 @@
         <div class="modal-body">
           <div class="course-detail-toolbar">
             <button class="btn btn-primary" id="add-module-btn">
-              <i class="fas fa-plus"></i> Thêm module
+              <i class="fas fa-plus"></i> Thêm chương
             </button>
           </div>
           <div id="course-modules-list">
@@ -587,6 +587,67 @@
       </div>
     </div>
 
+    <!-- Modal thêm /sửa Form Bài Học -->
+    <div class="modal" id="lesson-form-modal">
+      <div class="modal-content modal-md">
+        <div class="modal-header">
+          <h3 id="lesson-form-title">Thêm bài học mới</h3>
+          <button class="close-modal">&times;</button>
+        </div>
+        <div class="modal-body">
+          <form id="lesson-form">
+            <div class="form-group">
+              <label for="lesson-title">Tiêu đề bài học:</label>
+              <input
+                type="text"
+                id="lesson-title"
+                required
+                placeholder="Nhập tiêu đề bài học"
+              />
+            </div>
+            <div class="form-group">
+              <label for="lesson-content">Nội dung bài học:</label>
+              <textarea
+                id="lesson-content"
+                rows="5"
+                placeholder="Nhập nội dung chi tiết của bài học"
+              ></textarea>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="lesson-duration">Thời lượng:</label>
+                <input
+                  type="text"
+                  id="lesson-duration"
+                  placeholder="VD: 15 phút"
+                />
+              </div>
+              <div class="form-group">
+                <label for="lesson-video">Link video:</label>
+                <input
+                  type="text"
+                  id="lesson-video"
+                  placeholder="URL video (YouTube, Vimeo,...)"
+                />
+              </div>
+            </div>
+            <div class="form-actions">
+              <button
+                type="submit"
+                class="btn btn-primary"
+                id="save-lesson-btn"
+              >
+                <i class="fas fa-save"></i> Lưu bài học
+              </button>
+              <button type="button" class="btn btn-secondary cancel-btn">
+                <i class="fas fa-times"></i> Hủy
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
     <!-- Modal Quản lý Quiz cho bài học -->
     <div class="modal" id="quiz-manager-modal">
       <div class="modal-content modal-sm">
@@ -603,6 +664,99 @@
           <div id="quiz-list">
             <!-- Danh sách quiz sẽ được load ở đây -->
           </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal thêm /sửa Form Quiz -->
+    <div class="modal" id="quiz-form-modal">
+      <div class="modal-content modal-md">
+        <div class="modal-header">
+          <h3 id="quiz-form-title">Thêm quiz mới</h3>
+          <button class="close-modal">&times;</button>
+        </div>
+        <div class="modal-body">
+          <form id="quiz-form">
+            <div class="form-group">
+              <label for="quiz-question">Câu hỏi:</label>
+              <textarea
+                id="quiz-question"
+                rows="2"
+                required
+                placeholder="Nhập câu hỏi trắc nghiệm"
+              ></textarea>
+            </div>
+            <div class="form-group">
+              <label>Các đáp án:</label>
+              <div class="quiz-options">
+                <div class="option-group">
+                  <input
+                    type="radio"
+                    name="correct-answer"
+                    id="option1-radio"
+                    value="0"
+                    checked
+                  />
+                  <input
+                    type="text"
+                    id="quiz-option1"
+                    placeholder="Đáp án 1"
+                    required
+                  />
+                </div>
+                <div class="option-group">
+                  <input
+                    type="radio"
+                    name="correct-answer"
+                    id="option2-radio"
+                    value="1"
+                  />
+                  <input
+                    type="text"
+                    id="quiz-option2"
+                    placeholder="Đáp án 2"
+                    required
+                  />
+                </div>
+                <div class="option-group">
+                  <input
+                    type="radio"
+                    name="correct-answer"
+                    id="option3-radio"
+                    value="2"
+                  />
+                  <input
+                    type="text"
+                    id="quiz-option3"
+                    placeholder="Đáp án 3"
+                    required
+                  />
+                </div>
+                <div class="option-group">
+                  <input
+                    type="radio"
+                    name="correct-answer"
+                    id="option4-radio"
+                    value="3"
+                  />
+                  <input
+                    type="text"
+                    id="quiz-option4"
+                    placeholder="Đáp án 4"
+                    required
+                  />
+                </div>
+              </div>
+            </div>
+            <div class="form-actions">
+              <button type="submit" class="btn btn-primary" id="save-quiz-btn">
+                <i class="fas fa-save"></i> Lưu quiz
+              </button>
+              <button type="button" class="btn btn-secondary cancel-btn">
+                <i class="fas fa-times"></i> Hủy
+              </button>
+            </div>
+          </form>
         </div>
       </div>
     </div>
