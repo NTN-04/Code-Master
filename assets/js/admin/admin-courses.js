@@ -18,6 +18,16 @@ export default class CoursesManager {
 
   // Tải dữ liệu khóa học
   async loadData() {
+    // Hiển thị loading
+    const grid = document.getElementById("admin-courses-grid");
+    if (grid) {
+      grid.innerHTML = `
+        <div class="loading-courses">
+            <span class="loading-spinner"><i class="fas fa-spinner fa-spin"></i></span>
+            <span>Đang tải danh sách người dùng...</span>
+        </div>
+      `;
+    }
     try {
       // Thử tải từ Firebase trước
       const coursesRef = ref(database, "courses");

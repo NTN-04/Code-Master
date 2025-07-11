@@ -401,7 +401,13 @@ function setupPostModal() {
     if (!user) {
       blogCta.style.display = "none";
     } else {
-      blogCta.style.display = "block";
+      const userData = JSON.parse(localStorage.getItem("codemaster_user"));
+
+      if (userData && userData.role == "1") {
+        blogCta.style.display = "none";
+      } else {
+        blogCta.style.display = "block";
+      }
     }
   });
 

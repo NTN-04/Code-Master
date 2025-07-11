@@ -3,7 +3,6 @@ import {
   ref,
   get,
   push,
-  set,
   update,
   remove,
 } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-database.js";
@@ -15,6 +14,20 @@ export default class BlogManager {
   }
 
   async loadData() {
+    // Hiển thị trạng thái đang tải
+    const tbody = document.getElementById("resources-table-body");
+    if (tbody) {
+      tbody.innerHTML = `
+      <tr>
+        <td colspan="6" class="text-center">
+          <div class="loading-courses">
+            <span class="loading-spinner"><i class="fas fa-spinner fa-spin"></i></span>
+            <span>Đang tải danh sách bài viết...</span>
+          </div>
+        </td>
+      </tr>
+    `;
+    }
     try {
       // Tải dữ liệu bài viết blog từ Firebase
       const blogRef = ref(database, "blogs");
@@ -142,18 +155,6 @@ export default class BlogManager {
       categoryFilter.value = currentValue;
     }
   }
-
-  // getCategoryText(category) {
-  //   const categories = {
-  //     frontend: "Frontend",
-  //     backend: "Backend",
-  //     mobile: "Mobile",
-  //     database: "Database",
-  //     devops: "DevOps",
-  //     other: "Khác",
-  //   };
-  //   return categories[category] || category;
-  // }
 
   async editBlog(blogId) {
     const blog = this.blogs.find((b) => b.id === blogId);

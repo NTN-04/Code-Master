@@ -20,6 +20,20 @@ export default class UsersManager {
   }
 
   async loadData() {
+    // Hiển thị trạng thái đang tải
+    const tbody = document.getElementById("users-table-body");
+    if (tbody) {
+      tbody.innerHTML = `
+      <tr>
+        <td colspan="7" class="text-center">
+          <div class="loading-courses">
+            <span class="loading-spinner"><i class="fas fa-spinner fa-spin"></i></span>
+            <span>Đang tải danh sách người dùng...</span>
+          </div>
+        </td>
+      </tr>
+    `;
+    }
     try {
       const usersRef = ref(database, "users");
       const snapshot = await get(usersRef);

@@ -232,6 +232,11 @@ function initSettingsForms() {
   if (fileInput) {
     fileInput.addEventListener("change", function () {
       if (fileInput.files && fileInput.files[0]) {
+        // Kiểm tra kích thước file (tối đa 2MB)
+        if (fileInput.size > 2 * 1024 * 1024) {
+          showNotification("Kích thước file quá lớn (tối đa 2MB)", "error");
+          return;
+        }
         const reader = new FileReader();
         reader.onload = function (e) {
           base64Image = e.target.result;

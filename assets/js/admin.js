@@ -15,6 +15,7 @@ import CoursesManager from "./admin/admin-courses.js";
 import BlogManager from "./admin/admin-blogs.js";
 import AnalyticsManager from "./admin/admin-analytics.js";
 import Dashboard from "./admin/admin-dashboard.js";
+import SettingsManager from "./admin/admin-setting.js";
 
 // Bộ điều khiển chính cho trang Quản trị Admin
 class AdminPanel {
@@ -27,6 +28,7 @@ class AdminPanel {
     this.blogs = new BlogManager(this);
     this.analytics = new AnalyticsManager(this);
     this.dashboard = new Dashboard(this);
+    this.settings = new SettingsManager(this);
 
     this.currentManagingCourseId = null;
     this.currentManagingModuleId = null;
@@ -59,6 +61,9 @@ class AdminPanel {
     this.users.setupEventListeners();
     this.courses.setupEventListeners();
     this.blogs.setupEventListeners();
+
+    // Khởi tạo cài đặt khi vào trang
+    await this.settings.init();
   }
 
   // Điều hướng
@@ -99,8 +104,11 @@ class AdminPanel {
         case "courses":
           this.loadCoursesData();
           break;
-        case "resources":
+        case "blogs":
           this.loadBlogsData();
+          break;
+        case "settings":
+          // Được khỏi tạo khi vào admin trong init
           break;
         case "analytics":
           // luôn hủy và tải lại biểu đồ khi chuyển tab
@@ -162,6 +170,16 @@ class AdminPanel {
       this.showNotification("Lỗi tải dữ liệu thống kê", "error");
     }
   }
+
+  // // Cài đặt
+  // async loadSettingsData() {
+  //   try {
+  //     await this.settings.loadData();
+  //   } catch (error) {
+  //     console.error("Error loading settings data:", error);
+  //     this.showNotification("Lỗi tải dữ liệu cài đặt", "error");
+  //   }
+  // }
 
   // Ghi log hoạt động
   async logActivity(type, title, description, icon = null) {

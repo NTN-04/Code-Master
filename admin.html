@@ -77,7 +77,7 @@
             </a>
           </li>
           <li class="nav-item">
-            <a href="#resources" data-section="resources">
+            <a href="#blogs" data-section="blogs">
               <i class="fas fa-blog"></i>
               <span>Quản lý bài viết</span>
             </a>
@@ -259,7 +259,7 @@
       </section>
 
       <!-- Blog Management Section -->
-      <section id="resources" class="admin-section">
+      <section id="blogs" class="admin-section">
         <div class="section-header">
           <h1>Quản lý bài viết</h1>
           <div class="section-actions">
@@ -368,7 +368,7 @@
       <!-- Settings Section -->
       <section id="settings" class="admin-section">
         <div class="section-header">
-          <h1>Cài đặt hệ thống</h1>
+          <h1>Cài đặt</h1>
         </div>
 
         <div class="admin-card">
@@ -376,28 +376,164 @@
             <h3>Cài đặt chung</h3>
           </div>
           <div class="card-body">
-            <form id="system-settings-form">
-              <div class="form-group">
-                <label>Tên website:</label>
-                <input type="text" id="site-name" value="CodeMaster" />
+            <div class="admin-settings-tabs">
+              <div class="settings-tabs-header">
+                <button class="settings-tab-btn active" data-tab="profile">
+                  Thông tin cá nhân
+                </button>
+                <button class="settings-tab-btn" data-tab="password">
+                  Đổi mật khẩu
+                </button>
+                <button class="settings-tab-btn" data-tab="app">
+                  Tùy chọn ứng dụng
+                </button>
               </div>
-              <div class="form-group">
-                <label>Mô tả website:</label>
-                <textarea id="site-description" rows="3">
-                    Nền tảng học lập trình trực tuyến
-                  </textarea
-                >
+
+              <div class="settings-tab-content">
+                <!-- Thông tin cá nhân -->
+                <div class="settings-tab-pane active" id="profile-settings">
+                  <form id="profile-settings-form" class="settings-form">
+                    <div class="avatar-upload-container">
+                      <div class="avatar-preview">
+                        <img
+                          id="settings-avatar-preview"
+                          src="./assets/images/avatar-default.jpg"
+                          alt="Avatar"
+                        />
+                      </div>
+                      <div class="avatar-upload-btn">
+                        <label for="avatar-upload" class="btn btn-secondary">
+                          <i class="fas fa-camera"></i> Thay đổi avatar
+                        </label>
+                        <input
+                          type="file"
+                          id="avatar-upload"
+                          accept="image/*"
+                          style="display: none"
+                        />
+                      </div>
+                    </div>
+
+                    <div class="form-group">
+                      <label for="settings-username">Tên hiển thị</label>
+                      <input
+                        type="text"
+                        id="settings-username"
+                        class="form-control"
+                        value=""
+                      />
+                    </div>
+
+                    <div class="form-group">
+                      <label for="settings-email">Email</label>
+                      <input
+                        type="email"
+                        id="settings-email"
+                        class="form-control"
+                        value=""
+                        disabled
+                      />
+                    </div>
+
+                    <div class="form-group">
+                      <label for="settings-role">Vai trò</label>
+                      <input
+                        type="text"
+                        id="settings-role"
+                        class="form-control"
+                        value="Administrator"
+                        disabled
+                      />
+                    </div>
+
+                    <div class="form-actions">
+                      <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i> Lưu thay đổi
+                      </button>
+                    </div>
+                  </form>
+                </div>
+
+                <!-- Đổi mật khẩu -->
+                <div class="settings-tab-pane" id="password-settings">
+                  <form id="password-settings-form" class="settings-form">
+                    <div class="form-group">
+                      <label for="current-password">Mật khẩu hiện tại</label>
+                      <input
+                        type="password"
+                        id="current-password"
+                        class="form-control"
+                        required
+                      />
+                    </div>
+
+                    <div class="form-group">
+                      <label for="new-password">Mật khẩu mới</label>
+                      <input
+                        type="password"
+                        id="new-password"
+                        class="form-control"
+                        required
+                      />
+                      <small class="form-text text-muted"
+                        >Mật khẩu phải có ít nhất 6 ký tự</small
+                      >
+                    </div>
+
+                    <div class="form-group">
+                      <label for="confirm-password">Xác nhận mật khẩu</label>
+                      <input
+                        type="password"
+                        id="confirm-password"
+                        class="form-control"
+                        required
+                      />
+                    </div>
+
+                    <div class="form-actions">
+                      <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-key"></i> Đổi mật khẩu
+                      </button>
+                    </div>
+                  </form>
+                </div>
+
+                <!-- Tùy chọn ứng dụng -->
+                <div class="settings-tab-pane" id="app-settings">
+                  <form id="app-settings-form" class="settings-form">
+                    <div class="form-group">
+                      <label class="switch-label"
+                        >Tự động chuyển đến trang quản trị khi đăng nhập</label
+                      >
+                      <div class="form-check form-switch">
+                        <input
+                          class="form-check-input"
+                          type="checkbox"
+                          id="adminAutoRedirect"
+                        />
+                      </div>
+                    </div>
+
+                    <div class="form-group">
+                      <label for="notification-setting">Thông báo</label>
+                      <select id="notification-setting" class="form-control">
+                        <option value="all">Tất cả thông báo</option>
+                        <option value="important">
+                          Chỉ thông báo quan trọng
+                        </option>
+                        <option value="none">Tắt thông báo</option>
+                      </select>
+                    </div>
+
+                    <div class="form-actions">
+                      <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i> Lưu cài đặt
+                      </button>
+                    </div>
+                  </form>
+                </div>
               </div>
-              <div class="form-group">
-                <label>Email liên hệ:</label>
-                <input
-                  type="email"
-                  id="contact-email"
-                  value="admin@codemaster.com"
-                />
-              </div>
-              <button type="submit" class="btn btn-primary">Lưu cài đặt</button>
-            </form>
+            </div>
           </div>
         </div>
       </section>
@@ -610,7 +746,7 @@
               <textarea
                 id="lesson-content"
                 rows="5"
-                placeholder="Nhập nội dung chi tiết của bài học"
+                placeholder="Nhập nội dung tóm tắt của bài học"
               ></textarea>
             </div>
             <div class="form-row">
@@ -619,7 +755,7 @@
                 <input
                   type="text"
                   id="lesson-duration"
-                  placeholder="VD: 15 phút"
+                  placeholder="VD: 15 phút, 10:30 phút"
                 />
               </div>
               <div class="form-group">
@@ -627,7 +763,7 @@
                 <input
                   type="text"
                   id="lesson-video"
-                  placeholder="URL video (YouTube, Vimeo,...)"
+                  placeholder="URL Embed video (YouTube, Vimeo,...)"
                 />
               </div>
             </div>
