@@ -1077,10 +1077,10 @@ class CommentSystem {
 
       // QUAN TRỌNG: TẠM THỜI LƯU TRẠNG THÁI HIỆN TẠI CỦA PHẦN TỬ DOM
       // Để phòng trường hợp component bị re-render
-      const buttonClassList = button ? [...button.classList] : [];
-      const oppositeButtonClassList = oppositeButton
-        ? [...oppositeButton.classList]
-        : [];
+      // const buttonClassList = button ? [...button.classList] : [];
+      // const oppositeButtonClassList = oppositeButton
+      //   ? [...oppositeButton.classList]
+      //   : [];
       const currentCount = button
         ? parseInt(
             button.querySelector(".comment-action-count")?.textContent || "0"

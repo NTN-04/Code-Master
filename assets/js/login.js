@@ -44,11 +44,48 @@ async function checkAccountStatus(userId) {
       const userData = snapshot.val();
       return userData.status || "active";
     }
-    return "active";
+    // Nếu không tồn tại user, coi như đã bị xóa
+    return "deleted";
   } catch (e) {
-    return "active";
+    return "deleted";
   }
 }
+
+// Hàm kiểm tra và chuyển hướng dựa trên vai trò và cài đặt
+async function checkRoleAndRedirect(user) {
+  try {
+    // Lấy thông tin người dùng từ database
+    const userRef = ref(database, `users/${user.uid}`);
+    const snapshot = await get(userRef);
+
+    if (snapshot.exists()) {
+      const userData = snapshot.val();
+
+      // Kiểm tra nếu là admin (role = 1)
+      if (userData.role === 1 || userData.role === "1") {
+        // Kiểm tra cài đặt adminAutoRedirect
+        const autoRedirect =
+          localStorage.getItem("adminAutoRedirect") === "true";
+
+        if (autoRedirect) {
+          // Chuyển hướng đến trang admin
+          window.location.href = "admin.html";
+          return true;
+        }
+      }
+    }
+
+    // Nếu không phải admin hoặc không có cài đặt auto-redirect
+    window.location.href = "index.html";
+    return true;
+  } catch (error) {
+    console.error("Lỗi khi kiểm tra vai trò:", error);
+    // Mặc định chuyển về trang chủ nếu có lỗi
+    window.location.href = "index.html";
+    return false;
+  }
+}
+
 // Khởi tạo điều hướng tab
 function initTabs() {
   const tabButtons = document.querySelectorAll(".login-tabs .tab-btn");
@@ -104,10 +141,12 @@ function handlerLoginEmailPassword() {
 
         // Kiểm tra trạng thái tài khoản
         const status = await checkAccountStatus(user.uid);
-        if (status === "suspended") {
+        if (status === "suspended" || status === "deleted") {
           await signOut(auth);
           showNotification(
-            "Tài khoản của bạn đã bị tạm ngừng. Vui lòng liên hệ hỗ trợ để được khôi phục.",
+            status === "suspended"
+              ? "Tài khoản của bạn đã bị tạm ngừng. Vui lòng liên hệ hỗ trợ để được khôi phục."
+              : "Tài khoản của bạn không tồn tại hoặc đã bị xóa khỏi hệ thống.",
             "error"
           );
           return;
@@ -117,7 +156,7 @@ function handlerLoginEmailPassword() {
         await saveUserData(user, "email");
 
         // chuyển trang khi thành công
-        window.location.href = "index.html";
+        await checkRoleAndRedirect(user);
       } catch (error) {
         console.error("Lỗi đăng nhập: ", error);
 
@@ -268,13 +307,15 @@ async function signInWithProvider(provider, providerName) {
 
     // Kiểm tra trạng thái tài khoản
     const status = await checkAccountStatus(user.uid);
-    if (status === "suspended") {
+    if (status === "suspended" || status === "deleted") {
       await signOut(auth);
       showNotification(
-        "Tài khoản của bạn đã bị tạm ngừng. Vui lòng liên hệ hỗ trợ để được khôi phục.",
+        status === "suspended"
+          ? "Tài khoản của bạn đã bị tạm ngừng. Vui lòng liên hệ hỗ trợ để được khôi phục."
+          : "Tài khoản của bạn không tồn tại hoặc đã bị xóa khỏi hệ thống.",
         "error"
       );
-      return { success: false, error: "suspended" };
+      return { success: false, error: status };
     }
 
     // Lưu user vào database
@@ -293,7 +334,8 @@ async function signInWithProvider(provider, providerName) {
     }
 
     // Thông báo và chuyển hướng
-    window.location.href = "index.html";
+    await checkRoleAndRedirect(user);
+
     return { success: true, user };
   } catch (error) {
     // Xử lý lỗi
@@ -411,10 +453,12 @@ function setupAuthStateMonitoring() {
     if (user) {
       // Kiểm tra trạng thái tài khoản
       const status = await checkAccountStatus(user.uid);
-      if (status === "suspended") {
+      if (status === "suspended" || status === "deleted") {
         await signOut(auth);
         showNotification(
-          "Tài khoản của bạn đã bị tạm ngừng. Vui lòng liên hệ hỗ trợ để được khôi phục.",
+          status === "suspended"
+            ? "Tài khoản của bạn đã bị tạm ngừng. Vui lòng liên hệ hỗ trợ để được khôi phục."
+            : "Tài khoản của bạn không tồn tại hoặc đã bị xóa khỏi hệ thống.",
           "error"
         );
         return;
@@ -429,6 +473,11 @@ function setupAuthStateMonitoring() {
       } else if (providerData.providerId === "github.com") {
         providerName = "github";
       }
+      // // Nếu trang hiện tại là login.html và người dùng đã đăng nhập
+      // // thực hiện kiểm tra và chuyển hướng
+      // if (window.location.pathname.includes("login.html")) {
+      //   await checkRoleAndRedirect(user);
+      // }
     } else {
       // Xóa dữ liệu khi đăng xuất
       if (localStorage.getItem("codemaster_user")) {
