@@ -291,7 +291,7 @@ export default class CommentsManager {
                       </button>
                       <button class="btn-action btn-hide" data-action="hide" data-id="${
                         report.commentId
-                      }" data-path="${report.commentPath}" title="Ẩn/Hiện">
+                      }" data-path="${report.commentPath}" title="Ẩn">
                         <i class="fas fa-eye-slash"></i>
                       </button>
                       <button class="btn-action btn-delete" data-action="delete" data-id="${
@@ -605,7 +605,8 @@ export default class CommentsManager {
     `;
 
     // Thêm modal vào HTML và hiển thị
-    let modal = document.getElementById("comment-detail-modal");
+    const modalId = "comment-detail-modal";
+    let modal = document.getElementById(modalId);
     if (!modal) {
       // Tạo modal mới nếu chưa có
       modal = document.createElement("div");
@@ -630,12 +631,6 @@ export default class CommentsManager {
       modal.querySelector(".close-modal").addEventListener("click", () => {
         this.panel.hideModal(modalId);
       });
-
-      modal
-        .querySelector("#comment-modal-close")
-        .addEventListener("click", () => {
-          this.panel.hideModal(modalId);
-        });
     } else {
       // Cập nhật nội dung modal nếu đã tồn tại
       modal.querySelector("#comment-modal-title").textContent = modalTitle;
@@ -651,34 +646,59 @@ export default class CommentsManager {
    */
   async hideComment(path) {
     try {
-      // Phân tích đường dẫn để lấy vị trí bình luận
-      const pathParts = path.split("/");
-
-      if (!pathParts || pathParts.length < 3) {
-        this.panel.showNotification(
-          "Đường dẫn bình luận không hợp lệ.",
-          "error"
-        );
+      // Tìm bình luận trong dữ liệu đã lấy
+      const comment = this.flattenedComments.find((c) => c.path === path);
+      if (!comment) {
+        this.panel.showNotification("Không tìm thấy bình luận.", "error");
         return;
       }
 
-      // Xác định vị trí trong database
-      const commentRef = ref(database, `comments/${path}`);
-
       // Cập nhật trạng thái
+      const commentRef = ref(database, `comments/${path}`);
       await update(commentRef, { status: "hidden" });
+
+      // Cập nhật dữ liệu trong bộ nhớ
+      comment.status = "hidden";
+
+      // Cập nhật UI không cần render lại
+      // 1. Tìm hàng trong bảng chứa bình luận này
+      const commentsTable = document.getElementById("comments-table");
+      if (commentsTable) {
+        const rows = commentsTable.querySelectorAll("tbody tr");
+        for (const row of rows) {
+          const actionButton = row.querySelector(`[data-path="${path}"]`);
+          if (actionButton) {
+            // 2. Cập nhật trạng thái hiển thị
+            const statusCell = row.querySelector("td:nth-child(6)");
+            if (statusCell) {
+              const statusBadge = statusCell.querySelector(".status-badge");
+              statusBadge.textContent = "Đã ẩn";
+              statusBadge.className = "status-badge status-hidden";
+            }
+
+            // 3. Cập nhật nút ẩn/hiện
+            const hideShowBtn = row.querySelector(
+              '[data-action="hide"], [data-action="show"]'
+            );
+            if (hideShowBtn) {
+              hideShowBtn.dataset.action = "show";
+              hideShowBtn.className = "btn-action btn-show";
+              hideShowBtn.title = "Hiện";
+              const icon = hideShowBtn.querySelector("i");
+              if (icon) {
+                icon.className = "fas fa-eye";
+              }
+            }
+            break;
+          }
+        }
+      }
 
       // Thông báo thành công
       this.panel.showNotification("Đã ẩn bình luận thành công.", "success");
 
-      // Cập nhật dữ liệu và giao diện
-      await this.loadData();
-
-      // Tìm comment để lấy tên người đăng
-      const comment = this.flattenedComments.find((c) => c.path === path);
-      const username = comment?.userName || comment?.userId || "Không xác định";
-
       // Ghi log
+      const username = comment.userName || comment.userId || "Không xác định";
       this.panel.logActivity(
         "system",
         "Ẩn bình luận",
@@ -696,19 +716,53 @@ export default class CommentsManager {
    */
   async showComment(path) {
     try {
-      // Tương tự như hideComment nhưng thay đổi trạng thái thành active
+      // Tìm bình luận trong dữ liệu đã lấy
+      const comment = this.flattenedComments.find((c) => c.path === path);
+
+      // cập nhật trạng thái
       const commentRef = ref(database, `comments/${path}`);
-
       await update(commentRef, { status: "active" });
+      // cập nhật dữ liệu trong bộ nhớ
+      comment.status = "active";
 
+      // Cập nhật UI không cần render lại
+      const commentsTable = document.getElementById("comments-table");
+      if (commentsTable) {
+        const rows = commentsTable.querySelectorAll("tbody tr");
+        for (const row of rows) {
+          const actionButton = row.querySelector(`[data-path="${path}"]`);
+          if (actionButton) {
+            // Cập nhật trạng thái hiển thị
+            const statusCell = row.querySelector("td:nth-child(6)");
+            if (statusCell) {
+              const statusBadge = statusCell.querySelector(".status-badge");
+              statusBadge.textContent = "Hiển thị";
+              statusBadge.className = "status-badge status-active";
+            }
+
+            // Cập nhật nút ẩn/hiện
+            const hideShowBtn = row.querySelector(
+              '[data-action="hide"], [data-action="show"]'
+            );
+            if (hideShowBtn) {
+              hideShowBtn.dataset.action = "hide";
+              hideShowBtn.className = "btn-action btn-hide";
+              hideShowBtn.title = "Ẩn";
+              const icon = hideShowBtn.querySelector("i");
+              if (icon) {
+                icon.className = "fas fa-eye-slash";
+              }
+            }
+            break;
+          }
+        }
+      }
+
+      // Thông báo thành công
       this.panel.showNotification("Đã hiện bình luận thành công.", "success");
 
-      await this.loadData();
-
-      // Tìm comment vừa ẩn để lấy tên người đăng
-      const comment = this.flattenedComments.find((c) => c.path === path);
+      // Ghi log
       const username = comment?.userName || comment?.userId || "Không xác định";
-
       this.panel.logActivity(
         "system",
         "Hiện bình luận",
