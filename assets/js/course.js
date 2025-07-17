@@ -181,11 +181,7 @@ async function activateLesson(lessonId) {
       trackLessonProgress(lessonId);
 
       // Khởi tạo hệ thống bình luận cho bài học
-      if (commentSystem) {
-        commentSystem.destroy();
-      }
-
-      commentSystem = new CommentSystem(courseId, lessonId);
+      initCommentButton(lessonId);
     } else {
       lessonContainer.innerHTML =
         "<div class='alert alert-warning'>Không tìm thấy bài học.</div>";
@@ -218,7 +214,7 @@ function trackLessonProgress(lessonId) {
     }
 
     // Lưu tiến trình
-    const courseId = getCourseIdFromUrl(); // Thực tế sẽ lấy động
+    const courseId = getCourseIdFromUrl();
     saveLessonCompletionToDB(courseId, lessonId);
   }
 }
@@ -420,7 +416,12 @@ function renderLessonContent(lesson, modules) {
 
   return `
     <div class="lesson-content" id="lesson-${lesson.id}">
-      <h2>${lesson.title}</h2>
+      <div class="lesson-header-actions">
+        <h2>${lesson.title}</h2>
+        <button id="course-comment-btn" class="btn-comment-toggle">
+          <i class="fas fa-comments"></i> Bình luận
+        </button>
+      </div>
       <div class="lesson-video">
         ${lesson.video ? renderVideo(lesson.video) : ""}
       </div>
@@ -560,4 +561,40 @@ async function updateCourseMeta() {
 function escapeHtml(str) {
   if (!str) return "";
   return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+}
+
+// Khởi tạo xử lý cho nút bình luận để hiển thị panel
+function initCommentButton(lessonId) {
+  // Kiểm tra xem panel comment đã được thêm vào chưa
+  let commentPanel = document.getElementById("course-comments-panel");
+  if (!commentPanel) {
+    // Nếu chưa có, thêm vào
+    commentPanel = document.createElement("div");
+    commentPanel.id = "course-comments-panel";
+    commentPanel.className = "comments-panel";
+    document.body.appendChild(commentPanel);
+  }
+
+  // Thiết lập nút bình luận
+  const commentBtn = document.getElementById("course-comment-btn");
+  const commentOverlay = document.querySelector(".comments-overlay");
+  if (commentBtn) {
+    commentBtn.addEventListener("click", () => {
+      // Hiển thị panel
+      commentOverlay.classList.add("active");
+      commentPanel.classList.add("active");
+
+      // Khởi tạo hệ thống bình luận cho panel nếu chưa có
+      const courseId = getCourseIdFromUrl();
+
+      // Hủy hệ thống bình luận cũ trong panel nếu có
+      if (commentSystem) {
+        commentSystem.destroy();
+      }
+
+      // Tạo mới hệ thống bình luận trong panel
+      commentSystem = new CommentSystem(courseId, lessonId, commentPanel, true);
+      document.body.style.overflow = "hidden";
+    });
+  }
 }

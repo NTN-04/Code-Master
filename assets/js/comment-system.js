@@ -13,9 +13,11 @@ import {
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-auth.js";
 
 class CommentSystem {
-  constructor(courseId, lessonId) {
+  constructor(courseId, lessonId, container = null, isPanel = false) {
     this.courseId = this.encodePath(courseId);
     this.lessonId = this.encodePath(lessonId); // đã mã hóa (id: 1_1)
+    this.container = container;
+    this.isPanel = isPanel; // Cờ đánh dấu hiển thị dạng panel
     this.currentUser = null;
     this.comments = new Map();
     this.listeners = new Map();
@@ -75,11 +77,11 @@ class CommentSystem {
    * Hiển thị phần bình luận
    */
   renderCommentSection() {
-    const lessonContainer = document.querySelector(".lesson-container");
-    if (!lessonContainer) return;
+    const targetContainer = this.container;
+    if (!targetContainer) return;
 
     // Xóa phần bình luận hiện có
-    const existingSection = document.querySelector(".comments-section");
+    const existingSection = targetContainer.querySelector(".comments-section");
     if (existingSection) {
       existingSection.remove();
     }
@@ -87,12 +89,42 @@ class CommentSystem {
     // Tạo phần bình luận mới
     const commentsSection = document.createElement("div");
     commentsSection.className = "comments-section";
-    commentsSection.innerHTML = this.getCommentsSectionHTML();
 
-    lessonContainer.appendChild(commentsSection);
+    // Thêm header với nút đóng nếu ở chế độ panel
+    if (this.isPanel) {
+      commentsSection.innerHTML = `
+        <div class="comments-panel-header">
+          <h3></h3>
+          <button class="comment-close-btn">×</button>
+        </div>
+        ${this.getCommentsSectionHTML()}
+      `;
+    } else {
+      commentsSection.innerHTML = this.getCommentsSectionHTML();
+    }
+
+    targetContainer.appendChild(commentsSection);
 
     // Thiết lập sự kiện lắng nghe
     this.setupEventListeners();
+
+    // Thêm xử lý nút đóng nếu ở chế độ panel
+    if (this.isPanel) {
+      const closeBtn = targetContainer.querySelector(".comment-close-btn");
+      const overlay = document.querySelector(".comments-overlay");
+      if (closeBtn && this.container && overlay) {
+        closeBtn.addEventListener("click", () => {
+          this.container.classList.remove("active");
+          overlay.classList.remove("active");
+          document.body.style.overflow = "";
+        });
+        overlay.addEventListener("click", () => {
+          this.container.classList.remove("active");
+          overlay.classList.remove("active");
+          document.body.style.overflow = "";
+        });
+      }
+    }
   }
 
   /**
@@ -118,7 +150,7 @@ class CommentSystem {
         ${this.isLoading ? this.getLoadingHTML() : this.getCommentsHTML()}
       </div>
 
-      ${this.getReportModalHTML()}
+    
     `;
   }
 
@@ -147,7 +179,7 @@ class CommentSystem {
         
         <textarea 
           class="comment-textarea" 
-          placeholder="Chia sẻ suy nghĩ của bạn về bài học này..."
+          placeholder="Nhập nội dung bạn muốn chia sẻ ..."
           maxlength="${this.maxCommentLength}"
           rows="3"
         ></textarea>
@@ -203,19 +235,20 @@ class CommentSystem {
    * @returns {string} HTML của danh sách bình luận
    */
   getCommentsHTML() {
+    // Chỉ lấy các bình luận có status là active
+    const commentsArray = Array.from(this.comments.values())
+      .filter((comment) => comment.status === "active")
+      .sort((a, b) => b.timestamp - a.timestamp);
+
     if (this.comments.size === 0) {
       return `
         <div class="comments-empty">
           <i class="fas fa-comment-slash"></i>
-          <p>Chưa có bình luận nào cho bài học này</p>
+          <p>Chưa có bình luận nào cho phần này</p>
           <p>Hãy là người đầu tiên chia sẻ suy nghĩ!</p>
         </div>
       `;
     }
-
-    const commentsArray = Array.from(this.comments.values()).sort(
-      (a, b) => b.timestamp - a.timestamp
-    );
 
     return commentsArray
       .map((comment) => this.getCommentHTML(comment))
@@ -385,9 +418,10 @@ class CommentSystem {
   getRepliesHTML(replies) {
     if (!replies) return "";
 
-    const repliesArray = Object.entries(replies).sort(
-      (a, b) => a.timestamp - b.timestamp
-    );
+    // Chỉ lấy các reply có status là active
+    const repliesArray = Object.entries(replies)
+      .filter(([_, reply]) => reply.status === "active")
+      .sort((a, b) => a[1].timestamp - b[1].timestamp);
 
     return `
       <div class="comment-replies">
@@ -490,39 +524,40 @@ class CommentSystem {
    * @returns {string} HTML của modal báo cáo
    */
   getReportModalHTML() {
-    return `
-      <div class="report-modal" id="report-modal">
-        <div class="report-modal-content">
-          <div class="report-modal-header">
-            <h3 class="report-modal-title">Báo cáo vi phạm</h3>
-            <button class="report-modal-close" data-action="close-report">×</button>
-          </div>
-          
-          <form class="report-form">
-            <label for="report-reason">Lý do báo cáo:</label>
-            <select id="report-reason" required>
-              <option value="">Chọn lý do...</option>
-              <option value="spam">Spam</option>
-              <option value="inappropriate">Nội dung không phù hợp</option>
-              <option value="harassment">Quấy rối</option>
-              <option value="other">Khác</option>
-            </select>
-            
-            <label for="report-description">Mô tả chi tiết (tùy chọn):</label>
-            <textarea id="report-description" placeholder="Mô tả thêm về vi phạm..." maxlength="500"></textarea>
-            
-            <div class="report-form-actions">
-              <button type="button" class="btn-comment btn-comment-secondary" data-action="close-report">
-                Hủy
-              </button>
-              <button type="submit" class="btn-comment btn-comment-primary">
-                Gửi báo cáo
-              </button>
-            </div>
-          </form>
-        </div>
+    // Tạo modal và append vào body
+    const modal = document.createElement("div");
+    modal.className = "report-modal";
+    modal.id = "report-modal";
+    modal.innerHTML = `
+    <div class="report-modal-content">
+      <div class="report-modal-header">
+        <h3 class="report-modal-title">Báo cáo vi phạm</h3>
+        <button class="report-modal-close" data-action="close-report">×</button>
       </div>
-    `;
+      <form class="report-form">
+        <label for="report-reason">Lý do báo cáo:</label>
+        <select id="report-reason" required>
+          <option value="">Chọn lý do...</option>
+          <option value="spam">Spam</option>
+          <option value="inappropriate">Nội dung không phù hợp</option>
+          <option value="harassment">Quấy rối</option>
+          <option value="other">Khác</option>
+        </select>
+        <label for="report-description">Mô tả chi tiết (tùy chọn):</label>
+        <textarea id="report-description" placeholder="Mô tả thêm về vi phạm..." maxlength="500"></textarea>
+        <div class="report-form-actions">
+          <button type="button" class="btn-comment btn-comment-secondary" data-action="close-report">
+            Hủy
+          </button>
+          <button type="submit" class="btn-comment btn-comment-primary">
+            Gửi báo cáo
+          </button>
+        </div>
+      </form>
+    </div>
+  `;
+    document.body.appendChild(modal);
+    return "";
   }
 
   /**
@@ -638,30 +673,8 @@ class CommentSystem {
         case "cancel-reply":
           this.cancelReply(target.closest(".reply-form"));
           break;
-        case "close-report":
-          this.closeReportModal();
-          break;
       }
     });
-
-    // Gửi form báo cáo
-    const reportForm = commentsSection.querySelector(".report-form");
-    if (reportForm) {
-      reportForm.addEventListener("submit", (e) => {
-        e.preventDefault();
-        this.submitReport();
-      });
-    }
-
-    // Click bên ngoài modal để đóng
-    const reportModal = commentsSection.querySelector(".report-modal");
-    if (reportModal) {
-      reportModal.addEventListener("click", (e) => {
-        if (e.target === reportModal) {
-          this.closeReportModal();
-        }
-      });
-    }
   }
 
   /**
@@ -695,6 +708,9 @@ class CommentSystem {
     } finally {
       this.isLoading = false;
       this.renderCommentSection();
+      if (typeof window.updateBlogCommentCount === "function") {
+        window.updateBlogCommentCount();
+      }
     }
   }
 
@@ -802,6 +818,10 @@ class CommentSystem {
         // Chỉ render lại toàn bộ nếu có thay đổi lớn
         if (hasStructuralChanges) {
           this.renderCommentSection();
+          // cập nhật số lượng bình cho blog
+          if (typeof window.updateBlogCommentCount === "function") {
+            window.updateBlogCommentCount();
+          }
         }
       } else {
         this.comments.clear();
@@ -1521,8 +1541,10 @@ class CommentSystem {
       return;
     }
 
+    let username = this.userDB?.username || this.currentUser.displayName;
     try {
       const reportData = {
+        userName: username,
         reason: reason,
         description: description,
         timestamp: Date.now(),
@@ -1582,12 +1604,31 @@ class CommentSystem {
    */
   showReportModal(commentId) {
     this.currentReportCommentId = commentId;
-    const modal = document.getElementById("report-modal");
+    let modal = document.getElementById("report-modal");
+    if (!modal) {
+      this.getReportModalHTML(); // Tạo modal nếu chưa có
+      modal = document.getElementById("report-modal");
+    }
     modal.classList.add("active");
+    document.body.setAttribute("modal-open", "true");
 
     // Reset form
     document.getElementById("report-reason").value = "";
     document.getElementById("report-description").value = "";
+
+    // Gắn lại sự kiện đóng và submit
+    const closeBtns = modal.querySelectorAll('[data-action="close-report"]');
+    closeBtns.forEach((btn) => {
+      btn.onclick = () => this.closeReportModal();
+    });
+    modal.querySelector("form").onsubmit = (e) => {
+      e.preventDefault();
+      this.submitReport();
+    };
+    // Đóng khi click ra ngoài modal-content
+    modal.onclick = (e) => {
+      if (e.target === modal) this.closeReportModal();
+    };
   }
 
   /**
@@ -1597,6 +1638,7 @@ class CommentSystem {
     const modal = document.getElementById("report-modal");
     modal.classList.remove("active");
     this.currentReportCommentId = null;
+    document.body.removeAttribute("modal-open");
   }
 
   /**

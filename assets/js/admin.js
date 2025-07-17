@@ -16,6 +16,7 @@ import BlogManager from "./admin/admin-blogs.js";
 import AnalyticsManager from "./admin/admin-analytics.js";
 import Dashboard from "./admin/admin-dashboard.js";
 import SettingsManager from "./admin/admin-setting.js";
+import CommentsManager from "./admin/admin-comments.js";
 
 // Bộ điều khiển chính cho trang Quản trị Admin
 class AdminPanel {
@@ -29,6 +30,7 @@ class AdminPanel {
     this.analytics = new AnalyticsManager(this);
     this.dashboard = new Dashboard(this);
     this.settings = new SettingsManager(this);
+    this.comments = new CommentsManager(this);
 
     this.currentManagingCourseId = null;
     this.currentManagingModuleId = null;
@@ -107,6 +109,9 @@ class AdminPanel {
         case "blogs":
           this.loadBlogsData();
           break;
+        case "comments":
+          this.loadCommentsData();
+          break;
         case "settings":
           // Được khỏi tạo khi vào admin trong init
           break;
@@ -161,6 +166,16 @@ class AdminPanel {
     }
   }
 
+  // Quản lý bình luận
+  async loadCommentsData() {
+    try {
+      await this.comments.loadData();
+    } catch (error) {
+      console.error("Error loading comments data:", error);
+      this.showNotification("Lỗi tải dữ liệu bình luận", "error");
+    }
+  }
+
   // Thống kê
   async loadAnalyticsData() {
     try {
@@ -170,16 +185,6 @@ class AdminPanel {
       this.showNotification("Lỗi tải dữ liệu thống kê", "error");
     }
   }
-
-  // // Cài đặt
-  // async loadSettingsData() {
-  //   try {
-  //     await this.settings.loadData();
-  //   } catch (error) {
-  //     console.error("Error loading settings data:", error);
-  //     this.showNotification("Lỗi tải dữ liệu cài đặt", "error");
-  //   }
-  // }
 
   // Ghi log hoạt động
   async logActivity(type, title, description, icon = null) {

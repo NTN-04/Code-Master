@@ -677,7 +677,7 @@
 
   .profile-tabs {
     overflow-x: auto;
-    justify-content: center;
+    justify-content: flex-start;
     padding-bottom: 10px;
     flex-wrap: nowrap;
   }
