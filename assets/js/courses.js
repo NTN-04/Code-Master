@@ -69,31 +69,31 @@ function showCoursesLoading() {
 }
 
 // Lấy tổng số lessons và tổng duration từ course_modules
-async function getCourseStats(courseId) {
-  const modulesRef = ref(database, `course_modules/${courseId}`);
-  const snap = await get(modulesRef);
-  let totalLessons = 0;
-  let totalMinutes = 0;
-  if (snap.exists()) {
-    const modules = snap.val();
-    // Trả về 1 mảng chứa tất cả value của các module
-    Object.values(modules).forEach((module) => {
-      module.lessons.forEach((lesson) => {
-        totalLessons++;
-        if (lesson.duration) {
-          // kiểm tra và lấy số phút và số giây từ duration bằng regex
-          const match = lesson.duration.match(/(\d+)(?::(\d+))?/);
-          if (match) {
-            const m = parseInt(match[1]);
-            const s = match[2] ? parseInt(match[2]) : 0;
-            totalMinutes += m + Math.round(s / 60);
-          }
-        }
-      });
-    });
-  }
-  return { totalLessons, totalMinutes };
-}
+// async function getCourseStats(courseId) {
+//   const modulesRef = ref(database, `course_modules/${courseId}`);
+//   const snap = await get(modulesRef);
+//   let totalLessons = 0;
+//   let totalMinutes = 0;
+//   if (snap.exists()) {
+//     const modules = snap.val();
+//     // Trả về 1 mảng chứa tất cả value của các module
+//     Object.values(modules).forEach((module) => {
+//       module.lessons.forEach((lesson) => {
+//         totalLessons++;
+//         if (lesson.duration) {
+//           // kiểm tra và lấy số phút và số giây từ duration bằng regex
+//           const match = lesson.duration.match(/(\d+)(?::(\d+))?/);
+//           if (match) {
+//             const m = parseInt(match[1]);
+//             const s = match[2] ? parseInt(match[2]) : 0;
+//             totalMinutes += m + Math.round(s / 60);
+//           }
+//         }
+//       });
+//     });
+//   }
+//   return { totalLessons, totalMinutes };
+// }
 
 // Render khóa học từ dữ liệu database
 async function renderCourses(coursesData, categoriesData) {
@@ -149,6 +149,11 @@ function createCourseCard(course, categoriesData) {
       <div class="course-image">
         <img src="${course.image}" alt="${course.title}" loading="lazy" />
         <div class="course-tag" style="color:${categoryColor}">${categoryIcon} ${categoryName}</div>
+        ${
+          course.featured
+            ? `<div class="course-tag-featured"><i class="fa-solid fa-fire"></i></div>`
+            : ""
+        }
       </div>
       <div class="course-info">
         <h3>${course.title}</h3>

@@ -96,6 +96,8 @@
   object-fit: cover;
 }
 .blog-content {
+  word-break: break-word;
+  overflow-wrap: break-word;
   color: #444;
   font-size: 1em;
   margin-bottom: 0.5rem;
@@ -399,6 +401,10 @@
   align-items: center;
   justify-content: center;
   gap: 15px;
+  cursor: pointer;
+}
+#blog-comment-btn i:hover {
+  color: #d63384;
 }
 
 /* Sidebar bài viết cùng tác giả */
@@ -552,7 +558,7 @@
   opacity: 0.9 !important;
 }
 
-@media (max-width: 998px) {
+@media (max-width: 1024px) {
   .main {
     flex-direction: column;
     gap: 10px;

@@ -14,6 +14,7 @@ import {
   get,
   set,
 } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-database.js";
+import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-auth.js";
 
 // Chức năng Trang Đăng Nhập
 document.addEventListener("DOMContentLoaded", function () {
@@ -449,7 +450,7 @@ function setupGithubSignIn() {
 
 // Giám sát trạng thái xác thực
 function setupAuthStateMonitoring() {
-  auth.onAuthStateChanged(async (user) => {
+  onAuthStateChanged(auth, async (user) => {
     if (user) {
       // Kiểm tra trạng thái tài khoản
       const status = await checkAccountStatus(user.uid);
@@ -473,8 +474,8 @@ function setupAuthStateMonitoring() {
       } else if (providerData.providerId === "github.com") {
         providerName = "github";
       }
-      // // Nếu trang hiện tại là login.html và người dùng đã đăng nhập
-      // // thực hiện kiểm tra và chuyển hướng
+      // Nếu trang hiện tại là login.html và người dùng đã đăng nhập
+      // thực hiện kiểm tra và chuyển hướng
       // if (window.location.pathname.includes("login.html")) {
       //   await checkRoleAndRedirect(user);
       // }

@@ -4,11 +4,16 @@ import {
   get,
   update,
 } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-database.js";
+import CommentSystem from "./comment-system.js";
 
 document.addEventListener("DOMContentLoaded", function () {
   // Hiện thị nội dung bài blog
   renderBlogDetail();
 });
+
+// Biến lưu bình luận
+let commentSystem = null;
+
 // Lấy id bài viết từ URL
 function getBlogId() {
   const params = new URLSearchParams(window.location.search);
@@ -83,6 +88,8 @@ async function renderBlogDetail() {
   const user = auth.currentUser;
   const isLiked = user && blog.likedUsers && blog.likedUsers[user.uid];
   const likeCount = blog.likes || 0;
+  // Lấy số lượng bình luận từ localStorage (nếu có)
+  const commentCount = localStorage.getItem(`blog_comment_count_${blogId}`);
 
   // Render HTML (main content)
   main.innerHTML = `
@@ -135,9 +142,13 @@ async function renderBlogDetail() {
           <span id="blog-like-btn" style="cursor:pointer; color:${
             isLiked ? "#4a6fff" : "#888"
           }">
-              <i class="fa-regular fa-thumbs-up"></i> <span id="like-count"> ${likeCount}</span>
-              </span> 
-           | <span><i class="fa-regular fa-comments"></i></span>
+            <i class="fa-regular fa-thumbs-up"></i> 
+            <span id="like-count"> ${likeCount}</span>
+          </span> 
+           | <span id="blog-comment-btn">
+              <i class="fa-regular fa-comments"></i>
+              <span id="comment-count">${commentCount || ""}</span>
+            </span>
         </div>
       </div>
     </div>
@@ -159,6 +170,8 @@ async function renderBlogDetail() {
     likeBtn.addEventListener("click", () => handleLike(blogRef, blog));
   }
 
+  initCommentButton();
+
   // Lấy và render bài viết cùng tác giả
   if (blog.authorId) {
     const blogsRef = ref(database, "blogs");
@@ -167,7 +180,7 @@ async function renderBlogDetail() {
       const allBlogs = Object.entries(allBlogsSnap.val())
         .map(([id, data]) => ({ id, ...data }))
         .filter((b) => b.authorId === blog.authorId && b.id !== blogId)
-        .slice(0, 7);
+        .slice(0, 5);
       const relatedList = document.getElementById("related-blogs");
       if (relatedList) {
         relatedList.innerHTML = allBlogs.length
@@ -213,10 +226,49 @@ async function handleLike(blogRef, blog) {
   // Cập nhật giao diện và trạng thái
   likeCountEl.textContent = newLike;
   likeBtn.style.color = "#4a6fff";
-  likeBtn.title = "Bạn đã like bài viết này";
   likeBtn.style.pointerEvents = "none"; // Không cho click nữa
 
   // Cập nhật biến blog trong JS để lần click tiếp theo không thực hiện lại
   if (!blog.likedUsers) blog.likedUsers = {};
   blog.likedUsers[userId] = true;
+}
+
+// Cạp nhật số lượng bình luận
+function updateBlogCommentCount() {
+  if (commentSystem) {
+    const count = Array.from(commentSystem.comments.values()).filter(
+      (c) => c.status === "active"
+    ).length;
+    document.getElementById("comment-count").textContent = count;
+    // Lưu vào localStorage với key riêng cho từng blog
+    localStorage.setItem(`blog_comment_count_${getBlogId()}`, count);
+  }
+}
+window.updateBlogCommentCount = updateBlogCommentCount;
+
+function initCommentButton() {
+  // Gắn sự kiện click cho comment
+  const commentBtn = document.getElementById("blog-comment-btn");
+  const commentPanel = document.getElementById("blog-comments-panel");
+  const commentOverlay = document.querySelector(".comments-overlay");
+
+  if (commentBtn && commentPanel) {
+    commentBtn.addEventListener("click", () => {
+      // Thêm class active để panel trượt ra
+      commentOverlay.classList.add("active");
+      commentPanel.classList.add("active");
+      // Xóa nội dung cũ trước khi render lại
+      if (commentSystem) {
+        commentSystem.destroy();
+      }
+      // Khởi tạo hệ thống bình luận cho blog (courseId là blogId, lessonId là "blog")
+      commentSystem = new CommentSystem(
+        getBlogId(),
+        "blog",
+        commentPanel,
+        true
+      );
+      document.body.style.overflow = "hidden";
+    });
+  }
 }

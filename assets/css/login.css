@@ -408,4 +408,14 @@ input[type="password"]::-webkit-reveal {
   .modal-content {
     margin: 0 15px;
   }
+  .login-home a {
+    top: 10px;
+    left: 10px;
+    width: 35px;
+    height: 35px;
+  }
+  .social-login p::before,
+  .social-login p::after {
+    width: 20%;
+  }
 }

@@ -1070,6 +1070,164 @@
   font-size: 1em;
 }
 
+/* comments */
+.admin-section#comments .empty-state {
+  text-align: center;
+  padding: 2rem;
+  color: var(--gray-dark);
+}
+
+.admin-section#comments .empty-state i {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+  color: var(--gray-medium);
+}
+
+/* Report badges */
+.admin-section#comments .badge {
+  display: inline-block;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.admin-section#comments .badge-primary {
+  background-color: var(--primary-color);
+  color: white;
+}
+
+.admin-section#comments .badge-info {
+  background-color: #17a2b8;
+  color: white;
+}
+
+.admin-section#comments .badge-danger {
+  background-color: #dc3545;
+  color: white;
+}
+
+.admin-section#comments .badge-warning {
+  background-color: #ffc107;
+  color: #212529;
+}
+
+.admin-section#comments .badge-success {
+  background-color: #28a745;
+  color: white;
+}
+
+/* Status badges */
+.admin-section#comments .status-badge {
+  display: inline-block;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.admin-section#comments .status-active {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.admin-section#comments .status-hidden {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+
+/* Comment detail modal */
+.comment-detail {
+  padding: 1rem;
+  border: 1px solid var(--gray-medium);
+  border-radius: var(--border-radius);
+  background-color: #f8f9fa;
+}
+
+.comment-detail .comment-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  border-bottom: 1px solid var(--gray-medium);
+  padding-bottom: 1rem;
+}
+
+.comment-detail .comment-header img {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.comment-detail .comment-header h4 {
+  margin: 0;
+  font-size: 1rem;
+  color: var(--text-color);
+}
+
+.comment-detail .comment-header span {
+  font-size: 0.8rem;
+  color: var(--gray-dark);
+}
+
+.edited-badge {
+  background-color: var(--gray-medium);
+  padding: 0.15rem 0.4rem;
+  border-radius: 3px;
+  margin-left: 0.5rem;
+  font-size: 0.7rem;
+}
+
+.comment-detail .comment-body {
+  margin-bottom: 1rem;
+  padding: 1rem;
+  background-color: white;
+  border-radius: var(--border-radius);
+  white-space: pre-line;
+}
+
+.comment-detail .comment-footer {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.9rem;
+  color: var(--gray-dark);
+  padding-top: 1rem;
+  border-top: 1px solid var(--gray-medium);
+}
+.comment-footer {
+  flex-direction: column;
+  gap: 3px;
+}
+
+.comment-detail .comment-stats {
+  display: flex;
+  gap: 1rem;
+}
+
+.comment-detail .comment-stats span {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.comment-detail .comment-path {
+  font-size: 0.8rem;
+}
+
+/* Loading indicator */
+.loading-indicator {
+  text-align: center;
+  padding: 2rem;
+  color: var(--gray-dark);
+}
+
+.loading-indicator i {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+  color: var(--primary-color);
+}
+
 /* Notifications */
 .notification {
   position: fixed;
