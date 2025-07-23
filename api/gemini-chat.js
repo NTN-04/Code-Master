@@ -1,6 +1,14 @@
 export default async function handler(req, res) {
+  // Danh sách các domain có thể truy cập tài nguyên
+  const WHITELIST_DOMAINS = [
+    "https://code-master-dev.vercel.app",
+    "http://127.0.0.1:5500",
+  ];
   // Thêm header CORS cho mọi request
-  res.setHeader("Access-Control-Allow-Origin", "*");
+  const origin = req.headers.origin;
+  if (WHITELIST_DOMAINS.includes(origin)) {
+    res.setHeader("Access-Control-Allow-Origin", origin);
+  }
   res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type");
 

@@ -1648,9 +1648,14 @@ class CommentSystem {
   updateCharCount(textarea) {
     const charCount = textarea.value.length;
     const maxLength = parseInt(textarea.getAttribute("maxlength"));
-    const charCountElement = textarea
-      .closest(".comment-form, .reply-form")
-      .querySelector(".comment-char-count");
+    const formContainers = textarea.closest(
+      ".comment-form, .reply-form, .edit-comment-form, .edit-reply-form"
+    );
+    if (!formContainers) return;
+
+    const charCountElement = formContainers.querySelector(
+      ".comment-char-count"
+    );
 
     if (charCountElement) {
       charCountElement.textContent = `${charCount}/${maxLength}`;

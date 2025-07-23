@@ -23,7 +23,7 @@ document.addEventListener("DOMContentLoaded", () => {
     try {
       // Gọi API Gemini đã deploy trên Vercel
       const res = await fetch(
-        "https://code-master-lime.vercel.app/api/gemini-chat",
+        "https://code-master-dev.vercel.app/api/gemini-chat", // endpoint
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },

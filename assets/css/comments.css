@@ -180,7 +180,7 @@
 }
 
 .comment-char-count.error {
-  color: var(--error-color);
+  color: #e6162b;
 }
 
 .comment-form-right {
