@@ -1,68 +1,88 @@
 <!DOCTYPE html>
 <html lang="vi">
-
-<head>
+  <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Tài Liệu Node.js | CodeMaster</title>
     <link rel="icon" href="../assets/images/favicon.ico" type="image/x-icon" />
     <link rel="stylesheet" href="../assets/css/style.css" />
     <link rel="stylesheet" href="../assets/css/resources.css" />
-    <link rel="stylesheet" href="../assets/css/documents.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-</head>
+    <link rel="stylesheet" href="../assets/css/documents.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+  </head>
 
-<body>
-     <!-- load với component -->
+  <body>
+    <!-- load với component -->
     <header id="header-placeholder"></header>
 
     <div class="document-header">
-        <div class="container">
-            <h1>Tài Liệu Node.js</h1>
-            <p>Tài liệu hướng dẫn chi tiết về môi trường chạy Node.js, modules và API</p>
-        </div>
+      <div class="container">
+        <h1>Tài Liệu Node.js</h1>
+        <p>
+          Tài liệu hướng dẫn chi tiết về môi trường chạy Node.js, modules và API
+        </p>
+        <button id="download-pdf" class="btn btn-outline">
+          <i class="fa fa-download"></i> Tải PDF
+        </button>
+      </div>
     </div>
 
     <div class="document-content">
-        <div class="container">
-            <aside class="document-nav">
-                <h3>Mục lục</h3>
-                <ul>
-                    <li><a href="#introduction">Giới thiệu Node.js</a></li>
-                    <li><a href="#modules">Modules</a></li>
-                    <li><a href="#filesystem">Hệ thống file</a></li>
-                    <li><a href="#http">HTTP Server</a></li>
-                    <li><a href="#express">Express.js</a></li>
-                    <li><a href="#npm">NPM</a></li>
-                    <li><a href="#async">Lập trình bất đồng bộ</a></li>
-                    <li><a href="#database">Kết nối cơ sở dữ liệu</a></li>
-                    <li><a href="#security">Bảo mật</a></li>
-                </ul>
-            </aside>
+      <div class="container">
+        <aside class="document-nav">
+          <h3>Mục lục</h3>
+          <ul>
+            <li><a href="#introduction">Giới thiệu Node.js</a></li>
+            <li><a href="#modules">Modules</a></li>
+            <li><a href="#filesystem">Hệ thống file</a></li>
+            <li><a href="#http">HTTP Server</a></li>
+            <li><a href="#express">Express.js</a></li>
+            <li><a href="#npm">NPM</a></li>
+            <li><a href="#async">Lập trình bất đồng bộ</a></li>
+            <li><a href="#database">Kết nối cơ sở dữ liệu</a></li>
+            <li><a href="#security">Bảo mật</a></li>
+          </ul>
+        </aside>
 
-            <main class="document-main">
-                <section id="introduction">
-                    <h2>Giới thiệu Node.js</h2>
-                    <p>Node.js là một môi trường thời gian chạy JavaScript được xây dựng trên Chrome's V8 JavaScript
-                        engine. Node.js sử dụng một mô hình I/O không chặn, hướng sự kiện, khiến nó nhẹ và hiệu quả, lý
-                        tưởng cho các ứng dụng thời gian thực chạy trên các thiết bị phân tán.</p>
-                    <p>Node.js cho phép bạn chạy JavaScript trên máy chủ, cho phép phát triển ứng dụng fullstack với
-                        cùng một ngôn ngữ lập trình.</p>
-                </section>
+        <main class="document-main">
+          <section id="introduction">
+            <h2>Giới thiệu Node.js</h2>
+            <p>
+              Node.js là một môi trường thời gian chạy JavaScript được xây dựng
+              trên Chrome's V8 JavaScript engine. Node.js sử dụng một mô hình
+              I/O không chặn, hướng sự kiện, khiến nó nhẹ và hiệu quả, lý tưởng
+              cho các ứng dụng thời gian thực chạy trên các thiết bị phân tán.
+            </p>
+            <p>
+              Node.js cho phép bạn chạy JavaScript trên máy chủ, cho phép phát
+              triển ứng dụng fullstack với cùng một ngôn ngữ lập trình.
+            </p>
+          </section>
 
-                <section id="modules">
-                    <h2>Modules</h2>
-                    <p>Node.js sử dụng một hệ thống module nhẹ được gọi là "CommonJS". Modules cho phép bạn tổ chức code
-                        thành các phần nhỏ, có thể quản lý được.</p>
-                    <p>Có ba loại module trong Node.js:</p>
-                    <ul class="feature-list">
-                        <li><strong>Core Modules</strong> - Được tích hợp sẵn trong Node.js</li>
-                        <li><strong>Local Modules</strong> - Được tạo bởi chính bạn</li>
-                        <li><strong>Third Party Modules</strong> - Được cài đặt thông qua npm</li>
-                    </ul>
+          <section id="modules">
+            <h2>Modules</h2>
+            <p>
+              Node.js sử dụng một hệ thống module nhẹ được gọi là "CommonJS".
+              Modules cho phép bạn tổ chức code thành các phần nhỏ, có thể quản
+              lý được.
+            </p>
+            <p>Có ba loại module trong Node.js:</p>
+            <ul class="feature-list">
+              <li>
+                <strong>Core Modules</strong> - Được tích hợp sẵn trong Node.js
+              </li>
+              <li><strong>Local Modules</strong> - Được tạo bởi chính bạn</li>
+              <li>
+                <strong>Third Party Modules</strong> - Được cài đặt thông qua
+                npm
+              </li>
+            </ul>
 
-                    <div class="code-example">
-                        <pre><code>// Nhập core module
+            <div class="code-example">
+              <pre><code>// Nhập core module
 const fs = require('fs');
 
 // Nhập local module
@@ -80,17 +100,23 @@ const myFunction = () => {
 module.exports = {
   myFunction
 };</code></pre>
-                    </div>
-                </section>
+            </div>
+          </section>
 
-                <section id="filesystem">
-                    <h2>Hệ thống file</h2>
-                    <p>Module fs (file system) trong Node.js cung cấp một API để tương tác với hệ thống tệp theo một
-                        cách tương tự như các hàm POSIX tiêu chuẩn.</p>
-                    <p>Tất cả các phương thức trong module fs có các phiên bản đồng bộ và bất đồng bộ.</p>
+          <section id="filesystem">
+            <h2>Hệ thống file</h2>
+            <p>
+              Module fs (file system) trong Node.js cung cấp một API để tương
+              tác với hệ thống tệp theo một cách tương tự như các hàm POSIX tiêu
+              chuẩn.
+            </p>
+            <p>
+              Tất cả các phương thức trong module fs có các phiên bản đồng bộ và
+              bất đồng bộ.
+            </p>
 
-                    <div class="code-example">
-                        <pre><code>const fs = require('fs');
+            <div class="code-example">
+              <pre><code>const fs = require('fs');
 
 // Đọc file (bất đồng bộ)
 fs.readFile('file.txt', 'utf8', (err, data) => {
@@ -117,16 +143,22 @@ fs.mkdir('my-directory', (err) => {
   if (err) throw err;
   console.log('Thư mục đã được tạo!');
 });</code></pre>
-                    </div>
-                </section>
+            </div>
+          </section>
 
-                <section id="http">
-                    <h2>HTTP Server</h2>
-                    <p>Node.js có một module HTTP tích hợp sẵn cho phép bạn tạo các máy chủ web và khách hàng HTTP.</p>
-                    <p>Máy chủ HTTP có thể lắng nghe các cổng máy chủ và trả về các phản hồi HTTP cho khách hàng.</p>
+          <section id="http">
+            <h2>HTTP Server</h2>
+            <p>
+              Node.js có một module HTTP tích hợp sẵn cho phép bạn tạo các máy
+              chủ web và khách hàng HTTP.
+            </p>
+            <p>
+              Máy chủ HTTP có thể lắng nghe các cổng máy chủ và trả về các phản
+              hồi HTTP cho khách hàng.
+            </p>
 
-                    <div class="code-example">
-                        <pre><code>const http = require('http');
+            <div class="code-example">
+              <pre><code>const http = require('http');
 
 // Tạo máy chủ HTTP
 const server = http.createServer((req, res) => {
@@ -139,18 +171,23 @@ const server = http.createServer((req, res) => {
 server.listen(3000, 'localhost', () => {
   console.log('Server đang chạy tại http://localhost:3000/');
 });</code></pre>
-                    </div>
-                </section>
+            </div>
+          </section>
 
-                <section id="express">
-                    <h2>Express.js</h2>
-                    <p>Express là một framework web tối thiểu và linh hoạt cho Node.js. Nó cung cấp một bộ tính năng
-                        mạnh mẽ để phát triển các ứng dụng web và di động.</p>
-                    <p>Express giúp quản lý tất cả mọi thứ từ các routes trên máy chủ của bạn đến xử lý các yêu cầu và
-                        views.</p>
+          <section id="express">
+            <h2>Express.js</h2>
+            <p>
+              Express là một framework web tối thiểu và linh hoạt cho Node.js.
+              Nó cung cấp một bộ tính năng mạnh mẽ để phát triển các ứng dụng
+              web và di động.
+            </p>
+            <p>
+              Express giúp quản lý tất cả mọi thứ từ các routes trên máy chủ của
+              bạn đến xử lý các yêu cầu và views.
+            </p>
 
-                    <div class="code-example">
-                        <pre><code>const express = require('express');
+            <div class="code-example">
+              <pre><code>const express = require('express');
 const app = express();
 const port = 3000;
 
@@ -180,18 +217,23 @@ app.post('/users', (req, res) => {
 app.listen(port, () => {
   console.log(`Server đang chạy tại http://localhost:${port}`);
 });</code></pre>
-                    </div>
-                </section>
+            </div>
+          </section>
 
-                <section id="npm">
-                    <h2>NPM</h2>
-                    <p>NPM (Node Package Manager) là một trình quản lý gói mặc định cho Node.js. Nó bao gồm một kho lưu
-                        trữ trực tuyến cho các gói Node.js và một dòng lệnh để cài đặt các gói đó.</p>
-                    <p>NPM cho phép bạn dễ dàng quản lý các phụ thuộc trong dự án của bạn và cài đặt các gói của bên thứ
-                        ba.</p>
+          <section id="npm">
+            <h2>NPM</h2>
+            <p>
+              NPM (Node Package Manager) là một trình quản lý gói mặc định cho
+              Node.js. Nó bao gồm một kho lưu trữ trực tuyến cho các gói Node.js
+              và một dòng lệnh để cài đặt các gói đó.
+            </p>
+            <p>
+              NPM cho phép bạn dễ dàng quản lý các phụ thuộc trong dự án của bạn
+              và cài đặt các gói của bên thứ ba.
+            </p>
 
-                    <div class="code-example">
-                        <pre><code>// Khởi tạo dự án mới (tạo package.json)
+            <div class="code-example">
+              <pre><code>// Khởi tạo dự án mới (tạo package.json)
 npm init
 
 // Cài đặt gói
@@ -211,17 +253,23 @@ npm uninstall express
 
 // Chạy script đã định nghĩa trong package.json
 npm run start</code></pre>
-                    </div>
-                </section>
+            </div>
+          </section>
 
-                <section id="async">
-                    <h2>Lập trình bất đồng bộ</h2>
-                    <p>Node.js được xây dựng với sự bất đồng bộ trong tâm trí. Hầu hết các API Core của Node.js đều
-                        không chặn (non-blocking), có nghĩa là Node.js tiếp tục xử lý trong khi đợi callback.</p>
-                    <p>Node.js hỗ trợ lập trình bất đồng bộ thông qua callbacks, promises và async/await.</p>
+          <section id="async">
+            <h2>Lập trình bất đồng bộ</h2>
+            <p>
+              Node.js được xây dựng với sự bất đồng bộ trong tâm trí. Hầu hết
+              các API Core của Node.js đều không chặn (non-blocking), có nghĩa
+              là Node.js tiếp tục xử lý trong khi đợi callback.
+            </p>
+            <p>
+              Node.js hỗ trợ lập trình bất đồng bộ thông qua callbacks, promises
+              và async/await.
+            </p>
 
-                    <div class="code-example">
-                        <pre><code>// Callbacks
+            <div class="code-example">
+              <pre><code>// Callbacks
 fs.readFile('file.txt', 'utf8', (err, data) => {
   if (err) throw err;
   console.log(data);
@@ -254,18 +302,22 @@ async function readFile() {
 }
 
 readFile();</code></pre>
-                    </div>
-                </section>
+            </div>
+          </section>
 
-                <section id="database">
-                    <h2>Kết nối cơ sở dữ liệu</h2>
-                    <p>Node.js có thể kết nối với nhiều loại cơ sở dữ liệu khác nhau thông qua các module bên thứ ba.
-                    </p>
-                    <p>Các cơ sở dữ liệu phổ biến được sử dụng với Node.js bao gồm MongoDB, MySQL, PostgreSQL, Redis và
-                        nhiều loại khác.</p>
+          <section id="database">
+            <h2>Kết nối cơ sở dữ liệu</h2>
+            <p>
+              Node.js có thể kết nối với nhiều loại cơ sở dữ liệu khác nhau
+              thông qua các module bên thứ ba.
+            </p>
+            <p>
+              Các cơ sở dữ liệu phổ biến được sử dụng với Node.js bao gồm
+              MongoDB, MySQL, PostgreSQL, Redis và nhiều loại khác.
+            </p>
 
-                    <div class="code-example">
-                        <pre><code>// MongoDB với Mongoose
+            <div class="code-example">
+              <pre><code>// MongoDB với Mongoose
 const mongoose = require('mongoose');
 
 // Kết nối đến MongoDB
@@ -317,27 +369,41 @@ connection.query('SELECT * FROM users', (error, results) => {
 
 // Đóng kết nối
 connection.end();</code></pre>
-                    </div>
-                </section>
+            </div>
+          </section>
 
-                <section id="security">
-                    <h2>Bảo mật</h2>
-                    <p>Bảo mật là một khía cạnh quan trọng của bất kỳ ứng dụng Node.js nào. Dưới đây là một số phương
-                        pháp hay nhất để bảo mật ứng dụng Node.js của bạn:</p>
-                    <ul class="feature-list">
-                        <li><strong>Sử dụng HTTPS</strong> - Mã hóa dữ liệu được truyền giữa máy chủ và máy khách</li>
-                        <li><strong>Validate Input</strong> - Kiểm tra đầu vào để ngăn chặn các cuộc tấn công tiêm nhiễm
-                        </li>
-                        <li><strong>Sử dụng Helmet</strong> - Một module giúp bảo mật ứng dụng Express bằng cách thiết
-                            lập các HTTP headers</li>
-                        <li><strong>Implement Rate Limiting</strong> - Giới hạn số lượng yêu cầu để ngăn chặn các cuộc
-                            tấn công brute force và DDoS</li>
-                        <li><strong>Keep Dependencies Updated</strong> - Cập nhật các gói để tránh các lỗ hổng bảo mật
-                            đã biết</li>
-                    </ul>
+          <section id="security">
+            <h2>Bảo mật</h2>
+            <p>
+              Bảo mật là một khía cạnh quan trọng của bất kỳ ứng dụng Node.js
+              nào. Dưới đây là một số phương pháp hay nhất để bảo mật ứng dụng
+              Node.js của bạn:
+            </p>
+            <ul class="feature-list">
+              <li>
+                <strong>Sử dụng HTTPS</strong> - Mã hóa dữ liệu được truyền giữa
+                máy chủ và máy khách
+              </li>
+              <li>
+                <strong>Validate Input</strong> - Kiểm tra đầu vào để ngăn chặn
+                các cuộc tấn công tiêm nhiễm
+              </li>
+              <li>
+                <strong>Sử dụng Helmet</strong> - Một module giúp bảo mật ứng
+                dụng Express bằng cách thiết lập các HTTP headers
+              </li>
+              <li>
+                <strong>Implement Rate Limiting</strong> - Giới hạn số lượng yêu
+                cầu để ngăn chặn các cuộc tấn công brute force và DDoS
+              </li>
+              <li>
+                <strong>Keep Dependencies Updated</strong> - Cập nhật các gói để
+                tránh các lỗ hổng bảo mật đã biết
+              </li>
+            </ul>
 
-                    <div class="code-example">
-                        <pre><code>// Sử dụng Helmet để bảo mật Express app
+            <div class="code-example">
+              <pre><code>// Sử dụng Helmet để bảo mật Express app
 const express = require('express');
 const helmet = require('helmet');
 const app = express();
@@ -358,19 +424,19 @@ app.use('/api/', apiLimiter);
 
 // Hoặc cho một route cụ thể
 app.use('/api/login', loginLimiter);</code></pre>
-                    </div>
-                </section>
-            </main>
-        </div>
+            </div>
+          </section>
+        </main>
+      </div>
     </div>
 
     <!-- load bằng components -->
     <footer id="footer-placeholder"></footer>
 
-    <script src="../assets/js/script.js"></script>
     <script src="../assets/js/components.js"></script>
     <script type="module" src="../assets/js/auth.js"></script>
-    <script src="../assets/js/resources.js"></script>
-</body>
-
+    <!-- Thư viện xuất từ HTML sang PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script type="module" src="../assets/js/documents.js"></script>
+  </body>
 </html>

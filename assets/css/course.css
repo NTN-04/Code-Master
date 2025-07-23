@@ -48,9 +48,8 @@
 /* Lesson Header Actions */
 .lesson-header-actions {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
+  justify-content: flex-end;
+  margin: 14px 0px;
 }
 
 .btn-comment-toggle {

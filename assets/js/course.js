@@ -168,7 +168,7 @@ async function activateLesson(lessonId) {
   // Tìm lesson theo id
   let foundLesson = null;
   Object.values(modules).forEach((module) => {
-    const lesson = module.lessons.find((l) => l.id === lessonId);
+    const lesson = (module.lessons || []).find((l) => l.id === lessonId);
     if (lesson) foundLesson = lesson;
   });
 
@@ -377,7 +377,7 @@ function renderSidebar(modules) {
           <span class="module-toggle"><i class="fas fa-chevron-down"></i></span>
         </div>
         <ul class="lesson-list" id="${moduleKey}">
-          ${module.lessons
+          ${(module.lessons || [])
             .map(
               (lesson) => `
             <li class="lesson">
@@ -404,7 +404,7 @@ function renderLessonContent(lesson, modules) {
   let nextLessonId = null;
   let lessonsFlat = [];
   Object.values(modules).forEach((module) => {
-    module.lessons.forEach((l) => lessonsFlat.push(l));
+    (module.lessons || []).forEach((l) => lessonsFlat.push(l));
   });
   for (let i = 0; i < lessonsFlat.length; i++) {
     if (lessonsFlat[i].id === lesson.id) {
@@ -416,14 +416,16 @@ function renderLessonContent(lesson, modules) {
 
   return `
     <div class="lesson-content" id="lesson-${lesson.id}">
-      <div class="lesson-header-actions">
+      <div>
         <h2>${lesson.title}</h2>
-        <button id="course-comment-btn" class="btn-comment-toggle">
-          <i class="fas fa-comments"></i> Bình luận
-        </button>
       </div>
       <div class="lesson-video">
         ${lesson.video ? renderVideo(lesson.video) : ""}
+      </div>
+      <div class="lesson-header-actions">
+        <button id="course-comment-btn" class="btn-comment-toggle">
+          <i class="fas fa-comments"></i> Bình luận
+        </button>
       </div>
       <div class="lesson-text">
         <p class="lesson-main-content">${escapeHtml(lesson.content)}</p>

@@ -115,6 +115,7 @@
 }
 
 .resource-card {
+  position: relative;
   padding: unset;
   display: flex;
   background-color: white;

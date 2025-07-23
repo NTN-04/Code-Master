@@ -1,4 +1,4 @@
-import { database, auth } from "../firebaseConfig.js";
+import { database, auth, firebaseConfig } from "../firebaseConfig.js";
 import {
   ref,
   get,
@@ -163,7 +163,9 @@ export default class UsersManager {
     // Đổ dữ liệu user vào modal
     document.getElementById("user-id").value = userId;
     document.getElementById("user-name").value = user.username || "";
-    document.getElementById("user-email").value = user.email || "";
+    const emailInput = document.getElementById("user-email");
+    emailInput.value = user.email || "";
+    emailInput.setAttribute("disabled", "disabled");
     document.getElementById("user-role").value = user.role || "2";
     document.getElementById("user-status").value = user.status || "active";
 
@@ -247,7 +249,9 @@ export default class UsersManager {
     document.getElementById("user-id").value = "";
     document.getElementById("user-modal-title").textContent = "Thêm người dùng";
     document.getElementById("user-password-group").style.display = "block";
-    document.getElementById("user-password").setAttribute("required");
+    document.getElementById("user-password").setAttribute("required", "");
+    // Bỏ disable cho email khi thêm mới
+    document.getElementById("user-email").removeAttribute("disabled");
 
     this.adminPanel.showModal("user-modal");
   }
@@ -256,16 +260,30 @@ export default class UsersManager {
     e.preventDefault();
 
     const userId = document.getElementById("user-id").value;
-    const username = document.getElementById("user-name").value;
-    const email = document.getElementById("user-email").value;
+    const username = document.getElementById("user-name").value.trim();
+    const email = document.getElementById("user-email").value.trim();
     const role = parseInt(document.getElementById("user-role").value);
     const status = document.getElementById("user-status").value;
     const password = document.getElementById("user-password")?.value;
+
+    // Validate dữ liệu trước khi thêm db
+    const { valid, message } = await this.validateUserData({
+      username,
+      email,
+      password,
+      role,
+      isNewUser: !userId,
+    });
+    if (!valid) {
+      this.adminPanel.showNotification(message, "error");
+      return;
+    }
+
     try {
       if (userId) {
         // Cập nhật user đã có
         const userRef = ref(database, `users/${userId}`);
-        await update(userRef, { username, email, role, status });
+        await update(userRef, { username, role, status });
 
         // Ghi log hoạt động
         await this.adminPanel.logActivity(
@@ -281,14 +299,6 @@ export default class UsersManager {
         );
       } else {
         // Thêm mới user
-        if (!email || !password || !username) {
-          this.adminPanel.showNotification(
-            "Vui lòng nhập đầy đủ thông tin!",
-            "warning"
-          );
-          return;
-        }
-
         // Khởi tạo firebase app phụ cho xác thực tạo user mới
         const secondaryApp = initializeApp(firebaseConfig, "Secondary");
         const secondaryAuth = getAuth(secondaryApp);
@@ -328,9 +338,20 @@ export default class UsersManager {
 
       this.adminPanel.hideModal("user-modal");
       this.loadData();
-    } catch (error) {
-      console.error("Error saving user:", error);
-      this.adminPanel.showNotification("Lỗi lưu thông tin người dùng", "error");
+    } catch (err) {
+      if (err && err.code === "auth/email-already-in-use") {
+        this.adminPanel.showNotification(
+          "Email đã tồn tại trên hệ thống!",
+          "error"
+        );
+      } else {
+        console.error("Error saving user:", err);
+        this.adminPanel.showNotification(
+          "Lỗi lưu thông tin người dùng",
+          "error"
+        );
+      }
+      return;
     }
   }
 
@@ -346,5 +367,58 @@ export default class UsersManager {
     if (addUserBtn) {
       addUserBtn.addEventListener("click", this.showAddModal.bind(this));
     }
+  }
+
+  // Hàm validate dữ liệu user
+  async validateUserData({ username, email, password, role, isNewUser }) {
+    // Validate email định dạng
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!email || !emailRegex.test(email)) {
+      return { valid: false, message: "Email không hợp lệ!" };
+    }
+    // Validate username không để trống, độ dài 3-32 ký tự
+    if (!username || username.length < 3 || username.length > 32) {
+      return { valid: false, message: "Tên người dùng phải từ 3-32 ký tự!" };
+    }
+    // Validate role chỉ nhận 1 hoặc 2
+    if (![1, 2].includes(role)) {
+      return { valid: false, message: "Vai trò không hợp lệ!" };
+    }
+    // Nếu thêm mới user thì validate password
+    if (isNewUser) {
+      const pw = password || "";
+      const pwValid =
+        pw.length >= 6 &&
+        /[A-Z]/.test(pw) &&
+        /[0-9]/.test(pw) &&
+        /[^A-Za-z0-9]/.test(pw);
+      if (!pwValid) {
+        return {
+          valid: false,
+          message:
+            "Mật khẩu tối thiểu 6 ký tự, có chữ hoa, số và ký tự đặc biệt!",
+        };
+      }
+      // Kiểm tra trùng lặp email/username trong database
+      const usersRef = ref(database, "users");
+      const snapshot = await get(usersRef);
+      if (snapshot.exists()) {
+        const users = Object.values(snapshot.val());
+        const emailExists = users.some(
+          (u) => u.email && u.email.toLowerCase() === email.toLowerCase()
+        );
+        if (emailExists) {
+          return { valid: false, message: "Email đã tồn tại!" };
+        }
+        const usernameExists = users.some(
+          (u) =>
+            u.username && u.username.toLowerCase() === username.toLowerCase()
+        );
+        if (usernameExists) {
+          return { valid: false, message: "Tên người dùng đã tồn tại!" };
+        }
+      }
+    }
+    return { valid: true };
   }
 }

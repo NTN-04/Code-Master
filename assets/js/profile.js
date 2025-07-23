@@ -670,7 +670,7 @@ async function loadUserCourses() {
               <span class="progress-text">${progress}% Hoàn Thành</span>
             </div>
             <div class="course-actions">
-              <a href="${course.url}" class="btn btn-primary">${
+              <a href="course-detail.html?id=${courseId}" class="btn btn-primary">${
           isCompleted ? "Xem lại" : "Tiếp tục học"
         }
               </a> 
@@ -678,7 +678,7 @@ async function loadUserCourses() {
           </div>
           ${
             isCompleted
-              ? `<div class="course-completion-badge"><i class="fas fa-certificate"></i> Đã hoàn thành</div>`
+              ? `<div class="course-completion-badge"><i class="fas fa-certificate"></i></div>`
               : ""
           }
         </div>

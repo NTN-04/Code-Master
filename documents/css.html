@@ -6,7 +6,6 @@
     <title>Tài Liệu CSS | CodeMaster</title>
     <link rel="icon" href="../assets/images/favicon.ico" type="image/x-icon" />
     <link rel="stylesheet" href="../assets/css/style.css" />
-    <link rel="stylesheet" href="../assets/css/resources.css" />
     <link rel="stylesheet" href="../assets/css/documents.css" />
     <link
       rel="stylesheet"
@@ -25,6 +24,9 @@
           Tài liệu hướng dẫn về thuộc tính CSS, bố cục và kỹ thuật bố cục hiện
           đại
         </p>
+        <button id="download-pdf" class="btn btn-outline">
+          <i class="fa fa-download"></i> Tải PDF
+        </button>
       </div>
     </div>
 
@@ -55,6 +57,92 @@
               CSS tiết kiệm rất nhiều công việc. Nó có thể kiểm soát bố cục của
               nhiều trang web cùng lúc.
             </p>
+            <h3>Cú pháp CSS cơ bản:</h3>
+            <div class="code-example">Selector { property:value; }</div>
+
+            <h3>Trong đó:</h3>
+            <ul>
+              <li>
+                <strong>Selector:</strong> Các đối tượng mà chúng ta sẽ áp dụng
+                các thuộc tính trình bày. Nó là các tag HTML,
+                <span style="color: blue">class hay id</span> (chúng ta sẽ học
+                về 2 phần này ở bài học sau). Ví dụ: body, h2, p, img, #title,
+                #content, .username,...
+              </li>
+            </ul>
+
+            <p>
+              Trong CSS ngoài viết tên selector theo tên tag, class, id. Chúng
+              ta còn có thể viết tên selector theo phân cấp như để chỉ các ảnh ở
+              trong #entry, chúng ta viết selector là #entry img, như vậy thì
+              các thuộc tính chỉ định sẽ chỉ áp dụng riêng cho các ảnh nằm trong
+              #entry.
+            </p>
+
+            <p>
+              Khi viết tên cho class, đôi khi sẽ có nhiều thành phần có cùng
+              class đó, ví dụ như thẻ img và thẻ a cùng có class tên vistors
+              nhưng đây lại là hai đối tượng khác nhau, 1 cái là ảnh của người
+              thăm, 1 cái là liên kết tới trang người thăm. Nên nếu khi viết CSS
+              ta ghi là
+              <span class="code-inline">.visitors { width:50 }</span> thì sẽ ảnh
+              hưởng tới cả hai thành phần. Nên trong trường hợp này, nếu bạn có
+              ý dùng CSS đó chỉ riêng phần ảnh thì chỉ nên ghi là img .visitors.
+            </p>
+
+            <p>
+              Một lối viết selector nữa là dựa trên tên các thuộc tính có trong
+              HTML. Ví dụ trong HTML ta có đoạn mã như vầy:
+              <span class="code-inline"
+                >&lt;input name="Search" type="Text" value="Key Word"&gt;</span
+              >. Để áp dụng thuộc tính CSS cho riêng ô tìm kiếm này chúng ta sẽ
+              dùng selector
+              <span class="code-inline">input[name="Search"]</span>.
+            </p>
+
+            <p>
+              Ngoài việc viết tên selector cụ thể, chúng ta cũng có thể dùng một
+              selector đại diện như
+              <span class="code-inline">* { color:red }</span> sẽ tác động đến
+              tất cả các thành phần có trên trang web làm cho chúng có text màu
+              đỏ.
+            </p>
+
+            <ul>
+              <li>
+                <strong>Property:</strong> Chính là các thuộc tính quy định cách
+                trình bày. Ví dụ: background-color, font-family, color, padding,
+                margin,...
+              </li>
+            </ul>
+
+            <p>
+              Mỗi thuộc tính CSS phải được gán một giá trị. Nếu có nhiều hơn một
+              thuộc tính cho một selector thì chúng ta phải dùng một dấu chấm
+              phẩy (;) để phân cách các thuộc tính. Tất cả các thuộc tính trong
+              một selector sẽ được đặt trong một cặp ngoặc nhọn sau selector.
+            </p>
+
+            <h3>Ví dụ:</h3>
+            <div class="code-inline">
+              body { background:#FFF; color:#FF0000; font-size:14pt }
+            </div>
+
+            <p>
+              Để dễ đọc hơn, bạn nên viết mỗi thuộc tính CSS ở một dòng. Tuy
+              nhiên, nó sẽ làm tăng dung lượng lưu trữ CSS của bạn.
+            </p>
+
+            <h3>Ví dụ:</h3>
+            <div class="code-example">
+              <pre><code>
+  body {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;background:#FFF;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;bolor:#FF0000;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;font-size:14pt<br>
+}
+        </code></pre>
+            </div>
 
             <div class="code-example">
               <pre><code>/* Đây là một bình luận CSS */
@@ -76,29 +164,125 @@ h1 {
               Bộ chọn CSS được sử dụng để "tìm" (hoặc chọn) các phần tử HTML bạn
               muốn tạo kiểu.
             </p>
-            <p>Chúng ta có thể chia các bộ chọn CSS thành năm danh mục:</p>
-            <ul class="feature-list">
-              <li>
-                <strong>Bộ chọn đơn giản</strong> (chọn phần tử dựa trên tên,
-                id, lớp)
-              </li>
-              <li>
-                <strong>Bộ chọn kết hợp</strong> (chọn phần tử dựa trên mối quan
-                hệ cụ thể giữa chúng)
-              </li>
-              <li>
-                <strong>Bộ chọn lớp giả</strong> (chọn phần tử dựa trên một
-                trạng thái nhất định)
-              </li>
-              <li>
-                <strong>Bộ chọn phần tử giả</strong> (chọn và tạo kiểu cho một
-                phần của phần tử)
-              </li>
-              <li>
-                <strong>Bộ chọn thuộc tính</strong> (chọn phần tử dựa trên thuộc
-                tính hoặc giá trị thuộc tính)
-              </li>
-            </ul>
+            <p>Chúng ta có thể chia các bộ chọn CSS thành:</p>
+            <div>
+              <h3>Bộ chọn ID:</h3>
+              <p>
+                Bộ chọn ID là một cách để chúng ta có thể chọn một phần tử mà
+                không cần chọn phần tử khác cùng loại. Giả sử chúng ta cập nhật
+                mã HTML trong &lt;article&gt; ví dụ này để bài viết đầu tiên
+                được "gắn thẻ" bằng một ID:
+              </p>
+              <div class="code-example">
+                <pre><code>
+  &lt;article id="featured"&gt;
+    &lt;!-- Article 1 --&gt;
+  &lt;/article&gt;
+  
+  &lt;article&gt;
+    &lt;!-- Article 2 --&gt;
+  &lt;/article&gt;
+  
+  &lt;article&gt;
+    &lt;!-- Article 3 --&gt;
+  &lt;/article&gt;
+                </code></pre>
+              </div>
+              <p>
+                Bây giờ chúng ta có thể sử dụng ID đó để phân biệt bài viết đầu
+                tiên với các bài viết khác và áp dụng các kiểu cụ thể cho bài
+                viết đó. Chúng ta thêm ký tự hashtag ( #) vào trước tên ID khi
+                viết bộ chọn CSS để chọn đúng ID.
+              </p>
+              <div class="code-example">
+                <pre><code>
+  /* Selects all <article> elements */
+article {
+  background: #fff;
+}
+
+/* Selects any element with id="featured" */
+#featured {
+  background: hsl(35 100% 90%);
+  border-color: hsl(35 100% 50%);
+}
+                </code></pre>
+              </div>
+            </div>
+            <div>
+              <h3>Bộ chọn Class:</h3>
+              <p>
+                Bộ chọn lớp có thể là loại bộ chọn CSS được sử dụng phổ biến nhất mà bạn sẽ thấy trên web. Lớp là lựa chọn lý tưởng vì chúng cụ thể hơn một chút so với bộ chọn phần tử nhưng không quá phức tạp như ID.
+              </p>
+              <ul>
+                <li>Bộ chọn CSS .classchọn các phần tử có giá trị thuộc tính lớp cụ thể.</li>
+                <li>Để chọn tất cả các loại phần tử có lớp cụ thể, hãy viết ký tự dấu chấm (.), theo sau là giá trị thuộc tính lớp.</li>
+                <li>Bộ chọn sẽ chọn các phần tử được chỉ định với giá trị thuộc tính lớp được chỉ định. element.class</li>
+              </ul>
+              <p>Đó là lý do khiến bộ chọn lớp trở nên phổ biến — chúng chỉ cụ thể hơn một chút so với các phần tử, nhưng vẫn giữ được độ cụ thể ở mức đủ thấp để có thể quản lý được nếu chúng ta cần ghi đè các kiểu trong một bộ quy tắc bằng các kiểu trong một bộ quy tắc khác.</p>
+              <p>Sự khác biệt duy nhất khi viết một lớp là chúng ta thêm dấu chấm ( .) vào trước tên lớp thay vì dấu thăng ( #).</p>
+              <div class="code-example">
+                <pre><code>
+ .intro {
+  background-color: yellow;
+}
+                </code></pre>
+              </div>
+            
+            </div>
+            <div>
+              <h3>Bộ chọn phần tử:</h3>
+              <p>
+                Bộ chọn CSS sẽ chọn tất cả các phần tử có tên phần tử được chỉ định.
+              </p>
+              <div class="code-example">
+                <pre><code>
+ h1 {
+  border: 2px solid green;
+  background-color: beige;
+}
+
+p {
+  background-color: yellow;
+}
+                </code></pre>
+              </div>
+            
+            </div>
+            <div>
+              <h3>Bộ chọn kết hợp:</h3>
+              <p>
+                Nếu bộ chọn là "cái gì" chúng ta chọn trong CSS, thì bạn có thể nghĩ về bộ kết hợp CSS là "cách" chúng ta chọn chúng. Chúng được sử dụng để viết các bộ chọn kết hợp các bộ chọn khác nhằm mục tiêu đến các phần tử. Khởi đầu!
+              </p>
+              <p>
+                Cái tên "combinator" thật tuyệt vời vì nó truyền tải chính xác nhiều cách khác nhau mà chúng ta có thể kết hợp các bộ chọn . Tại sao chúng ta cần kết hợp các bộ chọn? Như đã thảo luận trước đó về Bộ chọn Chuỗi, có hai trường hợp phổ biến mà chúng ta cần thực hiện điều này:
+              </p>
+              <ul>
+                <li>Khi chúng ta muốn tăng tính cụ thể của nội dung được chọn.</li>
+                <li>Khi chúng ta muốn chọn một phần tử dựa trên một điều kiện.</li>
+              </ul>
+              <p><strong>Một bộ kết hợp con</strong> thực chất chỉ là một nhánh của bộ kết hợp con, chỉ khác là nó cụ thể hơn bộ kết hợp con vì nó chỉ chọn các phần tử con trực tiếp của một phần tử , chứ không phải bất kỳ phần tử con nào.</p>
+              <div class="code-example">
+                <pre><code>
+ &lt;div class="parent"&gt;
+  &lt;div class="child"&gt;&lt;/div&gt;
+  &lt;div class="child"&gt;
+    &lt;div class="grandchild"&gt;&lt;/div&gt;
+  &lt;/div&gt;
+  &lt;div class="child"&gt;&lt;/div&gt;
+  &lt;div class="child"&gt;&lt;/div&gt;
+&lt;/div&gt;
+                </code></pre>
+              </div>
+              <div class="code-example">
+                <pre><code>
+.parent > .child {}
+.parent > div {}
+.parent > * {}
+                </code></pre>
+              </div>
+            
+            </div>
           </section>
 
           <section id="box-model">
@@ -121,6 +305,34 @@ h1 {
   margin: 25px;
 }</code></pre>
             </div>
+            <h4>Thuộc tính Margin</h4>
+            <p>thuộc tính margin trong CSS cũng được dùng để canh lề cho cả trang web hay một thành phần web này với các thành phần web khác hay với viền trang</p>
+            <p>Đặt lề cho cả bốn cạnh của phần tử:</p>
+            <pre class="code-example">
+p {
+  margin: 35px;
+}
+            </pre>
+            <p>Nếu thuộc tính lề có ba giá trị:</p>
+            <pre class="code-example">
+p {
+  margin: 35px 30px 20px; // trên - trái, phải - dưới
+}
+            </pre>
+            <p>Nếu thuộc tính lề có hai giá trị:</p>
+            <pre class="code-example">
+p {
+  margin: 35px 30px; // trên, dưới - trái, phải  
+}
+            </pre>
+            <h4>Thuộc tính Padding</h4>
+            <p>Padding có thể hiểu như là một thuộc tính đệm. Padding không ảnh hưởng tới khoảng các giữa các các đối tượng như margin mà nó chỉ quy định khoảng cách giữa phần nội dung và viền của một đối tượng </p>
+           <p>Cú pháp: Tương tự margin.</p>
+           <pre class="code-example">
+p {
+  padding: 35px 30px 20px 10px;
+}
+            </pre>
           </section>
 
           <section id="layout">
@@ -144,69 +356,386 @@ h1 {
                 phép nổi
               </li>
             </ul>
+            <div>
+              <p><strong>Display:</strong> thuộc tính này display chỉ định hành vi hiển thị (loại hộp hiển thị) của một phần tử.</p>
+              <pre class="code-example"><code>
+p.ex1 {display: none;}
+p.ex2 {display: inline;}
+p.ex3 {display: block;}
+p.ex4 {display: inline-block;}
+              </code></pre>
+              <p>+ inline: Hiển thị một phần tử dưới dạng phần tử nội tuyến (như &lt;span&gt;). Bất kỳ thuộc tính chiều cao và chiều rộng nào cũng sẽ không có hiệu lực. Đây là mặc định.</p>
+              <p>+ block: Hiển thị một phần tử dưới dạng một phần tử khối (như &lt;p&gt;). Nó bắt đầu trên một dòng mới và chiếm toàn bộ chiều rộng.</p>
+              <p>+ inline-block: Hiển thị một phần tử dưới dạng một khối chứa nội tuyến. Bản thân phần tử được định dạng là một phần tử nội tuyến, nhưng bạn có thể áp dụng các giá trị chiều cao và chiều rộng.</p>
+              <p>+ none: Phần tử đã bị loại bỏ hoàn toàn </p>
+            </div>
+             <div>
+              <p><strong>Float:</strong> thuộc tính này float chỉ định liệu một phần tử có nên trôi sang trái, sang phải hay không trôi.</p>
+              <p>Lưu ý: Các thành phần được định vị tuyệt đối sẽ bỏ qua float thuộc tính này!</p>
+              <p>Lưu ý: Các phần tử bên cạnh một phần tử nổi sẽ chảy xung quanh nó. Để tránh điều này, hãy sử dụng thuộc tính clear</p>
+              <p><strong>Cú pháp: </strong> float: none | left | right | initial | inherit;</p>
+              <pre class="code-example"><code>
+img  {
+  float: right; // nổi về bên phải
+}
+              </code></pre>
+              <p>+ right: Cố định phần tử về bên phải</p>
+              <p>+ left: Cố định phần tử về bên trái</p>
+              <p>+ none: bình thường </p>
+            </div>
+            <div>
+              <p><strong>Clear:</strong> Đi cùng với thuộc tính float, trong CSS còn có một thuộc tính là clear. Thuộc tính clear là một thuộc tính thường được gán vào các phần tử liên quan tới phần tử đã được float để quyết định hướng xử sự của phần tử này.</p>
+              <p>Phần tử &lt;p&gt; được đẩy xuống bên dưới các phần tử nổi bên trái (phần tử &lt;p&gt; không cho phép các phần tử nổi ở bên trái):</p>
+              <pre class="code-example"><code>
+img {
+  float: left;
+}
+
+p.clear {
+  clear: left;
+}
+              </code></pre>
+            </div>
+            <div>
+              <p><strong>Position:</strong></p>
+              <p>Kết hợp với thuộc tính float đã học, thuộc tính position mang lại nhiều khả năng để tạo một cách trình bày tiên tiến và chính xác cho trang web.</p>
+              <p>Hãy tưởng tượng cửa sổ trình duyệt của bạn giống như một hệ tọa độ và với positionbạn có thể đặt một đối tượng web ở bất cứ vị trí nào trên hệ tọa độ này.</p>
+              <pre class="code-example"><code>
+// Cú pháp
+position: static;
+position: relative;
+position: absolute;
+position: fixed;
+position: sticky;
+              </code></pre>
+              <p>static : Phần tử được định vị theo Luồng chuẩn của tài liệu. Các thuộc tính top, right, bottom, left, và không có hiệu lực . Đây là giá trị mặc định.z-index</p>
+              <p>absolute: Phần tử được xóa khỏi luồng tài liệu thông thường và không có khoảng trống nào được tạo cho phần tử đó trong bố cục trang. Phần tử được định vị so với phần tử tổ tiên gần nhất (nếu có) hoặc so với khối chứa ban đầu . Vị trí cuối cùng của nó được xác định bởi các giá trị top, right, bottom, và left. </p>
+              <p>relative: Phần tử được định vị theo luồng thông thường của tài liệu, sau đó được bù trừ so với chính nó dựa trên các giá trị top, right, bottom, và left. Việc bù trừ không ảnh hưởng đến vị trí của bất kỳ phần tử nào khác; do đó, không gian được cung cấp cho phần tử trong bố cục trang giống như khi vị trí là static. </p>
+              <p>fixed: Phần tử được xóa khỏi luồng tài liệu thông thường và không có khoảng trống nào được tạo cho phần tử đó trong bố cục trang. Phần tử được định vị so với khối chứa ban đầu của nó , tức là khung nhìn trong trường hợp phương tiện trực quan. Vị trí cuối cùng của nó được xác định bởi các giá trị top, right, bottom, và left. </p>
+            </div>
           </section>
 
           <section id="flexbox">
             <h2>Flexbox</h2>
             <p>
-              Mô-đun Bố cục Flexbox làm cho việc thiết kế cấu trúc bố cục linh
-              hoạt dễ dàng hơn mà không cần sử dụng float hoặc định vị.
+              <strong>Flexbox (Flexible Box Layout)</strong> là một mô hình bố cục trong CSS giúp sắp xếp, căn chỉnh và phân phối các phần tử con trong một container một cách linh hoạt – đặc biệt hữu ích khi xây dựng giao diện responsive (tự điều chỉnh theo kích thước màn hình).
             </p>
             <p>
-              Trước khi Flexbox Layout module, có bốn chế độ bố cục: Block (cho
-              phần), Inline (cho văn bản), Table, và Positioned.
+              Flexbox hoạt động dựa trên hai khái niệm chính:<br>
+              - <strong>Container cha</strong> (thường gọi là "flex container") áp dụng <code class="code-inline">display: flex;</code>;<br>
+              - Các phần tử con trong container sẽ trở thành <strong>flex items</strong>
             </p>
-
+            <h3>Các thuộc tính cơ bản của Flexbox</h3>
+            <h4>1. Thuộc tính trên container cha</h4>
+            <table class="doc-table">
+              <thead>
+                <tr>
+                  <th>Thuộc tính</th>
+                  <th>Chức năng</th>
+                  <th>Giá trị tiêu biểu</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>display</code></td>
+                  <td>Kích hoạt flexbox layout</td>
+                  <td>flex hoặc inline-flex</td>
+                </tr>
+                <tr>
+                  <td><code>flex-direction</code></td>
+                  <td>Hướng của trục chính</td>
+                  <td>row, column, row-reverse</td>
+                </tr>
+                <tr>
+                  <td><code>justify-content</code></td>
+                  <td>Căn chỉnh phần tử theo trục chính</td>
+                  <td>flex-start, center, space-between, space-around</td>
+                </tr>
+                <tr>
+                  <td><code>align-items</code></td>
+                  <td>Căn chỉnh phần tử theo trục phụ</td>
+                  <td>stretch, center, flex-start, flex-end</td>
+                </tr>
+                <tr>
+                  <td><code>flex-wrap</code></td>
+                  <td>Cho phép phần tử xuống dòng khi tràn</td>
+                  <td>nowrap, wrap, wrap-reverse</td>
+                </tr>
+                <tr>
+                  <td><code>gap</code></td>
+                  <td>Khoảng cách giữa các phần tử</td>
+                  <td>VD: gap: 10px;</td>
+                </tr>
+              </tbody>
+            </table>
+            <h4>2. Thuộc tính trên phần tử con</h4>
+            <table class="doc-table">
+              <thead>
+                <tr>
+                  <th>Thuộc tính</th>
+                  <th>Chức năng</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>flex-grow</code></td>
+                  <td>Mở rộng phần tử để lấp đầy không gian</td>
+                </tr>
+                <tr>
+                  <td><code>flex-shrink</code></td>
+                  <td>Thu nhỏ phần tử khi không đủ không gian</td>
+                </tr>
+                <tr>
+                  <td><code>flex-basis</code></td>
+                  <td>Kích thước ban đầu trước khi co giãn</td>
+                </tr>
+                <tr>
+                  <td><code>flex</code></td>
+                  <td>Viết tắt của 3 thuộc tính trên (grow shrink basis)</td>
+                </tr>
+                <tr>
+                  <td><code>align-self</code></td>
+                  <td>Căn chỉnh riêng phần tử con</td>
+                </tr>
+                <tr>
+                  <td><code>order</code></td>
+                  <td>Thay đổi thứ tự hiển thị của phần tử</td>
+                </tr>
+              </tbody>
+            </table>
+            <h4>3. Ví dụ minh họa</h4>
             <div class="code-example">
-              <pre><code>.flex-container {
+              <pre><code>
+// HTML
+&lt;div class="container"&gt;
+  &lt;div class="item"&gt;1&lt;/div&gt;
+  &lt;div class="item"&gt;2&lt;/div&gt;
+  &lt;div class="item"&gt;3&lt;/div&gt;
+&lt;/div&gt;
+              </code></pre>
+            </div>
+            <div class="code-example">
+              <pre><code>
+// CSS
+.container {
   display: flex;
   flex-direction: row;
-  justify-content: center;
+  justify-content: space-around;
   align-items: center;
-}</code></pre>
+  height: 200px;
+  background-color: #f0f0f0;
+}
+
+.item {
+  width: 50px;
+  height: 50px;
+  background-color: #4caf50;
+  color: white;
+  text-align: center;
+  line-height: 50px;
+}
+              </code></pre>
             </div>
+            <em>Kết quả: Ba ô vuông sẽ được căn giữa theo chiều dọc, phân bố đều theo chiều ngang với khoảng cách như nhau.</em>
           </section>
 
-          <section id="grid">
-            <h2>CSS Grid</h2>
-            <p>
-              CSS Grid Layout cung cấp một hệ thống bố cục dựa trên lưới, với
-              hàng và cột, giúp dễ dàng thiết kế các trang web mà không cần sử
-              dụng float và định vị.
-            </p>
-            <p>
-              CSS Grid là công nghệ mạnh mẽ nhất có sẵn trong CSS để tạo bố cục.
-            </p>
+         <section id="grid">
+  <h2>CSS Grid</h2>
+  <p>
+    <strong>CSS Grid Layout</strong> là hệ thống bố cục dạng lưới (grid) giúp chia nội dung thành hàng và cột. Grid đặc biệt hữu ích khi xây dựng bố cục hai chiều (dọc và ngang), tạo nên giao diện web phức tạp một cách dễ dàng.<br>
+    CSS Grid có thể coi là “bảng vẽ” giúp bạn sắp xếp các phần tử một cách trực quan, linh hoạt, và hiệu quả.
+  </p>
 
-            <div class="code-example">
-              <pre><code>.grid-container {
+  <h3>Các thành phần chính trong Grid</h3>
+  <h4>1. Grid Container</h4>
+  <p>Bạn kích hoạt bằng cách thêm <code class="code-inline">display: grid;</code> hoặc <code>display: inline-grid;</code> vào phần tử cha.</p>
+  <table class="doc-table">
+    <thead>
+      <tr>
+        <th>Thuộc tính</th>
+        <th>Chức năng</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>grid-template-columns</code></td>
+        <td>Định nghĩa số lượng và kích thước các cột</td>
+      </tr>
+      <tr>
+        <td><code>grid-template-rows</code></td>
+        <td>Định nghĩa số lượng và kích thước các hàng</td>
+      </tr>
+      <tr>
+        <td><code>gap</code> hoặc <code>grid-gap</code></td>
+        <td>Khoảng cách giữa các hàng và cột</td>
+      </tr>
+      <tr>
+        <td><code>justify-content</code></td>
+        <td>Căn chỉnh nội dung theo chiều ngang</td>
+      </tr>
+      <tr>
+        <td><code>align-content</code></td>
+        <td>Căn chỉnh nội dung theo chiều dọc</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h4>2. Grid Item</h4>
+  <p>Các phần tử con nằm trong container grid sẽ có thể được đặt vào vị trí tùy ý.</p>
+  <table class="doc-table">
+    <thead>
+      <tr>
+        <th>Thuộc tính</th>
+        <th>Chức năng</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>grid-column</code></td>
+        <td>Chiếm bao nhiêu cột</td>
+      </tr>
+      <tr>
+        <td><code>grid-row</code></td>
+        <td>Chiếm bao nhiêu hàng</td>
+      </tr>
+      <tr>
+        <td><code>grid-area</code></td>
+        <td>Gộp khu vực gồm cả hàng và cột</td>
+      </tr>
+      <tr>
+        <td><code>justify-self</code></td>
+        <td>Căn chỉnh phần tử theo chiều ngang</td>
+      </tr>
+      <tr>
+        <td><code>align-self</code></td>
+        <td>Căn chỉnh phần tử theo chiều dọc</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>Ví dụ minh họa</h3>
+  <div class="code-example">
+    <pre><code>
+&lt;div class="grid-container"&gt;
+  &lt;div class="item item1"&gt;1&lt;/div&gt;
+  &lt;div class="item item2"&gt;2&lt;/div&gt;
+  &lt;div class="item item3"&gt;3&lt;/div&gt;
+&lt;/div&gt;
+    </code></pre>
+  </div>
+  <div class="code-example">
+    <pre><code>
+.grid-container {
   display: grid;
-  grid-template-columns: auto auto auto;
+  grid-template-columns: 100px 1fr 100px;
+  grid-template-rows: 100px auto;
   gap: 10px;
-  background-color: #2196F3;
-  padding: 10px;
-}</code></pre>
-            </div>
-          </section>
+  background-color: #eee;
+}
+
+.item {
+  background-color: #2196f3;
+  color: white;
+  text-align: center;
+  padding: 20px;
+}
+
+.item1 {
+  grid-column: 1 / 3;
+}
+
+.item2 {
+  grid-row: 2 / 3;
+  grid-column: 2 / 4;
+}
+    </code></pre>
+  </div>
+  <em>
+     Kết quả: Một bố cục lưới với ba ô được đặt ở các vị trí khác nhau, gộp cột hoặc hàng tùy theo cách bạn quy định bằng các chỉ số.
+  </em>
+         </section>
 
           <section id="responsive">
-            <h2>Thiết kế đáp ứng</h2>
-            <p>
-              Thiết kế đáp ứng là về việc sử dụng CSS để làm cho một trang web
-              trông đẹp trên tất cả các thiết bị.
-            </p>
-            <p>
-              Thiết kế đáp ứng không phải là một chương trình hoặc plugin
-              JavaScript. Nó chỉ sử dụng HTML và CSS.
-            </p>
+  <h2>Thiết kế đáp ứng (Responsive Web Design)</h2>
+  <p>
+    <strong>Responsive</strong> là phương pháp thiết kế giao diện website sao cho nội dung hiển thị phù hợp với nhiều kích thước màn hình khác nhau — từ điện thoại, máy tính bảng đến máy tính để bàn. Thay vì tạo nhiều phiên bản giao diện, responsive cho phép một giao diện tự điều chỉnh linh hoạt.
+  </p>
 
-            <div class="code-example">
-              <pre><code>@media only screen and (max-width: 600px) {
-  body {
-    background-color: lightblue;
+  <h3>Các kỹ thuật chính trong thiết kế responsive</h3>
+  <h4>1. Media Queries</h4>
+  <p>
+    Media Queries là công cụ chính trong CSS để áp dụng style khác nhau cho từng loại thiết bị.<br>
+    <strong>Ví dụ:</strong>
+  </p>
+  <div class="code-example">
+    <pre><code>
+/* Áp dụng cho màn hình nhỏ hơn 600px */
+@media (max-width: 600px) {
+  .container {
+    flex-direction: column;
   }
-}</code></pre>
-            </div>
+}
+    </code></pre>
+  </div>
+  <p>
+    Từ <code class="code-inline">@media</code> là mấu chốt để kiểm tra điều kiện màn hình và thay đổi cách hiển thị giao diện.
+  </p>
+
+  <h4>2. Grid và Flexbox</h4>
+  <p>
+    Kết hợp Flexbox và Grid để tạo bố cục linh hoạt:<br>
+    - Dùng <code class="code-inline">flex-wrap: wrap;</code> để các phần tử tự xuống hàng<br>
+    - Dùng <code class="code-inline">grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));</code> để grid tự co giãn tùy theo kích thước màn hình
+  </p>
+  <div class="code-example">
+    <pre><code>
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 20px;
+}
+    </code></pre>
+  </div>
+
+  <h4>3. Đơn vị đo linh hoạt</h4>
+  <p>Thay vì px, dùng các đơn vị như:</p>
+  <table class="doc-table">
+    <thead>
+      <tr>
+        <th>Đơn vị</th>
+        <th>Ý nghĩa</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>%</td>
+        <td>Tính theo phần trăm của phần tử cha</td>
+      </tr>
+      <tr>
+        <td>vw/vh</td>
+        <td>Theo kích thước cửa sổ trình duyệt</td>
+      </tr>
+      <tr>
+        <td>em/rem</td>
+        <td>Tính theo kích thước font chữ</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h4>4. Responsive Image</h4>
+  <p>
+    Sử dụng ảnh linh hoạt để hiển thị phù hợp:
+  </p>
+  <div class="code-example">
+    <pre><code>
+&lt;img src="large.jpg" alt="Ảnh lớn" 
+  srcset="small.jpg 600w, medium.jpg 1000w"
+  sizes="(max-width: 600px) 100vw, 50vw"&gt;
+    </code></pre>
+  </div>
+  <p>
+   Trình duyệt sẽ chọn ảnh phù hợp theo độ rộng màn hình.
+  </p>
           </section>
         </main>
       </div>
@@ -217,6 +746,8 @@ h1 {
 
     <script src="../assets/js/components.js"></script>
     <script type="module" src="../assets/js/auth.js"></script>
-    <script src="../assets/js/resources.js"></script>
+    <!-- Thư viện xuất từ HTML sang PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script type="module" src="../assets/js/documents.js"></script>
   </body>
 </html>

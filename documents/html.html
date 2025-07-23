@@ -6,7 +6,6 @@
     <title>Tài Liệu HTML | CodeMaster</title>
     <link rel="icon" href="../assets/images/favicon.ico" type="image/x-icon" />
     <link rel="stylesheet" href="../assets/css/style.css" />
-    <link rel="stylesheet" href="../assets/css/resources.css" />
     <link rel="stylesheet" href="../assets/css/documents.css" />
     <link
       rel="stylesheet"
@@ -25,6 +24,9 @@
           Tài liệu tham khảo chi tiết cho các phần tử, cấu trúc, thuộc tính và
           API HTML5.
         </p>
+        <button id="download-pdf" class="btn btn-outline">
+          <i class="fa fa-download"></i> Tải PDF
+        </button>
       </div>
     </section>
 
@@ -44,8 +46,8 @@
         </div>
 
         <div class="document-main">
-          <section>
-            <h2 id="intro">Giới thiệu HTML</h2>
+          <section id="intro">
+            <h2>Giới thiệu HTML</h2>
             <p>
               HTML (HyperText Markup Language) là ngôn ngữ đánh dấu tiêu chuẩn
               để tạo trang web. HTML mô tả cấu trúc của trang web và bao gồm một
@@ -56,6 +58,98 @@
               HTML được phát triển bởi Tim Berners-Lee vào năm 1991. Phiên bản
               hiện tại là HTML5.
             </p>
+            <h3>Cấu trúc cơ bản của một tài liệu HTML</h3>
+            <div class="code-example">
+              <pre><code>
+&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+  &lt;head&gt;
+    &lt;meta charset="UTF-8"&gt;
+    &lt;title&gt;Tiêu đề trang&lt;/title&gt;
+  &lt;/head&gt;
+  &lt;body&gt;
+    &lt;h1&gt;Chào mừng đến với HTML!&lt;/h1&gt;
+    &lt;p&gt;Đây là một đoạn văn bản.&lt;/p&gt;
+  &lt;/body&gt;
+&lt;/html&gt;
+    </code></pre>
+            </div>
+
+            <table class="doc-table">
+              <thead>
+                <tr>
+                  <th>Thành phần</th>
+                  <th>Chức năng</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>&lt;!DOCTYPE html&gt;</td>
+                  <td>Khai báo loại tài liệu HTML</td>
+                </tr>
+                <tr>
+                  <td>&lt;html&gt;</td>
+                  <td>Bao quanh toàn bộ nội dung HTML</td>
+                </tr>
+                <tr>
+                  <td>&lt;head&gt;</td>
+                  <td>Chứa thông tin meta như tiêu đề, charset</td>
+                </tr>
+                <tr>
+                  <td>&lt;body&gt;</td>
+                  <td>Chứa nội dung hiển thị trên trang web</td>
+                </tr>
+              </tbody>
+            </table>
+
+            <h3>Một số thẻ HTML thông dụng</h3>
+            <table class="doc-table">
+              <thead>
+                <tr>
+                  <th>Thẻ</th>
+                  <th>Công dụng</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>&lt;h1&gt; đến &lt;h6&gt;</td>
+                  <td>Tiêu đề, từ lớn nhất đến nhỏ nhất</td>
+                </tr>
+                <tr>
+                  <td>&lt;p&gt;</td>
+                  <td>Đoạn văn bản</td>
+                </tr>
+                <tr>
+                  <td>&lt;a&gt;</td>
+                  <td>Liên kết (hyperlink)</td>
+                </tr>
+                <tr>
+                  <td>&lt;img&gt;</td>
+                  <td>Chèn hình ảnh</td>
+                </tr>
+                <tr>
+                  <td>&lt;ul&gt; / &lt;ol&gt;</td>
+                  <td>Danh sách (unordered &amp; ordered)</td>
+                </tr>
+                <tr>
+                  <td>&lt;table&gt;</td>
+                  <td>Bảng dữ liệu</td>
+                </tr>
+                <tr>
+                  <td>&lt;form&gt;</td>
+                  <td>Biểu mẫu nhập liệu</td>
+                </tr>
+              </tbody>
+            </table>
+
+            <h3>Ví dụ đơn giản</h3>
+            <div class="code-example">
+              <pre><code>
+&lt;h2&gt;Giới thiệu bản thân&lt;/h2&gt;
+&lt;p&gt;Tôi tên là nguyen và đang học về thiết kế web.&lt;/p&gt;
+&lt;a href="https://example.com"&gt;Trang cá nhân&lt;/a&gt;
+    </code></pre>
+            </div>
           </section>
 
           <section id="basic-tags">
@@ -74,49 +168,106 @@
 &lt;/body&gt;
 &lt;/html&gt;</code></pre>
             </div>
+            <h3>Các thẻ HTML thông dụng</h3>
+            <p>
+              Dưới đây là danh sách các thẻ phổ biến và chức năng tương ứng:
+            </p>
             <table class="doc-table">
               <thead>
                 <tr>
                   <th>Thẻ</th>
-                  <th>Mô tả</th>
+                  <th>Chức năng</th>
+                  <th>Ví dụ</th>
                 </tr>
               </thead>
               <tbody>
                 <tr>
+                  <td>&lt;!DOCTYPE&gt;</td>
+                  <td>Khai báo kiểu tài liệu HTML</td>
                   <td>&lt;!DOCTYPE html&gt;</td>
-                  <td>Xác định loại tài liệu HTML5</td>
                 </tr>
                 <tr>
                   <td>&lt;html&gt;</td>
-                  <td>Phần tử gốc của trang HTML</td>
+                  <td>Bao quanh toàn bộ nội dung</td>
+                  <td>&lt;html&gt;...&lt;/html&gt;</td>
                 </tr>
                 <tr>
                   <td>&lt;head&gt;</td>
-                  <td>Chứa thông tin meta về trang</td>
-                </tr>
-                <tr>
-                  <td>&lt;title&gt;</td>
-                  <td>Tiêu đề trang xuất hiện trên tab trình duyệt</td>
+                  <td>Chứa metadata, tiêu đề, link CSS, v.v.</td>
+                  <td>&lt;head&gt;...&lt;/head&gt;</td>
                 </tr>
                 <tr>
                   <td>&lt;body&gt;</td>
-                  <td>Chứa nội dung trang web hiển thị</td>
+                  <td>Chứa nội dung hiển thị trên trang</td>
+                  <td>&lt;body&gt;...&lt;/body&gt;</td>
                 </tr>
                 <tr>
-                  <td>&lt;h1&gt; đến &lt;h6&gt;</td>
-                  <td>Tiêu đề từ cấp 1 đến cấp 6</td>
+                  <td>&lt;h1&gt; - &lt;h6&gt;</td>
+                  <td>Tiêu đề từ lớn đến nhỏ (1 là lớn nhất)</td>
+                  <td>&lt;h1&gt;Tiêu đề&lt;/h1&gt;</td>
                 </tr>
                 <tr>
                   <td>&lt;p&gt;</td>
-                  <td>Đánh dấu đoạn văn</td>
+                  <td>Đoạn văn</td>
+                  <td>&lt;p&gt;Đây là nội dung văn bản.&lt;/p&gt;</td>
                 </tr>
                 <tr>
                   <td>&lt;a&gt;</td>
-                  <td>Tạo liên kết</td>
+                  <td>Liên kết (hyperlink)</td>
+                  <td>&lt;a href="https://example.com"&gt;Click&lt;/a&gt;</td>
                 </tr>
                 <tr>
                   <td>&lt;img&gt;</td>
-                  <td>Hiển thị hình ảnh</td>
+                  <td>Hình ảnh</td>
+                  <td>&lt;img src="image.jpg" alt="ảnh"&gt;</td>
+                </tr>
+                <tr>
+                  <td>&lt;br&gt;</td>
+                  <td>Xuống dòng</td>
+                  <td>Dòng thứ nhất&lt;br&gt;Dòng thứ hai</td>
+                </tr>
+                <tr>
+                  <td>&lt;hr&gt;</td>
+                  <td>Đường kẻ ngang</td>
+                  <td>&lt;hr&gt;</td>
+                </tr>
+                <tr>
+                  <td>&lt;strong&gt;</td>
+                  <td>Văn bản in đậm</td>
+                  <td>&lt;strong&gt;Quan trọng!&lt;/strong&gt;</td>
+                </tr>
+                <tr>
+                  <td>&lt;em&gt;</td>
+                  <td>Văn bản nghiêng</td>
+                  <td>&lt;em&gt;Nhấn mạnh&lt;/em&gt;</td>
+                </tr>
+                <tr>
+                  <td>&lt;ul&gt; / &lt;ol&gt;</td>
+                  <td>Danh sách không/thứ tự</td>
+                  <td>&lt;ul&gt;&lt;li&gt;Một mục&lt;/li&gt;&lt;/ul&gt;</td>
+                </tr>
+                <tr>
+                  <td>&lt;table&gt;</td>
+                  <td>Bảng dữ liệu</td>
+                  <td>
+                    &lt;table&gt;&lt;tr&gt;&lt;td&gt;Ô
+                    1&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+                  </td>
+                </tr>
+                <tr>
+                  <td>&lt;div&gt;</td>
+                  <td>Khối nội dung</td>
+                  <td>&lt;div class="box"&gt;Nội dung&lt;/div&gt;</td>
+                </tr>
+                <tr>
+                  <td>&lt;span&gt;</td>
+                  <td>Dòng nội dung nhỏ lẻ</td>
+                  <td>&lt;span style="color:red"&gt;Đỏ&lt;/span&gt;</td>
+                </tr>
+                <tr>
+                  <td>&lt;form&gt;</td>
+                  <td>Biểu mẫu</td>
+                  <td>&lt;form&gt;&lt;input type="text"&gt;&lt;/form&gt;</td>
                 </tr>
               </tbody>
             </table>
@@ -165,42 +316,158 @@
           </section>
 
           <section id="forms">
-            <h2>Biểu mẫu HTML</h2>
+            <h2>Biểu mẫu HTML (Forms)</h2>
             <p>
-              HTML cung cấp nhiều phần tử để tạo biểu mẫu tương tác với người
-              dùng:
+              Biểu mẫu HTML (Forms) là tập hợp các trường nhập liệu (input
+              fields), nút bấm và các phần tử khác mà người dùng có thể dùng để
+              gửi thông tin đến máy chủ hoặc xử lý bằng JavaScript.<br />
+              Tất cả nằm bên trong cặp thẻ
+              <code class="code-inline">&lt;form&gt;...&lt;/form&gt;</code>
             </p>
+
+            <h3>Các thành phần cơ bản của biểu mẫu</h3>
+            <h4>1. Thẻ <span class="code-inline">&lt;form&gt;</span></h4>
             <div class="code-example">
-              <pre><code>&lt;form action="/submit" method="post"&gt;
-  &lt;fieldset&gt;
-    &lt;legend&gt;Thông tin cá nhân&lt;/legend&gt;
-    
-    &lt;label for="name"&gt;Họ tên:&lt;/label&gt;
-    &lt;input type="text" id="name" name="name" required&gt;
-    
-    &lt;label for="email"&gt;Email:&lt;/label&gt;
-    &lt;input type="email" id="email" name="email" required&gt;
-    
-    &lt;label for="password"&gt;Mật khẩu:&lt;/label&gt;
-    &lt;input type="password" id="password" name="password" required&gt;
-    
-    &lt;label for="gender"&gt;Giới tính:&lt;/label&gt;
-    &lt;select id="gender" name="gender"&gt;
-      &lt;option value="male"&gt;Nam&lt;/option&gt;
-      &lt;option value="female"&gt;Nữ&lt;/option&gt;
-      &lt;option value="other"&gt;Khác&lt;/option&gt;
-    &lt;/select&gt;
-    
-    &lt;label&gt;
-      &lt;input type="checkbox" name="subscribe" value="yes"&gt;
-      Đăng ký nhận tin
-    &lt;/label&gt;
-    
-    &lt;button type="submit"&gt;Gửi&lt;/button&gt;
-    &lt;button type="reset"&gt;Xóa&lt;/button&gt;
-  &lt;/fieldset&gt;
-&lt;/form&gt;</code></pre>
+              <pre><code>
+&lt;form action="/xuly" method="POST"&gt;
+  &lt;!-- các trường dữ liệu --&gt;
+&lt;/form&gt;
+    </code></pre>
             </div>
+            <table class="doc-table">
+              <thead>
+                <tr>
+                  <th>Thuộc tính</th>
+                  <th>Ý nghĩa</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>action</td>
+                  <td>URL nhận dữ liệu gửi đi</td>
+                </tr>
+                <tr>
+                  <td>method</td>
+                  <td>Phương thức gửi: GET hoặc POST</td>
+                </tr>
+                <tr>
+                  <td>target</td>
+                  <td>Nơi mở kết quả (_blank, _self)</td>
+                </tr>
+              </tbody>
+            </table>
+
+            <h4>2. Các trường nhập liệu</h4>
+            <table class="doc-table">
+              <thead>
+                <tr>
+                  <th>Thẻ</th>
+                  <th>Chức năng</th>
+                  <th>Ví dụ</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>&lt;input type="text"&gt;</td>
+                  <td>Nhập văn bản ngắn</td>
+                  <td>Tên, email,...</td>
+                </tr>
+                <tr>
+                  <td>&lt;input type="password"&gt;</td>
+                  <td>Nhập mật khẩu</td>
+                  <td>Mật khẩu</td>
+                </tr>
+                <tr>
+                  <td>&lt;input type="email"&gt;</td>
+                  <td>Nhập địa chỉ email</td>
+                  <td>Email</td>
+                </tr>
+                <tr>
+                  <td>&lt;input type="number"&gt;</td>
+                  <td>Nhập số</td>
+                  <td>Tuổi, số lượng</td>
+                </tr>
+                <tr>
+                  <td>&lt;textarea&gt;</td>
+                  <td>Nhập văn bản dài</td>
+                  <td>Mô tả, nội dung</td>
+                </tr>
+                <tr>
+                  <td>&lt;select&gt; + &lt;option&gt;</td>
+                  <td>Menu chọn một hoặc nhiều mục</td>
+                  <td>Quốc gia, ngành nghề,...</td>
+                </tr>
+                <tr>
+                  <td>&lt;input type="radio"&gt;</td>
+                  <td>Chọn 1 trong nhiều tùy chọn</td>
+                  <td>Giới tính, trạng thái,...</td>
+                </tr>
+                <tr>
+                  <td>&lt;input type="checkbox"&gt;</td>
+                  <td>Chọn nhiều tùy chọn</td>
+                  <td>Sở thích</td>
+                </tr>
+                <tr>
+                  <td>&lt;input type="submit"&gt;</td>
+                  <td>Nút gửi dữ liệu</td>
+                  <td>"Gửi"</td>
+                </tr>
+                <tr>
+                  <td>&lt;input type="reset"&gt;</td>
+                  <td>Xóa toàn bộ dữ liệu đã nhập</td>
+                  <td>"Xóa"</td>
+                </tr>
+              </tbody>
+            </table>
+
+            <h3>Ví dụ biểu mẫu đơn giản</h3>
+            <div class="code-example">
+              <pre><code>
+&lt;form action="/guithongtin" method="POST"&gt;
+  &lt;label for="ten"&gt;Họ tên:&lt;/label&gt;
+  &lt;input type="text" id="ten" name="ten"&gt;&lt;br&gt;&lt;br&gt;
+
+  &lt;label for="email"&gt;Email:&lt;/label&gt;
+  &lt;input type="email" id="email" name="email"&gt;&lt;br&gt;&lt;br&gt;
+
+  &lt;label for="gioitinh"&gt;Giới tính:&lt;/label&gt;&lt;br&gt;
+  &lt;input type="radio" id="nam" name="gioitinh" value="nam"&gt; Nam
+  &lt;input type="radio" id="nu" name="gioitinh" value="nu"&gt; Nữ&lt;br&gt;&lt;br&gt;
+
+  &lt;label for="ghichu"&gt;Ghi chú:&lt;/label&gt;&lt;br&gt;
+  &lt;textarea name="ghichu" rows="4" cols="30"&gt;&lt;/textarea&gt;&lt;br&gt;&lt;br&gt;
+
+  &lt;input type="submit" value="Gửi"&gt;
+&lt;/form&gt;
+    </code></pre>
+            </div>
+            <em>
+              Kết quả: Người dùng điền tên, email, chọn giới tính, ghi chú rồi
+              nhấn “Gửi”.
+            </em>
+
+            <h4>Mẹo và lưu ý</h4>
+            <ul>
+              <li>
+                Luôn thêm thuộc tính <strong>name</strong> để dữ liệu gửi đi
+                được nhận diện đúng.
+              </li>
+              <li>
+                Dùng <code class="code-inline">&lt;label&gt;</code> để gắn nhãn
+                cho input giúp tăng khả năng truy cập (accessibility).
+              </li>
+              <li>
+                Kết hợp JavaScript để kiểm tra dữ liệu trước khi gửi (form
+                validation).
+              </li>
+              <li>
+                Có thể dùng <code class="code-inline">required</code> để bắt
+                buộc điền thông tin:
+                <code class="code-inline"
+                  >&lt;input type="email" required&gt;</code
+                >
+              </li>
+            </ul>
           </section>
 
           <section id="semantic">
@@ -284,29 +551,75 @@
           <section id="api">
             <h2>API HTML5</h2>
             <p>
-              HTML5 đi kèm với nhiều API JavaScript để tạo ứng dụng web phong
-              phú:
+              Trong ngữ cảnh HTML5, “API” (Application Programming Interface) là
+              giao diện lập trình cho phép trang web làm được những tác vụ trước
+              đây chỉ dành cho ứng dụng phần mềm. Ví dụ như: lưu dữ liệu cục bộ,
+              theo dõi vị trí người dùng, vẽ đồ họa 2D, ghi âm video, v.v.
             </p>
-            <ul class="feature-list">
-              <li>
-                <strong>Geolocation API</strong> - Xác định vị trí người dùng
-              </li>
-              <li>
-                <strong>Drag and Drop API</strong> - Kéo và thả các phần tử
-              </li>
-              <li>
-                <strong>Local Storage API</strong> - Lưu trữ dữ liệu cục bộ
-              </li>
-              <li>
-                <strong>Session Storage API</strong> - Lưu trữ dữ liệu phiên
-              </li>
-              <li><strong>Web Workers API</strong> - JavaScript đa luồng</li>
-              <li><strong>WebSocket API</strong> - Giao tiếp hai chiều</li>
-              <li><strong>Canvas API</strong> - Vẽ đồ họa 2D</li>
-              <li>
-                <strong>History API</strong> - Thao tác lịch sử trình duyệt
-              </li>
-            </ul>
+            <h3>Một số HTML5 API phổ biến và mạnh mẽ</h3>
+            <table class="doc-table">
+              <thead>
+                <tr>
+                  <th>Tên API</th>
+                  <th>Mô tả chức năng chính</th>
+                  <th>Ví dụ ứng dụng thực tế</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Canvas API</td>
+                  <td>Vẽ đồ họa 2D trực tiếp trên trình duyệt</td>
+                  <td>Game 2D, đồ thị, trình chỉnh ảnh đơn giản</td>
+                </tr>
+                <tr>
+                  <td>Geolocation API</td>
+                  <td>Truy cập vị trí của người dùng qua GPS/WiFi</td>
+                  <td>Bản đồ, tìm địa điểm gần nhất</td>
+                </tr>
+                <tr>
+                  <td>Web Storage API</td>
+                  <td>
+                    Lưu trữ dữ liệu trên trình duyệt (local/sessionStorage)
+                  </td>
+                  <td>Giỏ hàng, lưu trạng thái người dùng</td>
+                </tr>
+                <tr>
+                  <td>Media API</td>
+                  <td>Truy cập webcam, microphone của người dùng</td>
+                  <td>Gọi video, quay video từ trình duyệt</td>
+                </tr>
+                <tr>
+                  <td>Drag and Drop API</td>
+                  <td>Kéo thả phần tử từ nơi này sang nơi khác</td>
+                  <td>Quản lý file, sắp xếp ảnh, upload dễ dàng</td>
+                </tr>
+                <tr>
+                  <td>Web Workers API</td>
+                  <td>Chạy tác vụ nền mà không làm chậm giao diện chính</td>
+                  <td>Tính toán phức tạp, xử lý dữ liệu lớn</td>
+                </tr>
+                <tr>
+                  <td>Notifications API</td>
+                  <td>Hiển thị thông báo cho người dùng</td>
+                  <td>Cảnh báo, tin mới, nhắc việc</td>
+                </tr>
+                <tr>
+                  <td>FullScreen API</td>
+                  <td>Chuyển website sang chế độ toàn màn hình</td>
+                  <td>Trình chiếu, video, game</td>
+                </tr>
+                <tr>
+                  <td>Speech Recognition</td>
+                  <td>Nhận dạng giọng nói để điều khiển website</td>
+                  <td>Tìm kiếm bằng giọng nói, điều khiển bằng lời</td>
+                </tr>
+                <tr>
+                  <td>Battery Status API</td>
+                  <td>Biết mức pin thiết bị người dùng (nay ít được hỗ trợ)</td>
+                  <td>Tối ưu giao diện với pin thấp</td>
+                </tr>
+              </tbody>
+            </table>
           </section>
         </div>
       </div>
@@ -315,8 +628,10 @@
     <!-- load bằng components -->
     <footer id="footer-placeholder"></footer>
 
-    <script type="module" src="../assets/js/resources.js"></script>
     <script src="../assets/js/components.js"></script>
     <script type="module" src="../assets/js/auth.js"></script>
+    <!-- Thư viện xuất từ HTML sang PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script type="module" src="../assets/js/documents.js"></script>
   </body>
 </html>
