@@ -23,14 +23,14 @@ const handleRegister = function (event) {
   let role = 2; // 1 : admin , 2: user
 
   // validate form
-  if (!userName || !email || !password || !confirmPassword) {
-    alert("Vui lòng nhập đầy đủ các trường dữ liệu !");
-    return;
-  }
-  if (password !== confirmPassword) {
-    alert("Mật khẩu không hợp lệ !");
-    return;
-  }
+  const isValid = validateDataForm({
+    userName,
+    email,
+    password,
+    confirmPassword,
+    role,
+  });
+  if (!isValid) return;
   if (!termsAgreed) {
     alert("Bạn phải đồng ý với Điều khoản dịch vụ và Chính sách bảo mật.");
     return;
@@ -52,23 +52,122 @@ const handleRegister = function (event) {
         createAt: new Date().toISOString().slice(0, 10), // yyyy-mm-dd
       })
         .then(() => {
-          alert("Đăng ký thành công!");
+          showNotification("Đăng ký thành công!", "success");
           // Xóa biểu mẫu và chuyển sang tab đăng nhập sau 1 giây
           setTimeout(() => {
             registerForm.reset();
             document.querySelector('.tab-btn[data-tab="login"]').click();
-
             // Điền email vào biểu mẫu đăng nhập
             document.getElementById("login-email").value = email;
+            successMsg.textContent = "";
           }, 1000);
         })
         .catch((error) => {
-          alert("Lưu thông tin thất bại: " + error.message);
+          console.error("Lưu thông tin thất bại: " + error.message);
+          showNotification("Lưu thông tin thất bại!", "error");
         });
     })
     .catch((error) => {
-      alert("Đăng Ký thất bại: " + error.message);
+      if (error.code === "auth/email-already-in-use") {
+        showNotification("Email đã tồn tại trên hệ thống!", "error");
+      } else if (error.code === "auth/weak-password") {
+        showNotification("Mật khẩu quá yếu!", "error");
+      } else {
+        console.error("Đăng ký thất bại: " + error.message);
+        showNotification("Đăng ký thất bại!", "error");
+      }
     });
 };
+
+// Hàm hiển thị lỗi
+function showValidateError(input, message) {
+  let errorEl = input.closest(".form-group").querySelector(".valid-error");
+  if (errorEl) {
+    errorEl.textContent = message;
+    input.classList.add("valid-error-border");
+  }
+}
+
+function clearValidateError(input) {
+  let errorEl = input.closest(".form-group").querySelector(".valid-error");
+  if (errorEl) errorEl.textContent = "";
+  input.classList.remove("valid-error-border");
+}
+
+// Hàm validate form đăng ký
+function validateDataForm({
+  userName,
+  email,
+  password,
+  confirmPassword,
+  role,
+}) {
+  let valid = true;
+  // Email
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!email || !emailRegex.test(email)) {
+    showValidateError(inputEmail, "Email không hợp lệ!");
+    valid = false;
+  } else {
+    clearValidateError(inputEmail);
+  }
+  // Username
+  if (!userName || userName.length < 3 || userName.length > 32) {
+    showValidateError(inputName, "Tên người dùng phải từ 3-32 ký tự!");
+    valid = false;
+  } else {
+    clearValidateError(inputName);
+  }
+  // Password
+  const pw = password || "";
+  const pwValid =
+    pw.length >= 6 &&
+    /[A-Z]/.test(pw) &&
+    /[0-9]/.test(pw) &&
+    /[^A-Za-z0-9]/.test(pw);
+  if (!pwValid) {
+    showValidateError(
+      inputPassword,
+      "Mật khẩu tối thiểu 6 ký tự, có chữ hoa, số và ký tự đặc biệt!"
+    );
+    valid = false;
+  } else {
+    clearValidateError(inputPassword);
+  }
+  // Confirm password
+  if (confirmPassword !== password) {
+    showValidateError(inputConfirmPwd, "Mật khẩu xác nhận không khớp!");
+    valid = false;
+  } else {
+    clearValidateError(inputConfirmPwd);
+  }
+  return valid;
+}
+
+// Hiển thị thông báo
+function showNotification(message, type = "success") {
+  // Kiểm tra xem đã có thông báo nào chưa
+  let notification = document.querySelector(".notification");
+
+  // Nếu chưa có, tạo một thông báo mới
+  if (!notification) {
+    notification = document.createElement("div");
+    notification.classList.add("notification");
+    document.body.appendChild(notification);
+  }
+
+  // Đặt lớp kiểu và nội dung thông báo
+  notification.className = "notification";
+  notification.classList.add(type);
+  notification.textContent = message;
+
+  // Hiển thị thông báo
+  notification.classList.add("show");
+
+  // Tự động ẩn thông báo sau 3 giây
+  setTimeout(() => {
+    notification.classList.remove("show");
+  }, 4000);
+}
 
 registerForm.addEventListener("submit", handleRegister);

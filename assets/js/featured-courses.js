@@ -91,7 +91,7 @@ function createFeaturedCourseCard(course) {
         <div class="skill-level">
           <span class="level ${course.level}">${levelText}</span>
         </div>
-        <p>${course.description}</p>
+        <p class="line-clamp-2">${course.description}</p>
         <div class="progress-container">
           <div class="progress-bar" data-progress="0" data-course-id="${
             course.id

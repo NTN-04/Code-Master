@@ -25,6 +25,9 @@
           Tài liệu tham khảo cho thư viện React, components, hooks và các phương
           pháp hay nhất
         </p>
+        <button id="download-pdf" class="btn btn-outline">
+          <i class="fa fa-download"></i> Tải PDF
+        </button>
       </div>
     </div>
 
@@ -416,9 +419,10 @@
     <!-- load bằng components -->
     <footer id="footer-placeholder"></footer>
 
-    <script src="../assets/js/script.js"></script>
     <script src="../assets/js/components.js"></script>
     <script type="module" src="../assets/js/auth.js"></script>
-    <script src="../assets/js/resources.js"></script>
+    <!-- Thư viện xuất từ HTML sang PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script type="module" src="../assets/js/documents.js"></script>
   </body>
 </html>

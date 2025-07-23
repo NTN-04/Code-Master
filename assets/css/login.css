@@ -110,6 +110,7 @@
 /* Form Styles */
 .auth-form .form-group {
   margin-bottom: 20px;
+  position: relative;
 }
 
 .auth-form label {
@@ -120,6 +121,7 @@
 
 .input-with-icon {
   position: relative;
+  width: 100%;
 }
 
 .input-with-icon i {
@@ -148,6 +150,22 @@
 input[type="password"]::-ms-reveal,
 input[type="password"]::-webkit-reveal {
   display: none;
+}
+/* validate form */
+.valid-error {
+  color: #e74c3c;
+  font-size: 0.95em;
+  display: block;
+  width: 100%;
+  clear: both;
+  margin-left: 0;
+  margin-right: 0;
+  margin-bottom: 2px;
+  margin-top: 2px;
+  position: relative;
+}
+.valid-error-border {
+  border-color: #e74c3c !important;
 }
 
 .toggle-password {
@@ -382,6 +400,7 @@ input[type="password"]::-webkit-reveal {
   transform: translateX(0);
   opacity: 1;
 }
+
 /* Responsive Styles */
 @media (max-width: 576px) {
   .login-container {
