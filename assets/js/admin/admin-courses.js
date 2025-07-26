@@ -18,17 +18,10 @@ export default class CoursesManager {
 
   // Tải dữ liệu khóa học
   async loadData() {
-    // Hiển thị loading
-    const grid = document.getElementById("admin-courses-grid");
-    if (grid) {
-      grid.innerHTML = `
-        <div class="loading-courses">
-            <span class="loading-spinner"><i class="fas fa-spinner fa-spin"></i></span>
-            <span>Đang tải danh sách người dùng...</span>
-        </div>
-      `;
-    }
     try {
+      // Hiển thị loading
+      this.showCoursesLoading();
+
       // Thử tải từ Firebase trước
       const coursesRef = ref(database, "courses");
       const snapshot = await get(coursesRef);
@@ -39,60 +32,78 @@ export default class CoursesManager {
           id,
           ...data,
         }));
-      } else {
-        // Nếu không có thì import từ file JSON vào Firebase
-        await this.importCoursesToFirebase();
       }
 
-      this.renderCoursesGrid();
+      await this.renderCoursesGrid();
     } catch (error) {
       console.error("Error loading courses:", error);
       this.adminPanel.showNotification("Lỗi tải dữ liệu khóa học", "error");
     }
   }
-
-  async importCoursesToFirebase() {
-    try {
-      const response = await fetch("./data/db_courses.json");
-      const data = await response.json();
-      const courses = data.courses || [];
-
-      // Import khóa học vào Firebase
-      const coursesRef = ref(database, "courses");
-      const coursesData = {};
-
-      courses.forEach((course) => {
-        coursesData[course.id] = {
-          title: course.title,
-          description: course.description,
-          level: course.level,
-          category: course.category,
-          duration: course.duration,
-          lessons: course.lessons,
-          progress: course.progress || 0,
-          image: course.image,
-          tag: course.tag,
-          url: course.url,
-          createdAt: new Date().toISOString().slice(0, 10),
-          updatedAt: new Date().toISOString().slice(0, 10),
-          status: "active",
-        };
-      });
-
-      await set(coursesRef, coursesData);
-      this.courses = courses;
-
-      this.adminPanel.showNotification(
-        "Đã import khóa học vào Firebase",
-        "success"
-      );
-    } catch (error) {
-      console.error("Error importing courses:", error);
-      this.adminPanel.showNotification("Lỗi import khóa học", "error");
+  // Hiển thị loading cho khóa học
+  showCoursesLoading() {
+    const coursesGrid = document.getElementById("admin-courses-grid");
+    if (coursesGrid) {
+      coursesGrid.innerHTML = `
+      <div class="loading-courses">
+            <span class="loading-spinner"><i class="fas fa-spinner fa-spin"></i></span>
+            <span>Đang tải danh sách khóa học...</span>
+        </div>
+      `;
     }
   }
 
-  renderCoursesGrid() {
+  // Hàm lấy tổng số bài học và tổng thời lượng, có cache
+  async getCourseStats(courseId) {
+    const modulesRef = ref(database, `course_modules/${courseId}`);
+    const snap = await get(modulesRef);
+    let totalLessons = 0;
+    let totalMinutes = 0;
+    if (snap.exists()) {
+      const modules = snap.val();
+      Object.values(modules).forEach((module) => {
+        (module.lessons || []).forEach((lesson) => {
+          totalLessons++;
+          if (lesson.duration) {
+            // Hỗ trợ các dạng "10 phút", "10:30 phút", "1:20:00 phút"
+            let durationStr = lesson.duration.replace(/[^\d:]/g, "");
+            let parts = durationStr.split(":");
+            let minutes = 0;
+            if (parts.length === 1) {
+              minutes = parseInt(parts[0]) || 0;
+            } else if (parts.length === 2) {
+              minutes = parseInt(parts[0]) || 0;
+              let seconds = parseInt(parts[1]) || 0;
+              minutes += Math.round(seconds / 60);
+            } else if (parts.length === 3) {
+              let hours = parseInt(parts[0]) || 0;
+              let mins = parseInt(parts[1]) || 0;
+              let secs = parseInt(parts[2]) || 0;
+              minutes = hours * 60 + mins + Math.round(secs / 60);
+            }
+            totalMinutes += minutes;
+          }
+        });
+      });
+    }
+    // Format duration thành "X giờ Y phút"
+    const hours = Math.floor(totalMinutes / 60);
+    const minutes = totalMinutes % 60;
+    let durationText = "";
+    if (hours > 0) durationText += `${hours} giờ `;
+    if (minutes > 0 || hours === 0) durationText += `${minutes} phút`;
+    const stats = { totalLessons, durationText };
+
+    // cập nhật lại node courses
+    await update(ref(database, `courses/${courseId}`), {
+      lessons: totalLessons,
+      duration: durationText,
+    });
+
+    return stats;
+  }
+
+  async renderCoursesGrid() {
     const grid = document.getElementById("admin-courses-grid");
     if (!grid) return;
 
@@ -433,6 +444,7 @@ export default class CoursesManager {
   async openLessonsManager(courseId, moduleId) {
     this.currentManagingCourseId = courseId;
     this.currentManagingModuleId = moduleId;
+
     // Trích xuất số module từ moduleId (module1 -> '1')
     const moduleNumber = moduleId.replace(/\D/g, "");
     // Đặt tiêu đề modal
@@ -537,7 +549,7 @@ export default class CoursesManager {
     // Focus vào trường đầu tiên
     setTimeout(() => titleInput.focus(), 300);
 
-    // Xử lý sự kiện submit form
+    // Xử lý sự kiện submit form bài học
     const handleSubmit = async (e) => {
       e.preventDefault();
 
@@ -580,6 +592,8 @@ export default class CoursesManager {
         }
 
         await set(moduleRef, lessons);
+        // Sau khi thêm/sửa cập nhật lại số bài học và thời lượng cho khóa học
+        await this.getCourseStats(courseId);
         await this.loadLessonsList(courseId, moduleId);
 
         this.adminPanel.showNotification(
@@ -601,7 +615,7 @@ export default class CoursesManager {
     };
     // Gán sự kiện submit cho form
     const form = document.getElementById("lesson-form");
-    form.addEventListener("submit", handleSubmit);
+    form.onsubmit = handleSubmit; // dùng onsubmit để tránh lặp sự kiện
   }
 
   // Xóa bài học
@@ -617,6 +631,8 @@ export default class CoursesManager {
     if (!confirm("Bạn có chắc chắn muốn xóa bài học này?")) return;
     lessons.splice(idx, 1);
     await set(moduleRef, lessons);
+    // Cập nhật lại bài học và thời lượng cho khóa học
+    await this.getCourseStats(courseId);
     await this.loadLessonsList(courseId, moduleId);
     this.adminPanel.showNotification("Đã xóa bài học", "success");
   }
@@ -816,7 +832,7 @@ export default class CoursesManager {
     };
     // sự kiện submit
     const quizForm = document.getElementById("quiz-form");
-    quizForm.addEventListener("submit", handleQuizSubmit);
+    quizForm.onsubmit = handleQuizSubmit;
   }
 
   async deleteQuiz(courseId, moduleId, lessonIdx, quizIdx) {

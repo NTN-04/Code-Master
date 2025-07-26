@@ -68,33 +68,6 @@ function showCoursesLoading() {
   }
 }
 
-// Lấy tổng số lessons và tổng duration từ course_modules
-// async function getCourseStats(courseId) {
-//   const modulesRef = ref(database, `course_modules/${courseId}`);
-//   const snap = await get(modulesRef);
-//   let totalLessons = 0;
-//   let totalMinutes = 0;
-//   if (snap.exists()) {
-//     const modules = snap.val();
-//     // Trả về 1 mảng chứa tất cả value của các module
-//     Object.values(modules).forEach((module) => {
-//       module.lessons.forEach((lesson) => {
-//         totalLessons++;
-//         if (lesson.duration) {
-//           // kiểm tra và lấy số phút và số giây từ duration bằng regex
-//           const match = lesson.duration.match(/(\d+)(?::(\d+))?/);
-//           if (match) {
-//             const m = parseInt(match[1]);
-//             const s = match[2] ? parseInt(match[2]) : 0;
-//             totalMinutes += m + Math.round(s / 60);
-//           }
-//         }
-//       });
-//     });
-//   }
-//   return { totalLessons, totalMinutes };
-// }
-
 // Render khóa học từ dữ liệu database
 async function renderCourses(coursesData, categoriesData) {
   const coursesGrid = document.querySelector(".courses-grid");
@@ -131,16 +104,6 @@ function createCourseCard(course, categoriesData) {
     advanced: "Nâng Cao",
   };
   const levelText = levelMap[course.level] || course.level;
-
-  // Sử dụng stats động nếu có, fallback về dữ liệu tĩnh nếu chưa có
-  // const lessonsCount = stats.totalLessons || course.lessons || 0;
-  // const totalMinutes = stats.totalMinutes || 0;
-  // const hours = Math.floor(totalMinutes / 60);
-  // const minutes = totalMinutes % 60;
-  // let durationText = "";
-  // if (hours > 0) durationText += `${hours} giờ `;
-  // if (minutes > 0) durationText += `${minutes} phút`;
-  // if (!durationText) durationText = course.duration || "0 phút";
 
   return `
     <div class="course-card" data-level="${course.level}" data-category="${

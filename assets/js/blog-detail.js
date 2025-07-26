@@ -84,15 +84,29 @@ async function renderBlogDetail() {
     sessionStorage.setItem(viewedKey, "1");
   }
 
-  // Kiểm tra trạng thái like
+  // Lấy user hiện tại
   const user = auth.currentUser;
+
+  // Kiểm tra trạng thái like
   const isLiked = user && blog.likedUsers && blog.likedUsers[user.uid];
   const likeCount = blog.likes || 0;
   // Lấy số lượng bình luận từ localStorage (nếu có)
   const commentCount = localStorage.getItem(`blog_comment_count_${blogId}`);
 
+  // Nếu bài viết đang chờ duyệt và là chủ bài viết, hiển thị cảnh báo
+  let pendingAlert = "";
+  if (blog.status === "pending" && user && user.uid === blog.authorId) {
+    pendingAlert = `
+    <div class="blog-alert" style="background:#fff3cd;color:#856404;border:1px solid #ffeeba;padding:12px 16px;border-radius:6px;margin-bottom:16px;display:flex;align-items:center;gap:8px;">
+      <i class="fas fa-exclamation-circle"></i>
+      Bài viết của bạn đang chờ duyệt, chỉ bạn mới xem được!
+    </div>
+  `;
+  }
+
   // Render HTML (main content)
   main.innerHTML = `
+    ${pendingAlert}
     <div class="blog-detail-card">
       <div class="blog-detail-meta-row">
         <div class="blog-detail-meta-author">

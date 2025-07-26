@@ -45,20 +45,16 @@ export default class Dashboard {
         : 0;
 
       // Đếm số học viên đang học (user có trường courses)
-      let activeLearners = 0;
-      if (usersSnapshot.exists()) {
-        const users = usersSnapshot.val();
-        Object.values(users).forEach((user) => {
-          if (user.courses && Object.keys(user.courses).length > 0) {
-            activeLearners++;
-          }
-        });
-      }
+      const Learner = ref(database, "userProgress");
+      const learnerSnapshot = await get(Learner);
+      const learnerCount = learnerSnapshot.exists()
+        ? Object.keys(learnerSnapshot.val()).length
+        : 0;
 
       // Cập nhật giao diện
       document.getElementById("total-users").textContent = usersCount;
       document.getElementById("total-courses").textContent = coursesCount;
-      document.getElementById("active-learners").textContent = activeLearners;
+      document.getElementById("active-learners").textContent = learnerCount;
       document.getElementById("total-resources").textContent = blogsCount;
     } catch (error) {
       console.error("Error loading statistics:", error);

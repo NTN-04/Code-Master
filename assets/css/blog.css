@@ -508,6 +508,12 @@
   grid-template-columns: 0.5fr 1fr;
   gap: 10px;
 }
+.blog-main-content {
+  word-break: break-all;
+  overflow-wrap: anywhere;
+  min-width: 0;
+  max-width: 100%;
+}
 #blog-post-form input,
 #blog-post-form textarea {
   width: 100%;
@@ -548,6 +554,9 @@
 }
 #blog-post-form .SimpleMDEContainer {
   margin-bottom: 0;
+}
+.CodeMirror .CodeMirror-code .cm-header-1 {
+  font-size: 120% !important;
 }
 /* toolbar của simpleMde */
 .editor-toolbar {
