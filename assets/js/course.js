@@ -459,60 +459,234 @@ function renderVideo(videoUrl) {
 }
 
 function renderQuiz(quiz, lessonId) {
+  if (!quiz && quiz.length === 0) {
+    return "";
+  }
+
   return `
     <div class="quiz-section" data-lesson="${lessonId}">
-      <h3>Câu hỏi trắc nghiệm</h3>
-      ${quiz
-        .map(
-          (q, idx) => `
-        <div class="quiz-question" data-qidx="${idx}">
-          <h4>${q.question}</h4>
-          <div class="quiz-options">
-            ${q.options
-              .map(
-                (opt, oidx) => `
-              <label class="quiz-option">
-                <input type="radio" name="quiz-${lessonId}-${idx}" value="${oidx}">
-                <span>${escapeHtml(opt)}</span>
-              </label>
-            `
-              )
-              .join("")}
+      <h3>Bài kiểm tra kiến thức</h3>
+      <div class="quiz-questions-container">
+        ${quiz
+          .map(
+            (q, idx) => `
+          <div class="quiz-question ${
+            idx === 0 ? "active" : ""
+          }" data-qidx="${idx}">
+            <h4>Câu ${idx + 1}: ${q.question}</h4>
+            <div class="quiz-options">
+              ${q.options
+                .map(
+                  (opt, oidx) => `
+                <label class="quiz-option">
+                  <input type="radio" name="quiz-${lessonId}-${idx}" value="${oidx}">
+                  <span>${escapeHtml(opt)}</span>
+                </label>
+              `
+                )
+                .join("")}
+            </div>
+            <div class="quiz-feedback"></div>
+            <div class="quiz-rationale"></div>
+            <button class="btn btn-primary check-answer">Kiểm tra đáp án</button>
           </div>
-          <div class="quiz-feedback"></div>
-          <button class="btn btn-primary check-answer">Kiểm tra đáp án</button>
-        </div>
-      `
-        )
-        .join("")}
+        `
+          )
+          .join("")}
+      </div>
+      <div class="quiz-navigation">
+        <button class="btn btn-secondary prev-question" style="display: none;">Quay lại</button>
+        <button class="btn btn-primary next-question" style="display: none;">Tiếp theo</button>
+      </div>
     </div>
   `;
 }
 
+// // Khởi tạo xử lý tương tác quiz và phản hồi
+// function initQuizEvents(lesson) {
+//   document
+//     .querySelectorAll(`.quiz-section[data-lesson="${lesson.id}"] .check-answer`)
+//     .forEach((btn, idx) => {
+//       btn.addEventListener("click", function () {
+//         const question = lesson.quiz[idx];
+//         const container = btn.closest(".quiz-question");
+//         const selected = container.querySelector("input[type='radio']:checked");
+//         const feedback = container.querySelector(".quiz-feedback");
+//         if (!selected) {
+//           feedback.textContent = "Vui lòng chọn đáp án!";
+//           feedback.className = "quiz-feedback";
+//           return;
+//         }
+//         if (parseInt(selected.value) === question.answer) {
+//           feedback.textContent = "Chính xác!";
+//           feedback.className = "quiz-feedback correct";
+//         } else {
+//           feedback.textContent = "Chưa đúng, hãy thử lại!";
+//           feedback.className = "quiz-feedback incorrect";
+//         }
+//       });
+//     });
+// }
 // Khởi tạo xử lý tương tác quiz và phản hồi
 function initQuizEvents(lesson) {
-  document
-    .querySelectorAll(`.quiz-section[data-lesson="${lesson.id}"] .check-answer`)
-    .forEach((btn, idx) => {
-      btn.addEventListener("click", function () {
-        const question = lesson.quiz[idx];
-        const container = btn.closest(".quiz-question");
-        const selected = container.querySelector("input[type='radio']:checked");
-        const feedback = container.querySelector(".quiz-feedback");
-        if (!selected) {
-          feedback.textContent = "Vui lòng chọn đáp án!";
-          feedback.className = "quiz-feedback";
-          return;
-        }
-        if (parseInt(selected.value) === question.answer) {
-          feedback.textContent = "Chính xác!";
-          feedback.className = "quiz-feedback correct";
-        } else {
-          feedback.textContent = "Chưa đúng, hãy thử lại!";
-          feedback.className = "quiz-feedback incorrect";
-        }
-      });
+  const quizSection = document.querySelector(
+    `.quiz-section[data-lesson="${lesson.id}"]`
+  );
+  if (!quizSection) return;
+
+  const quizQuestions = quizSection.querySelectorAll(".quiz-question");
+  const prevBtn = quizSection.querySelector(".prev-question");
+  const nextBtn = quizSection.querySelector(".next-question");
+
+  let currentQuestionIndex = 0;
+  // Lưu trữ đáp án người dùng đã chọn
+  let userAnswers = new Array(lesson.quiz.length).fill(null);
+
+  function showQuestion(index) {
+    quizQuestions.forEach((q, i) => {
+      q.classList.remove("active");
+      if (i === index) {
+        q.classList.add("active");
+      }
     });
+
+    // Cập nhật trạng thái nút điều hướng
+    prevBtn.style.display = index > 0 ? "inline-block" : "none";
+    nextBtn.style.display =
+      index < quizQuestions.length - 1 ? "inline-block" : "none";
+
+    // Ẩn nút "Kiểm tra đáp án" nếu câu hỏi đã được trả lời và chuyển sang câu tiếp theo
+    const currentQuestionEl = quizQuestions[index];
+    const checkAnswerBtn = currentQuestionEl.querySelector(".check-answer");
+    const feedback = currentQuestionEl.querySelector(".quiz-feedback");
+    const rationaleDisplay = currentQuestionEl.querySelector(".quiz-rationale");
+    const allOptions = currentQuestionEl.querySelectorAll(".quiz-option");
+
+    // Reset feedback và rationale khi chuyển câu hỏi
+    feedback.textContent = "";
+    feedback.className = "quiz-feedback";
+    rationaleDisplay.textContent = "";
+    rationaleDisplay.className = "quiz-rationale";
+    allOptions.forEach((opt) => {
+      opt.classList.remove("correct", "incorrect", "selected");
+    });
+
+    // Khôi phục lựa chọn đã chọn của người dùng nếu có
+    if (userAnswers[index] !== null) {
+      const selectedRadio = currentQuestionEl.querySelector(
+        `input[type='radio'][value="${userAnswers[index]}"]`
+      );
+      if (selectedRadio) {
+        selectedRadio.checked = true;
+        selectedRadio.closest("label.quiz-option").classList.add("selected");
+      }
+      // Tự động kiểm tra và hiển thị feedback nếu đã trả lời
+      checkAnswer(index, true); // không cho phép thay đổi đáp án (isFromNavigation)
+    }
+
+    // Luôn hiển thị nút kiểm tra đáp án ban đầu
+    checkAnswerBtn.style.display = "inline-block";
+  }
+
+  function checkAnswer(questionIndex, isFromNavigation = false) {
+    const questionData = lesson.quiz[questionIndex];
+    const container = quizQuestions[questionIndex];
+    const selected = container.querySelector(
+      `input[name="quiz-${lesson.id}-${questionIndex}"]:checked`
+    );
+    const feedback = container.querySelector(".quiz-feedback");
+    const rationaleDisplay = container.querySelector(".quiz-rationale");
+    const allOptions = container.querySelectorAll(".quiz-option");
+    const checkAnswerBtn = container.querySelector(".check-answer");
+
+    // Reset trạng thái trước khi kiểm tra lại
+    feedback.textContent = "";
+    feedback.className = "quiz-feedback";
+    rationaleDisplay.textContent = "";
+    rationaleDisplay.className = "quiz-rationale";
+    allOptions.forEach((opt) => {
+      opt.classList.remove("correct", "incorrect", "selected");
+    });
+
+    if (!selected) {
+      if (!isFromNavigation) {
+        // Chỉ hiển thị cảnh báo nếu người dùng nhấn nút kiểm tra
+        feedback.textContent = "Vui lòng chọn đáp án!";
+        feedback.className = "quiz-feedback alert-warning";
+      }
+      return;
+    }
+
+    const selectedOptionValue = parseInt(selected.value);
+    const selectedOptionLabel = selected.closest("label.quiz-option");
+
+    // Đánh dấu lựa chọn của người dùng
+    selectedOptionLabel.classList.add("selected");
+    userAnswers[questionIndex] = selectedOptionValue; // Lưu đáp án người dùng
+
+    if (selectedOptionValue === questionData.answer) {
+      feedback.innerHTML = `<span><i class="fa-solid fa-check" style="margin-right: 7px"></i>Câu trả lời chích xác.</span>`;
+      feedback.className = "quiz-feedback correct";
+      selectedOptionLabel.classList.add("correct");
+    } else {
+      feedback.innerHTML = `<i class="fa-solid fa-xmark" style="margin-right: 7px"></i>Chưa đúng, hãy thử lại!`;
+      feedback.className = "quiz-feedback incorrect";
+      selectedOptionLabel.classList.add("incorrect");
+    }
+
+    if (questionData.rationale) {
+      rationaleDisplay.textContent = `Giải thích: ${escapeHtml(
+        questionData.rationale
+      )}`;
+      rationaleDisplay.classList.add("active");
+    }
+
+    // Sau khi kiểm tra, ẩn nút "Kiểm tra đáp án"
+    checkAnswerBtn.style.display = "none";
+  }
+
+  // Event Listeners cho các nút điều hướng
+  prevBtn.addEventListener("click", () => {
+    if (currentQuestionIndex > 0) {
+      currentQuestionIndex--;
+      showQuestion(currentQuestionIndex);
+    }
+  });
+
+  nextBtn.addEventListener("click", () => {
+    if (currentQuestionIndex < quizQuestions.length - 1) {
+      currentQuestionIndex++;
+      showQuestion(currentQuestionIndex);
+    }
+  });
+
+  // Event Listeners cho nút "Kiểm tra đáp án" của từng câu hỏi
+  quizQuestions.forEach((qEl, qIdx) => {
+    const checkBtn = qEl.querySelector(".check-answer");
+    checkBtn.addEventListener("click", () => checkAnswer(qIdx));
+
+    // Bắt sự kiện thay đổi lựa chọn để reset feedback cũ
+    const optionsContainer = qEl.querySelector(".quiz-options");
+    optionsContainer.addEventListener("change", function () {
+      const feedback = qEl.querySelector(".quiz-feedback");
+      const rationaleDisplay = qEl.querySelector(".quiz-rationale");
+      const allOptions = qEl.querySelectorAll(".quiz-option");
+      const checkAnswerBtn = qEl.querySelector(".check-answer");
+
+      feedback.textContent = "";
+      feedback.className = "quiz-feedback";
+      rationaleDisplay.textContent = "";
+      rationaleDisplay.className = "quiz-rationale";
+      allOptions.forEach((opt) => {
+        opt.classList.remove("correct", "incorrect", "selected");
+      });
+      // Hiển thị lại nút kiểm tra đáp án khi người dùng thay đổi lựa chọn
+      checkAnswerBtn.style.display = "inline-block";
+    });
+  });
+
+  // Hiển thị câu hỏi đầu tiên khi khởi tạo
+  showQuestion(currentQuestionIndex);
 }
 
 // Cập nhật thông tin meta

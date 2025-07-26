@@ -47,7 +47,7 @@ document.addEventListener("DOMContentLoaded", () => {
   function appendMsg(role, text) {
     const msg = document.createElement("div");
     msg.className = "ai-msg " + role;
-    msg.innerHTML = `<div class="msg-bubble">${text}</div>`;
+    msg.innerHTML = `<div class="msg-bubble">${marked.parse(text)}</div>`;
     messages.appendChild(msg);
     messages.scrollTop = messages.scrollHeight;
   }
