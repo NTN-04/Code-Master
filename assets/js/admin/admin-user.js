@@ -162,7 +162,9 @@ export default class UsersManager {
 
     // Đổ dữ liệu user vào modal
     document.getElementById("user-id").value = userId;
-    document.getElementById("user-name").value = user.username || "";
+    const nameInput = document.getElementById("user-name");
+    nameInput.value = user.username || "";
+    nameInput.setAttribute("disabled", "disabled");
     const emailInput = document.getElementById("user-email");
     emailInput.value = user.email || "";
     emailInput.setAttribute("disabled", "disabled");
@@ -250,8 +252,9 @@ export default class UsersManager {
     document.getElementById("user-modal-title").textContent = "Thêm người dùng";
     document.getElementById("user-password-group").style.display = "block";
     document.getElementById("user-password").setAttribute("required", "");
-    // Bỏ disable cho email khi thêm mới
+    // Bỏ disable cho email và name khi thêm mới
     document.getElementById("user-email").removeAttribute("disabled");
+    document.getElementById("user-name").removeAttribute("disabled");
 
     this.adminPanel.showModal("user-modal");
   }
