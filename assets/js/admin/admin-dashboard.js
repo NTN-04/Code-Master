@@ -85,7 +85,7 @@ export default class Dashboard {
         const activities = Object.entries(snapshot.val())
           .map(([id, data]) => ({ id, ...data }))
           .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
-          .slice(0, 10); // Lấy 10 hoạt động mới nhất
+          .slice(0, 30); // Lấy 30 hoạt động mới nhất
 
         if (activities.length > 0) {
           activities.forEach((activity) => {
