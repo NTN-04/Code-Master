@@ -1,3 +1,141 @@
+body.dark-mode {
+  --color-admin: #1a1d24;
+  --primary-color: #3498db;
+  --secondary-color: #2ecc71;
+  --accent-color: #00adb5;
+  --text-color: #eeeeee;
+  --gray-light: #2d3748;
+  --gray-medium: #4a5568;
+  --gray-dark: #718096;
+  --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+  --border-radius: 8px;
+  --danger-color: #e74c3c;
+  --warning-color: #f39c12;
+  --success-color: #2ecc71;
+  background: #1a1d24;
+  color: var(--text-color);
+}
+
+/* Dark mode cards và tables */
+body.dark-mode .admin-card,
+body.dark-mode .stat-card {
+  background: #2d3748;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+}
+
+body.dark-mode .card-header {
+  background: #1a1d24;
+  border-bottom-color: #4a5568;
+}
+
+body.dark-mode .admin-table th {
+  background: #1a1d24;
+}
+
+body.dark-mode .admin-table td,
+body.dark-mode .admin-table th {
+  border-color: #4a5568;
+}
+
+body.dark-mode .admin-table tr:hover {
+  background: #4a5568;
+}
+
+body.dark-mode .admin-sidebar {
+  background: #1a1d24;
+  border-right-color: #4a5568;
+}
+
+body.dark-mode .nav-item a {
+  color: #eeeeee;
+}
+
+body.dark-mode .nav-item a:hover {
+  background: #2d3748;
+  color: #3498db;
+}
+
+/* Đảm bảo biểu tượng và text có độ tương phản tốt */
+body.dark-mode .activity-content h4,
+body.dark-mode .stat-info h3 {
+  color: #ffffff;
+}
+
+/* Điều chỉnh các form và input */
+body.dark-mode .form-group input,
+body.dark-mode .form-group select,
+body.dark-mode .form-group textarea {
+  background-color: #2d3748;
+  border-color: #4a5568;
+  color: #eeeeee;
+}
+
+body.dark-mode .form-group input:focus,
+body.dark-mode .form-group select:focus,
+body.dark-mode .form-group textarea:focus {
+  border-color: #3498db;
+  box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.3);
+}
+
+body.dark-mode .form-group input:disabled,
+body.dark-mode .form-group select:disabled,
+body.dark-mode .form-group textarea:disabled {
+  background-color: #23272b;
+  color: #888;
+}
+/* Dark mode cho modal */
+body.dark-mode .modal-content,
+body.dark-mode .modal-blog-content {
+  background: #23272b;
+  color: #eeeeee;
+}
+
+body.dark-mode .modal-header {
+  background: #1a1d24;
+  border-bottom: 1px solid #4a5568;
+  color: #eeeeee;
+}
+
+body.dark-mode .modal-header h3,
+body.dark-mode .modal-header label {
+  color: #eeeeee;
+}
+
+body.dark-mode .modal-body {
+  background: #23272b;
+  color: #eeeeee;
+}
+
+body.dark-mode .modal-footer {
+  background: #23272b;
+  color: #eeeeee;
+}
+
+body.dark-mode .btn-primary {
+  background: #3498db;
+}
+
+body.dark-mode .btn-secondary {
+  background: #4a5568;
+}
+
+body.dark-mode .btn-primary:hover {
+  background: #2ecc71;
+}
+
+body.dark-mode .btn-secondary:hover {
+  background: #718096;
+}
+/* setting dark */
+body.dark-mode .settings-tab-btn:hover,
+body.dark-mode .settings-tab-btn.active {
+  color: var(--primary-color);
+}
+
+body.dark-mode .settings-tab-btn.active::after {
+  background: var(--primary-color);
+}
+
 /* Admin Panel Styles */
 .admin-header {
   background: var(--color-admin);
@@ -492,7 +630,7 @@
   font-size: 1.25rem;
   font-weight: 600;
   margin-bottom: 0.5rem;
-  color: var(--text-color);
+  color: #222;
 }
 
 .course-card-meta {
@@ -889,7 +1027,7 @@
 .option-group input[type="radio"] {
   width: 20px;
   height: 20px;
-  accent-color: var(--color-admin);
+  accent-color: var(--primary-color);
   cursor: pointer;
 }
 
@@ -971,7 +1109,7 @@
 #admin-blog-detail-modal .modal-body {
   padding: 2rem 2.5rem 1.5rem 2.5rem;
   background: #fff;
-  color: var(--text-color, #222);
+  color: #222;
   font-size: 1.1rem;
   line-height: 1.7;
 }
@@ -1156,7 +1294,7 @@
   padding: 1rem;
   border: 1px solid var(--gray-medium);
   border-radius: var(--border-radius);
-  background-color: #f8f9fa;
+  background-color: transparent;
 }
 
 .comment-detail .comment-header {
@@ -1197,7 +1335,7 @@
 .comment-detail .comment-body {
   margin-bottom: 1rem;
   padding: 1rem;
-  background-color: white;
+  background-color: transparent;
   border-radius: var(--border-radius);
   white-space: pre-line;
 }
@@ -1271,7 +1409,7 @@
 
 .notification-message {
   flex: 1;
-  color: var(--text-color);
+  color: #222;
 }
 
 .notification-close {
@@ -1340,7 +1478,7 @@
 
 /* Setting  */
 .admin-settings-tabs {
-  background: white;
+  background: transparent;
   border-radius: var(--border-radius);
   overflow: hidden;
 }
@@ -1437,7 +1575,7 @@
 }
 
 .form-check-input:checked {
-  background-color: var(--color-admin);
+  background-color: var(--primary-color) !important;
   background-position: right center;
 }
 .form-check-input:focus {
@@ -1447,6 +1585,11 @@
 .switch-label {
   font-weight: 600;
   margin-bottom: 0.5rem;
+}
+
+.form-text.text-muted {
+  font-style: italic;
+  color: #53a6ff;
 }
 
 /* Responsive */

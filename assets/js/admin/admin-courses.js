@@ -107,9 +107,14 @@ export default class CoursesManager {
     const grid = document.getElementById("admin-courses-grid");
     if (!grid) return;
 
+    // sắp xếp theo ngày mới nhất
+    const coursesArray = this.courses.sort((a, b) => {
+      return new Date(b.createdAt) - new Date(a.createdAt);
+    });
+
     grid.innerHTML = "";
 
-    this.courses.forEach((course) => {
+    coursesArray.forEach((course) => {
       const courseCard = this.createCourseCard(course);
       grid.appendChild(courseCard);
     });
@@ -194,7 +199,15 @@ export default class CoursesManager {
     document.getElementById("course-duration").value = course.duration || "";
     document.getElementById("course-lessons").value = course.lessons || "";
     document.getElementById("course-category").value = course.category || "web";
-    document.getElementById("course-image").value = course.image || "";
+    // Không set lại file input khi edit
+    const imageInput = document.getElementById("course-image");
+    if (imageInput) imageInput.value = "";
+    const preview = document.getElementById("course-image-preview");
+    if (preview) {
+      preview.src = "";
+      preview.style.display = "none";
+    }
+
     document.getElementById("course-featured").checked = !!course.featured;
 
     // Cập nhật tiêu đề modal
@@ -204,6 +217,7 @@ export default class CoursesManager {
     // Ẩn custom id và required
     document.getElementById("form-custom-id").style.display = "none";
     document.getElementById("course-custom-id").required = false;
+    document.getElementById("course-image").required = false;
     document.getElementById("form-featured").style.display = "flex"; // Hiện trường featured
 
     // Hiện modal
@@ -242,12 +256,79 @@ export default class CoursesManager {
     document.getElementById("course-id").value = "";
     document.getElementById("form-custom-id").style.display = "block"; // Hiện id
     document.getElementById("course-custom-id").required = true;
+    document.getElementById("course-image").required = true;
     document.getElementById("form-featured").style.display = "none"; // Ẩn trường featured
     document.getElementById("course-modal-title").textContent = "Thêm khóa học";
+    // Xóa file input khi mở modal
+    const imageInput = document.getElementById("course-image");
+    if (imageInput) imageInput.value = "";
+    const preview = document.getElementById("course-image-preview");
+    if (preview) {
+      preview.src = "";
+      preview.style.display = "none";
+    }
+    this.imageBase64 = null;
 
     this.adminPanel.showModal("course-modal");
+    // xử lý file ảnh và hiện preview
+    this.setupCourseImage();
   }
 
+  // xử lý dữ liệu ảnh trước khi submit
+  imageBase64 = null;
+  setupCourseImage() {
+    // Luôn gắn event change cho input file, không bị lặp event
+    const imageInput = document.getElementById("course-image");
+    const preview = document.getElementById("course-image-preview");
+    if (!imageInput) return;
+    // Xóa event cũ nếu có
+    if (imageInput._previewEventHandler) {
+      imageInput.removeEventListener("change", imageInput._previewEventHandler);
+    }
+    // Gắn event mới
+    imageInput._previewEventHandler = (e) => {
+      const file = imageInput.files[0];
+      if (!file) {
+        if (preview) {
+          preview.src = "";
+          preview.style.display = "none";
+        }
+        this.imageBase64 = null;
+        return;
+      }
+      if (!file.type.startsWith("image/")) {
+        this.adminPanel.showNotification("Chỉ chấp nhận file ảnh!", "error");
+        imageInput.value = "";
+        if (preview) {
+          preview.src = "";
+          preview.style.display = "none";
+        }
+        this.imageBase64 = null;
+        return;
+      }
+      if (file.size > 2 * 1024 * 1024) {
+        this.adminPanel.showNotification("Ảnh tối đa 2MB!", "error");
+        imageInput.value = "";
+        if (preview) {
+          preview.src = "";
+          preview.style.display = "none";
+        }
+        this.imageBase64 = null;
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        this.imageBase64 = e.target.result;
+        if (preview) {
+          preview.src = this.imageBase64;
+          preview.style.display = "block";
+        }
+      };
+      reader.readAsDataURL(file);
+    };
+    imageInput.addEventListener("change", imageInput._previewEventHandler);
+  }
+  
   // Xử lý submit form thêm/sửa
   async handleFormSubmit(e) {
     e.preventDefault();
@@ -258,6 +339,13 @@ export default class CoursesManager {
       ?.value.toLowerCase()
       .trim();
 
+    // Lấy ảnh đã được xử lý: ưu tiên ảnh mới chọn, nếu không thì lấy ảnh cũ khi edit
+    let imageBase64 = this.imageBase64;
+    if (!imageBase64 && courseId) {
+      const course = this.courses.find((c) => c.id === courseId);
+      imageBase64 = course ? course.image : "";
+    }
+
     const courseData = {
       title: document.getElementById("course-title").value,
       description: document.getElementById("course-description").value,
@@ -265,7 +353,7 @@ export default class CoursesManager {
       duration: document.getElementById("course-duration").value,
       lessons: parseInt(document.getElementById("course-lessons").value),
       category: document.getElementById("course-category").value,
-      image: document.getElementById("course-image").value,
+      image: imageBase64,
       updatedAt: new Date().toISOString().slice(0, 10),
     };
 
@@ -296,9 +384,7 @@ export default class CoursesManager {
           id: newCourseId,
           ...courseData,
           createdAt: new Date().toISOString().slice(0, 10),
-          progress: 0,
           tag: this.getCategoryText(courseData.category),
-          url: `courses/${newCourseId}.html`,
           featured: false,
         });
 
@@ -876,6 +962,14 @@ export default class CoursesManager {
         const courseId = this.currentManagingCourseId;
         const title = prompt("Nhập tiêu đề module mới:");
         if (title) await this.addModule(courseId, title);
+      });
+    }
+
+    // Sự kiện nút refresh-courses
+    const refresh = document.querySelector(".refresh-courses");
+    if (refresh) {
+      refresh.addEventListener("click", () => {
+        this.loadData();
       });
     }
   }

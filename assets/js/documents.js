@@ -1,4 +1,26 @@
-import { auth } from "./firebaseConfig.js";
+import { database, auth } from "./firebaseConfig.js";
+import {
+  ref,
+  get,
+} from "https://www.gstatic.com/firebasejs/11.8.0/firebase-database.js";
+
+// Biến toàn cục lưu giới hạn tải, chỉ lấy 1 lần khi load trang
+let GLOBAL_DOWNLOAD_LIMIT = 10;
+// Hàm lấy giới hạn từ database khi load trang
+async function fetchGlobalDownloadLimit() {
+  try {
+    const globalRef = ref(database, "settings/global/downloadLimit");
+    const snap = await get(globalRef);
+    if (snap.exists()) {
+      const val = snap.val();
+      if (!isNaN(val) && Number(val) >= 0) {
+        GLOBAL_DOWNLOAD_LIMIT = Number(val);
+      }
+    }
+  } catch (e) {
+    // Nếu lỗi thì giữ mặc định 10
+  }
+}
 
 // Loading đơn giản
 function showButtonLoading(btn, message = "Đang tải...") {
@@ -16,7 +38,7 @@ function showButtonLoading(btn, message = "Đang tải...") {
 function downloadDocs() {
   const btnDownload = document.getElementById("download-pdf");
   if (btnDownload) {
-    btnDownload.addEventListener("click", function () {
+    btnDownload.addEventListener("click", async function () {
       // kiểm tra user
       const user = auth.currentUser;
       if (!user) {
@@ -24,9 +46,9 @@ function downloadDocs() {
         return;
       }
 
-      // Giới hạn tải trong ngày
-      if (!limitDownload(10)) {
-        return; // Dừng lại nếu đã vượt quá giới hạn
+      // Lấy giới hạn tải toàn cục từ database
+      if (!limitDownload(GLOBAL_DOWNLOAD_LIMIT)) {
+        return;
       }
 
       // Lấy tiêu đề làm tên file
@@ -134,3 +156,5 @@ function limitDownload(max) {
 }
 
 downloadDocs();
+// Gọi lấy giới hạn ngay khi load file
+fetchGlobalDownloadLimit();

@@ -397,7 +397,7 @@
                   Đổi mật khẩu
                 </button>
                 <button class="settings-tab-btn" data-tab="app">
-                  Tùy chọn ứng dụng
+                  Tùy chọn
                 </button>
               </div>
 
@@ -527,6 +527,19 @@
                     </div>
 
                     <div class="form-group">
+                      <label class="switch-label"
+                        >Chế độ giao diện tối (Dark Mode)</label
+                      >
+                      <div class="form-check form-switch">
+                        <input
+                          class="form-check-input"
+                          type="checkbox"
+                          id="adminThemeDark"
+                        />
+                      </div>
+                    </div>
+
+                    <div class="form-group">
                       <label for="notification-setting">Thông báo</label>
                       <select id="notification-setting" class="form-control">
                         <option value="all">Tất cả thông báo</option>
@@ -535,6 +548,23 @@
                         </option>
                         <option value="none">Tắt thông báo</option>
                       </select>
+                    </div>
+
+                    <div class="form-group">
+                      <label for="globalDownloadLimit"
+                        >Giới hạn tải xuống tài liệu lần/ngày</label
+                      >
+                      <input
+                        type="number"
+                        id="globalDownloadLimit"
+                        class="form-control"
+                        min="0"
+                        max="50"
+                        placeholder="10"
+                      />
+                      <small class="form-text texbt-muted"
+                        >Không giới hạn là 0. Mặc định: 10 lần/ngày.</small
+                      >
                     </div>
 
                     <div class="form-actions">
@@ -552,7 +582,7 @@
     </main>
 
     <!-- Modals -->
-    <!-- User Modal -->
+    <!-- User Modal -->s
     <div class="modal" id="user-modal">
       <div class="modal-content">
         <div class="modal-header">
@@ -681,8 +711,14 @@
               <label for="course-featured"> Khóa học nổi bật </label>
             </div>
             <div class="form-group">
-              <label>URL ảnh:</label>
-              <input type="text" id="course-image" />
+              <label>Ảnh đại diện:</label>
+              <input type="file" id="course-image" accept="image/*" required />
+              <img
+                src=""
+                alt="ảnh đại diện"
+                id="course-image-preview"
+                style="width: 100px; margin-top: 5px; object-fit: cover"
+              />
             </div>
             <div class="form-actions">
               <button type="submit" class="btn btn-primary">Lưu</button>
