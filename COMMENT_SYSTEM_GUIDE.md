@@ -14,46 +14,6 @@ Hệ thống bình luận CodeMaster là một giải pháp hoàn chỉnh cho ph
 
 ## Cài đặt
 
-### 1. Cập nhật Firebase Rules
-
-Thêm rules sau vào Firebase Realtime Database:
-
-```json
-{
-  "rules": {
-    // ... existing rules ...
-
-    "comments": {
-      ".read": true,
-      "$courseId": {
-        "$lessonId": {
-          ".write": "auth != null",
-          "$commentId": {
-            ".validate": "newData.hasChildren(['userId', 'userName', 'content', 'timestamp', 'status'])"
-            // ... chi tiết rules xem trong file firebase_rules.json
-          }
-        }
-      }
-    },
-
-    "commentVotes": {
-      ".read": true,
-      "$commentId": {
-        "$userId": {
-          ".write": "auth != null && $userId == auth.uid",
-          ".validate": "newData.isString() && (newData.val() == 'like' || newData.val() == 'dislike')"
-        }
-      }
-    },
-
-    "commentReports": {
-      ".read": "auth != null && root.child('users').child(auth.uid).child('role').val() == 1"
-      // ... chi tiết rules xem trong file firebase_rules.json
-    }
-  }
-}
-```
-
 ### 2. Thêm CSS
 
 Thêm link CSS vào `course-detail.html`:
@@ -75,68 +35,11 @@ import CommentSystem from "./comment-system.js";
 Hệ thống sẽ tự động khởi tạo khi người dùng chọn bài học:
 
 ```javascript
-// Trong hàm activateLesson()
+// Trong trang course-detail.html và blog-detail.html
 if (commentSystem) {
   commentSystem.destroy();
 }
 commentSystem = new CommentSystem(courseId, lessonId);
-```
-
-## Cấu trúc dữ liệu Firebase
-
-### Comments Structure
-
-```
-comments/
-├── {courseId}/
-│   ├── {lessonId}/
-│   │   ├── {commentId}/
-│   │   │   ├── id: string
-│   │   │   ├── userId: string
-│   │   │   ├── userName: string
-│   │   │   ├── userAvatar: string
-│   │   │   ├── content: string
-│   │   │   ├── timestamp: number
-│   │   │   ├── likes: number
-│   │   │   ├── dislikes: number
-│   │   │   ├── reports: number
-│   │   │   ├── status: "active" | "hidden" | "deleted"
-│   │   │   ├── isEdited: boolean
-│   │   │   ├── editedAt: number | null
-│   │   │   └── replies/
-│   │   │       └── {replyId}/
-│   │   │           ├── id: string
-│   │   │           ├── userId: string
-│   │   │           ├── userName: string
-│   │   │           ├── userAvatar: string
-│   │   │           ├── content: string
-│   │   │           ├── timestamp: number
-│   │   │           ├── likes: number
-│   │   │           ├── dislikes: number
-│   │   │           ├── reports: number
-│   │   │           ├── status: "active" | "hidden" | "deleted"
-│   │   │           ├── isEdited: boolean
-│   │   │           ├── editedAt: number | null
-│   │   │           └── parentId: string
-```
-
-### Votes Structure
-
-```
-commentVotes/
-├── {commentId}/
-│   ├── {userId}: "like" | "dislike"
-```
-
-### Reports Structure
-
-```
-commentReports/
-├── {commentId}/
-│   ├── {userId}/
-│   │   ├── reason: "spam" | "inappropriate" | "harassment" | "other"
-│   │   ├── timestamp: number
-│   │   └── description: string
 ```
 
 ## Sử dụng
@@ -197,12 +100,6 @@ Hệ thống tự động hiển thị phần bình luận ở cuối mỗi bài
 - Validate dữ liệu đầu vào
 - Escape HTML để tránh XSS
 
-### 3. Báo cáo và kiểm duyệt
-
-- Hệ thống báo cáo vi phạm
-- Admin có thể xem và xử lý báo cáo
-- Ẩn/xóa bình luận vi phạm
-
 ## Tùy chỉnh
 
 ### 1. Thay đổi giới hạn ký tự
@@ -241,32 +138,6 @@ Hệ thống được tối ưu cho mobile:
 - Touch-friendly buttons và form controls
 - Optimized typography cho mobile
 
-## Troubleshooting
-
-### 1. Bình luận không hiển thị
-
-- Kiểm tra Firebase Rules đã cập nhật chưa
-- Kiểm tra console log có lỗi không
-- Đảm bảo đã import đúng module
-
-### 2. Không thể đăng bình luận
-
-- Kiểm tra người dùng đã đăng nhập chưa
-- Kiểm tra nội dung có vượt quá giới hạn không
-- Kiểm tra kết nối Firebase
-
-### 3. Realtime không hoạt động
-
-- Kiểm tra Firebase listeners đã setup chưa
-- Kiểm tra network connection
-- Kiểm tra Firebase quota
-
-### 4. CSS không hiển thị đúng
-
-- Kiểm tra đường dẫn CSS file
-- Kiểm tra CSS variables đã định nghĩa chưa
-- Clear browser cache
-
 ## API Reference
 
 ### CommentSystem Class
@@ -284,19 +155,6 @@ commentSystem.deleteComment(commentId); // Xóa bình luận
 commentSystem.destroy(); // Cleanup
 ```
 
-### Events
-
-```javascript
-// Lắng nghe sự kiện
-document.addEventListener("commentSubmitted", (e) => {
-  console.log("New comment:", e.detail);
-});
-
-document.addEventListener("commentDeleted", (e) => {
-  console.log("Comment deleted:", e.detail);
-});
-```
-
 ## Changelog
 
 ### v1.0.0 (2024-01-15)
@@ -307,7 +165,3 @@ document.addEventListener("commentDeleted", (e) => {
 - ✅ Realtime updates
 - ✅ Responsive design
 - ✅ Bảo mật và chống spam
-
-## License
-
-MIT License - CodeMaster Education Platform

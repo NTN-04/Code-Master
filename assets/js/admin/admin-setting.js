@@ -126,6 +126,26 @@ export default class SettingsManager {
       const autoRedirect = localStorage.getItem("adminAutoRedirect") === "true";
       document.getElementById("adminAutoRedirect").checked = autoRedirect;
 
+      // Lấy giá trị giới hạn tải xuống từ database và hiển thị lên input
+      const downloadLimitInput = document.getElementById("globalDownloadLimit");
+      if (downloadLimitInput) {
+        const globalSettingsRef = ref(database, `settings/global`);
+        get(globalSettingsRef)
+          .then((snapshot) => {
+            if (
+              snapshot.exists() &&
+              snapshot.val().downloadLimit !== undefined
+            ) {
+              downloadLimitInput.value = snapshot.val().downloadLimit;
+            } else {
+              downloadLimitInput.value = 10;
+            }
+          })
+          .catch(() => {
+            downloadLimitInput.value = 10;
+          });
+      }
+
       // Thêm sự kiện cho checkbox
       document
         .getElementById("adminAutoRedirect")
@@ -140,6 +160,21 @@ export default class SettingsManager {
       avatarUpload.addEventListener("change", (e) =>
         this.handleAvatarUpload(e)
       );
+    }
+
+    // Xử lý theme dark mode
+    const themeCheckbox = document.getElementById("adminThemeDark");
+    if (themeCheckbox) {
+      // Lấy trạng thái từ localStorage
+      const isDark = localStorage.getItem("adminThemeDark") === "true";
+      themeCheckbox.checked = isDark;
+      this.applyTheme(isDark);
+
+      themeCheckbox.addEventListener("change", (e) => {
+        const checked = e.target.checked;
+        localStorage.setItem("adminThemeDark", checked);
+        this.applyTheme(checked);
+      });
     }
   }
 
@@ -358,30 +393,56 @@ export default class SettingsManager {
   async handleAppSettingsSubmit(event) {
     event.preventDefault();
 
+    // Lấy giá trị các trường cài đặt
     const autoRedirect = document.getElementById("adminAutoRedirect").checked;
     const notificationSetting = document.getElementById(
       "notification-setting"
     ).value;
+    const isDark = document.getElementById("adminThemeDark").checked;
+
+    let downloadLimit =
+      document.getElementById("globalDownloadLimit")?.value || 10;
+    if (isNaN(downloadLimit) || downloadLimit < 0) downloadLimit = 10;
 
     try {
       // Lưu cài đặt vào localStorage
       localStorage.setItem("adminAutoRedirect", autoRedirect);
       localStorage.setItem("notificationSetting", notificationSetting);
+      localStorage.setItem("adminThemeDark", isDark);
 
-      // Lưu cài đặt vào database (để đồng bộ giữa các thiết bị)
+      // Lưu giới hạn tải xuống toàn cục vào database
+      const globalSettingsRef = ref(database, `settings/global`);
+      await update(globalSettingsRef, {
+        downloadLimit: Number(downloadLimit),
+        updatedAt: Date.now(),
+      });
+
+      // Lưu cài đặt cá nhân vào database (nếu cần)
       const settingsRef = ref(database, `settings/${this.currentUser.uid}`);
       await update(settingsRef, {
         username: this.userDetails.username,
         role: this.userDetails.role,
         autoRedirect: autoRedirect,
         notificationSetting: notificationSetting,
+        themeDark: isDark,
         updatedAt: Date.now(),
       });
+
+      this.applyTheme(isDark);
 
       this.adminPanel.showNotification("Đã lưu cài đặt", "success");
     } catch (error) {
       console.error("Error saving settings:", error);
       this.adminPanel.showNotification("Không thể lưu cài đặt", "error");
+    }
+  }
+
+  // Hàm chuyển đổi theme
+  applyTheme(isDark) {
+    if (isDark) {
+      document.body.classList.add("dark-mode");
+    } else {
+      document.body.classList.remove("dark-mode");
     }
   }
 }

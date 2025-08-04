@@ -17,11 +17,24 @@ class AdminGuard {
       return;
     }
 
-    // Hiển thị loading screen
-    this.showLoadingScreen();
+    // Kiểm tra trạng thái xác thực admin trong sessionStorage
+    const verified = sessionStorage.getItem("adminVerified") === "true";
+    if (!verified) {
+      // Lần đầu vào trang: hiển thị loading
+      this.showLoadingScreen();
+    } else {
+      this.showLoadingReload();
+    }
 
     // Kiểm tra authentication và authorization
-    await this.checkAccess();
+    const result = await this.checkAccess();
+
+    // Nếu xác thực thành công, lưu trạng thái vào sessionStorage
+    if (result) {
+      sessionStorage.setItem("adminVerified", "true");
+    } else {
+      sessionStorage.removeItem("adminVerified");
+    }
   }
 
   isAdminPage() {
@@ -67,11 +80,42 @@ class AdminGuard {
 
     document.body.insertAdjacentHTML("afterbegin", loadingHTML);
   }
+  // Tạo loading screen khi reload lại trang
+  showLoadingReload() {
+    const loadingHTML = `
+      <div id="admin-loading-reload" style="
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: #4b6584;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+        color: white;
+      ">
+        <div class="loading-courses">
+        <span class="loading-spinner" style='color: #fff'><i class="fas fa-spinner fa-spin"></i></span>
+        <span>Loading...</span>
+      </div>
+      </div>
+    `;
+
+    document.body.insertAdjacentHTML("afterbegin", loadingHTML);
+  }
 
   hideLoadingScreen() {
     const loadingElement = document.getElementById("admin-loading");
+    const loadingElementReload = document.getElementById(
+      "admin-loading-reload"
+    );
     if (loadingElement) {
       loadingElement.remove();
+    }
+    if (loadingElementReload) {
+      loadingElementReload.remove();
     }
   }
 
@@ -177,8 +221,8 @@ class AdminGuard {
           }
 
           // Cho phép truy cập
-          this.hideLoadingScreen();
           resolve(true);
+          setTimeout(this.hideLoadingScreen, 250);
         } catch (error) {
           console.error("Error checking admin access:", error);
           this.showAccessDenied("Có lỗi xảy ra khi kiểm tra quyền truy cập.");
@@ -222,10 +266,4 @@ class AdminGuard {
     }
   }
 }
-
-// khởi tạo admin guard
-// document.addEventListener("DOMContentLoaded", () => {
-//   new AdminGuard();
-// });
-
 export default AdminGuard;

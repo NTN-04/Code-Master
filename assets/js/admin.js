@@ -63,9 +63,6 @@ class AdminPanel {
     this.users.setupEventListeners();
     this.courses.setupEventListeners();
     this.blogs.setupEventListeners();
-
-    // Khởi tạo cài đặt khi vào trang
-    await this.settings.init();
   }
 
   // Điều hướng
@@ -113,7 +110,9 @@ class AdminPanel {
           this.loadCommentsData();
           break;
         case "settings":
-          // Được khỏi tạo khi vào admin trong init
+          // Được khởi tạo khi sau khi xác thực quyền thành công checkAccess()
+          // khởi tạo lại khi vào tab cài đặt
+          if (this.settings) this.settings.init();
           break;
         case "analytics":
           // luôn hủy và tải lại biểu đồ khi chuyển tab
@@ -233,6 +232,7 @@ class AdminPanel {
 
   async handleLogout() {
     try {
+      sessionStorage.removeItem("adminVerified");
       await signOut(auth);
       window.location.href = "login.html";
     } catch (error) {
@@ -334,11 +334,20 @@ class AdminPanel {
   }
 }
 
-// Khởi tạo AdminPanel khi đã xác thực thành công
+// Khởi tạo AdminPanel khi đã xác thực thành công và đã tải xong setting
+
 document.addEventListener("DOMContentLoaded", () => {
   const guard = new AdminGuard();
-  guard.checkAccess().then((isAllowed) => {
+  guard.checkAccess().then(async (isAllowed) => {
     if (isAllowed) {
+      // Tải setting trước khi vào admin
+      const fakePanel = { showNotification: () => {} };
+      const settings = new SettingsManager(fakePanel);
+      await settings.init();
+
+      // tải dashboard trước khi vào admin
+
+      // Khởi tạo admin panel thật sự
       window.adminPanel = new AdminPanel();
     }
     // Nếu không đủ quyền, admin-guard.js đã xử lý và chuyển hướng
