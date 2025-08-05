@@ -727,7 +727,25 @@ async function updateCourseMeta() {
       if (durationSpan) {
         durationSpan.innerHTML = `<i class="far fa-clock"></i> ${course.duration}`;
       }
+      // Cập nhật ảnh thumbnail
+      const courseThumbnail = document.querySelector(
+        ".course-header .course-thumbnail"
+      );
+      if (courseThumbnail) {
+        courseThumbnail.src = `${course?.image}`;
+      }
     }
+    // thêm class animation
+    const courseInfoAnimated = document.querySelector(".course-info");
+    courseInfoAnimated.classList.add(
+      "animate__animated",
+      "animate__bounceInLeft"
+    );
+    const courseImageAnimated = document.querySelector(".course-image");
+    courseImageAnimated.classList.add(
+      "animate__animated",
+      "animate__backInRight"
+    );
   } catch (err) {
     console.error("Lỗi khi lấy thông tin course:", err);
   }
