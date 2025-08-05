@@ -11,6 +11,8 @@
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
     />
+    <!-- aos animation -->
+    <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
   </head>
 
   <body>
@@ -32,17 +34,23 @@
 
         <div class="container">
           <div class="hero-content">
-            <h1>
+            <h1
+              data-aos="fade-down"
+              data-aos-easing="easy"
+              data-aos-duration="800"
+            >
               Làm Chủ Kỹ Năng Lập Trình Với
               <span class="highlight">CodeMaster</span>
             </h1>
-            <p class="hero-subtitle">🚀 Nền tảng học lập trình miễn phí</p>
-            <p>
+            <p class="hero-subtitle" data-aos="flip-left">
+              🚀 Nền tảng học lập trình miễn phí
+            </p>
+            <p data-aos="flip-left">
               Học phát triển web, phát triển ứng dụng di động, khóa học dữ liệu
               và nhiều hơn nữa thông qua các khóa học và dự án tương tác chất
               lượng cao.
             </p>
-            <div class="buttons">
+            <div class="buttons" data-aos="fade-up" data-aos-delay="500">
               <a href="courses.html" class="btn btn-primary">
                 <i class="fas fa-rocket"></i> Khám Phá Khóa Học
               </a>
@@ -60,7 +68,13 @@
       <section id="featured" class="featured-courses">
         <div class="container">
           <h2>Khóa Học Nổi Bật</h2>
-          <div class="courses-grid" id="featured-courses-grid">
+          <div
+            class="courses-grid"
+            id="featured-courses-grid"
+            data-aos="fade-up"
+            data-aos-anchor-placement="center-bottom"
+          >
+            >
             <!-- <div class="course-card">
               <div class="course-image">
                 <img
@@ -98,7 +112,7 @@
         <div class="container">
           <h2>Lộ Trình Học</h2>
           <div class="paths-grid">
-            <div class="path-card">
+            <div class="path-card" data-aos="fade-up-left">
               <div class="path-icon">
                 <i class="fas fa-laptop-code"></i>
               </div>
@@ -116,7 +130,7 @@
               >
             </div>
 
-            <div class="path-card">
+            <div class="path-card" data-aos="fade-up">
               <div class="path-icon">
                 <i class="fas fa-server"></i>
               </div>
@@ -134,7 +148,7 @@
               >
             </div>
 
-            <div class="path-card">
+            <div class="path-card" data-aos="fade-up-right">
               <div class="path-icon">
                 <i class="fas fa-mobile-alt"></i>
               </div>
@@ -158,7 +172,7 @@
       <section class="resources">
         <div class="container">
           <h2>Tài Nguyên Học Tập</h2>
-          <div class="resources-grid">
+          <div class="resources-grid" data-aos="zoom-out-down">
             <div class="resource-card">
               <div class="resource-icon">
                 <i class="fas fa-book"></i>
@@ -207,6 +221,13 @@
     <!-- load bằng components -->
     <footer id="footer-placeholder"></footer>
 
+    <!-- js aos -->
+    <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
+    <script>
+      AOS.init({
+        duration: 500,
+      });
+    </script>
     <script src="./assets/js/script.js"></script>
     <script src="./assets/js/components.js"></script>
     <script type="module" src="./assets/js/auth.js"></script>
