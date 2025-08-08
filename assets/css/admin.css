@@ -16,6 +16,14 @@ body.dark-mode {
   color: var(--text-color);
 }
 
+body.dark-mode .sidebar-toggle {
+  color: #fff;
+}
+body.dark-mode .btn-logout-sidebar {
+  border-color: #fff;
+  color: #fff;
+}
+
 /* Dark mode cards và tables */
 body.dark-mode .admin-card,
 body.dark-mode .stat-card {

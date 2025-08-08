@@ -32,7 +32,7 @@ const handleRegister = function (event) {
   });
   if (!isValid) return;
   if (!termsAgreed) {
-    alert("Bạn phải đồng ý với Điều khoản dịch vụ và Chính sách bảo mật.");
+    showNotification("Vui lòng đồng ý với Điều khoản dịch vụ.", "error");
     return;
   }
 

@@ -220,6 +220,7 @@ function trackLessonProgress(lessonId) {
 }
 
 // Lưu trạng thái hoàn thành bài học vào Firebase cho từng khóa học
+// Và tính toán để lưu tiến trình
 async function saveLessonCompletionToDB(courseId, lessonId) {
   return new Promise((resolve, reject) => {
     onAuthStateChanged(auth, async (user) => {
@@ -403,6 +404,7 @@ function renderLessonContent(lesson, modules) {
   let prevLessonId = null;
   let nextLessonId = null;
   let lessonsFlat = [];
+  // modules tương ứng node courseId trong db
   Object.values(modules).forEach((module) => {
     (module.lessons || []).forEach((l) => lessonsFlat.push(l));
   });
@@ -502,31 +504,6 @@ function renderQuiz(quiz, lessonId) {
   `;
 }
 
-// // Khởi tạo xử lý tương tác quiz và phản hồi
-// function initQuizEvents(lesson) {
-//   document
-//     .querySelectorAll(`.quiz-section[data-lesson="${lesson.id}"] .check-answer`)
-//     .forEach((btn, idx) => {
-//       btn.addEventListener("click", function () {
-//         const question = lesson.quiz[idx];
-//         const container = btn.closest(".quiz-question");
-//         const selected = container.querySelector("input[type='radio']:checked");
-//         const feedback = container.querySelector(".quiz-feedback");
-//         if (!selected) {
-//           feedback.textContent = "Vui lòng chọn đáp án!";
-//           feedback.className = "quiz-feedback";
-//           return;
-//         }
-//         if (parseInt(selected.value) === question.answer) {
-//           feedback.textContent = "Chính xác!";
-//           feedback.className = "quiz-feedback correct";
-//         } else {
-//           feedback.textContent = "Chưa đúng, hãy thử lại!";
-//           feedback.className = "quiz-feedback incorrect";
-//         }
-//       });
-//     });
-// }
 // Khởi tạo xử lý tương tác quiz và phản hồi
 function initQuizEvents(lesson) {
   const quizSection = document.querySelector(
@@ -581,7 +558,7 @@ function initQuizEvents(lesson) {
         selectedRadio.closest("label.quiz-option").classList.add("selected");
       }
       // Tự động kiểm tra và hiển thị feedback nếu đã trả lời
-      checkAnswer(index, true); // không cho phép thay đổi đáp án (isFromNavigation)
+      checkAnswer(index, true); // isFromNavigation "Tôi chỉ đang hiển thị lại kết quả cũ, đừng cho người dùng thay đổi đáp án nữa".
     }
 
     // Luôn hiển thị nút kiểm tra đáp án ban đầu

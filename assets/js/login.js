@@ -285,7 +285,7 @@ function handleForgotPassword() {
                 errorMessage = error.message;
             }
 
-            alert("Lỗi: " + errorMessage);
+            showNotification(`Lỗi: ${errorMessage}`, "error");
             console.error("Password reset error:", error);
           } finally {
             // Khôi phục nút submit
