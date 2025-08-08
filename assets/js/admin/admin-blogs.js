@@ -559,6 +559,8 @@ export default class BlogManager {
         this.adminPanel.hideModal("admin-blog-detail-modal");
         this.approveBlog(blog.id);
       };
+    } else {
+      approveBtn.style.display = "none";
     }
   }
 

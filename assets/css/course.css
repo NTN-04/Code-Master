@@ -32,6 +32,9 @@
 .course-meta i {
   font-size: 0.9rem;
 }
+.course-info {
+  width: 70%;
+}
 .course-image {
   width: 300px;
   max-width: 350px;
@@ -240,7 +243,7 @@
   }
 }
 .banner-content {
-  max-width: 60%;
+  max-width: 65%;
   z-index: 2;
 }
 .banner-content h1 {
@@ -671,6 +674,9 @@ code {
   .course-image {
     display: none;
   }
+  .course-info {
+    width: 100%;
+  }
 }
 
 @media (max-width: 768px) {
@@ -725,6 +731,13 @@ code {
     padding: 10px;
     font-size: 0.95rem;
   }
+
+  .banner-content {
+    max-width: 75%;
+  }
+  .banner-content .btn {
+    padding: 14px 20px;
+  }
 }
 
 @media (max-width: 576px) {
@@ -771,5 +784,12 @@ code {
   .quiz-section {
     padding: 10px;
     margin: 15px 0;
+  }
+  .banner-content {
+    max-width: 100%;
+  }
+  .banner-content .btn {
+    padding: 12px;
+    width: 90%;
   }
 }
