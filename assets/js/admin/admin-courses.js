@@ -230,8 +230,28 @@ export default class CoursesManager {
     const course = this.courses.find((c) => c.id === courseId);
 
     try {
+      // Xóa khóa học
       const courseRef = ref(database, `courses/${courseId}`);
       await remove(courseRef);
+      // Xóa module và bài học của khóa học
+      await remove(ref(database, `course_modules/${courseId}`));
+
+      // Xóa tiến trình liên quan đến khóa học
+      const userProgressRef = ref(database, "userProgress");
+      const userProgressSnap = await get(userProgressRef);
+      if (userProgressSnap.exists()) {
+        const userProgressData = userProgressSnap.val();
+        for (const userId in userProgressData) {
+          if (
+            userProgressData[userId].courses &&
+            userProgressData[userId].courses[courseId]
+          ) {
+            await remove(
+              ref(database, `userProgress/${userId}/courses/${courseId}`)
+            );
+          }
+        }
+      }
 
       // Ghi log hoạt động
       await this.adminPanel.logActivity(
@@ -328,7 +348,7 @@ export default class CoursesManager {
     };
     imageInput.addEventListener("change", imageInput._previewEventHandler);
   }
-  
+
   // Xử lý submit form thêm/sửa
   async handleFormSubmit(e) {
     e.preventDefault();
@@ -476,15 +496,11 @@ export default class CoursesManager {
         title: moduleTitle,
         lessons: [],
       });
-      // await this.adminPanel.logActivity(
-      //   "course",
-      //   "Thêm module",
-      //   `Thêm module "${moduleTitle}" cho khóa học ${courseId}`
-      // );
-      this.adminPanel.showNotification("Đã thêm module mới", "success");
+
+      this.adminPanel.showNotification("Đã thêm chương mới", "success");
       await this.loadCourseModules(courseId);
     } catch (error) {
-      this.adminPanel.showNotification("Lỗi thêm module", "error");
+      this.adminPanel.showNotification("Lỗi thêm chương", "error");
     }
   }
 
@@ -496,16 +512,11 @@ export default class CoursesManager {
       await update(ref(database, `course_modules/${courseId}/${moduleId}`), {
         title: newTitle,
       });
-      // await this.adminPanel.logActivity(
-      //   "course",
-      //   "Sửa module",
-      //   `Sửa module ${moduleId} thành "${newTitle}" cho khóa học ${courseId}`
-      // );
 
-      this.adminPanel.showNotification("Đã cập nhật module", "success");
+      this.adminPanel.showNotification("Đã cập nhật chương", "success");
       await this.loadCourseModules(courseId);
     } catch (error) {
-      this.adminPanel.showNotification("Lỗi cập nhật module", "error");
+      this.adminPanel.showNotification("Lỗi cập nhật chương", "error");
     }
   }
 
@@ -514,15 +525,10 @@ export default class CoursesManager {
     if (!confirm("Bạn có chắc chắn muốn xóa module này?")) return;
     try {
       await remove(ref(database, `course_modules/${courseId}/${moduleId}`));
-      // await this.adminPanel.logActivity(
-      //   "course",
-      //   "Xóa module",
-      //   `Xóa module ${moduleId} khỏi khóa học ${courseId}`
-      // );
-      this.adminPanel.showNotification("Đã xóa module", "success");
+      this.adminPanel.showNotification("Đã xóa chương", "success");
       await this.loadCourseModules(courseId);
     } catch (error) {
-      this.adminPanel.showNotification("Lỗi xóa module", "error");
+      this.adminPanel.showNotification("Lỗi xóa chương", "error");
     }
   }
 
