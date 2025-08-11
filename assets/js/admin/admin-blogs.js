@@ -5,12 +5,17 @@ import {
   push,
   update,
   remove,
+  onValue,
+  off,
 } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-database.js";
 
 export default class BlogManager {
   constructor(adminPanel) {
     this.adminPanel = adminPanel;
     this.blogs = [];
+    // Listener management
+    this.blogsListenerRef = null;
+    this.blogsListenerCallback = null;
   }
 
   async loadData() {
@@ -28,11 +33,11 @@ export default class BlogManager {
       </tr>
     `;
     }
-    try {
-      // Tải dữ liệu bài viết blog từ Firebase
-      const blogRef = ref(database, "blogs");
-      const snapshot = await get(blogRef);
 
+    this.cleanupListener();
+
+    this.blogsListenerRef = ref(database, "blogs");
+    this.blogsListenerCallback = (snapshot) => {
       if (snapshot.exists()) {
         // Lấy từ Firebase
         this.blogs = Object.entries(snapshot.val()).map(([id, data]) => ({
@@ -40,7 +45,6 @@ export default class BlogManager {
           ...data,
         }));
       } else {
-        console.log("Chưa có dữ liệu blog trên Firebase");
         this.blogs = [];
       }
 
@@ -48,9 +52,20 @@ export default class BlogManager {
       this.updateTagsFilterOptions();
       // hiển thị blogs
       this.renderBlogTable();
-    } catch (error) {
-      console.error("Error loading blogs:", error);
+    };
+
+    onValue(this.blogsListenerRef, this.blogsListenerCallback, (error) => {
       this.adminPanel.showNotification("Lỗi tải dữ liệu bài viết", "error");
+    });
+  }
+
+  // Cleanup listener khi chuyển tab hoặc không cần nữa
+  cleanupListener() {
+    if (this.blogsListenerRef && this.blogsListenerCallback) {
+      // off chỉ khi đã có ref và callback
+      off(this.blogsListenerRef, this.blogsListenerCallback);
+      this.blogsListenerRef = null;
+      this.blogsListenerCallback = null;
     }
   }
 
@@ -181,7 +196,7 @@ export default class BlogManager {
       );
 
       this.adminPanel.showNotification("Đã xóa bài viết", "success");
-      this.loadData();
+      // this.loadData(); realtime
     } catch (error) {
       console.error("Error deleting blog:", error);
       this.adminPanel.showNotification("Lỗi xóa bài viết", "error");
@@ -209,7 +224,7 @@ export default class BlogManager {
       );
 
       this.adminPanel.showNotification("Đã duyệt bài viết", "success");
-      this.loadData();
+      // this.loadData();
     } catch (error) {
       console.error("Error approving blog:", error);
       this.adminPanel.showNotification("Lỗi khi duyệt bài viết", "error");
@@ -348,7 +363,7 @@ export default class BlogManager {
         this.adminPanel.showNotification("Đã lưu thay đổi!", "success");
 
         this.adminPanel.hideModal("admin-blog-modal");
-        this.loadData();
+        // this.loadData();
       } catch (err) {
         console.error("Lỗi: ", err);
         this.adminPanel.showNotification("Có lỗi khi lưu!", "error");
@@ -512,7 +527,7 @@ export default class BlogManager {
         localStorage.removeItem("admin-blog-draft-image");
         // ẩn modal
         this.adminPanel.hideModal("admin-blog-modal");
-        this.loadData();
+        // this.loadData();
       } catch (err) {
         console.error("Lỗi: ", err);
         this.adminPanel.showNotification("Có lỗi khi đăng bài!", "error");
