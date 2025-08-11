@@ -5,11 +5,12 @@ import {
   set,
   update,
   remove,
+  onValue,
+  off,
 } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-database.js";
 import {
   createUserWithEmailAndPassword,
   getAuth,
-  signOut,
 } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-auth.js";
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-app.js";
 
@@ -17,6 +18,9 @@ export default class UsersManager {
   constructor(adminPanel) {
     this.adminPanel = adminPanel;
     this.users = [];
+    // Listener management
+    this.userListenerRef = null;
+    this.userListenerCallback = null;
   }
 
   async loadData() {
@@ -34,10 +38,11 @@ export default class UsersManager {
       </tr>
     `;
     }
-    try {
-      const usersRef = ref(database, "users");
-      const snapshot = await get(usersRef);
 
+    this.cleanupListener();
+
+    this.userListenerRef = ref(database, "users");
+    this.userListenerCallback = (snapshot) => {
       if (snapshot.exists()) {
         this.users = Object.entries(snapshot.val()).map(([id, data]) => ({
           id,
@@ -49,9 +54,21 @@ export default class UsersManager {
 
       this.renderTable();
       this.setupFilters();
-    } catch (error) {
-      console.error("Error loading users:", error);
+    };
+
+    onValue(this.userListenerRef, this.userListenerCallback, (error) => {
+      // console.error("Error loading users:", error);
       this.adminPanel.showNotification("Lỗi tải dữ liệu người dùng", "error");
+    });
+  }
+
+  // Cleanup listener khi chuyển tab hoặc không cần nữa
+  cleanupListener() {
+    if (this.userListenerRef && this.userListenerCallback) {
+      // off chỉ khi đã có ref và callback
+      off(this.userListenerRef, this.userListenerCallback);
+      this.userListenerRef = null;
+      this.userListenerCallback = null;
     }
   }
 
@@ -206,7 +223,7 @@ export default class UsersManager {
         `Đã ${newStatus === "suspended" ? "tạm ngừng" : "kích hoạt"} tài khoản`,
         "success"
       );
-      this.loadData();
+      // this.loadData(); realtime
     } catch (error) {
       console.error("Error updating user status:", error);
       this.adminPanel.showNotification(
@@ -238,7 +255,7 @@ export default class UsersManager {
       );
 
       this.adminPanel.showNotification("Đã xóa người dùng", "success");
-      this.loadData();
+      // this.loadData();
     } catch (error) {
       console.error("Error deleting user:", error);
       this.adminPanel.showNotification("Lỗi xóa người dùng", "error");
@@ -340,7 +357,7 @@ export default class UsersManager {
       }
 
       this.adminPanel.hideModal("user-modal");
-      this.loadData();
+      // this.loadData();
     } catch (err) {
       if (err && err.code === "auth/email-already-in-use") {
         this.adminPanel.showNotification(

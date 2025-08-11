@@ -5,6 +5,8 @@ import {
   set,
   update,
   remove,
+  onValue,
+  off,
 } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-database.js";
 
 export default class CoursesManager {
@@ -14,32 +16,48 @@ export default class CoursesManager {
     this.currentManagingCourseId = null;
     this.currentManagingModuleId = null;
     this.currentManagingLessonIdx = null;
+    // Listener management
+    this.coursesListenerRef = null;
+    this.coursesListenerCallback = null;
   }
 
   // Tải dữ liệu khóa học
   async loadData() {
-    try {
-      // Hiển thị loading
-      this.showCoursesLoading();
+    // Hiển thị loading
+    this.showCoursesLoading();
 
-      // Thử tải từ Firebase trước
-      const coursesRef = ref(database, "courses");
-      const snapshot = await get(coursesRef);
+    // Xóa lăng nghe realtime nếu có
+    this.cleanupListener();
 
+    // Tạo mới listener
+    this.coursesListenerRef = ref(database, "courses");
+    this.coursesListenerCallback = (snapshot) => {
       if (snapshot.exists()) {
-        // Lấy từ Firebase
         this.courses = Object.entries(snapshot.val()).map(([id, data]) => ({
           id,
           ...data,
         }));
+      } else {
+        this.courses = [];
       }
-
-      await this.renderCoursesGrid();
-    } catch (error) {
-      console.error("Error loading courses:", error);
+      this.renderCoursesGrid();
+    };
+    onValue(this.coursesListenerRef, this.coursesListenerCallback, (error) => {
+      // console.error("Error loading courses:", error);
       this.adminPanel.showNotification("Lỗi tải dữ liệu khóa học", "error");
+    });
+  }
+
+  // Cleanup listener khi chuyển tab hoặc không cần nữa
+  cleanupListener() {
+    if (this.coursesListenerRef && this.coursesListenerCallback) {
+      // off chỉ khi đã có ref và callback
+      off(this.coursesListenerRef, this.coursesListenerCallback);
+      this.coursesListenerRef = null;
+      this.coursesListenerCallback = null;
     }
   }
+
   // Hiển thị loading cho khóa học
   showCoursesLoading() {
     const coursesGrid = document.getElementById("admin-courses-grid");
@@ -262,7 +280,7 @@ export default class CoursesManager {
       );
 
       this.adminPanel.showNotification("Đã xóa khóa học", "success");
-      this.loadData();
+      // this.loadData();
     } catch (error) {
       console.error("Error deleting course:", error);
       this.adminPanel.showNotification("Lỗi xóa khóa học", "error");
@@ -419,7 +437,7 @@ export default class CoursesManager {
       }
 
       this.adminPanel.hideModal("course-modal");
-      this.loadData();
+      // this.loadData();
     } catch (error) {
       console.error("Error saving course:", error);
       this.adminPanel.showNotification("Lỗi lưu khóa học", "error");
