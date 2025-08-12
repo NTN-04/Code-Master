@@ -2,7 +2,7 @@ body.dark-mode {
   --color-admin: #1a1d24;
   --primary-color: #3498db;
   --secondary-color: #2ecc71;
-  --accent-color: #00adb5;
+  --accent-color: #a7c6db;
   --text-color: #eeeeee;
   --gray-light: #2d3748;
   --gray-medium: #4a5568;
@@ -12,6 +12,7 @@ body.dark-mode {
   --danger-color: #e74c3c;
   --warning-color: #f39c12;
   --success-color: #2ecc71;
+
   background: #1a1d24;
   color: var(--text-color);
 }
@@ -56,6 +57,9 @@ body.dark-mode .admin-sidebar {
 
 body.dark-mode .nav-item a {
   color: #eeeeee;
+}
+body.dark-mode .nav-item.active a {
+  background: var(--primary-color);
 }
 
 body.dark-mode .nav-item a:hover {

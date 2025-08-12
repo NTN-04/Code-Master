@@ -547,7 +547,7 @@ code {
   position: fixed;
   bottom: 24px;
   right: 24px;
-  width: 340px;
+  width: 400px;
   max-width: 95vw;
   z-index: 9999;
   font-family: inherit;
@@ -653,6 +653,75 @@ code {
   background: #6366f1;
   color: #fff;
   border-bottom-left-radius: 4px;
+}
+/* ghi đè Markdown styles trong chat AI */
+#ai-chatbot .ai-msg.ai .msg-bubble h1,
+#ai-chatbot .ai-msg.ai .msg-bubble h2,
+#ai-chatbot .ai-msg.ai .msg-bubble h3,
+#ai-chatbot .ai-msg.ai .msg-bubble h4,
+#ai-chatbot .ai-msg.ai .msg-bubble h5,
+#ai-chatbot .ai-msg.ai .msg-bubble h6 {
+  margin: 10px 0;
+  font-weight: 700;
+  color: #fff;
+  text-align: left;
+  line-height: 1.2;
+  background: none;
+  font-size: 1.1rem;
+}
+
+#ai-chatbot .ai-msg.ai .msg-bubble h1 {
+  font-size: 1.4rem;
+}
+#ai-chatbot .ai-msg.ai .msg-bubble h2 {
+  font-size: 1.25rem;
+}
+#ai-chatbot .ai-msg.ai .msg-bubble h3 {
+  font-size: 1.15rem;
+}
+
+#ai-chatbot .ai-msg.ai .msg-bubble p {
+  margin: 8px 0;
+  color: #fff;
+  line-height: 1.6;
+}
+
+#ai-chatbot .ai-msg.ai .msg-bubble ul,
+#ai-chatbot .ai-msg.ai .msg-bubble ol {
+  margin: 10px 0 10px 20px;
+  color: #fff;
+}
+
+#ai-chatbot .ai-msg.ai .msg-bubble li {
+  margin-bottom: 6px;
+}
+
+#ai-chatbot .ai-msg.ai .msg-bubble code {
+  font-family: "Courier New", Courier, monospace;
+  background: rgba(255, 255, 255, 0.18);
+  color: #ffe;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 0.98em;
+}
+
+#ai-chatbot .ai-msg.ai .msg-bubble pre {
+  background: rgba(0, 0, 0, 0.25);
+  color: #ffe;
+  padding: 10px;
+  border-radius: 8px;
+  overflow-x: auto;
+  margin: 10px 0;
+  font-size: 0.98em;
+}
+
+#ai-chatbot .ai-msg.ai .msg-bubble blockquote {
+  border-left: 4px solid #fff;
+  padding-left: 12px;
+  color: #e0e7ef;
+  margin: 10px 0;
+  font-style: italic;
+  opacity: 0.9;
 }
 
 /* Responsive Styles */
@@ -791,5 +860,8 @@ code {
   .banner-content .btn {
     padding: 12px;
     width: 90%;
+  }
+  #ai-chatbot {
+    width: 330px;
   }
 }
