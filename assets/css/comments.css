@@ -636,7 +636,7 @@ body[modal-open] {
   border-radius: var(--border-radius);
   color: white;
   font-weight: 500;
-  z-index: 9999;
+  z-index: 10000;
   display: flex;
   align-items: center;
   gap: 10px;
