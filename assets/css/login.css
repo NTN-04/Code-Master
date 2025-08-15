@@ -395,6 +395,9 @@ input[type="password"]::-webkit-reveal {
 .notification.warning {
   background-color: var(--warning-color);
 }
+.notification.info {
+  background-color: var(--primary-color);
+}
 
 .notification.show {
   transform: translateX(0);
