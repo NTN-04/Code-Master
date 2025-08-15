@@ -435,8 +435,6 @@ async function saveUserData(user, provider) {
 
 // Xử lý lỗi xác thực
 function handleAuthError(error, providerName) {
-  console.error(`Lỗi đăng nhập ${providerName}: `, error);
-
   let errorMessage = `Đăng nhập ${providerName} thất bại: `;
   let notificationType = "error";
 
@@ -511,7 +509,7 @@ function setupGoogleSignIn() {
       setTimeout(() => {
         googleButton.disabled = false;
         googleButton.innerHTML = originalText;
-      }, 1500);
+      }, 500);
     }
   });
 }
@@ -545,7 +543,7 @@ function setupGithubSignIn() {
       setTimeout(() => {
         githubButton.disabled = false;
         githubButton.innerHTML = originalText;
-      }, 1500);
+      }, 500);
     }
   });
 }
