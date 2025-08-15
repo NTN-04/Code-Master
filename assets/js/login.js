@@ -8,6 +8,7 @@ import {
   signInWithPopup,
   GithubAuthProvider,
   sendPasswordResetEmail,
+  fetchSignInMethodsForEmail,
 } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-auth.js";
 import {
   ref,
@@ -302,6 +303,12 @@ function handleForgotPassword() {
 }
 // Hàm chung xử lý đăng nhập với Firebase gg/github
 async function signInWithProvider(provider, providerName) {
+  // Biến cờ ngăn chặn nhiều lần click
+  if (window.authInProgress) {
+    return { success: false, error: "in-progress" };
+  }
+  window.authInProgress = true;
+
   try {
     const result = await signInWithPopup(auth, provider);
     const user = result.user;
@@ -339,9 +346,36 @@ async function signInWithProvider(provider, providerName) {
 
     return { success: true, user };
   } catch (error) {
-    // Xử lý lỗi
-    handleAuthError(error, providerName);
+    // Xử lý đặc biệt cho lỗi tài khoản đã tồn tại với phương thức khác
+    if (error.code === "auth/account-exists-with-different-credential") {
+      try {
+        // Lấy các phương thức đăng nhập cho email này
+        const email = error.customData.email;
+        const methods = await fetchSignInMethodsForEmail(auth, email);
+
+        let message = `Email này (${email}) đã được sử dụng với phương thức đăng nhập khác: 
+                      ${methods.join(", ")}. `;
+
+        // Nếu có thể đăng nhập bằng Google
+        if (methods.includes("google.com")) {
+          message +=
+            "Vui lòng đăng nhập bằng Google và liên kết tài khoản sau.";
+        } else if (methods.includes("password")) {
+          message += "Vui lòng đăng nhập bằng Email và mật khẩu để tiếp tục.";
+        }
+
+        showNotification(message, "info");
+      } catch (err) {}
+    } else {
+      // Xử lý các lỗi khác
+      handleAuthError(error, providerName);
+    }
     return { success: false, error };
+  } finally {
+    // Đảm bảo reset cờ khi hoàn tất
+    setTimeout(() => {
+      window.authInProgress = false;
+    }, 1000);
   }
 }
 
@@ -403,27 +437,52 @@ async function saveUserData(user, provider) {
 function handleAuthError(error, providerName) {
   console.error(`Lỗi đăng nhập ${providerName}: `, error);
 
-  let errorMessage = ` Đăng nhập ${providerName} thất bại: `;
+  let errorMessage = `Đăng nhập ${providerName} thất bại: `;
+  let notificationType = "error";
 
   switch (error.code) {
     case "auth/popup-closed-by-user":
-      errorMessage = "Bạn đã đóng cửa sổ đăng nhập.";
-      break;
+      // Không hiển thị thông báo khi người dùng chủ động đóng popup
+      return;
+
+    case "auth/cancelled-popup-request":
+      // Không hiển thị thông báo khi popup request bị hủy (thường xảy ra khi nhiều lần click)
+      return;
+
     case "auth/popup-blocked":
-      errorMessage = "Cửa sổ đăng nhập bị chặn. Vui lòng cho phép popup.";
+      errorMessage =
+        "Cửa sổ đăng nhập bị chặn. Vui lòng cho phép popup và thử lại.";
+      notificationType = "warning";
       break;
+
     case "auth/account-exists-with-different-credential":
       errorMessage =
         "Email này đã được sử dụng với phương thức đăng nhập khác.";
+      notificationType = "warning";
       break;
+
     case "auth/unauthorized-domain":
       errorMessage =
         "Domain này không được phép sử dụng GitHub Authentication. Vui lòng liên hệ quản trị viên.";
       break;
+
+    case "auth/operation-not-allowed":
+      errorMessage = `Đăng nhập với ${providerName} không được bật. Vui lòng kiểm tra cấu hình Firebase.`;
+      break;
+
+    case "auth/timeout":
+      errorMessage =
+        "Hết thời gian kết nối, vui lòng kiểm tra mạng và thử lại.";
+      notificationType = "warning";
+      break;
+
     default:
       errorMessage += error.message;
   }
-  showNotification(errorMessage, "error");
+
+  if (errorMessage) {
+    showNotification(errorMessage, notificationType);
+  }
 }
 
 // Xử lý đăng nhập Google
@@ -434,17 +493,60 @@ function setupGoogleSignIn() {
     prompt: "select_account",
   });
 
-  document.querySelector(".btn-google").addEventListener("click", async () => {
-    await signInWithProvider(googleProvider, "google");
+  const googleButton = document.querySelector(".btn-google");
+
+  googleButton.addEventListener("click", async () => {
+    // Disable button to prevent multiple clicks
+    if (googleButton.disabled) return;
+
+    googleButton.disabled = true;
+    const originalText = googleButton.innerHTML;
+    googleButton.innerHTML =
+      '<i class="fas fa-spinner fa-spin"></i> Đang xử lý...';
+
+    try {
+      await signInWithProvider(googleProvider, "google");
+    } finally {
+      // Re-enable button after a short delay
+      setTimeout(() => {
+        googleButton.disabled = false;
+        googleButton.innerHTML = originalText;
+      }, 1500);
+    }
   });
 }
 
 // Xử lý đăng nhập Github
 function setupGithubSignIn() {
   const githubProvider = new GithubAuthProvider();
+  // Thêm các tham số để luôn hiển thị trang chọn tài khoản
+  githubProvider.setCustomParameters({
+    prompt: "select_account",
+  });
 
-  document.querySelector(".btn-github").addEventListener("click", async () => {
-    await signInWithProvider(githubProvider, "github");
+  // Thêm scope để lấy email public từ GitHub
+  githubProvider.addScope("user:email");
+
+  const githubButton = document.querySelector(".btn-github");
+
+  githubButton.addEventListener("click", async () => {
+    // Disable button to prevent multiple clicks
+    if (githubButton.disabled) return;
+
+    githubButton.disabled = true;
+    const originalText = githubButton.innerHTML;
+    githubButton.innerHTML =
+      '<i class="fas fa-spinner fa-spin"></i> Đang xử lý...';
+
+    try {
+      await signInWithProvider(githubProvider, "github");
+    } finally {
+      // Re-enable button after a short delay
+      setTimeout(() => {
+        githubButton.disabled = false;
+        githubButton.innerHTML = originalText;
+      }, 1500);
+    }
   });
 }
 
