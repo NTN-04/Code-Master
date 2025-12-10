@@ -1,4 +1,5 @@
 import { database } from "../firebaseConfig.js";
+import { uploadToCloudinary } from "../cloudinary-service.js";
 import {
   ref,
   get,
@@ -307,13 +308,12 @@ export default class BlogManager {
     imageInput.onchange = (e) => {
       const file = e.target.files[0];
       if (!file) return;
-      const reader = new FileReader();
-      reader.onload = (evt) => {
-        imagePreview.src = evt.target.result;
-        imagePreview.style.display = "block";
-        localStorage.setItem("blog-edit-draft-image", evt.target.result);
-      };
-      reader.readAsDataURL(file);
+      const url = URL.createObjectURL(file);
+      imagePreview.src = url;
+      imagePreview.style.display = "block";
+      imageInput._selectedFile = file;
+      // stop storing Base64 drafts for edit
+      localStorage.removeItem("blog-edit-draft-image");
     };
 
     // Xử lý submit
@@ -334,7 +334,7 @@ export default class BlogManager {
         .map((t) => t.trim().toLowerCase())
         .filter(Boolean);
 
-      const newImage = localStorage.getItem("blog-edit-draft-image");
+      const newImageFile = imageInput._selectedFile;
       const blogData = {
         title: titleInput.value.trim(),
         content: mde.value(),
@@ -342,8 +342,13 @@ export default class BlogManager {
         updatedAt: new Date().toLocaleDateString("vi-VN"),
       };
       // nếu có ảnh mới thì lưu
-      if (newImage) {
-        blogData.image = newImage;
+      if (newImageFile) {
+        const url = await uploadToCloudinary(newImageFile);
+        if (!url) {
+          this.adminPanel.showNotification("Upload ảnh thất bại", "error");
+          return;
+        }
+        blogData.image = url;
       }
 
       try {
@@ -358,8 +363,8 @@ export default class BlogManager {
           "fas fa-edit"
         );
         e.target.reset();
-        // xóa ảnh tạm
-        localStorage.removeItem("blog-edit-draft-image");
+        // xóa tham chiếu file tạm
+        imageInput._selectedFile = null;
         this.adminPanel.showNotification("Đã lưu thay đổi!", "success");
 
         this.adminPanel.hideModal("admin-blog-modal");
@@ -444,13 +449,8 @@ export default class BlogManager {
     titleInput.value = localStorage.getItem("admin-blog-draft-title") || "";
     tagsInput.value = localStorage.getItem("admin-blog-draft-tags") || "";
     mde.value(localStorage.getItem("admin-blog-draft-content") || "");
-    const imgDraft = localStorage.getItem("admin-blog-draft-image");
-    if (imgDraft) {
-      imagePreview.src = imgDraft;
-      imagePreview.style.display = "block";
-    } else {
-      imagePreview.style.display = "none";
-    }
+    // Không còn lưu Base64 ảnh nháp; chỉ hiển thị khi có file chọn
+    imagePreview.style.display = "none";
 
     // Lưu nháp khi nhập
     titleInput.oninput = () =>
@@ -463,13 +463,10 @@ export default class BlogManager {
     imageInput.onchange = (e) => {
       const file = e.target.files[0];
       if (!file) return;
-      const reader = new FileReader();
-      reader.onload = (evt) => {
-        imagePreview.src = evt.target.result;
-        imagePreview.style.display = "block";
-        localStorage.setItem("admin-blog-draft-image", evt.target.result);
-      };
-      reader.readAsDataURL(file);
+      const url = URL.createObjectURL(file);
+      imagePreview.src = url;
+      imagePreview.style.display = "block";
+      imageInput._selectedFile = file;
     };
 
     // Đóng modal click vào nút cancel-btn và close-modal
@@ -492,7 +489,16 @@ export default class BlogManager {
         .split(",")
         .map((t) => t.trim().toLowerCase())
         .filter(Boolean);
-      const image = localStorage.getItem("admin-blog-draft-image") || "";
+      // Upload nếu có file ảnh mới
+      let image = "";
+      const newFile = imageInput._selectedFile;
+      if (newFile) {
+        image = await uploadToCloudinary(newFile);
+        if (!image) {
+          this.adminPanel.showNotification("Upload ảnh thất bại", "error");
+          return;
+        }
+      }
       const blogData = {
         title: titleInput.value.trim(),
         content: mde.value(),
@@ -520,11 +526,11 @@ export default class BlogManager {
           "fas fa-blog"
         );
         e.target.reset();
-        // Xóa nháp
+        // Xóa nháp (không còn ảnh Base64)
         localStorage.removeItem("admin-blog-draft-title");
         localStorage.removeItem("admin-blog-draft-tags");
         localStorage.removeItem("admin-blog-draft-content");
-        localStorage.removeItem("admin-blog-draft-image");
+        imageInput._selectedFile = null;
         // ẩn modal
         this.adminPanel.hideModal("admin-blog-modal");
         // this.loadData();

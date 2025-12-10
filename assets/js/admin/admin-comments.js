@@ -6,6 +6,7 @@ import {
   update,
   remove,
 } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-database.js";
+import { formatDateTime } from "../utils/date.js";
 
 export default class CommentsManager {
   constructor(panel) {
@@ -870,16 +871,7 @@ export default class CommentsManager {
    * Định dạng ngày tháng
    */
   formatDate(timestamp) {
-    if (!timestamp) return "N/A";
-
-    const date = new Date(timestamp);
-    return date.toLocaleString("vi-VN", {
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
+    return formatDateTime(timestamp) || "N/A";
   }
 
   /**

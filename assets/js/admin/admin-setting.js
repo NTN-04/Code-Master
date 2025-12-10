@@ -1,4 +1,5 @@
 import { auth, database } from "../firebaseConfig.js";
+import { uploadToCloudinary } from "../cloudinary-service.js";
 import {
   ref,
   update,
@@ -209,30 +210,21 @@ export default class SettingsManager {
     const file = event.target.files[0];
     if (!file) return;
 
-    // Kiểm tra kích thước file (tối đa 2MB)
-    if (file.size > 2 * 1024 * 1024) {
+    // Kiểm tra kích thước file (tối đa 5MB)
+    if (file.size > 5 * 1024 * 1024) {
       this.adminPanel.showNotification(
-        "Kích thước file quá lớn (tối đa 2MB)",
+        "Kích thước file quá lớn (tối đa 5MB)",
         "error"
       );
       return;
     }
-
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      const base64Image = e.target.result;
-
-      // Hiển thị avatar mới trong preview
-      const avatarPreview = document.getElementById("settings-avatar-preview");
-      if (avatarPreview) {
-        avatarPreview.src = base64Image;
-      }
-
-      // Lưu base64 vào biến để sử dụng khi submit
-      this.newAvatarBase64 = base64Image;
-    };
-
-    reader.readAsDataURL(file);
+    // Hiển thị avatar mới trong preview qua object URL và lưu tạm file
+    const avatarPreview = document.getElementById("settings-avatar-preview");
+    if (avatarPreview) {
+      const url = URL.createObjectURL(file);
+      avatarPreview.src = url;
+    }
+    this.newAvatarFile = file;
   }
 
   /**
@@ -263,9 +255,17 @@ export default class SettingsManager {
         username: username,
       };
 
-      // Nếu có avatar mới, thêm vào dữ liệu cập nhật
-      if (this.newAvatarBase64) {
-        updateData.avatar = this.newAvatarBase64;
+      // Nếu có avatar file mới, upload Cloudinary và thêm vào dữ liệu cập nhật
+      if (this.newAvatarFile) {
+        const url = await uploadToCloudinary(this.newAvatarFile);
+        if (!url) {
+          this.adminPanel.showNotification(
+            "Upload ảnh đại diện thất bại",
+            "error"
+          );
+          throw new Error("Avatar upload failed");
+        }
+        updateData.avatar = url;
       }
 
       await update(userRef, updateData);
@@ -289,15 +289,15 @@ export default class SettingsManager {
         ...this.userDetails,
         username: username,
       };
-      if (this.newAvatarBase64) {
-        this.userDetails.avatar = this.newAvatarBase64;
+      if (this.newAvatarFile && updateData.avatar) {
+        this.userDetails.avatar = updateData.avatar;
       }
 
       // Cập nhật UI header
       this.updateHeaderInfo();
 
       // Reset biến avatar
-      this.newAvatarBase64 = null;
+      this.newAvatarFile = null;
 
       this.adminPanel.showNotification(
         "Cập nhật thông tin thành công",

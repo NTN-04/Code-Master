@@ -5,6 +5,9 @@ import {
   get,
 } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-database.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-auth.js";
+import { debounce } from "./utils/render.js";
+import { showFloatingNotification as showNotification } from "./utils/notifications.js";
+import { openModal, attachModalDismiss } from "./utils/modal.js";
 
 // Chức năng trang Tài Nguyên
 document.addEventListener("DOMContentLoaded", function () {
@@ -257,38 +260,6 @@ function searchResources(query) {
   }
 }
 
-// Hàm debounce để giới hạn tần suất thực thi hàm tìm kiếm
-function debounce(func, delay) {
-  let timeout;
-  return function () {
-    const context = this;
-    const args = arguments;
-    clearTimeout(timeout);
-    timeout = setTimeout(() => func.apply(context, args), delay);
-  };
-}
-// Hiển thị thông báo
-function showNotification(message, type = "success") {
-  const notification = document.createElement("div");
-  notification.className = `notification ${type}`;
-  notification.textContent = message;
-
-  document.body.appendChild(notification);
-
-  // Hiệu ứng xuất hiện
-  setTimeout(() => {
-    notification.classList.add("show");
-  }, 10);
-
-  // Tự động ẩn sau một khoảng thời gian
-  setTimeout(() => {
-    notification.classList.remove("show");
-    setTimeout(() => {
-      document.body.removeChild(notification);
-    }, 300);
-  }, 4000);
-}
-
 // Xác thực khi không phải user
 function ResourceAuthButtons() {
   // Các nút cần xác thực
@@ -448,25 +419,34 @@ function initExampleModal() {
     `;
     modal.style.display = "none";
     modal.className = "example-modal";
+    modal.dataset.modalDisplay = "flex";
+    modal.dataset.modalActiveClass = "visible";
     document.body.appendChild(modal);
 
-    // Đóng modal khi click backdrop hoặc nút close
-    modal.querySelector(".modal-backdrop").onclick = closeExampleModal;
-    modal.querySelector(".modal-close").onclick = closeExampleModal;
+    attachModalDismiss(modal, {
+      dismissSelectors: [".modal-close", ".modal-backdrop"],
+      closeOnBackdrop: false,
+      activeClass: "visible",
+      lockScroll: true,
+    });
+
+    modal.addEventListener("modal:closed", () => {
+      const frame = modal.querySelector("iframe");
+      if (frame) {
+        frame.src = "";
+      }
+    });
   }
 }
 function openExampleModal(url) {
   const modal = document.getElementById("example-modal");
   if (modal) {
-    modal.style.display = "flex";
+    openModal(modal, {
+      activeClass: "visible",
+      lockScroll: true,
+      display: "flex",
+    });
     modal.querySelector("iframe").src = url;
-  }
-}
-function closeExampleModal() {
-  const modal = document.getElementById("example-modal");
-  if (modal) {
-    modal.style.display = "none";
-    modal.querySelector("iframe").src = "";
   }
 }
 // Gắn sự kiện cho nút "Xem Đầy Đủ Ví Dụ" sau khi render

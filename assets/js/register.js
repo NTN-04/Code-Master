@@ -5,6 +5,7 @@ import {
   ref,
   set,
 } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-database.js";
+import { showFloatingNotification as showNotification } from "./utils/notifications.js";
 
 const inputName = document.querySelector("#register-name");
 const inputEmail = document.querySelector("#register-email");
@@ -142,32 +143,6 @@ function validateDataForm({
     clearValidateError(inputConfirmPwd);
   }
   return valid;
-}
-
-// Hiển thị thông báo
-function showNotification(message, type = "success") {
-  // Kiểm tra xem đã có thông báo nào chưa
-  let notification = document.querySelector(".notification");
-
-  // Nếu chưa có, tạo một thông báo mới
-  if (!notification) {
-    notification = document.createElement("div");
-    notification.classList.add("notification");
-    document.body.appendChild(notification);
-  }
-
-  // Đặt lớp kiểu và nội dung thông báo
-  notification.className = "notification";
-  notification.classList.add(type);
-  notification.textContent = message;
-
-  // Hiển thị thông báo
-  notification.classList.add("show");
-
-  // Tự động ẩn thông báo sau 3 giây
-  setTimeout(() => {
-    notification.classList.remove("show");
-  }, 4000);
 }
 
 registerForm.addEventListener("submit", handleRegister);

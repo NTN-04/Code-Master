@@ -8,6 +8,8 @@ import {
   onAuthStateChanged,
 } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-auth.js";
 import AdminGuard from "./admin-guard.js";
+import { createNotificationManager } from "./utils/notifications.js";
+import { openModal, closeModal, attachModalDismiss } from "./utils/modal.js";
 
 // Import các module quản lý riêng biệt
 import UsersManager from "./admin/admin-user.js";
@@ -31,6 +33,11 @@ class AdminPanel {
     this.dashboard = new Dashboard(this);
     this.settings = new SettingsManager(this);
     this.comments = new CommentsManager(this);
+
+    this.notificationManager = createNotificationManager({
+      containerId: "notification",
+      autoHideDelay: 5000,
+    });
 
     this.currentManagingCourseId = null;
     this.currentManagingModuleId = null;
@@ -268,69 +275,30 @@ class AdminPanel {
 
   // Quản lý modal
   initModals() {
-    // Đóng modal khi click ra ngoài hoặc click nút đóng
     document.querySelectorAll(".modal").forEach((modal) => {
-      modal.addEventListener("click", (e) => {
-        if (e.target === modal) {
-          this.hideModal(modal.id);
-        }
-      });
-    });
-
-    document.querySelectorAll(".close-modal, .cancel-btn").forEach((btn) => {
-      btn.addEventListener("click", (e) => {
-        const modal = e.target.closest(".modal");
-        if (modal) {
-          this.hideModal(modal.id);
-        }
-      });
+      attachModalDismiss(modal, { closeOnBackdrop: true });
     });
   }
 
   showModal(modalId) {
-    const modal = document.getElementById(modalId);
-    if (modal) {
-      modal.classList.add("show");
-      document.body.style.overflow = "hidden";
-    }
+    openModal(modalId, { lockScroll: true });
   }
 
   hideModal(modalId) {
-    const modal = document.getElementById(modalId);
-    if (modal) {
-      modal.classList.remove("show");
-      document.body.style.overflow = "";
-    }
+    closeModal(modalId, { lockScroll: true });
   }
 
   // Thông báo
   initNotifications() {
-    // Tự động ẩn thông báo sau 5 giây
-    document.addEventListener("notification-shown", () => {
-      setTimeout(() => {
-        this.hideNotification();
-      }, 5000);
-    });
+    // Notification manager đã xử lý auto-hide, không cần cấu hình thêm
   }
 
   showNotification(message, type = "success") {
-    const notification = document.getElementById("notification");
-    if (!notification) return;
-
-    const messageElement = notification.querySelector(".notification-message");
-
-    messageElement.textContent = message;
-    notification.className = `notification ${type} show`;
-
-    // Dispatch custom event
-    document.dispatchEvent(new CustomEvent("notification-shown"));
+    this.notificationManager.show(message, type);
   }
 
   hideNotification() {
-    const notification = document.getElementById("notification");
-    if (notification) {
-      notification.classList.remove("show");
-    }
+    this.notificationManager.hide();
   }
 }
 
@@ -357,6 +325,10 @@ document.addEventListener("DOMContentLoaded", () => {
 // Đóng thông báo khi click nút đóng
 document.addEventListener("click", (e) => {
   if (e.target.classList.contains("notification-close")) {
-    document.getElementById("notification")?.classList.remove("show");
+    if (window.adminPanel) {
+      window.adminPanel.hideNotification();
+    } else {
+      document.getElementById("notification")?.classList.remove("show");
+    }
   }
 });

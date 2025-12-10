@@ -5,6 +5,7 @@ import {
   update,
 } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-database.js";
 import CommentSystem from "./comment-system.js";
+import { showFloatingNotification as showNotification } from "./utils/notifications.js";
 
 document.addEventListener("DOMContentLoaded", function () {
   // Hiện thị nội dung bài blog
@@ -220,7 +221,7 @@ async function renderBlogDetail() {
 async function handleLike(blogRef, blog) {
   const user = auth.currentUser;
   if (!user || !user.uid) {
-    alert("Bạn cần đăng nhập để like bài viết!");
+    showNotification("Bạn cần đăng nhập để like bài viết!", "warning");
     window.location.href = "login.html";
     return;
   }

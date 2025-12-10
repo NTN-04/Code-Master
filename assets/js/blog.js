@@ -1,4 +1,7 @@
 import { auth, database } from "./firebaseConfig.js";
+import { uploadToCloudinary } from "./cloudinary-service.js";
+import { openModal, closeModal, attachModalDismiss } from "./utils/modal.js";
+import { showFloatingNotification as showNotification } from "./utils/notifications.js";
 import {
   ref,
   get,
@@ -360,7 +363,7 @@ function initBlogFiltering() {
 
 // ===== Modal Đăng Bài Viết ===== //
 
-// Xử lý lưu ảnh vào localStorage/sessionStorage khi chọn file
+// Xử lý chọn ảnh: preview bằng object URL, không lưu Base64
 const postImageInput = document.getElementById("post-image");
 const imagePreview = document.getElementById("image-preview");
 
@@ -368,19 +371,17 @@ if (postImageInput) {
   postImageInput.addEventListener("change", function (e) {
     const file = e.target.files[0];
     if (!file) return;
-    const reader = new FileReader();
-    reader.onload = function (evt) {
-      const base64 = evt.target.result;
-      // Lưu vào localStorage và sessionStorage
-      localStorage.setItem("blog-image-temp", base64);
-      sessionStorage.setItem("blog-image-temp", base64);
-      // Hiển thị preview
-      if (imagePreview) {
-        imagePreview.src = base64;
-        imagePreview.style.display = "block";
-      }
-    };
-    reader.readAsDataURL(file);
+    if (!file.type.startsWith("image/")) return;
+    if (file.size > 5 * 1024 * 1024) {
+      showNotification("Ảnh tối đa 5MB", "error");
+      return;
+    }
+    postImageInput._selectedFile = file;
+    if (imagePreview) {
+      const url = URL.createObjectURL(file);
+      imagePreview.src = url;
+      imagePreview.style.display = "block";
+    }
   });
 }
 
@@ -412,15 +413,17 @@ function setupPostModal() {
   });
 
   // Khởi tạo SimpleMDE khi mở modal lần đầu
+  // Đóng modal (backdrop click, buttons)
+  attachModalDismiss(postModal, { closeOnBackdrop: true });
+
   openModalBtn.onclick = () => {
     const user = auth.currentUser;
     if (!user) {
-      alert("Bạn cần đăng nhập để đăng bài!");
+      showNotification("Bạn cần đăng nhập để đăng bài!", "error");
       window.location.href = "login.html";
       return;
     }
-
-    postModal.style.display = "flex";
+    openModal(postModal, { display: "flex" });
     if (!simpleMde) {
       // Thiết lặp simpleMDE
       simpleMde = new SimpleMDE({
@@ -472,14 +475,6 @@ function setupPostModal() {
     }
   };
 
-  closeModalBtn.onclick = () => {
-    postModal.style.display = "none";
-  };
-
-  window.addEventListener("click", (e) => {
-    if (e.target === postModal) postModal.style.display = "none";
-  });
-
   postForm.onsubmit = handlePostFormSubmit;
 }
 
@@ -488,12 +483,15 @@ async function handlePostFormSubmit(e) {
   e.preventDefault();
 
   if (!simpleMde) {
-    alert("Vui lòng mở modal và nhập nội dung trước khi đăng bài!");
+    showNotification(
+      "Vui lòng mở modal và nhập nội dung trước khi đăng bài!",
+      "error"
+    );
     return;
   }
   const user = auth.currentUser;
   if (!user) {
-    alert("Bạn cần đăng nhập để đăng bài!");
+    showNotification("Bạn cần đăng nhập để đăng bài!", "error");
     return;
   }
 
@@ -501,7 +499,7 @@ async function handlePostFormSubmit(e) {
   const title = document.getElementById("post-title").value.trim();
   const content = simpleMde.value();
   if (!content.trim()) {
-    alert("Vui lòng nhập nội dung bài viết!");
+    showNotification("Vui lòng nhập nội dung bài viết!", "warning");
     return;
   }
   const tags = document
@@ -510,11 +508,15 @@ async function handlePostFormSubmit(e) {
     .map((t) => t.trim().toLowerCase())
     .filter(Boolean);
 
-  // Lấy ảnh từ localStorage/sessionStorage
-  const image =
-    localStorage.getItem("blog-image-temp") ||
-    sessionStorage.getItem("blog-image-temp") ||
-    "";
+  // Upload ảnh nếu có file
+  let image = "";
+  if (postImageInput && postImageInput._selectedFile) {
+    image = await uploadToCloudinary(postImageInput._selectedFile);
+    if (!image) {
+      showNotification("Upload ảnh thất bại", "error");
+      return;
+    }
+  }
   // Lấy thông tin user avatar từ database
   const userRef = ref(database, "users/" + user.uid);
   const userSnap = await get(userRef);
@@ -524,7 +526,7 @@ async function handlePostFormSubmit(e) {
     title,
     content,
     tags,
-    image, // lưu base64
+    image, // lưu URL Cloudinary
     authorId: user.uid,
     authorName: user.displayName || "Ẩn danh",
     // Lấy ảnh đại diện
@@ -538,18 +540,17 @@ async function handlePostFormSubmit(e) {
 
   try {
     await push(ref(database, "blogs"), blogData);
-    alert("Đăng bài thành công! Chờ admin duyệt bài.");
+    showNotification("Đăng bài thành công! Chờ admin duyệt bài.", "success");
     e.target.reset();
     simpleMde.value("");
-    document.getElementById("post-modal").style.display = "none";
+    closeModal(document.getElementById("post-modal"));
 
-    // Xóa ảnh tạm sau khi đăng thành công
-    localStorage.removeItem("blog-image-temp");
-    sessionStorage.removeItem("blog-image-temp");
+    // Xóa tham chiếu file tạm sau khi đăng thành công
+    if (postImageInput) postImageInput._selectedFile = null;
     if (imagePreview) imagePreview.style.display = "none";
 
     loadBlogsFromDatabase();
   } catch (err) {
-    alert("Có lỗi khi đăng bài. Vui lòng thử lại!");
+    showNotification("Có lỗi khi đăng bài. Vui lòng thử lại!", "error");
   }
 }
