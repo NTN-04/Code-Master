@@ -7,6 +7,9 @@ import {
   update,
 } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-database.js";
 import { auth, database } from "./firebaseConfig.js";
+import { uploadToCloudinary } from "./cloudinary-service.js";
+import { openModal, closeModal, attachModalDismiss } from "./utils/modal.js";
+import { showFloatingNotification as showToast } from "./utils/notifications.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-auth.js";
 
 // Các phần tử DOM
@@ -310,13 +313,10 @@ function handleEditBlog(blog) {
   const editImagePreview = document.getElementById("image-preview");
 
   if (editBlogModal) {
-    editBlogModal.style.display = "flex";
+    openModal(editBlogModal, { display: "flex" });
+    // Đóng modal backdrop và btn close
+    attachModalDismiss(editBlogModal, { closeOnBackdrop: true });
   }
-  // Đóng modal
-  closeEditModal.onclick = () => (editBlogModal.style.display = "none");
-  window.addEventListener("click", (e) => {
-    if (e.target === editBlogModal) editBlogModal.style.display = "none";
-  });
 
   // SimpleMDE
   if (!window.simpleMDE) {
@@ -373,17 +373,20 @@ function handleEditBlog(blog) {
     editImagePreview.style.display = "none";
   }
 
-  // hiển thị ảnh preview
+  // hiển thị ảnh preview (không dùng Base64)
   editImageInput.onchange = (e) => {
     const file = e.target.files[0];
     if (!file) return;
-    const reader = new FileReader();
-    reader.onload = (evt) => {
-      editImagePreview.src = evt.target.result;
-      editImagePreview.style.display = "block";
-      localStorage.setItem("myBlog-edit-image", evt.target.result);
-    };
-    reader.readAsDataURL(file);
+    if (!file.type.startsWith("image/")) return;
+    if (file.size > 5 * 1024 * 1024) {
+      showToast("Ảnh tối đa 5MB", "error");
+      return;
+    }
+    const url = URL.createObjectURL(file);
+    editImagePreview.src = url;
+    editImagePreview.style.display = "block";
+    editImageInput._selectedFile = file;
+    localStorage.removeItem("myBlog-edit-image");
   };
 
   // Xử lý submit
@@ -391,11 +394,11 @@ function handleEditBlog(blog) {
     e.preventDefault();
     // Validate
     if (!editTitleInput.value.trim()) {
-      showToast("Vui lòng nhập tiêu đề!", "error");
+      showToast("Vui lòng nhập tiêu đề!", "warning");
       return;
     }
     if (!mde.value().trim()) {
-      showToast("Vui lòng nhập nội dung!", "error");
+      showToast("Vui lòng nhập nội dung!", "warning");
       return;
     }
     // Chuẩn bị dữ liệu
@@ -403,9 +406,6 @@ function handleEditBlog(blog) {
       .split(",")
       .map((t) => t.trim().toLowerCase())
       .filter(Boolean);
-
-    // Lấy ảnh mới từ localStorage (nếu có)
-    const newImage = localStorage.getItem("myBlog-edit-image");
 
     // Tạo object dữ liệu update
     const blogData = {
@@ -415,10 +415,14 @@ function handleEditBlog(blog) {
       updatedAt: new Date().toLocaleDateString("vi-VN"),
       status: "pending",
     };
-
-    // Nếu có ảnh mới thì cập nhật, không thì giữ nguyên ảnh cũ
-    if (newImage) {
-      blogData.image = newImage;
+    // Nếu có ảnh mới thì upload Cloudinary, không thì giữ nguyên ảnh cũ
+    if (editImageInput._selectedFile) {
+      const url = await uploadToCloudinary(editImageInput._selectedFile);
+      if (!url) {
+        showToast("Upload ảnh thất bại", "error");
+        return;
+      }
+      blogData.image = url;
     }
     try {
       // Cập nhật Firebase
@@ -426,11 +430,11 @@ function handleEditBlog(blog) {
       await update(blogRef, blogData);
 
       e.target.reset();
-      // Xóa ảnh tạm trong localStorage sau khi lưu thành công
-      localStorage.removeItem("myBlog-edit-image");
+      // Xóa tham chiếu file tạm
+      editImageInput._selectedFile = null;
       showToast("Đã lưu thay đổi, chờ duyệt lại!", "success");
 
-      editBlogModal.style.display = "none";
+      closeModal(editBlogModal);
       fetchUserBlogs(); // reload lại danh sách
     } catch (err) {
       console.error("Lỗi: ", err);
@@ -460,54 +464,54 @@ function deleteBlog(blogId, blogTitle) {
 }
 
 // Hiển thị thông báo (toast)
-function showToast(message, type = "info") {
-  const toastContainer =
-    document.getElementById("toast-container") || createToastContainer();
+// function showToast(message, type = "info") {
+//   const toastContainer =
+//     document.getElementById("toast-container") || createToastContainer();
 
-  const toast = document.createElement("div");
-  toast.className = `toast toast-${type}`;
-  toast.innerHTML = `
-    <div class="toast-content">
-      <i class="${getToastIcon(type)}"></i>
-      <span>${message}</span>
-    </div>
-  `;
+//   const toast = document.createElement("div");
+//   toast.className = `toast toast-${type}`;
+//   toast.innerHTML = `
+//     <div class="toast-content">
+//       <i class="${getToastIcon(type)}"></i>
+//       <span>${message}</span>
+//     </div>
+//   `;
 
-  toastContainer.appendChild(toast);
+//   toastContainer.appendChild(toast);
 
-  setTimeout(() => {
-    toast.classList.add("show");
-  }, 10);
+//   setTimeout(() => {
+//     toast.classList.add("show");
+//   }, 10);
 
-  setTimeout(() => {
-    toast.classList.remove("show");
-    setTimeout(() => {
-      toast.remove();
-    }, 300);
-  }, 4000);
-}
+//   setTimeout(() => {
+//     toast.classList.remove("show");
+//     setTimeout(() => {
+//       toast.remove();
+//     }, 300);
+//   }, 4000);
+// }
 
-// Tạo toast container nếu chưa có
-function createToastContainer() {
-  const container = document.createElement("div");
-  container.id = "toast-container";
-  document.body.appendChild(container);
-  return container;
-}
+// // Tạo toast container nếu chưa có
+// function createToastContainer() {
+//   const container = document.createElement("div");
+//   container.id = "toast-container";
+//   document.body.appendChild(container);
+//   return container;
+// }
 
-// Lấy icon phù hợp cho từng loại toast
-function getToastIcon(type) {
-  switch (type) {
-    case "success":
-      return "fas fa-check-circle";
-    case "error":
-      return "fas fa-exclamation-circle";
-    case "warning":
-      return "fas fa-exclamation-triangle";
-    default:
-      return "fas fa-info-circle";
-  }
-}
+// // Lấy icon phù hợp cho từng loại toast
+// function getToastIcon(type) {
+//   switch (type) {
+//     case "success":
+//       return "fas fa-check-circle";
+//     case "error":
+//       return "fas fa-exclamation-circle";
+//     case "warning":
+//       return "fas fa-exclamation-triangle";
+//     default:
+//       return "fas fa-info-circle";
+//   }
+// }
 
 // Hiển thị thông báo khi không có bài viết
 function showNoPostsMessage() {

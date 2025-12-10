@@ -3,6 +3,7 @@ import {
   ref,
   get,
 } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-database.js";
+import { showFloatingNotification as showNotification } from "./utils/notifications.js";
 
 // Biến toàn cục lưu giới hạn tải, chỉ lấy 1 lần khi load trang
 let GLOBAL_DOWNLOAD_LIMIT = 10;
@@ -42,7 +43,7 @@ function downloadDocs() {
       // kiểm tra user
       const user = auth.currentUser;
       if (!user) {
-        alert("Bạn cần đăng nhập để tải tài liệu.");
+        showNotification("Bạn cần đăng nhập để tải tài liệu.", "warning");
         return;
       }
 
@@ -119,7 +120,7 @@ function downloadDocs() {
         .catch((error) => {
           // Ẩn loading nếu có lỗi
           hideLoading();
-          alert("Có lỗi khi tạo PDF: " + error.message);
+          showNotification(`Có lỗi khi tạo PDF: ${error.message}`, "error");
           console.error("PDF error:", error);
         });
     });
@@ -146,7 +147,10 @@ function limitDownload(max) {
   // Kiểm tra số lần tải
   const downloadCount = Number(localStorage.getItem(todayKey) || 0);
   if (downloadCount >= max) {
-    alert(`Vượt quá số lần tải trong ngày! (${max} lần/ngày)`);
+    showNotification(
+      `Vượt quá số lần tải trong ngày! (${max} lần/ngày)`,
+      "warning"
+    );
     return false; // Trả về false nếu vượt giới hạn
   }
 

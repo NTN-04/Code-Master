@@ -1,4 +1,5 @@
 import { database } from "../firebaseConfig.js";
+import { uploadToCloudinary } from "../cloudinary-service.js";
 import {
   ref,
   get,
@@ -8,6 +9,12 @@ import {
   onValue,
   off,
 } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-database.js";
+import { sanitizeText } from "../utils/sanitize.js";
+import { batchAppend, lazyImage } from "../utils/render.js";
+import {
+  summarizeCourseModules,
+  formatMinutesToDuration,
+} from "../utils/time.js";
 
 export default class CoursesManager {
   constructor(adminPanel) {
@@ -19,6 +26,10 @@ export default class CoursesManager {
     // Listener management
     this.coursesListenerRef = null;
     this.coursesListenerCallback = null;
+    // Debounce render to avoid excessive reflows
+    this._renderTimer = null;
+    // Image file selected for upload
+    this.imageFile = null;
   }
 
   // Tải dữ liệu khóa học
@@ -40,7 +51,9 @@ export default class CoursesManager {
       } else {
         this.courses = [];
       }
-      this.renderCoursesGrid();
+      // Debounce rendering to batch DOM updates
+      clearTimeout(this._renderTimer);
+      this._renderTimer = setTimeout(() => this.renderCoursesGrid(), 50);
     };
     onValue(this.coursesListenerRef, this.coursesListenerCallback, (error) => {
       // console.error("Error loading courses:", error);
@@ -48,7 +61,6 @@ export default class CoursesManager {
     });
   }
 
-  // Cleanup listener khi chuyển tab hoặc không cần nữa
   cleanupListener() {
     if (this.coursesListenerRef && this.coursesListenerCallback) {
       // off chỉ khi đã có ref và callback
@@ -56,9 +68,13 @@ export default class CoursesManager {
       this.coursesListenerRef = null;
       this.coursesListenerCallback = null;
     }
+    // Clear any pending render timers
+    if (this._renderTimer) {
+      clearTimeout(this._renderTimer);
+      this._renderTimer = null;
+    }
   }
 
-  // Hiển thị loading cho khóa học
   showCoursesLoading() {
     const coursesGrid = document.getElementById("admin-courses-grid");
     if (coursesGrid) {
@@ -75,50 +91,24 @@ export default class CoursesManager {
   async getCourseStats(courseId) {
     const modulesRef = ref(database, `course_modules/${courseId}`);
     const snap = await get(modulesRef);
-    let totalLessons = 0;
-    let totalMinutes = 0;
-    if (snap.exists()) {
-      const modules = snap.val();
-      Object.values(modules).forEach((module) => {
-        (module.lessons || []).forEach((lesson) => {
-          totalLessons++;
-          if (lesson.duration) {
-            // Hỗ trợ các dạng "10 phút", "10:30 phút", "1:20:00 phút"
-            let durationStr = lesson.duration.replace(/[^\d:]/g, "");
-            let parts = durationStr.split(":");
-            let minutes = 0;
-            if (parts.length === 1) {
-              minutes = parseInt(parts[0]) || 0;
-            } else if (parts.length === 2) {
-              minutes = parseInt(parts[0]) || 0;
-              let seconds = parseInt(parts[1]) || 0;
-              minutes += Math.round(seconds / 60);
-            } else if (parts.length === 3) {
-              let hours = parseInt(parts[0]) || 0;
-              let mins = parseInt(parts[1]) || 0;
-              let secs = parseInt(parts[2]) || 0;
-              minutes = hours * 60 + mins + Math.round(secs / 60);
-            }
-            totalMinutes += minutes;
-          }
-        });
-      });
-    }
-    // Format duration thành "X giờ Y phút"
-    const hours = Math.floor(totalMinutes / 60);
-    const minutes = totalMinutes % 60;
-    let durationText = "";
-    if (hours > 0) durationText += `${hours} giờ `;
-    if (minutes > 0 || hours === 0) durationText += `${minutes} phút`;
-    const stats = { totalLessons, durationText };
+    const summary = snap.exists()
+      ? summarizeCourseModules(snap.val())
+      : {
+          totalLessons: 0,
+          totalMinutes: 0,
+          durationText: formatMinutesToDuration(0),
+        };
 
     // cập nhật lại node courses
     await update(ref(database, `courses/${courseId}`), {
-      lessons: totalLessons,
-      duration: durationText,
+      lessons: summary.totalLessons,
+      duration: summary.durationText,
     });
 
-    return stats;
+    return {
+      totalLessons: summary.totalLessons,
+      durationText: summary.durationText,
+    };
   }
 
   async renderCoursesGrid() {
@@ -130,58 +120,83 @@ export default class CoursesManager {
       return new Date(b.createdAt) - new Date(a.createdAt);
     });
 
-    grid.innerHTML = "";
-
-    coursesArray.forEach((course) => {
-      const courseCard = this.createCourseCard(course);
-      grid.appendChild(courseCard);
-    });
+    const nodes = coursesArray.map((course) => this.createCourseCard(course));
+    grid.textContent = "";
+    batchAppend(grid, nodes);
   }
 
   createCourseCard(course) {
     const div = document.createElement("div");
     div.className = "admin-course-card";
 
-    div.innerHTML = `
-      <div class="course-card-image">
-        <img src="${course.image}" alt="${
-      course.title
-    }" onerror="this.src='./assets/images/img-course/html-css.png'">
-      </div>
-      <div class="course-card-content">
-        <h3 class="course-card-title">${course.title}</h3>
-        <div class="course-card-meta">
-          <span><i class="fas fa-signal"></i> ${this.getLevelText(
-            course.level
-          )}</span>
-          <span><i class="fas fa-clock"></i> ${course.duration}</span>
-          <span><i class="fas fa-book"></i> ${course.lessons} bài</span>
-        </div>
-        <p class="course-card-description line-clamp-2">${
-          course.description
-        }</p>
-        <div class="course-card-actions">
-          <div class="action-buttons">
-            <button class="btn-action btn-edit" onclick="adminPanel.courses.editCourse('${
-              course.id
-            }')" title="Chỉnh sửa">
-              <i class="fas fa-edit"></i>
-            </button>
-            <button class="btn-action btn-delete" onclick="adminPanel.courses.deleteCourse('${
-              course.id
-            }')" title="Xóa">
-              <i class="fas fa-trash"></i>
-            </button>
-            <button class="btn-action btn-detail" onclick="adminPanel.courses.openCourseDetailManager('${
-              course.id
-            }')" title="Quản lý chi tiết">
-              <i class="fas fa-tasks"></i>
-            </button>
-          </div>
-        </div>
-      </div>
-    `;
+    // Image wrapper
+    const imgWrap = document.createElement("div");
+    imgWrap.className = "course-card-image";
+    const img = lazyImage(
+      course.image,
+      sanitizeText(course.title || "Course image"),
+      "./assets/images/img-course/html-css.png"
+    );
+    imgWrap.appendChild(img);
 
+    // Content
+    const content = document.createElement("div");
+    content.className = "course-card-content";
+
+    const titleEl = document.createElement("h3");
+    titleEl.className = "course-card-title";
+    titleEl.textContent = course.title || "(Không có tiêu đề)";
+
+    const meta = document.createElement("div");
+    meta.className = "course-card-meta";
+    const levelSpan = document.createElement("span");
+    levelSpan.innerHTML = `<i class="fas fa-signal"></i> ${sanitizeText(
+      this.getLevelText(course.level)
+    )}`;
+    const clockSpan = document.createElement("span");
+    clockSpan.innerHTML = `<i class="fas fa-clock"></i> ${sanitizeText(
+      course.duration || ""
+    )}`;
+    const lessonsSpan = document.createElement("span");
+    lessonsSpan.innerHTML = `<i class="fas fa-book"></i> ${Number(
+      course.lessons || 0
+    )} bài`;
+    meta.append(levelSpan, clockSpan, lessonsSpan);
+
+    const desc = document.createElement("p");
+    desc.className = "course-card-description line-clamp-2";
+    desc.textContent = course.description || "";
+
+    const actionsWrap = document.createElement("div");
+    actionsWrap.className = "course-card-actions";
+    const actionBtns = document.createElement("div");
+    actionBtns.className = "action-buttons";
+
+    const btnEdit = document.createElement("button");
+    btnEdit.className = "btn-action btn-edit";
+    btnEdit.title = "Chỉnh sửa";
+    btnEdit.innerHTML = '<i class="fas fa-edit"></i>';
+    btnEdit.addEventListener("click", () => this.editCourse(course.id));
+
+    const btnDelete = document.createElement("button");
+    btnDelete.className = "btn-action btn-delete";
+    btnDelete.title = "Xóa";
+    btnDelete.innerHTML = '<i class="fas fa-trash"></i>';
+    btnDelete.addEventListener("click", () => this.deleteCourse(course.id));
+
+    const btnDetail = document.createElement("button");
+    btnDetail.className = "btn-action btn-detail";
+    btnDetail.title = "Quản lý chi tiết";
+    btnDetail.innerHTML = '<i class="fas fa-tasks"></i>';
+    btnDetail.addEventListener("click", () =>
+      this.openCourseDetailManager(course.id)
+    );
+
+    actionBtns.append(btnEdit, btnDelete, btnDetail);
+    actionsWrap.appendChild(actionBtns);
+
+    content.append(titleEl, meta, desc, actionsWrap);
+    div.append(imgWrap, content);
     return div;
   }
 
@@ -305,7 +320,7 @@ export default class CoursesManager {
       preview.src = "";
       preview.style.display = "none";
     }
-    this.imageBase64 = null;
+    this.imageFile = null;
 
     this.adminPanel.showModal("course-modal");
     // xử lý file ảnh và hiện preview
@@ -313,7 +328,7 @@ export default class CoursesManager {
   }
 
   // xử lý dữ liệu ảnh trước khi submit
-  imageBase64 = null;
+  imageFile = null;
   setupCourseImage() {
     // Luôn gắn event change cho input file, không bị lặp event
     const imageInput = document.getElementById("course-image");
@@ -331,7 +346,7 @@ export default class CoursesManager {
           preview.src = "";
           preview.style.display = "none";
         }
-        this.imageBase64 = null;
+        this.imageFile = null;
         return;
       }
       if (!file.type.startsWith("image/")) {
@@ -341,28 +356,25 @@ export default class CoursesManager {
           preview.src = "";
           preview.style.display = "none";
         }
-        this.imageBase64 = null;
+        this.imageFile = null;
         return;
       }
-      if (file.size > 2 * 1024 * 1024) {
-        this.adminPanel.showNotification("Ảnh tối đa 2MB!", "error");
+      if (file.size > 5 * 1024 * 1024) {
+        this.adminPanel.showNotification("Ảnh tối đa 5MB!", "error");
         imageInput.value = "";
         if (preview) {
           preview.src = "";
           preview.style.display = "none";
         }
-        this.imageBase64 = null;
+        this.imageFile = null;
         return;
       }
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        this.imageBase64 = e.target.result;
-        if (preview) {
-          preview.src = this.imageBase64;
-          preview.style.display = "block";
-        }
-      };
-      reader.readAsDataURL(file);
+      this.imageFile = file;
+      if (preview) {
+        const objectUrl = URL.createObjectURL(file);
+        preview.src = objectUrl;
+        preview.style.display = "block";
+      }
     };
     imageInput.addEventListener("change", imageInput._previewEventHandler);
   }
@@ -377,11 +389,23 @@ export default class CoursesManager {
       ?.value.toLowerCase()
       .trim();
 
-    // Lấy ảnh đã được xử lý: ưu tiên ảnh mới chọn, nếu không thì lấy ảnh cũ khi edit
-    let imageBase64 = this.imageBase64;
-    if (!imageBase64 && courseId) {
-      const course = this.courses.find((c) => c.id === courseId);
-      imageBase64 = course ? course.image : "";
+    // Xử lý ảnh: nếu có file mới chọn thì upload Cloudinary, nếu không giữ ảnh cũ khi edit
+    let imageUrl = "";
+    try {
+      if (this.imageFile) {
+        const { uploadToCloudinary } = await import("../cloudinary-service.js");
+        imageUrl = await uploadToCloudinary(this.imageFile);
+        if (!imageUrl) {
+          this.adminPanel.showNotification("Upload ảnh thất bại", "error");
+          return;
+        }
+      } else if (courseId) {
+        const course = this.courses.find((c) => c.id === courseId);
+        imageUrl = course ? course.image || "" : "";
+      }
+    } catch (err) {
+      this.adminPanel.showNotification("Lỗi upload ảnh", "error");
+      return;
     }
 
     const courseData = {
@@ -391,7 +415,7 @@ export default class CoursesManager {
       duration: document.getElementById("course-duration").value,
       lessons: parseInt(document.getElementById("course-lessons").value),
       category: document.getElementById("course-category").value,
-      image: imageBase64,
+      image: imageUrl,
       updatedAt: new Date().toISOString().slice(0, 10),
     };
 
@@ -437,6 +461,8 @@ export default class CoursesManager {
       }
 
       this.adminPanel.hideModal("course-modal");
+      // Reset image state
+      this.imageFile = null;
       // this.loadData();
     } catch (error) {
       console.error("Error saving course:", error);

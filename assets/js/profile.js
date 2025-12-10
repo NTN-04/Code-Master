@@ -1,4 +1,5 @@
 import { auth, database } from "./firebaseConfig.js";
+import { uploadToCloudinary } from "./cloudinary-service.js";
 import {
   updateProfile,
   onAuthStateChanged,
@@ -14,6 +15,8 @@ import {
   remove,
 } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-database.js";
 import progressManager from "./progress-manager.js";
+import { formatDate } from "./utils/date.js";
+import { showFloatingNotification as showNotification } from "./utils/notifications.js";
 
 // Chức năng Trang Hồ Sơ
 document.addEventListener("DOMContentLoaded", function () {
@@ -226,27 +229,23 @@ function initSettingsForms() {
 
   // Nếu người dùng chọn ảnh mới
   const fileInput = document.getElementById("profile-picture");
-  let base64Image = null; // Lưu tạm base64 để dùng khi submit
+  let selectedFile = null; // Lưu tạm file để dùng khi submit
 
   // Khi chọn ảnh, hiển thị review ngay
   if (fileInput) {
     fileInput.addEventListener("change", function () {
       if (fileInput.files && fileInput.files[0]) {
-        // Kiểm tra kích thước file (tối đa 2MB)
-        if (fileInput.size > 2 * 1024 * 1024) {
-          showNotification("Kích thước file quá lớn (tối đa 2MB)", "error");
+        // Kiểm tra kích thước file (tối đa 5MB)
+        if (fileInput.files[0].size > 5 * 1024 * 1024) {
+          showNotification("Kích thước file quá lớn (tối đa 5MB)", "error");
           return;
         }
-        const reader = new FileReader();
-        reader.onload = function (e) {
-          base64Image = e.target.result;
-          // Hiển thị review
-          const avatarReview = document.querySelector(
-            ".profile-picture-upload img"
-          );
-          if (avatarReview) avatarReview.src = base64Image;
-        };
-        reader.readAsDataURL(fileInput.files[0]);
+        selectedFile = fileInput.files[0];
+        const url = URL.createObjectURL(selectedFile);
+        const avatarReview = document.querySelector(
+          ".profile-picture-upload img"
+        );
+        if (avatarReview) avatarReview.src = url;
       }
     });
   }
@@ -269,12 +268,16 @@ function initSettingsForms() {
       try {
         const user = auth.currentUser;
         if (user) {
-          // Khi submit, có base64 thì lưu vào local
-          if (base64Image) {
-            localStorage.setItem("profile-avatar-" + user.uid, base64Image);
-            // hiển thị ra giao diện
+          // Nếu có file ảnh, upload Cloudinary
+          let avatarUrl = "";
+          if (selectedFile) {
+            avatarUrl = await uploadToCloudinary(selectedFile);
+            if (!avatarUrl) {
+              showNotification("Upload ảnh thất bại", "error");
+              return;
+            }
             const avatarImg = document.querySelector(".profile-avatar img");
-            if (avatarImg) avatarImg.src = base64Image;
+            if (avatarImg) avatarImg.src = avatarUrl;
           }
 
           // Đồng bộ lại với local
@@ -296,8 +299,8 @@ function initSettingsForms() {
             username: username,
             bio: bio,
           };
-          if (base64Image) {
-            updateData.avatar = base64Image;
+          if (avatarUrl) {
+            updateData.avatar = avatarUrl;
           }
           const userRef = ref(database, "users/" + user.uid);
           await update(userRef, updateData);
@@ -840,40 +843,4 @@ function removeBookmark() {
       }
     });
   });
-}
-
-// Định dạng ngày tháng
-function formatDate(timestamp) {
-  if (!timestamp) return "";
-  const d = new Date(timestamp);
-  return d.toLocaleDateString("vi-VN", {
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-  });
-}
-// Hiển thị thông báo
-function showNotification(message, type = "success") {
-  // Kiểm tra xem đã có thông báo nào chưa
-  let notification = document.querySelector(".notification");
-
-  // Nếu chưa có, tạo một thông báo mới
-  if (!notification) {
-    notification = document.createElement("div");
-    notification.classList.add("notification");
-    document.body.appendChild(notification);
-  }
-
-  // Đặt lớp kiểu và nội dung thông báo
-  notification.className = "notification";
-  notification.classList.add(type);
-  notification.textContent = message;
-
-  // Hiển thị thông báo
-  notification.classList.add("show");
-
-  // Tự động ẩn thông báo sau 3 giây
-  setTimeout(() => {
-    notification.classList.remove("show");
-  }, 4000);
 }
