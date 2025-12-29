@@ -1,0 +1,284 @@
+/* Thiết kế chứng chỉ */
+
+/* Ẩn template khỏi giao diện web */
+/* Modal review toàn màn hình */
+.cert-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.cert-modal.show {
+  display: flex;
+  pointer-events: auto;
+}
+
+.cert-modal-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(5, 10, 25, 0.7);
+  backdrop-filter: blur(8px);
+}
+
+.cert-modal-content {
+  position: relative;
+  z-index: 1;
+  max-width: 100%;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  transform: scale(0.92);
+  transform-origin: center;
+}
+
+@media (max-width: 1366px) {
+  .cert-modal-content {
+    transform: scale(0.82);
+  }
+}
+
+@media (max-width: 1100px) {
+  .cert-modal-content {
+    transform: scale(0.74);
+  }
+}
+
+/* CSS cho chứng chỉ khi in ra */
+.certificate-container {
+  width: 297mm; /* Khổ A4 Ngang */
+  height: 210mm;
+  padding: 10mm;
+  background-color: #0f172a; /* Màu xanh đen sang trọng */
+  color: #f8fafc;
+  box-sizing: border-box;
+  font-family: "Montserrat", sans-serif;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+
+/* Khung viền vàng kép */
+.cert-border {
+  width: 100%;
+  height: 100%;
+  border: 2px solid #d4af37;
+  padding: 5px;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.cert-border::before {
+  content: "";
+  position: absolute;
+  top: 5px;
+  left: 5px;
+  right: 5px;
+  bottom: 5px;
+  border: 1px solid rgba(212, 175, 55, 0.5);
+}
+
+/* Họa tiết góc (Corner Ornaments) dùng CSS gradient */
+.corner {
+  position: absolute;
+  width: 40px;
+  height: 40px;
+  border: 4px solid #d4af37;
+  transition: all 0.3s;
+}
+.tl {
+  top: 20px;
+  left: 20px;
+  border-right: none;
+  border-bottom: none;
+}
+.tr {
+  top: 20px;
+  right: 20px;
+  border-left: none;
+  border-bottom: none;
+}
+.bl {
+  bottom: 20px;
+  left: 20px;
+  border-right: none;
+  border-top: none;
+}
+.br {
+  bottom: 20px;
+  right: 20px;
+  border-left: none;
+  border-top: none;
+}
+
+/* Nội dung chính */
+.cert-content {
+  text-align: center;
+  z-index: 10;
+  width: 80%;
+}
+
+.cert-header {
+  font-family: "Cinzel", serif;
+  font-size: 42px;
+  letter-spacing: 4px;
+  color: #d4af37;
+  margin-bottom: 10px;
+  text-transform: uppercase;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.cert-subheader {
+  font-size: 18px;
+  letter-spacing: 2px;
+  color: #94a3b8;
+  text-transform: uppercase;
+  margin-bottom: 40px;
+}
+
+.cert-present {
+  font-size: 16px;
+  font-style: italic;
+  color: #cbd5e1;
+  margin-bottom: 20px;
+}
+
+/* Tên học viên - Điểm nhấn lớn nhất */
+.cert-student-name {
+  font-family: "Great Vibes", cursive; /* Font viết tay */
+  font-size: 80px;
+  color: #fff;
+  margin: 10px 0;
+  line-height: 1.2;
+  text-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
+  border-bottom: 1px solid rgba(212, 175, 55, 0.3);
+  display: inline-block;
+  padding: 0 40px;
+}
+
+.cert-input {
+  background: transparent;
+  border: none;
+  border-bottom: 1px dashed rgba(212, 175, 55, 0.6);
+  outline: none;
+  text-align: center;
+  width: 100%;
+  color: #fff;
+  caret-color: #d4af37;
+}
+
+.cert-display {
+  border-bottom: 1px solid rgba(212, 175, 55, 0.3);
+}
+
+.cert-course-label {
+  margin-top: 30px;
+  font-size: 16px;
+  color: #cbd5e1;
+}
+
+.cert-course-title {
+  font-family: "Cinzel", serif;
+  font-size: 28px;
+  font-weight: 700;
+  color: #d4af37;
+  margin: 10px 0 40px 0;
+}
+
+/* Chữ ký và Ngày */
+.cert-footer {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 50px;
+  padding: 0 50px;
+}
+
+.footer-item {
+  text-align: center;
+  width: 200px;
+}
+
+.signature-line {
+  border-bottom: 1px solid #94a3b8;
+  margin-bottom: 10px;
+  padding-bottom: 5px;
+  font-family: "Great Vibes", cursive;
+  font-size: 24px;
+  color: #d4af37;
+}
+
+.footer-label {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #64748b;
+}
+
+/* Logo watermark chìm */
+.cert-watermark {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 300px;
+  color: rgba(255, 255, 255, 0.03);
+  z-index: 0;
+}
+
+/* Huy hiệu vàng */
+.cert-seal {
+  position: absolute;
+  bottom: 90px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 70px;
+  height: 70px;
+  background: radial-gradient(circle, #fcd34d 0%, #d4af37 100%);
+  border-radius: 50%;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #78350f;
+  font-weight: bold;
+  font-size: 12px;
+  text-align: center;
+  border: 4px double #78350f;
+}
+
+.cert-meta {
+  margin-top: 32px;
+  font-size: 12px;
+  letter-spacing: 2px;
+  color: #94a3b8;
+}
+
+.cert-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 12px 16px;
+  color: #e2e8f0;
+}
+
+.cert-note {
+  font-size: 14px;
+  opacity: 0.86;
+}
+
+.cert-buttons {
+  display: flex;
+  gap: 10px;
+}

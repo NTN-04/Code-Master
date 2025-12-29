@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Giới thiệu khóa học | CodeMaster</title>
+    <link rel="icon" href="./assets/images/favicon.ico" type="image/x-icon" />
+    <link rel="stylesheet" href="./assets/css/style.css" />
+    <link rel="stylesheet" href="./assets/css/course.css" />
+    <link rel="stylesheet" href="./assets/css/course-intro.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <!-- Thư viện Marked.js để render Markdown -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  </head>
+  <body>
+    <!-- Header -->
+    <header id="header-placeholder"></header>
+
+    <!-- Course Intro Content -->
+    <main class="course-intro-container">
+      <!-- Main Content -->
+      <div class="course-intro-main" id="course-intro-main">
+        <!-- Header -->
+        <div class="course-intro-header">
+          <h1 id="course-title">Tên khóa học</h1>
+          <div class="course-intro-meta">
+            <span class="course-level-badge" id="course-level">Beginner</span>
+            <span
+              ><i class="far fa-clock"></i>
+              <span id="course-duration">0 giờ</span></span
+            >
+            <span
+              ><i class="far fa-file-alt"></i>
+              <span id="course-lessons">0 bài học</span></span
+            >
+          </div>
+        </div>
+
+        <!-- Description -->
+        <div class="course-description">
+          <p id="course-description-text">Mô tả khóa học...</p>
+        </div>
+
+        <!-- Detailed Description (Markdown) -->
+        <div class="detailed-description" id="detailed-description"></div>
+
+        <!-- Learning Outcomes -->
+        <div class="learning-outcomes-box">
+          <h2><i class="fas fa-lightbulb"></i> Bạn sẽ học được gì?</h2>
+          <div class="outcomes-list" id="outcomes-list">
+            <!-- Dynamically populated -->
+          </div>
+        </div>
+
+        <!-- Course Content -->
+        <div class="course-content-box">
+          <h2><i class="fas fa-list"></i> Nội dung khóa học</h2>
+          <ul class="course-modules-list" id="course-modules-list">
+            <!-- Dynamically populated -->
+          </ul>
+        </div>
+
+        <!-- Requirements -->
+        <div class="requirements-box">
+          <h2><i class="fas fa-check-circle"></i> Yêu cầu bắt buộc</h2>
+          <div class="requirements-list" id="requirements-list">
+            <!-- Dynamically populated -->
+          </div>
+        </div>
+      </div>
+
+      <!-- Sidebar -->
+      <aside class="course-intro-sidebar" id="course-intro-sidebar">
+        <!-- Thumbnail/Video -->
+        <div class="course-thumbnail-wrapper">
+          <img
+            id="course-thumbnail"
+            src="./assets/images/img-course/html-css.png"
+            alt="Course Thumbnail"
+          />
+          <!-- Video will be dynamically injected if available -->
+        </div>
+
+        <!-- Sidebar Content -->
+        <div class="sidebar-content">
+          <!-- Price -->
+          <div class="course-price">
+            <div class="price-tag" id="course-price">Miễn phí</div>
+          </div>
+
+          <!-- Action Button -->
+          <a href="#" class="enrollment-button primary" id="enrollment-button">
+            <i class="fas fa-user-plus"></i>
+            <span>Đăng ký ngay</span>
+          </a>
+
+          <!-- Sidebar Info -->
+          <div class="sidebar-info">
+            <div class="sidebar-info-item">
+              <span class="label">
+                <i class="fas fa-signal"></i>
+                Cấp độ
+              </span>
+              <span class="value" id="sidebar-level">Beginner</span>
+            </div>
+            <div class="sidebar-info-item">
+              <span class="label">
+                <i class="fas fa-book"></i>
+                Tổng số bài học
+              </span>
+              <span class="value" id="sidebar-lessons">0</span>
+            </div>
+            <div class="sidebar-info-item">
+              <span class="label">
+                <i class="fas fa-clock"></i>
+                Thời lượng
+              </span>
+              <span class="value" id="sidebar-duration">0 giờ</span>
+            </div>
+          </div>
+        </div>
+      </aside>
+    </main>
+
+    <!-- Footer -->
+    <footer id="footer-placeholder"></footer>
+
+    <!-- Scripts -->
+    <script src="./assets/js/components.js"></script>
+    <script type="module" src="./assets/js/course-intro.js"></script>
+    <script type="module" src="./assets/js/auth.js"></script>
+  </body>
+</html>

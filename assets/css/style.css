@@ -6,6 +6,15 @@
 }
 
 :root {
+  /* Theme 2.0 */
+  --brand-blue: #5ebbff;
+  --brand-purple: #a174ff;
+  --brand-gradient: linear-gradient(
+    to right,
+    var(--brand-blue),
+    var(--brand-purple)
+  );
+  /* Theme 1.0 */
   --color-admin: #4b6584;
   --primary-color: #4a6fff;
   --secondary-color: #845ef7;
@@ -654,6 +663,7 @@ nav .icon {
 .course-info h3 {
   font-size: 1.25rem;
   margin-bottom: 10px;
+  color: #000;
 }
 
 .skill-level {
@@ -707,6 +717,15 @@ nav .icon {
 .progress-text {
   font-size: 0.85rem;
   color: var(--gray-dark);
+}
+#certificate-button {
+  display: none;
+  margin-top: 10px;
+  font-size: 1.2rem;
+  font-family: inherit;
+}
+#certificate-button.show {
+  display: inline-block;
 }
 
 .view-all {
@@ -963,22 +982,26 @@ footer {
   }
 }
 
-/* Loading skeleton */
+/* ===== Loading Skeleton System ===== */
+
+/* Base skeleton animation */
 .skeleton {
   background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
   background-size: 200% 100%;
   border-radius: 4px;
-  animation: skeleton-loading 1s linear infinite alternate;
+  animation: skeleton-loading 1.5s infinite;
 }
+
 @keyframes skeleton-loading {
   0% {
-    background-position: -100% 0;
+    background-position: 200% 0;
   }
   100% {
-    background-position: 100% 0;
+    background-position: -200% 0;
   }
 }
-/* cho Card Khóa Học */
+
+/* Skeleton Cards */
 .skeleton-card {
   border-radius: var(--border-radius);
   overflow: hidden;
@@ -987,7 +1010,7 @@ footer {
   width: 100%;
   height: 500px;
 }
-/* cho Card Khóa Học */
+
 .skeleton-resource-card {
   border-radius: var(--border-radius);
   overflow: hidden;
@@ -995,6 +1018,117 @@ footer {
   background-color: #fff;
   width: 100%;
   height: 215px;
+}
+
+/* Skeleton Components */
+.skeleton-image {
+  width: 100%;
+  height: 200px;
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: skeleton-loading 1.5s infinite;
+  border-radius: var(--border-radius);
+  margin-bottom: 15px;
+}
+
+.skeleton-image.large {
+  height: 300px;
+}
+
+.skeleton-avatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: skeleton-loading 1.5s infinite;
+  margin-bottom: 10px;
+}
+
+.skeleton-icon {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: skeleton-loading 1.5s infinite;
+  margin: 0 auto 15px;
+}
+
+.skeleton-title {
+  height: 24px;
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: skeleton-loading 1.5s infinite;
+  border-radius: 4px;
+  margin-bottom: 12px;
+  width: 80%;
+}
+
+.skeleton-title.large {
+  height: 32px;
+  width: 90%;
+}
+
+.skeleton-text {
+  height: 16px;
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: skeleton-loading 1.5s infinite;
+  border-radius: 4px;
+  margin-bottom: 10px;
+  width: 100%;
+}
+
+.skeleton-text.short {
+  width: 60%;
+}
+
+.skeleton-badge {
+  width: 80px;
+  height: 24px;
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: skeleton-loading 1.5s infinite;
+  border-radius: 12px;
+  display: inline-block;
+  margin-right: 10px;
+}
+
+.skeleton-button {
+  height: 40px;
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: skeleton-loading 1.5s infinite;
+  border-radius: var(--border-radius);
+  margin-top: 15px;
+}
+
+.skeleton-content {
+  padding: 15px;
+}
+
+.skeleton-meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+/* Course Intro Skeleton */
+.skeleton-container {
+  padding: 20px;
+  max-width: 800px;
+}
+
+.skeleton-sidebar {
+  padding: 20px;
+}
+
+/* Loading State Container */
+.loading-state {
+  pointer-events: none;
+  user-select: none;
 }
 
 /* Loading spinner */

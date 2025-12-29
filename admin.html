@@ -646,80 +646,159 @@
 
     <!-- Course Modal -->
     <div class="modal" id="course-modal">
-      <div class="modal-content">
+      <div class="modal-content modal-md">
         <div class="modal-header">
           <h3 id="course-modal-title">Thêm khóa học</h3>
           <button class="close-modal">&times;</button>
         </div>
         <div class="modal-body">
           <form id="course-form">
-            <!-- id course lấy từ database khi edit -->
-            <input type="hidden" id="course-id" />
-            <div class="form-group" id="form-custom-id">
-              <label>ID:</label>
-              <input
-                type="text"
-                id="course-custom-id"
-                required
-                placeholder="VD: html-css"
-              />
+            <!-- Tabs Navigation -->
+            <div class="modal-tabs">
+              <button
+                type="button"
+                class="tab-btn active"
+                data-tab="tab-course-basic"
+              >
+                Thông tin cơ bản
+              </button>
+              <button
+                type="button"
+                class="tab-btn"
+                data-tab="tab-course-detail"
+              >
+                Chi tiết & Landing Page
+              </button>
             </div>
-            <div class="form-group">
-              <label>Tiêu đề khóa học:</label>
-              <input type="text" id="course-title" required />
-            </div>
-            <div class="form-group">
-              <label>Mô tả:</label>
-              <textarea id="course-description" rows="3" required></textarea>
-            </div>
-            <div class="form-row">
-              <div class="form-group">
-                <label>Cấp độ:</label>
-                <select id="course-level" required>
-                  <option value="beginner">Người mới</option>
-                  <option value="intermediate">Trung cấp</option>
-                  <option value="advanced">Nâng cao</option>
-                </select>
-              </div>
-              <div class="form-group">
-                <label>Thời lượng:</label>
+
+            <!-- Tab 1: Thông tin cơ bản -->
+            <div id="tab-course-basic" class="tab-content active">
+              <!-- id course lấy từ database khi edit -->
+              <input type="hidden" id="course-id" />
+              <div class="form-group" id="form-custom-id">
+                <label>ID:</label>
                 <input
                   type="text"
-                  id="course-duration"
-                  placeholder="20 giờ"
+                  id="course-custom-id"
                   required
+                  placeholder="VD: html-css"
+                />
+              </div>
+              <div class="form-group">
+                <label>Tiêu đề khóa học:</label>
+                <input type="text" id="course-title" required />
+              </div>
+              <div class="form-group">
+                <label>Mô tả ngắn:</label>
+                <textarea id="course-description" rows="3" required></textarea>
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Cấp độ:</label>
+                  <select id="course-level" required>
+                    <option value="beginner">Người mới</option>
+                    <option value="intermediate">Trung cấp</option>
+                    <option value="advanced">Nâng cao</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label>Thời lượng:</label>
+                  <input
+                    type="text"
+                    id="course-duration"
+                    placeholder="20 giờ"
+                    required
+                  />
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Số bài học:</label>
+                  <input type="number" id="course-lessons" required />
+                </div>
+                <div class="form-group">
+                  <label>Danh mục:</label>
+                  <select id="course-category" required>
+                    <option value="web">Phát triển Web</option>
+                    <option value="mobile">Phát triển Mobile</option>
+                    <option value="data">Khoa học dữ liệu</option>
+                    <option value="ai">Trí tuệ nhân tạo</option>
+                  </select>
+                </div>
+              </div>
+              <div id="form-featured">
+                <input type="checkbox" id="course-featured" />
+                <label for="course-featured"> Khóa học nổi bật </label>
+              </div>
+              <div class="form-group">
+                <label>Ảnh đại diện:</label>
+                <input
+                  type="file"
+                  id="course-image"
+                  accept="image/*"
+                  required
+                />
+                <img
+                  src=""
+                  alt="ảnh đại diện"
+                  id="course-image-preview"
+                  style="width: 100px; margin-top: 5px; object-fit: cover"
                 />
               </div>
             </div>
-            <div class="form-row">
-              <div class="form-group">
-                <label>Số bài học:</label>
-                <input type="number" id="course-lessons" required />
+
+            <!-- Tab 2: Chi tiết & Landing Page -->
+            <div id="tab-course-detail" class="tab-content">
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Giá khóa học (VNĐ):</label>
+                  <input
+                    type="number"
+                    id="course-price"
+                    placeholder="0 = Miễn phí"
+                    min="0"
+                  />
+                </div>
+                <div class="form-group">
+                  <label>Video giới thiệu (Youtube Embed URL):</label>
+                  <input
+                    type="text"
+                    id="course-video-intro"
+                    placeholder="https://www.youtube.com/embed/..."
+                  />
+                </div>
               </div>
+
               <div class="form-group">
-                <label>Danh mục:</label>
-                <select id="course-category" required>
-                  <option value="web">Phát triển Web</option>
-                  <option value="mobile">Phát triển Mobile</option>
-                  <option value="data">Khoa học dữ liệu</option>
-                  <option value="ai">Trí tuệ nhân tạo</option>
-                </select>
+                <label>Mô tả chi tiết (Markdown):</label>
+                <textarea id="course-detailed-desc"></textarea>
+              </div>
+
+              <div class="form-group">
+                <label>Bạn sẽ học được gì (Mục tiêu):</label>
+                <div id="outcomes-list" class="dynamic-list"></div>
+                <button
+                  type="button"
+                  class="btn btn-sm btn-secondary"
+                  id="add-outcome-btn"
+                >
+                  <i class="fas fa-plus"></i> Thêm mục tiêu
+                </button>
+              </div>
+
+              <div class="form-group">
+                <label>Yêu cầu đầu vào:</label>
+                <div id="requirements-list" class="dynamic-list"></div>
+                <button
+                  type="button"
+                  class="btn btn-sm btn-secondary"
+                  id="add-requirement-btn"
+                >
+                  <i class="fas fa-plus"></i> Thêm yêu cầu
+                </button>
               </div>
             </div>
-            <div id="form-featured">
-              <input type="checkbox" id="course-featured" />
-              <label for="course-featured"> Khóa học nổi bật </label>
-            </div>
-            <div class="form-group">
-              <label>Ảnh đại diện:</label>
-              <input type="file" id="course-image" accept="image/*" required />
-              <img
-                src=""
-                alt="ảnh đại diện"
-                id="course-image-preview"
-                style="width: 100px; margin-top: 5px; object-fit: cover"
-              />
-            </div>
+
             <div class="form-actions">
               <button type="submit" class="btn btn-primary">Lưu</button>
               <button type="button" class="btn btn-secondary cancel-btn">

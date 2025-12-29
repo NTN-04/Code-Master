@@ -1,5 +1,6 @@
 import { auth } from "./firebaseConfig.js";
 import { signOut } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-auth.js";
+import { cacheManager } from "./utils/cache-manager.js";
 
 // Cập nhật UI dựa trên trạng thái đăng nhập
 function updateUIBasedOnLoginState() {
@@ -80,8 +81,18 @@ function updateNavList(navList, isLoggedIn) {
     // Gắn sự kiện đăng xuất
     logoutBtn.onclick = function (e) {
       e.preventDefault();
+
+      //Lấy userId trước khi đăng xuất
+      const currentUserId = auth.currentUser?.uid;
+
       signOut(auth).then(() => {
         localStorage.removeItem("codemaster_user");
+
+        //Clear user-specific cache khi logout
+        if (currentUserId) {
+          cacheManager.clearUserCache(currentUserId);
+        }
+
         updateNavigationMenu(false);
         window.location.href = rootPath + "index.html";
       });

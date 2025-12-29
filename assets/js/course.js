@@ -6,6 +6,7 @@ import {
 } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-database.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-auth.js";
 import CommentSystem from "./comment-system.js";
+import { issueCertificate } from "./certificate-service.js";
 
 // Các phần tử DOM cho trang khóa học
 document.addEventListener("DOMContentLoaded", async function () {
@@ -27,6 +28,13 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 // Biến lưu bộ nhớ đệm (cache)
 const moduleCache = new Map();
+
+// Lắng nghe sự kiện đăng xuất để xóa cache
+onAuthStateChanged(auth, (user) => {
+  if (!user) {
+    moduleCache.clear();
+  }
+});
 
 // Biến lưu hệ thống bình luận
 let commentSystem = null;
@@ -345,6 +353,27 @@ function updateProgressUI(progressPercentage) {
     if (progressElement && progressText) {
       progressElement.style.width = `${progressPercentage}%`;
       progressText.textContent = `${progressPercentage}% Hoàn Thành`;
+    }
+  }
+
+  const certificateBtn = document.getElementById("certificate-button");
+  if (certificateBtn) {
+    if (progressPercentage === 100) {
+      certificateBtn.classList.add("show");
+      if (!certificateBtn.dataset.bound) {
+        certificateBtn.addEventListener("click", async () => {
+          const courseId = getCourseIdFromUrl();
+          const titleEl = document.querySelector(
+            ".course-info .course-info-title"
+          );
+          const courseTitle =
+            titleEl?.textContent?.trim() || "Khóa học CodeMaster";
+          await issueCertificate(courseId, courseTitle);
+        });
+        certificateBtn.dataset.bound = "true";
+      }
+    } else {
+      certificateBtn.classList.remove("show");
     }
   }
 }

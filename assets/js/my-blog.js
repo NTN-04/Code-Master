@@ -33,6 +33,7 @@ async function checkAuth() {
   // Lấy user từ Firebase Auth
   onAuthStateChanged(auth, async (user) => {
     if (!user) {
+      userBlogs = []; // Xóa dữ liệu bài viết khi đăng xuất
       window.location.href = "login.html";
       return;
     }

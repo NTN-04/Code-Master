@@ -1,14 +1,20 @@
-import { database } from "./firebaseConfig.js";
+import { auth, database } from "./firebaseConfig.js";
 import {
   ref,
   get,
 } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-database.js";
+import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-auth.js";
 import progressManager from "./progress-manager.js";
+import { cacheManager, CACHE_KEYS } from "./utils/cache-manager.js";
+import loadingSkeleton from "./utils/loading-skeleton.js";
+import { getUserEnrollments } from "./utils/enrollment.js";
 
 // Chức năng trang khóa học
 document.addEventListener("DOMContentLoaded", function () {
-  // Tải khóa học từ database
-  loadCoursesFromDatabase();
+  // Theo dõi trạng thái đăng nhập để đồng bộ CTA thông minh
+  onAuthStateChanged(auth, async (user) => {
+    await loadCoursesFromDatabase(user);
+  });
 
   // Khởi tạo bộ lọc khóa học (sẽ chạy sau khi tải xong dữ liệu)
   initCourseFiltering();
@@ -17,36 +23,41 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 // Tải khóa học từ Firebase Realtime Database
-async function loadCoursesFromDatabase() {
+async function loadCoursesFromDatabase(user) {
+  const coursesGrid = document.querySelector(".courses-grid");
+  if (!coursesGrid) return;
+
   try {
     // Hiển thị loading
     showCoursesLoading();
 
-    // Lấy dữ liệu khóa học từ database
-    const coursesRef = ref(database, "courses");
-    const snapshot = await get(coursesRef);
+    // Lấy dữ liệu khóa học, danh mục và trạng thái ghi danh song song
+    const [enrolledCourses, coursesSnapshot, categoriesSnapshot] =
+      await Promise.all([
+        getUserEnrollments(user?.uid),
+        get(ref(database, "courses")),
+        get(ref(database, "categories")),
+      ]);
 
-    if (snapshot.exists()) {
-      const coursesData = snapshot.val();
-
-      // Tải thêm dữ liệu categories để lấy thông tin màu sắc
-      const categoriesRef = ref(database, "categories");
-      const categoriesSnapshot = await get(categoriesRef);
+    if (coursesSnapshot.exists()) {
+      const coursesData = coursesSnapshot.val();
       const categoriesData = categoriesSnapshot.exists()
         ? categoriesSnapshot.val()
         : {};
 
       // Render khóa học
-      await renderCourses(coursesData, categoriesData);
+      await renderCourses(coursesData, categoriesData, enrolledCourses);
 
       // Khởi tạo thanh tiến trình từ firebase
       progressManager.initProgressBars();
     } else {
       showNoCoursesMessage();
+      loadingSkeleton.hide(coursesGrid);
     }
   } catch (error) {
     console.error("Lỗi khi tải khóa học:", error);
     showErrorMessage();
+    loadingSkeleton.hide(coursesGrid);
   }
 }
 
@@ -54,22 +65,16 @@ async function loadCoursesFromDatabase() {
 function showCoursesLoading() {
   const coursesGrid = document.querySelector(".courses-grid");
   if (coursesGrid) {
-    let skeletonHTML = "";
-
-    // Tạo 6 skeleton card
-    for (let i = 0; i < 6; i++) {
-      skeletonHTML += `
-        <div class="course-card skeleton skeleton-card">  
-        </div>
-      `;
-    }
-
-    coursesGrid.innerHTML = skeletonHTML;
+    loadingSkeleton.showCourses(coursesGrid, 6);
   }
 }
 
 // Render khóa học từ dữ liệu database
-async function renderCourses(coursesData, categoriesData) {
+async function renderCourses(
+  coursesData,
+  categoriesData,
+  enrolledCourses = new Set()
+) {
   const coursesGrid = document.querySelector(".courses-grid");
   if (!coursesGrid) return;
 
@@ -78,24 +83,30 @@ async function renderCourses(coursesData, categoriesData) {
     return new Date(b.createdAt) - new Date(a.createdAt);
   });
 
-  // Tạo HTML cho tất cả khóa học (chờ stats từng khóa học)
-  // let coursesHTML = "";
-  // for (const course of coursesArray) {
-  //   // stats lưu totalLessons và totalDuration
-  //   const stats = await getCourseStats(course.id);
-  //   coursesHTML += createCourseCard(course, categoriesData, stats);
-  // }
   coursesGrid.innerHTML = coursesArray
-    .map((course) => createCourseCard(course, categoriesData))
+    .map((course) => createCourseCard(course, categoriesData, enrolledCourses))
     .join("");
+
+  // Remove loading state để enable interaction
+  loadingSkeleton.hide(coursesGrid);
 }
 
 // Tạo HTML cho một thẻ khóa học
-function createCourseCard(course, categoriesData) {
+function createCourseCard(course, categoriesData, enrolledCourses) {
   const category = categoriesData[course.category] || {};
   const categoryName = category.name || course.category;
   const categoryIcon = category.icon || "📚";
   const categoryColor = category.color || "#fff";
+  const introUrl = `course-intro.html?id=${course.id}`;
+  const isEnrolled = enrolledCourses.has(course.id);
+  const buttonHref = isEnrolled
+    ? `course-detail.html?id=${course.id}`
+    : introUrl;
+  const buttonClass = isEnrolled ? "btn btn-primary" : "btn btn-secondary";
+  const buttonText = isEnrolled ? "Tiếp tục học" : "Xem chi tiết";
+  const prefetchAttr = isEnrolled
+    ? ""
+    : ` onmouseenter="prefetchCourseData('${course.id}')"`;
 
   // Map level sang tiếng Việt
   const levelMap = {
@@ -110,7 +121,9 @@ function createCourseCard(course, categoriesData) {
     course.category
   }">
       <div class="course-image">
-        <img src="${course.image}" alt="${course.title}" loading="lazy" />
+        <a href="${introUrl}">
+          <img src="${course.image}" alt="${course.title}" loading="lazy" />
+        </a>
         <div class="course-tag" style="color:${categoryColor}">${categoryIcon} ${categoryName}</div>
         ${
           course.featured
@@ -119,7 +132,7 @@ function createCourseCard(course, categoriesData) {
         }
       </div>
       <div class="course-info">
-        <h3>${course.title}</h3>
+        <a href="${introUrl}"><h3>${course.title}</h3></a>
         <div class="skill-level">
           <span class="level ${course.level}">${levelText}</span>
         </div>
@@ -136,17 +149,10 @@ function createCourseCard(course, categoriesData) {
           </div>
           <span class="progress-text">0% Hoàn Thành</span>
         </div>
-        <a href="${startCourse(
-          course.id
-        )}" class="btn btn-primary">Bắt Đầu Học</a>
+        <a href="${buttonHref}" class="${buttonClass}"${prefetchAttr}>${buttonText}</a>
       </div>
     </div>
   `;
-}
-
-// Khi click nút bắt đầu học
-function startCourse(courseId) {
-  return `course-detail.html?id=${courseId}`;
 }
 
 // Hiển thị thông báo khi không có khóa học
@@ -281,3 +287,35 @@ function updateCategoryFilter(categoriesData) {
     categoryFilter.appendChild(option);
   });
 }
+
+// Prefetch course data khi hover vào nút
+window.prefetchCourseData = async function (courseId) {
+  // Chỉ prefetch nếu chưa có cache
+  if (!cacheManager.has(CACHE_KEYS.COURSE_DATA(courseId))) {
+    try {
+      console.log("Prefetching course:", courseId);
+
+      // Load song song để nhanh
+      const [courseSnapshot, modulesSnapshot] = await Promise.all([
+        get(ref(database, `courses/${courseId}`)),
+        get(ref(database, `course_modules/${courseId}`)),
+      ]);
+
+      if (courseSnapshot.exists()) {
+        const courseData = courseSnapshot.val();
+        const modulesData = modulesSnapshot.exists()
+          ? modulesSnapshot.val()
+          : {};
+
+        // Cache data
+        cacheManager.set(CACHE_KEYS.COURSE_DATA(courseId), courseData);
+        cacheManager.set(CACHE_KEYS.COURSE_MODULES(courseId), modulesData);
+
+        console.log("Prefetch complete for:", courseId);
+      }
+    } catch (error) {
+      console.warn("Prefetch failed:", error);
+      // Không hiển thị lỗi cho user
+    }
+  }
+};

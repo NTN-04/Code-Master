@@ -8,6 +8,7 @@ import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.8.0/fi
 import { debounce } from "./utils/render.js";
 import { showFloatingNotification as showNotification } from "./utils/notifications.js";
 import { openModal, attachModalDismiss } from "./utils/modal.js";
+import loadingSkeleton from "./utils/loading-skeleton.js";
 
 // Chức năng trang Tài Nguyên
 document.addEventListener("DOMContentLoaded", function () {
@@ -327,15 +328,7 @@ function showLoading(tabId) {
     `#${tabId} .resources-grid, #${tabId} .examples-grid, #${tabId} .videos-grid, #${tabId} .books-grid, #${tabId} .tools-grid`
   );
   if (grid) {
-    let skeletonHTML = "";
-    // tạo 6 skeleton
-    for (let i = 0; i < 6; i++) {
-      skeletonHTML += `
-        <div class="skeleton skeleton-resource-card">  
-        </div>
-      `;
-    }
-    grid.innerHTML = skeletonHTML;
+    loadingSkeleton.showResources(grid, 6);
   }
 }
 
@@ -344,8 +337,8 @@ function hideLoading(tabId) {
   const grid = document.querySelector(
     `#${tabId} .resources-grid, #${tabId} .examples-grid, #${tabId} .videos-grid, #${tabId} .books-grid, #${tabId} .tools-grid`
   );
-  if (grid && grid.querySelector(".loading-courses")) {
-    grid.innerHTML = "";
+  if (grid) {
+    loadingSkeleton.hide(grid);
   }
 }
 // Hiển thị thông báo khi k có tài nguyên

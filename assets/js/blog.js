@@ -2,11 +2,13 @@ import { auth, database } from "./firebaseConfig.js";
 import { uploadToCloudinary } from "./cloudinary-service.js";
 import { openModal, closeModal, attachModalDismiss } from "./utils/modal.js";
 import { showFloatingNotification as showNotification } from "./utils/notifications.js";
+import loadingSkeleton from "./utils/loading-skeleton.js";
 import {
   ref,
   get,
   push,
 } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-database.js";
+import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-auth.js";
 
 // Chức năng trang blog
 document.addEventListener("DOMContentLoaded", function () {
@@ -117,6 +119,9 @@ function renderBlogsData(blogsData) {
   blogList.innerHTML = blogsToShow.length
     ? blogsToShow.map(createBlogCard).join("")
     : "<li>Chưa có bài viết nào.</li>";
+
+  // Remove loading state để enable interaction
+  loadingSkeleton.hide(blogList);
 
   // Render phân trang
   renderPagination(totalPages);
@@ -269,11 +274,7 @@ function addBlogCardClickEvents() {
 function showBlogsLoading() {
   const blogList = document.getElementById("blog-list");
   if (blogList) {
-    let skeletonHTML = "";
-    for (let i = 0; i < 3; i++) {
-      skeletonHTML += `<li class="blog-card skeleton"></li>`;
-    }
-    blogList.innerHTML = skeletonHTML;
+    loadingSkeleton.showBlogs(blogList, 4);
   }
 }
 // Hiển thị thông báo khi không có blog
@@ -398,9 +399,12 @@ function setupPostModal() {
   if (!openModalBtn || !postModal || !closeModalBtn || !postForm) return;
 
   // Luôn kiểm tra trạng thái đăng nhập khi DOMContentLoaded
-  auth.onAuthStateChanged((user) => {
+  onAuthStateChanged(auth, (user) => {
     if (!user) {
       blogCta.style.display = "none";
+      // Xóa cache khi đăng xuất
+      blogsArray = [];
+      usersMap = {};
     } else {
       const userData = JSON.parse(localStorage.getItem("codemaster_user"));
 

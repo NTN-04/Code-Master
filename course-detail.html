@@ -8,15 +8,21 @@
     <link rel="stylesheet" href="./assets/css/style.css" />
     <link rel="stylesheet" href="./assets/css/course.css" />
     <link rel="stylesheet" href="./assets/css/comments.css" />
+    <link rel="stylesheet" href="./assets/css/certificate.css" />
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Great+Vibes&family=Montserrat:wght@300;500&display=swap"
+      rel="stylesheet"
     />
     <!-- thư viện animation -->
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
     />
+    <style></style>
   </head>
 
   <body>
@@ -55,6 +61,13 @@
                   <div class="progress"></div>
                 </div>
                 <span class="progress-text">0% Hoàn Thành</span>
+                <button
+                  id="certificate-button"
+                  class="btn btn-primary certificate-action"
+                  type="button"
+                >
+                  🎖️ Nhận Chứng Chỉ
+                </button>
               </div>
             </div>
 
@@ -98,6 +111,93 @@
       </div>
     </section>
 
+    <!-- Modal Review Chứng Chỉ Toàn Màn Hình -->
+    <div id="cert-review-modal" class="cert-modal">
+      <div class="cert-modal-backdrop"></div>
+      <div class="cert-modal-content">
+        <div id="certificate-template" class="certificate-container">
+          <div class="cert-border">
+            <div class="corner tl"></div>
+            <div class="corner tr"></div>
+            <div class="corner bl"></div>
+            <div class="corner br"></div>
+
+            <div class="cert-watermark">
+              <i class="fas fa-code"></i>
+            </div>
+
+            <div class="cert-content">
+              <div class="cert-header">CodeMaster Academy</div>
+              <div class="cert-subheader">Giấy Chứng Nhận Hoàn Thành</div>
+
+              <div class="cert-present">Trân trọng trao tặng cho</div>
+
+              <!-- Trạng thái nhập tên (chưa cấp) -->
+              <input
+                id="cert-student-input"
+                class="cert-student-name cert-input"
+                type="text"
+                value="Học viên CodeMaster"
+                aria-label="Nhập tên hiển thị trên chứng chỉ"
+              />
+
+              <!-- Trạng thái đã cấp (text tĩnh) -->
+              <div
+                id="cert-student-display"
+                class="cert-student-name cert-display"
+                style="display: none"
+              >
+                Học viên CodeMaster
+              </div>
+
+              <div class="cert-course-label">
+                Đã hoàn thành xuất sắc khóa học
+              </div>
+
+              <div id="cert-course-title" class="cert-course-title">
+                Tên khóa học
+              </div>
+
+              <div class="cert-footer">
+                <div class="footer-item">
+                  <div id="cert-issued-date" class="signature-line">
+                    dd/mm/yyyy
+                  </div>
+                  <div class="footer-label">Ngày cấp</div>
+                </div>
+
+                <div class="cert-seal">
+                  <i class="fas fa-medal" style="font-size: 30px"></i>
+                </div>
+
+                <div class="footer-item">
+                  <div class="signature-line">Admin CodeMaster</div>
+                  <div class="footer-label">Giám đốc đào tạo</div>
+                </div>
+              </div>
+
+              <div class="cert-meta">
+                CERTIFICATE ID: <span id="cert-id">#000000</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="cert-actions">
+          <div class="cert-note">Kiểm tra kỹ tên trước khi lưu.</div>
+          <div class="cert-buttons">
+            <button id="cert-confirm-btn" class="btn btn-primary">
+              Xác nhận & Lưu
+            </button>
+            <button id="cert-download-btn" class="btn btn-secondary">
+              Tải PDF
+            </button>
+            <button class="btn btn-secondary" data-modal-close>Đóng</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- ChatBot AI -->
     <div id="ai-chatbot">
       <div id="ai-chat-header">
@@ -127,5 +227,7 @@
     <script src="./assets/js/chat-ai.js"></script>
     <script src="./assets/js/components.js"></script>
     <script type="module" src="./assets/js/auth.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
   </body>
 </html>
