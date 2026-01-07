@@ -9,7 +9,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
   if (!chat) return;
 
-  openBtn.onclick = () => chat.classList.add("open");
+  // Open chat from original button
+  if (openBtn) openBtn.onclick = () => chat.classList.add("open");
   closeBtn.onclick = () => chat.classList.remove("open");
 
   form.onsubmit = async (e) => {

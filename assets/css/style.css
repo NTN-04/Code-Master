@@ -718,15 +718,6 @@ nav .icon {
   font-size: 0.85rem;
   color: var(--gray-dark);
 }
-#certificate-button {
-  display: none;
-  margin-top: 10px;
-  font-size: 1.2rem;
-  font-family: inherit;
-}
-#certificate-button.show {
-  display: inline-block;
-}
 
 .view-all {
   text-align: center;

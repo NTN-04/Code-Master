@@ -1,0 +1,658 @@
+/* ==============================================
+   LEARNING LAYOUT - F8 Style
+   Uses CSS variables from style.css:
+   - var(--brand-blue): #5ebbff
+   - var(--brand-purple): #a174ff  
+   - var(--brand-gradient)
+============================================== */
+
+/* Reset for learning page */
+body.learning-body {
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  height: 100vh;
+  background-color: #f7f8fa;
+}
+
+body.learning-body header#header-placeholder,
+body.learning-body footer#footer-placeholder {
+  display: none !important;
+}
+
+/* ========================================
+   LAYOUT STRUCTURE
+======================================== */
+.learning-wrapper {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.learning-header {
+  height: 50px;
+  min-height: 50px;
+  background-color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  z-index: 100;
+}
+
+.learning-container {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+.learning-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background-color: #000;
+}
+
+.learning-sidebar {
+  width: 350px;
+  min-width: 350px;
+  background-color: #fff;
+  border-left: 1px solid #e8e8e8;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* ========================================
+   HEADER STYLES
+======================================== */
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.btn-back {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  background: transparent;
+  border: none;
+  color: #ccc;
+  font-size: 1.2rem;
+  cursor: pointer;
+  border-radius: 50%;
+  transition: background 0.2s;
+}
+
+.btn-back:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.header-logo {
+  display: flex;
+  align-items: center;
+}
+
+.header-logo img {
+  height: 32px;
+  width: auto;
+}
+
+.header-center {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0 20px;
+}
+
+.header-course-title {
+  color: var(--text-color);
+  font-size: 1rem;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 500px;
+  text-align: center;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+/* Circular Progress in Header */
+.circular-progress {
+  position: relative;
+  width: 40px;
+  height: 40px;
+}
+
+.circular-progress svg {
+  transform: rotate(-90deg);
+  width: 40px;
+  height: 40px;
+}
+
+.circular-progress .progress-bg {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.2);
+  stroke-width: 4;
+}
+
+.circular-progress .progress-bar {
+  fill: none;
+  stroke: url(#progressGradient);
+  stroke-width: 4;
+  stroke-linecap: round;
+  stroke-dasharray: 100;
+  stroke-dashoffset: 100;
+  transition: stroke-dashoffset 0.5s ease;
+}
+
+.circular-progress .progress-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: var(--text-color);
+}
+
+/* ========================================
+   MAIN CONTENT AREA
+======================================== */
+
+/* Main Scroll Area - Video + Content scroll together */
+.main-scroll-area {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  background-color: #f7f8fa;
+}
+
+/* Hide scrollbar but keep functionality */
+.main-scroll-area::-webkit-scrollbar {
+  width: 6px;
+}
+
+.main-scroll-area::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.main-scroll-area::-webkit-scrollbar-thumb {
+  background: rgba(200, 200, 200, 0.3);
+  border-radius: 3px;
+}
+
+.main-scroll-area::-webkit-scrollbar-thumb:hover {
+  background: rgba(180, 180, 180, 0.5);
+}
+
+/* Firefox */
+.main-scroll-area {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(200, 200, 200, 0.3) transparent;
+}
+
+/* Video Stage */
+.video-stage {
+  width: 100%;
+  background-color: #000;
+  position: relative;
+  display: flex;
+  justify-content: center;
+}
+
+.video-stage .lesson-video {
+  position: relative;
+  width: 85%;
+  padding-bottom: 49.8125%; /* 16:9 ratio */
+  background: #000;
+}
+
+.video-stage .lesson-video iframe,
+.video-stage .lesson-video video {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+/* Content Scroll Area - now just a container, not scrollable itself */
+.content-scroll {
+  background-color: #fff;
+  padding: 24px 32px;
+}
+
+/* Lesson Content inside scroll */
+.learning-main .lesson-container {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.learning-main .lesson-content h2 {
+  font-size: 1.5rem;
+  color: #333;
+  margin-bottom: 16px;
+  font-weight: 700;
+}
+
+.learning-main .lesson-text {
+  line-height: 1.8;
+  color: #444;
+  font-size: 1rem;
+}
+
+/* Comment Button */
+.learning-main .lesson-header-actions {
+  display: flex;
+  justify-content: flex-start;
+  margin: 20px 0;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #e8e8e8;
+}
+
+.learning-main .btn-comment-toggle {
+  padding: 10px 20px;
+  background: var(--brand-gradient);
+  border: none;
+  color: #fff;
+  font-size: 0.9rem;
+  font-weight: 500;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.learning-main .btn-comment-toggle:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(94, 187, 255, 0.35);
+}
+
+/* ========================================
+   FOOTER NAVIGATION
+======================================== */
+.learning-footer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 24px;
+  background-color: #fff;
+  border-top: 1px solid #e8e8e8;
+  min-height: 60px;
+}
+
+.footer-center {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.btn-prev-lesson,
+.btn-next-lesson {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 24px;
+  border-radius: 25px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none;
+}
+
+.btn-prev-lesson {
+  background-color: transparent;
+  border: 1px solid #ddd;
+  color: #333;
+}
+
+.btn-prev-lesson:hover {
+  background-color: #f5f5f5;
+  border-color: #ccc;
+}
+
+.btn-next-lesson {
+  background: var(--brand-gradient);
+  border: none;
+  color: #fff;
+}
+
+.btn-next-lesson:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(94, 187, 255, 0.35);
+}
+
+.btn-prev-lesson:disabled,
+.btn-next-lesson:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* ========================================
+   SIDEBAR STYLES
+======================================== */
+.sidebar-header {
+  padding: 16px 20px;
+  border-bottom: 1px solid #e8e8e8;
+  background: #fff;
+}
+
+.sidebar-header h3 {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #333;
+}
+
+.sidebar-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0;
+}
+
+.sidebar-content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.sidebar-content::-webkit-scrollbar-track {
+  background: #f9f9f9;
+}
+
+.sidebar-content::-webkit-scrollbar-thumb {
+  background: #ddd;
+  border-radius: 3px;
+}
+
+.sidebar-content::-webkit-scrollbar-thumb:hover {
+  background: #ccc;
+}
+
+/* Module List in Sidebar */
+.learning-sidebar .module-list {
+  background: transparent;
+  box-shadow: none;
+  border-radius: 0;
+}
+
+.learning-sidebar .module-list h3 {
+  display: none; /* Hidden, using sidebar-header instead */
+}
+
+.learning-sidebar .module {
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.learning-sidebar .module-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 20px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: #333;
+  background: #fafafa;
+  transition: background 0.2s;
+}
+
+.learning-sidebar .module-header:hover {
+  background: #f0f0f0;
+}
+
+.learning-sidebar .module-toggle i {
+  font-size: 0.8rem;
+  color: #666;
+  transition: transform 0.3s ease;
+}
+
+.learning-sidebar .module-header[aria-expanded="true"] .module-toggle i {
+  transform: rotate(180deg);
+}
+
+.learning-sidebar .lesson-list {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease;
+  background: #fff;
+}
+
+.learning-sidebar .lesson-list.expanded {
+  max-height: 2000px;
+}
+
+.learning-sidebar .lesson {
+  border-top: none;
+  border-bottom: 1px solid #f5f5f5;
+}
+
+.learning-sidebar .lesson:last-child {
+  border-bottom: none;
+}
+
+.learning-sidebar .lesson-link {
+  display: flex;
+  align-items: center;
+  padding: 12px 20px 12px 28px;
+  color: #666;
+  font-size: 0.9rem;
+  transition: all 0.2s;
+  position: relative;
+}
+
+.learning-sidebar .lesson-link:hover {
+  background-color: #f8f9fa;
+  color: #333;
+}
+
+/* Active lesson - F8 style */
+.learning-sidebar .lesson-link.active {
+  background: linear-gradient(
+    to right,
+    rgba(94, 187, 255, 0.1),
+    rgba(161, 116, 255, 0.1)
+  ); /* Using brand colors with opacity */
+  color: #333;
+  font-weight: 500;
+}
+
+.learning-sidebar .lesson-link.active::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: linear-gradient(
+    to bottom,
+    var(--brand-blue),
+    var(--brand-purple)
+  );
+}
+
+/* Completed lesson */
+.learning-sidebar .lesson-link.completed .lesson-check i {
+  color: #28a745;
+}
+
+.learning-sidebar .lesson-check {
+  margin-right: 12px;
+  font-size: 0.85rem;
+  color: #ccc;
+}
+
+.learning-sidebar .lesson-title {
+  flex: 1;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.learning-sidebar .lesson-duration {
+  font-size: 0.8rem;
+  color: #999;
+  margin-left: 8px;
+}
+
+/* ========================================
+   PROGRESS TRACKER (Hidden in learning mode, shown in header)
+======================================== */
+.learning-body .progress-tracker {
+  display: none;
+}
+
+/* ========================================
+   QUIZ SECTION (Keep existing styles, minor adjustments)
+======================================== */
+.learning-main .quiz-section {
+  background-color: #f8f9fa;
+  border: 1px solid #e8e8e8;
+  border-radius: 12px;
+  padding: 24px;
+  margin: 24px 0;
+}
+
+/* ========================================
+   COMMENTS PANEL
+======================================== */
+.learning-main .comments-panel {
+  margin-top: 20px;
+}
+
+/* ========================================
+   HIDE ORIGINAL COURSE HEADER
+======================================== */
+body.learning-body .course-header {
+  display: none;
+}
+
+body.learning-body .course-content {
+  padding: 0;
+  margin: 0;
+}
+
+body.learning-body .course-content > .container {
+  max-width: 100%;
+  padding: 0;
+  margin: 0;
+}
+
+body.learning-body .course-layout {
+  display: none;
+}
+
+/* ========================================
+   RESPONSIVE DESIGN
+======================================== */
+@media (max-width: 1024px) {
+  .learning-sidebar {
+    width: 300px;
+    min-width: 300px;
+  }
+}
+
+@media (max-width: 768px) {
+  .learning-container {
+    flex-direction: column;
+  }
+
+  .learning-sidebar {
+    width: 100%;
+    min-width: 100%;
+    height: 40vh;
+    border-left: none;
+    border-top: 1px solid #e8e8e8;
+  }
+
+  .learning-main {
+    height: 60vh;
+  }
+
+  .header-lesson-title {
+    max-width: 200px;
+    font-size: 0.9rem;
+  }
+
+  .content-scroll {
+    padding: 16px;
+  }
+
+  .learning-footer {
+    padding: 10px 16px;
+  }
+
+  .btn-prev-lesson,
+  .btn-next-lesson {
+    padding: 8px 16px;
+    font-size: 0.85rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .header-logo {
+    display: none;
+  }
+
+  .circular-progress {
+    width: 32px;
+    height: 32px;
+  }
+
+  .circular-progress svg {
+    width: 32px;
+    height: 32px;
+  }
+
+  .btn-prev-lesson span,
+  .btn-next-lesson span {
+    display: none;
+  }
+
+  .btn-prev-lesson,
+  .btn-next-lesson {
+    padding: 10px 14px;
+  }
+}
+
+/* ========================================
+   CERTIFICATE BUTTON IN HEADER
+======================================== */
+.header-right .certificate-action {
+  display: none;
+  padding: 8px 16px;
+  font-size: 0.85rem;
+  border-radius: 20px;
+  background: var(--brand-gradient);
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.header-right .certificate-action:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(94, 187, 255, 0.35);
+}
+
+.header-right .certificate-action.show {
+  display: inline-flex !important;
+  align-items: center;
+  gap: 6px;
+}

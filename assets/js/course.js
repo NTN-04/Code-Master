@@ -14,7 +14,7 @@ document.addEventListener("DOMContentLoaded", async function () {
   const modules = await fetchCourseModules(courseId);
   renderSidebar(modules);
 
-  updateCourseMeta();
+  updateCourseTitle();
 
   // Khởi tạo chức năng thu gọn/mở rộng module
   initModuleToggles();
@@ -86,25 +86,6 @@ function initModuleToggles() {
 // Khởi tạo điều hướng bài học
 function initLessonNavigation() {
   const lessonLinks = document.querySelectorAll(".lesson-link");
-  const startCourseBtn = document.getElementById("start-course");
-
-  if (startCourseBtn) {
-    startCourseBtn.addEventListener("click", (e) => {
-      e.preventDefault();
-
-      // xác thực
-      if (!auth.currentUser) {
-        window.location.href = "/login.html";
-        return;
-      }
-
-      if (lessonLinks.length > 0) {
-        const firstLesson = lessonLinks[0];
-        activateLesson(firstLesson.getAttribute("data-lesson"));
-        firstLesson.classList.add("active");
-      }
-    });
-  }
 
   lessonLinks.forEach((link) => {
     link.addEventListener("click", (e) => {
@@ -164,14 +145,11 @@ async function activateLesson(lessonId) {
     return;
   }
 
-  // Ẩn banner chào mừng khi hiển thị bài học
-  const welcomeBanner = document.getElementById("lesson-welcome");
-  if (welcomeBanner) {
-    welcomeBanner.style.display = "none";
-  }
-
   const courseId = getCourseIdFromUrl();
   const modules = await fetchCourseModules(courseId);
+
+  // Lưu bài học cuối cùng đã xem vào Firebase
+  saveLastViewedLesson(courseId, lessonId);
 
   // Tìm lesson theo id
   let foundLesson = null;
@@ -183,6 +161,28 @@ async function activateLesson(lessonId) {
   const lessonContainer = document.querySelector(".lesson-container");
   if (lessonContainer) {
     if (foundLesson) {
+      // Tìm prev/next lesson IDs
+      let prevLessonId = null;
+      let nextLessonId = null;
+      let lessonsFlat = [];
+      Object.values(modules).forEach((module) => {
+        (module.lessons || []).forEach((l) => lessonsFlat.push(l));
+      });
+      for (let i = 0; i < lessonsFlat.length; i++) {
+        if (lessonsFlat[i].id === foundLesson.id) {
+          if (i > 0) prevLessonId = lessonsFlat[i - 1].id;
+          if (i < lessonsFlat.length - 1) nextLessonId = lessonsFlat[i + 1].id;
+          break;
+        }
+      }
+
+      // Render video vào video-stage (new layout)
+      renderVideoToStage(foundLesson.video);
+
+      // Cập nhật footer navigation
+      updateFooterNavigation(prevLessonId, nextLessonId);
+      initFooterNavButtons();
+
       lessonContainer.innerHTML = renderLessonContent(foundLesson, modules);
       initQuizEvents(foundLesson);
       initLessonNavButtons();
@@ -190,6 +190,10 @@ async function activateLesson(lessonId) {
 
       // Khởi tạo hệ thống bình luận cho bài học
       initCommentButton(lessonId);
+
+      // Scroll content về đầu
+      const mainScrollArea = document.querySelector(".main-scroll-area");
+      if (mainScrollArea) mainScrollArea.scrollTop = 0;
     } else {
       lessonContainer.innerHTML =
         "<div class='alert alert-warning'>Không tìm thấy bài học.</div>";
@@ -338,10 +342,108 @@ async function initCourseProgress() {
       }
       // cập nhật UI
       updateProgressUI(progressPercentage);
+
+      // Auto-focus vào bài học cuối cùng hoặc bài đầu tiên
+      await autoFocusLesson(courseId, user.uid);
     } catch (err) {
       console.error("Lỗi khi tải tiến trình từ server:", err);
     }
   });
+}
+
+// === HÀM TỰ ĐỘNG FOCUS BÀI HỌC ===
+
+// Lưu bài học cuối cùng đã xem vào Firebase
+async function saveLastViewedLesson(courseId, lessonId) {
+  const user = auth.currentUser;
+  if (!user || !courseId || !lessonId) return;
+
+  try {
+    const lastViewedRef = ref(
+      database,
+      `userProgress/${user.uid}/courses/${courseId}/lastViewedLesson`
+    );
+    await set(lastViewedRef, {
+      lessonId: lessonId,
+      timestamp: Date.now(),
+    });
+  } catch (err) {
+    console.error("Lỗi khi lưu bài học cuối cùng:", err);
+  }
+}
+
+// Lấy bài học cuối cùng đã xem từ Firebase
+async function getLastViewedLesson(courseId, userId) {
+  try {
+    const lastViewedRef = ref(
+      database,
+      `userProgress/${userId}/courses/${courseId}/lastViewedLesson`
+    );
+    const snapshot = await get(lastViewedRef);
+    if (snapshot.exists()) {
+      return snapshot.val().lessonId;
+    }
+    return null;
+  } catch (err) {
+    console.error("Lỗi khi lấy bài học cuối cùng:", err);
+    return null;
+  }
+}
+
+// Tự động focus vào bài học khi vào trang
+async function autoFocusLesson(courseId, userId) {
+  // Lấy bài học cuối cùng đã xem
+  const lastLessonId = await getLastViewedLesson(courseId, userId);
+
+  // Lấy danh sách tất cả bài học
+  const allLessonLinks = document.querySelectorAll(".lesson-link");
+  if (allLessonLinks.length === 0) return;
+
+  let targetLessonId = null;
+
+  if (lastLessonId) {
+    // Kiểm tra bài học cuối cùng có tồn tại trong danh sách không
+    const lastLessonLink = document.querySelector(
+      `.lesson-link[data-lesson="${lastLessonId}"]`
+    );
+    if (lastLessonLink) {
+      targetLessonId = lastLessonId;
+    }
+  }
+
+  // Nếu không có bài học cuối hoặc không tìm thấy, focus vào bài đầu tiên
+  if (!targetLessonId) {
+    targetLessonId = allLessonLinks[0].getAttribute("data-lesson");
+  }
+
+  // Mở module chứa bài học target
+  const targetLink = document.querySelector(
+    `.lesson-link[data-lesson="${targetLessonId}"]`
+  );
+  if (targetLink) {
+    // Tìm module chứa bài học
+    const lessonList = targetLink.closest(".lesson-list");
+    if (lessonList) {
+      const moduleId = lessonList.id;
+      const moduleHeader = document.querySelector(
+        `.module-header[data-toggle="${moduleId}"]`
+      );
+      if (moduleHeader) {
+        // Mở module này
+        moduleHeader.setAttribute("aria-expanded", "true");
+        lessonList.classList.add("expanded");
+      }
+    }
+
+    // Đánh dấu active và kích hoạt bài học
+    targetLink.classList.add("active");
+    await activateLesson(targetLessonId);
+
+    // Scroll sidebar để hiển thị bài học đang active
+    setTimeout(() => {
+      targetLink.scrollIntoView({ behavior: "smooth", block: "center" });
+    }, 100);
+  }
 }
 
 // Cập nhật tiến trình tổng thể của khóa học
@@ -355,6 +457,9 @@ function updateProgressUI(progressPercentage) {
       progressText.textContent = `${progressPercentage}% Hoàn Thành`;
     }
   }
+
+  // Cập nhật circular progress trong header
+  updateHeaderProgress(progressPercentage);
 
   const certificateBtn = document.getElementById("certificate-button");
   if (certificateBtn) {
@@ -427,6 +532,106 @@ function renderSidebar(modules) {
     .join("");
 }
 
+// === NEW LEARNING LAYOUT FUNCTIONS ===
+
+// Cập nhật circular progress trong header
+function updateHeaderProgress(progressPercentage) {
+  const headerProgress = document.getElementById("header-progress");
+  if (!headerProgress) return;
+
+  const progressBar = headerProgress.querySelector(".progress-bar");
+  const progressText = headerProgress.querySelector(".progress-text");
+
+  if (progressBar) {
+    // Tính stroke-dashoffset: 100 = 0%, 0 = 100%
+    const offset = 100 - progressPercentage;
+    progressBar.style.strokeDashoffset = offset;
+  }
+
+  if (progressText) {
+    progressText.textContent = `${progressPercentage}%`;
+  }
+}
+
+// Cập nhật footer navigation buttons
+function updateFooterNavigation(prevLessonId, nextLessonId) {
+  const prevBtn = document.getElementById("prev-lesson-btn");
+  const nextBtn = document.getElementById("next-lesson-btn");
+
+  if (prevBtn) {
+    if (prevLessonId) {
+      prevBtn.disabled = false;
+      prevBtn.setAttribute("data-prev", prevLessonId);
+    } else {
+      prevBtn.disabled = true;
+      prevBtn.removeAttribute("data-prev");
+    }
+  }
+
+  if (nextBtn) {
+    if (nextLessonId) {
+      nextBtn.disabled = false;
+      nextBtn.setAttribute("data-next", nextLessonId);
+    } else {
+      nextBtn.disabled = true;
+      nextBtn.removeAttribute("data-next");
+    }
+  }
+}
+
+// Khởi tạo footer navigation button events
+function initFooterNavButtons() {
+  const prevBtn = document.getElementById("prev-lesson-btn");
+  const nextBtn = document.getElementById("next-lesson-btn");
+
+  if (prevBtn && !prevBtn.dataset.bound) {
+    prevBtn.addEventListener("click", function (e) {
+      e.preventDefault();
+      const prevId = prevBtn.getAttribute("data-prev");
+      if (prevId) {
+        activateLesson(prevId);
+        setActiveLessonLink(prevId);
+      }
+    });
+    prevBtn.dataset.bound = "true";
+  }
+
+  if (nextBtn && !nextBtn.dataset.bound) {
+    nextBtn.addEventListener("click", function (e) {
+      e.preventDefault();
+      const nextId = nextBtn.getAttribute("data-next");
+      if (nextId) {
+        activateLesson(nextId);
+        setActiveLessonLink(nextId);
+      }
+    });
+    nextBtn.dataset.bound = "true";
+  }
+}
+
+// Render video vào video-stage
+function renderVideoToStage(videoUrl) {
+  const videoStage = document.getElementById("video-stage");
+  if (!videoStage) return;
+
+  if (!videoUrl) {
+    videoStage.innerHTML = "";
+    videoStage.style.display = "none";
+    return;
+  }
+
+  videoStage.style.display = "flex";
+  let videoHtml = "";
+
+  if (videoUrl.includes("youtube.com") || videoUrl.includes("youtu.be")) {
+    videoHtml = `<div class="lesson-video"><iframe src="${videoUrl}" loading="lazy" frameborder="0" allowfullscreen></iframe></div>`;
+  } else {
+    videoHtml = `<div class="lesson-video"><video controls><source src="${videoUrl}" type="video/mp4"></video></div>`;
+  }
+
+  videoStage.innerHTML = videoHtml;
+}
+
 // Render nội dung bài học, video và quiz
 function renderLessonContent(lesson, modules) {
   // Tìm vị trí bài học hiện tại trong modules
@@ -445,14 +650,9 @@ function renderLessonContent(lesson, modules) {
     }
   }
 
+  // Video được render riêng vào video-stage, không render ở đây nữa
   return `
     <div class="lesson-content" id="lesson-${lesson.id}">
-      <div>
-        <h2>${lesson.title}</h2>
-      </div>
-      <div class="lesson-video">
-        ${lesson.video ? renderVideo(lesson.video) : ""}
-      </div>
       <div class="lesson-header-actions">
         <button id="course-comment-btn" class="btn-comment-toggle">
           <i class="fas fa-comments"></i> Bình luận
@@ -466,7 +666,8 @@ function renderLessonContent(lesson, modules) {
             : ""
         }
       </div>
-       <div class="lesson-navigation">
+      <!-- Hidden navigation for backward compatibility -->
+      <div class="lesson-navigation" style="display: none;">
         ${
           prevLessonId
             ? `<a href="#" class="btn btn-secondary prev-lesson" data-prev="${prevLessonId}">Bài Trước</a>`
@@ -480,13 +681,6 @@ function renderLessonContent(lesson, modules) {
       </div>
     </div>
   `;
-}
-
-function renderVideo(videoUrl) {
-  if (videoUrl.includes("youtube.com") || videoUrl.includes("youtu.be")) {
-    return `<iframe width="853" height="480" src="${videoUrl}" loading="lazy" frameborder="0" allowfullscreen></iframe>`;
-  }
-  return `<video controls width="853"><source src="${videoUrl}" type="video/mp4"></video>`;
 }
 
 function renderQuiz(quiz, lessonId) {
@@ -695,63 +889,23 @@ function initQuizEvents(lesson) {
   showQuestion(currentQuestionIndex);
 }
 
-// Cập nhật thông tin meta
-async function updateCourseMeta() {
-  // Cập nhật title, description, level
+// Cập nhật thông tin course trên header
+async function updateCourseTitle() {
+  // Cập nhật thông tin khóa học
   const courseId = getCourseIdFromUrl();
   const courseRef = ref(database, `courses/${courseId}`);
   try {
     const snap = await get(courseRef);
     if (snap.exists()) {
       const course = snap.val();
-      // Cập nhật title
-      const titleEl = document.querySelector(".course-info .course-info-title");
+
+      // Lưu thông tin khóa học để sử dụng trong các hàm khác
+      window.currentCourse = course;
+
+      // Cập nhật tiêu đề khóa học
+      const titleEl = document.getElementById("course-title");
       if (titleEl && course.title) titleEl.textContent = course.title;
-      // Cập nhật description
-      const descEl = document.querySelector(".course-info p");
-      if (descEl && course.description) descEl.textContent = course.description;
-      // Cập nhật level
-      const levelEl = document.querySelector(".course-meta .level");
-      if (levelEl && course.level) {
-        levelEl.textContent =
-          course.level === "beginner"
-            ? "Người Mới"
-            : course.level === "intermediate"
-            ? "Trung Cấp"
-            : course.level === "advanced"
-            ? "Nâng Cao"
-            : course.level;
-        levelEl.className = `level ${course.level}`;
-      }
-      // Cập nhật số bài học
-      const lessonsSpan = document.querySelector(".course-meta .lessons");
-      if (lessonsSpan) {
-        lessonsSpan.innerHTML = `<i class="far fa-file-alt"></i> ${course.lessons} bài học`;
-      }
-      // Cập nhật tổng thời lượng
-      const durationSpan = document.querySelector(".course-meta .duration");
-      if (durationSpan) {
-        durationSpan.innerHTML = `<i class="far fa-clock"></i> ${course.duration}`;
-      }
-      // Cập nhật ảnh thumbnail
-      const courseThumbnail = document.querySelector(
-        ".course-header .course-thumbnail"
-      );
-      if (courseThumbnail) {
-        courseThumbnail.src = `${course?.image}`;
-      }
     }
-    // thêm class animation
-    const courseInfoAnimated = document.querySelector(".course-info");
-    courseInfoAnimated.classList.add(
-      "animate__animated",
-      "animate__bounceInLeft"
-    );
-    const courseImageAnimated = document.querySelector(".course-image");
-    courseImageAnimated.classList.add(
-      "animate__animated",
-      "animate__backInRight"
-    );
   } catch (err) {
     console.error("Lỗi khi lấy thông tin course:", err);
   }
