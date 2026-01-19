@@ -43,7 +43,9 @@
       <div class="learning-header">
         <div class="header-left">
           <div class="header-logo">
-            <img src="./assets/images/logo-01.svg" alt="CodeMaster" />
+            <a href="./index.html">
+              <img src="./assets/images/logo-01.svg" alt="CodeMaster" />
+            </a>
           </div>
           <button class="btn-back" onclick="history.back()" title="Quay lại">
             <i class="fas fa-chevron-left"></i>
@@ -83,23 +85,84 @@
       <div class="learning-container">
         <!-- Main Content Area (Left) -->
         <div class="learning-main">
-          <!-- Scrollable Area (video + content scroll together) -->
-          <div class="main-scroll-area">
-            <!-- Video Stage -->
-            <div class="video-stage" id="video-stage">
-              <!-- Video will be rendered here -->
-            </div>
+          <!-- Tab Switcher -->
+          <div class="tab-switcher">
+            <button class="tab-btn active" data-tab="lesson">
+              <i class="fas fa-book-open"></i> Bài học
+            </button>
+            <button class="tab-btn" data-tab="editor">
+              <i class="fas fa-code"></i> Code Editor
+            </button>
+          </div>
 
-            <!-- Lesson Container -->
-            <div class="content-scroll">
-              <div class="lesson-container">
-                <!-- Nội dung bài học sẽ được render động từ JS -->
+          <!-- Tab: Bài học (Default) -->
+          <div id="tab-lesson" class="tab-content active">
+            <!-- Scrollable Area (video + content scroll together) -->
+            <div class="main-scroll-area">
+              <!-- Video Stage -->
+              <div class="video-stage" id="video-stage">
+                <!-- Video will be rendered here -->
               </div>
 
-              <!-- Comments Panel -->
-              <div class="comments-overlay"></div>
-              <div class="comments-panel" id="course-comments-panel"></div>
+              <!-- Lesson Container -->
+              <div class="content-scroll">
+                <div class="lesson-container">
+                  <!-- Nội dung bài học sẽ được render động từ JS -->
+                </div>
+
+                <!-- Comments Panel -->
+                <div class="comments-overlay"></div>
+                <div class="comments-panel" id="course-comments-panel"></div>
+              </div>
             </div>
+          </div>
+
+          <!-- Tab: Code Editor -->
+          <div id="tab-editor" class="tab-content">
+            <div class="editor-wrapper">
+              <div class="editor-toolbar">
+                <div class="toolbar-left">
+                  <!-- Language selector được render động bởi ide.js -->
+                  <select id="language-select" class="language-selector">
+                    <!-- Options sẽ được thêm tự động dựa trên template -->
+                  </select>
+                  <!-- Status indicator cho Python/Pyodide -->
+                  <span
+                    id="pyodide-status"
+                    class="pyodide-status"
+                    style="display: none"
+                  >
+                    <i class="fas fa-circle"></i>
+                    <span class="status-text">Đang tải Python...</span>
+                  </span>
+                </div>
+                <div class="toolbar-right">
+                  <button id="btn-run-code" class="btn-run">
+                    <i class="fas fa-play"></i> Chạy Code
+                  </button>
+                </div>
+              </div>
+              <div class="editor-container" id="editor-container">
+                <div id="monaco-container" class="editor-pane"></div>
+                <!-- Resizable Divider -->
+                <div class="editor-divider" id="editor-divider"></div>
+                <div class="preview-pane">
+                  <div class="preview-header">
+                    <i class="fas fa-eye"></i> Kết quả
+                  </div>
+                  <iframe id="code-preview" title="Code Preview"></iframe>
+                </div>
+              </div>
+            </div>
+
+            <!-- Sidebar Toggle Edge Button (VS Code Style) -->
+            <button
+              class="sidebar-toggle-edge"
+              id="sidebar-toggle-edge"
+              title="Toggle Sidebar (Ctrl+B)"
+            >
+              <i class="fas fa-chevron-right"></i>
+            </button>
           </div>
 
           <!-- Footer Navigation -->
@@ -263,5 +326,9 @@
     <script type="module" src="./assets/js/auth.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+    <!-- Monaco Editor Loader -->
+    <script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.45.0/min/vs/loader.js"></script>
+    <script type="module" src="./assets/js/ide/ide.js"></script>
+    <script type="module" src="./assets/js/ide/ide-ui.js"></script>
   </body>
 </html>

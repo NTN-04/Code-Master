@@ -15,6 +15,7 @@ import {
   summarizeCourseModules,
   formatMinutesToDuration,
 } from "../utils/time.js";
+import { getAllTemplates } from "../ide/ide-config.js";
 
 export default class CoursesManager {
   constructor(adminPanel) {
@@ -229,6 +230,9 @@ export default class CoursesManager {
     // Reset tabs về tab đầu tiên
     this.resetTabs();
 
+    // Render options cho IDE Template select
+    this.renderIdeTemplateOptions();
+
     // Đổ dữ liệu khóa học vào modal
     document.getElementById("course-id").value = courseId;
     document.getElementById("course-title").value = course.title || "";
@@ -238,6 +242,8 @@ export default class CoursesManager {
     document.getElementById("course-duration").value = course.duration || "";
     document.getElementById("course-lessons").value = course.lessons || "";
     document.getElementById("course-category").value = course.category || "web";
+    document.getElementById("course-ide-template").value =
+      course.ideTemplate || "";
 
     // Dữ liệu mới
     document.getElementById("course-price").value = course.price || 0;
@@ -338,9 +344,13 @@ export default class CoursesManager {
     document.getElementById("form-featured").style.display = "none"; // Ẩn trường featured
     document.getElementById("course-modal-title").textContent = "Thêm khóa học";
 
+    // Render options cho IDE Template select
+    this.renderIdeTemplateOptions();
+
     // Reset các trường mới
     document.getElementById("course-price").value = "";
     document.getElementById("course-video-intro").value = "";
+    document.getElementById("course-ide-template").value = "";
     if (this.courseMDE) {
       this.courseMDE.value("");
     }
@@ -380,6 +390,36 @@ export default class CoursesManager {
     // Active tab đầu tiên
     if (tabs[0]) tabs[0].classList.add("active");
     if (contents[0]) contents[0].classList.add("active");
+  }
+
+  /**
+   * Render các options cho IDE Template select
+   * Lấy danh sách templates từ ide-config.js
+   */
+  renderIdeTemplateOptions() {
+    const select = document.getElementById("course-ide-template");
+    if (!select) return;
+
+    // Lấy giá trị hiện tại để restore sau khi render
+    const currentValue = select.value;
+
+    // Xóa các options cũ (trừ option đầu tiên "Không sử dụng IDE")
+    select.innerHTML =
+      '<option value="">Không sử dụng IDE (CodeEditor)</option>';
+
+    // Lấy danh sách templates và render
+    const templates = getAllTemplates();
+    templates.forEach((template) => {
+      const option = document.createElement("option");
+      option.value = template.id;
+      option.textContent = template.name;
+      select.appendChild(option);
+    });
+
+    // Restore giá trị nếu có
+    if (currentValue) {
+      select.value = currentValue;
+    }
   }
 
   // Helper: Render dynamic list inputs
@@ -536,7 +576,12 @@ export default class CoursesManager {
 
   // Helper: Thu thập dữ liệu từ form
   getCourseFormData(imageUrl) {
-    return {
+    // Lấy giá trị ideTemplate
+    const ideTemplateValue = document
+      .getElementById("course-ide-template")
+      .value.trim();
+
+    const formData = {
       title: document.getElementById("course-title").value.trim(),
       description: document.getElementById("course-description").value.trim(),
       level: document.getElementById("course-level").value,
@@ -551,7 +596,11 @@ export default class CoursesManager {
       detailedDescription: this.courseMDE ? this.courseMDE.value().trim() : "",
       learningOutcomes: this.getDynamicListValues("outcomes-list"),
       requirements: this.getDynamicListValues("requirements-list"),
+      // ideTemplate: lưu giá trị hoặc null để xóa khỏi database khi update
+      ideTemplate: ideTemplateValue || null,
     };
+
+    return formData;
   }
 
   // Helper: Validate dữ liệu khóa học

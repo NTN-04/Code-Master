@@ -530,13 +530,6 @@ body.learning-body footer#footer-placeholder {
 }
 
 /* ========================================
-   COMMENTS PANEL
-======================================== */
-.learning-main .comments-panel {
-  margin-top: 20px;
-}
-
-/* ========================================
    HIDE ORIGINAL COURSE HEADER
 ======================================== */
 body.learning-body .course-header {
@@ -655,4 +648,423 @@ body.learning-body .course-layout {
   display: inline-flex !important;
   align-items: center;
   gap: 6px;
+}
+
+/* ========================================
+   TAB SWITCHER
+======================================== */
+.tab-switcher {
+  display: flex;
+  gap: 0;
+  background-color: #fff;
+  border-bottom: 1px solid #e8e8e8;
+  padding: 0 16px;
+  flex-shrink: 0;
+}
+
+.tab-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 20px;
+  background: transparent;
+  border: none;
+  border-bottom: 3px solid transparent;
+  color: #666;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.tab-btn:hover {
+  color: #333;
+  background-color: #f8f9fa;
+}
+
+.tab-btn.active {
+  color: #333;
+  border-bottom: 3px solid transparent;
+  border-image: var(--brand-gradient) 1;
+}
+
+/* Ẩn tab IDE mặc định  */
+.tab-btn[data-tab="editor"] {
+  display: none;
+}
+
+/* Class để hiện tab IDE khi cần */
+.tab-btn[data-tab="editor"].ide-enabled {
+  display: flex;
+}
+
+.tab-btn i {
+  font-size: 1rem;
+}
+
+/* ========================================
+   TAB CONTENT
+======================================== */
+.tab-content {
+  display: none;
+  flex: 1;
+  overflow: hidden;
+}
+
+.tab-content.active {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Ensure main-scroll-area fills tab-lesson */
+#tab-lesson .main-scroll-area {
+  flex: 1;
+}
+
+/* ========================================
+   CODE EDITOR TAB
+======================================== */
+#tab-editor {
+  background-color: #1e1e1e;
+}
+
+/* IDE Full Mode - Ẩn sidebar và footer */
+.learning-wrapper.ide-full-mode .learning-sidebar {
+  width: 0;
+  min-width: 0;
+  opacity: 0;
+  overflow: hidden;
+  transition: width 0.3s ease, opacity 0.3s ease;
+}
+
+.learning-wrapper.ide-full-mode .learning-footer {
+  display: none;
+}
+
+/* Sidebar visible animation */
+.learning-sidebar {
+  transition: width 0.3s ease, opacity 0.3s ease;
+}
+
+/* ========================================
+   TOGGLE SIDEBAR - Vertical Edge Button (VS Code Style)
+======================================== */
+.sidebar-toggle-edge {
+  position: fixed;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 100;
+
+  /* Khi sidebar mở: nằm sát mép trái của sidebar */
+  right: 350px; /* width của sidebar (350px) */
+
+  /* Button styling */
+  width: 20px;
+  height: 64px;
+  background: #2d2d3070;
+  border: none;
+  border-radius: 6px 0 0 6px;
+
+  display: none; /* Ẩn mặc định, JS sẽ hiện */
+  align-items: center;
+  justify-content: center;
+
+  cursor: pointer;
+  color: #f0f0f0;
+  transition: all 0.3s ease;
+}
+
+.sidebar-toggle-edge:hover {
+  background: #3c3c3c;
+  color: #fff;
+  width: 26px;
+}
+
+.sidebar-toggle-edge i {
+  font-size: 11px;
+  transition: transform 0.3s ease;
+}
+
+/* Khi sidebar đóng: nằm sát mép phải màn hình */
+.learning-wrapper.ide-full-mode .sidebar-toggle-edge {
+  right: 0;
+  border-radius: 6px 0 0 6px;
+  border-color: transparent;
+  color: #fff;
+}
+
+.learning-wrapper.ide-full-mode .sidebar-toggle-edge:hover {
+  width: 28px;
+  background: linear-gradient(
+    135deg,
+    var(--brand-blue) 0%,
+    var(--brand-purple) 100%
+  );
+  box-shadow: -4px 0 20px rgba(94, 187, 255, 0.3);
+}
+
+.learning-wrapper.ide-full-mode .sidebar-toggle-edge i {
+  transform: rotate(180deg);
+}
+
+#tab-editor .editor-toolbar {
+  position: relative;
+}
+
+.editor-wrapper {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+}
+
+.editor-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 16px;
+  background-color: #252526;
+  border-bottom: 1px solid #333;
+  flex-shrink: 0;
+}
+
+.toolbar-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.language-selector {
+  padding: 6px 12px;
+  background-color: #3c3c3c;
+  border: 1px solid #555;
+  border-radius: 4px;
+  color: #fff;
+  font-size: 0.85rem;
+  cursor: pointer;
+  outline: none;
+}
+
+.language-selector:hover {
+  border-color: var(--brand-blue);
+}
+
+.language-selector:focus {
+  border-color: var(--brand-blue);
+  box-shadow: 0 0 0 2px rgba(94, 187, 255, 0.2);
+}
+
+.toolbar-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-run {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  background: var(--brand-gradient);
+  border: none;
+  border-radius: 6px;
+  color: #fff;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-run:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 15px rgba(94, 187, 255, 0.35);
+}
+
+.btn-run:active {
+  transform: translateY(0);
+}
+
+.btn-run i {
+  font-size: 0.85rem;
+}
+
+/* Pyodide Status Indicator */
+.pyodide-status {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  font-size: 0.75rem;
+  color: #808080;
+}
+
+.pyodide-status i {
+  font-size: 8px;
+}
+
+.pyodide-status.loading i {
+  color: #f0ad4e;
+  animation: pulse-status 1.5s ease-in-out infinite;
+}
+
+.pyodide-status.ready i {
+  color: #4ec9b0;
+}
+
+.pyodide-status.ready .status-text {
+  color: #4ec9b0;
+}
+
+@keyframes pulse-status {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.4;
+  }
+}
+
+/* Editor Container - Split View */
+.editor-container {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+  background-color: #333;
+  position: relative;
+}
+
+.editor-pane {
+  flex: 1;
+  min-width: 0;
+  border: 1px solid #333;
+  background-color: #1e1e1e;
+}
+
+/* ========================================
+   RESIZABLE DIVIDER
+======================================== */
+.editor-divider {
+  width: 6px;
+  background: #333;
+  cursor: col-resize;
+  flex-shrink: 0;
+  position: relative;
+  transition: background 0.2s ease;
+}
+
+.editor-divider::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 2px;
+  height: 40px;
+  background: #555;
+  border-radius: 2px;
+  transition: all 0.2s ease;
+}
+
+.editor-divider:hover {
+  background: #444;
+}
+
+.editor-divider:hover::after {
+  background: var(--brand-blue);
+  height: 60px;
+}
+
+.editor-divider.dragging {
+  background: var(--brand-blue);
+}
+
+.editor-divider.dragging::after {
+  background: #fff;
+  height: 80px;
+}
+
+/* Prevent text selection while resizing */
+.editor-container.resizing {
+  user-select: none;
+}
+
+.editor-container.resizing * {
+  pointer-events: none;
+}
+
+.editor-container.resizing .editor-divider {
+  pointer-events: auto;
+}
+
+.preview-pane {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #333;
+  background-color: #fff;
+}
+
+.preview-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background-color: #f5f5f5;
+  border-bottom: 1px solid #ddd;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #666;
+  flex-shrink: 0;
+}
+
+.preview-header i {
+  color: var(--brand-blue);
+}
+
+#code-preview {
+  flex: 1;
+  width: 100%;
+  border: none;
+  background-color: #fff;
+}
+
+/* ========================================
+   EDITOR RESPONSIVE
+======================================== */
+@media (max-width: 768px) {
+  .editor-container {
+    flex-direction: column;
+  }
+
+  .editor-pane,
+  .preview-pane {
+    flex: none;
+    height: 50%;
+  }
+
+  .tab-btn {
+    padding: 10px 14px;
+    font-size: 0.85rem;
+  }
+
+  .tab-btn span {
+    display: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .editor-toolbar {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .btn-run {
+    padding: 6px 12px;
+    font-size: 0.85rem;
+  }
 }

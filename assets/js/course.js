@@ -7,6 +7,37 @@ import {
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-auth.js";
 import CommentSystem from "./comment-system.js";
 import { issueCertificate } from "./certificate-service.js";
+import {
+  initEditor,
+  renderLanguageSelector,
+  updateUIBasedOnFeatures,
+} from "./ide/ide.js";
+
+// Biến lưu template IDE cho khóa học hiện tại (null = không có IDE)
+let currentIdeTemplate = null;
+
+/**
+ * Ẩn/hiện tab IDE dựa trên việc khóa học có cần IDE hay không
+ * Sử dụng class 'ide-enabled' để tránh flash khi load trang
+ * @param {boolean} show - true để hiện, false để ẩn
+ */
+function toggleIDETab(show) {
+  const editorTabBtn = document.querySelector('.tab-btn[data-tab="editor"]');
+  const editorTabContent = document.getElementById("tab-editor");
+
+  if (editorTabBtn) {
+    // Dùng class thay vì inline style để CSS ẩn mặc định hoạt động
+    if (show) {
+      editorTabBtn.classList.add("ide-enabled");
+    } else {
+      editorTabBtn.classList.remove("ide-enabled");
+    }
+  }
+
+  if (editorTabContent) {
+    editorTabContent.style.display = show ? "" : "none";
+  }
+}
 
 // Các phần tử DOM cho trang khóa học
 document.addEventListener("DOMContentLoaded", async function () {
@@ -905,6 +936,26 @@ async function updateCourseTitle() {
       // Cập nhật tiêu đề khóa học
       const titleEl = document.getElementById("course-title");
       if (titleEl && course.title) titleEl.textContent = course.title;
+
+      // Kiểm tra và thiết lập IDE template cho khóa học
+      // Nếu không có ideTemplate hoặc null → ẩn tab IDE
+      const ideTemplate = course.ideTemplate;
+
+      if (ideTemplate) {
+        // Có IDE template → hiện tab và khởi tạo IDE
+        currentIdeTemplate = ideTemplate;
+        window.currentIdeTemplate = currentIdeTemplate;
+
+        toggleIDETab(true);
+        initEditor("monaco-container", currentIdeTemplate);
+        renderLanguageSelector();
+        updateUIBasedOnFeatures();
+      } else {
+        // Không có IDE → ẩn tab IDE
+        currentIdeTemplate = null;
+        window.currentIdeTemplate = null;
+        toggleIDETab(false);
+      }
     }
   } catch (err) {
     console.error("Lỗi khi lấy thông tin course:", err);

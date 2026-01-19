@@ -789,6 +789,19 @@ body.dark-mode .settings-tab-btn.active::after {
   border-color: var(--primary-color);
 }
 
+/* Form hint - mô tả phụ cho input */
+.form-hint {
+  display: block;
+  margin-top: 0.35rem;
+  font-size: 0.8rem;
+  color: #6b7280;
+  line-height: 1.4;
+}
+
+body.dark-mode .form-hint {
+  color: #9ca3af;
+}
+
 .form-actions {
   display: flex;
   gap: 1rem;
