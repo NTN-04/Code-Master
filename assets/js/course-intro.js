@@ -10,9 +10,12 @@ import { showFloatingNotification as showNotification } from "./utils/notificati
 import { sanitizeText } from "./utils/sanitize.js";
 import { cacheManager, CACHE_KEYS } from "./utils/cache-manager.js";
 import loadingSkeleton from "./utils/loading-skeleton.js";
+// Payment imports
+import { isPaidCourse, checkPurchaseStatus } from "./pay/payment-service.js";
 
 // State Management
 let currentCourseId = null;
+let currentCourse = null; // Lưu thông tin khóa học để kiểm tra thanh toán
 let currentUser = null;
 let previousUserId = null; // Track user changes for security
 let isEnrolled = false;
@@ -62,14 +65,17 @@ async function loadCourseData() {
   try {
     // Check cache first
     const cachedCourse = cacheManager.get(
-      CACHE_KEYS.COURSE_DATA(currentCourseId)
+      CACHE_KEYS.COURSE_DATA(currentCourseId),
     );
     const cachedModules = cacheManager.get(
-      CACHE_KEYS.COURSE_MODULES(currentCourseId)
+      CACHE_KEYS.COURSE_MODULES(currentCourseId),
     );
 
     // If cache exists, render immediately (fast)
     if (cachedCourse && cachedModules) {
+      // Set currentCourse để kiểm tra thanh toán
+      currentCourse = cachedCourse;
+
       // Render from cache first for instant display (no loading needed)
       if (currentUser) {
         await checkEnrollmentStatus();
@@ -102,6 +108,9 @@ async function loadCourseData() {
     const courseData = courseSnapshot.val();
     const modulesData = modulesSnapshot.exists() ? modulesSnapshot.val() : {};
 
+    // Lưu course data để kiểm tra thanh toán
+    currentCourse = courseData;
+
     // Cache data for next visit
     cacheManager.set(CACHE_KEYS.COURSE_DATA(currentCourseId), courseData);
     cacheManager.set(CACHE_KEYS.COURSE_MODULES(currentCourseId), modulesData);
@@ -127,7 +136,7 @@ async function loadCourseData() {
 
     showNotification(
       "Không thể tải dữ liệu khóa học. Vui lòng thử lại.",
-      "error"
+      "error",
     );
     hideLoading();
   } finally {
@@ -163,7 +172,7 @@ async function checkEnrollmentStatus() {
     // Check cache first
     const cacheKey = CACHE_KEYS.ENROLLMENT_STATUS(
       currentUser.uid,
-      currentCourseId
+      currentCourseId,
     );
     const cachedStatus = cacheManager.get(cacheKey);
 
@@ -175,7 +184,7 @@ async function checkEnrollmentStatus() {
     // Fetch from database
     const enrollmentRef = ref(
       database,
-      `enrollments/${currentUser.uid}/${currentCourseId}`
+      `enrollments/${currentUser.uid}/${currentCourseId}`,
     );
     const snapshot = await get(enrollmentRef);
     isEnrolled = snapshot.exists();
@@ -257,7 +266,7 @@ function renderCourseIntro(course, modules) {
           video.play();
         }
       },
-      { once: true }
+      { once: true },
     );
 
     thumbnailWrapper.appendChild(video);
@@ -275,16 +284,35 @@ function renderCourseIntro(course, modules) {
     thumbnailWrapper.appendChild(img);
   }
 
-  // Price
+  // Price - hỗ trợ originalPrice và giảm giá
   const priceTag = document.getElementById("course-price");
-  if (course.price && course.price > 0) {
-    priceTag.textContent = `${Number(course.price).toLocaleString(
-      "vi-VN"
-    )} VNĐ`;
+  const originalPriceEl = document.getElementById("course-original-price");
+  const discountBadge = document.getElementById("course-discount-badge");
+  
+  const price = Number(course.price) || 0;
+  const originalPrice = Number(course.originalPrice) || 0;
+  const hasDiscount = originalPrice > price && price > 0;
+  
+  if (price > 0) {
+    priceTag.textContent = `${price.toLocaleString("vi-VN")} VNĐ`;
     priceTag.className = "price-tag";
+    
+    // Hiển thị giá gốc và badge giảm giá nếu có khuyến mãi
+    if (hasDiscount && originalPriceEl && discountBadge) {
+      const discountPercent = Math.round(((originalPrice - price) / originalPrice) * 100);
+      originalPriceEl.textContent = `${originalPrice.toLocaleString("vi-VN")} VNĐ`;
+      originalPriceEl.style.display = "inline";
+      discountBadge.textContent = `-${discountPercent}%`;
+      discountBadge.style.display = "inline";
+    } else if (originalPriceEl && discountBadge) {
+      originalPriceEl.style.display = "none";
+      discountBadge.style.display = "none";
+    }
   } else {
     priceTag.textContent = "Miễn phí";
     priceTag.className = "price-tag free";
+    if (originalPriceEl) originalPriceEl.style.display = "none";
+    if (discountBadge) discountBadge.style.display = "none";
   }
 
   // Sidebar info
@@ -357,8 +385,8 @@ function renderCourseModules(modules) {
         <div class="module-title">
           <i class="fas fa-chevron-down module-toggle-icon"></i>
           <span>Chương ${moduleNumber}: ${sanitizeText(
-      moduleData.title || "Chưa có tiêu đề"
-    )}</span>
+            moduleData.title || "Chưa có tiêu đề",
+          )}</span>
         </div>
         <div class="module-meta">${lessonCount} bài học</div>
       </div>
@@ -447,9 +475,20 @@ function updateEnrollmentButton() {
     button.href = `course-detail.html?id=${currentCourseId}`;
     button.onclick = null;
   } else {
-    // Not enrolled -> Enroll now
-    button.textContent = "Đăng ký ngay";
-    button.className = "enrollment-button primary";
+    // Not enrolled -> Check if paid course
+    const isPaid = currentCourse && isPaidCourse(currentCourse);
+
+    if (isPaid) {
+      // Paid course -> Show "Mua ngay" with price
+      const priceText = Number(currentCourse.price).toLocaleString("vi-VN");
+      button.innerHTML = `<i class="fas fa-shopping-cart"></i> Mua ngay - ${priceText} VNĐ`;
+      button.className = "enrollment-button primary paid";
+    } else {
+      // Free course -> Show "Đăng ký ngay"
+      button.innerHTML = `<i class="fas fa-user-plus"></i> Đăng ký ngay`;
+      button.className = "enrollment-button primary";
+    }
+
     button.href = "#";
     button.onclick = (e) => {
       e.preventDefault();
@@ -481,6 +520,26 @@ async function handleEnrollment() {
     button.textContent = "Đang xử lý...";
     button.disabled = true;
 
+    // ============ KIỂM TRA KHÓA HỌC TRẢ PHÍ ============
+    if (isPaidCourse(currentCourse)) {
+      // Kiểm tra xem đã mua chưa
+      const hasPurchased = await checkPurchaseStatus(
+        currentUser.uid,
+        currentCourseId,
+      );
+
+      if (!hasPurchased) {
+        // Chưa mua -> Redirect đến trang thanh toán
+        showNotification("Đang chuyển đến trang thanh toán...", "info");
+        setTimeout(() => {
+          window.location.href = `checkout.html?courseId=${currentCourseId}`;
+        }, 1000);
+        return;
+      }
+      // Đã mua -> Tiếp tục enroll như bình thường
+    }
+    // ============ END KIỂM TRA THANH TOÁN ============
+
     // Verify user is authenticated
     if (!auth.currentUser) {
       throw new Error("User not authenticated");
@@ -492,7 +551,7 @@ async function handleEnrollment() {
     // Create enrollment record
     const enrollmentRef = ref(
       database,
-      `enrollments/${currentUser.uid}/${currentCourseId}`
+      `enrollments/${currentUser.uid}/${currentCourseId}`,
     );
 
     const enrollmentData = {
@@ -512,7 +571,7 @@ async function handleEnrollment() {
     // Clear enrollment cache to force refresh
     const cacheKey = CACHE_KEYS.ENROLLMENT_STATUS(
       currentUser.uid,
-      currentCourseId
+      currentCourseId,
     );
     cacheManager.remove(cacheKey);
 

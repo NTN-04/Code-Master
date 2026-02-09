@@ -4,7 +4,7 @@ import {
   get,
 } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-database.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-auth.js";
-import progressManager from "./progress-manager.js";
+// import progressManager from "./progress-manager.js"; // Đã loại bỏ thanh tiến trình khỏi card
 import loadingSkeleton from "./utils/loading-skeleton.js";
 import { getUserEnrollments } from "./utils/enrollment.js";
 
@@ -12,9 +12,6 @@ document.addEventListener("DOMContentLoaded", function () {
   onAuthStateChanged(auth, async (user) => {
     await loadFeaturedCourses(user);
   });
-
-  // khởi tạo đồng bộ tiến trình
-  progressManager.initAuth();
 });
 
 async function loadFeaturedCourses(user) {
@@ -65,8 +62,6 @@ async function loadFeaturedCourses(user) {
       .join("");
     // Remove loading state để enable interaction
     loadingSkeleton.hide(grid);
-    // Khởi tạo progress bar từ firebase
-    progressManager.initProgressBars();
   } catch (err) {
     grid.innerHTML = `<div class="error-message">Không thể tải khóa học nổi bật.</div>`;
     loadingSkeleton.hide(grid);
@@ -87,34 +82,69 @@ function createFeaturedCourseCard(course, enrolledCourses) {
   const buttonHref = isEnrolled
     ? `course-detail.html?id=${course.id}`
     : introUrl;
-  const buttonClass = isEnrolled ? "btn btn-primary" : "btn btn-secondary";
+  const buttonClass = isEnrolled ? "btn-cta enrolled" : "btn-cta";
   const buttonText = isEnrolled ? "Tiếp tục học" : "Xem chi tiết";
+  const buttonIcon = isEnrolled ? "fa-play-circle" : "fa-arrow-right";
 
-  // Badge cho khóa học nổi bật
-  const featuredBadge = course.featured
-    ? '<div class="featured-badge"><i class="fas fa-star"></i> Nổi bật</div>'
-    : "";
+  // Tính toán giá và giảm giá
+  const price = Number(course.price) || 0;
+  const originalPrice = Number(course.originalPrice) || 0;
+  const hasDiscount = originalPrice > price && price > 0;
+  const discountPercent = hasDiscount
+    ? Math.round(((originalPrice - price) / originalPrice) * 100)
+    : 0;
+
+  // Format giá tiền
+  const formatPrice = (value) => value.toLocaleString("vi-VN");
+
+  // Render phần giá
+  let priceHTML = "";
+  if (price === 0) {
+    priceHTML = `
+      <div class="course-pricing">
+        <span class="price-free">Miễn phí</span>
+      </div>
+    `;
+  } else if (hasDiscount) {
+    priceHTML = `
+      <div class="course-pricing has-discount">
+        <div class="price-wrapper">
+          <span class="price-original">${formatPrice(originalPrice)}đ</span>
+          <span class="price-current">${formatPrice(price)}đ</span>
+        </div>
+        <span class="discount-badge">-${discountPercent}%</span>
+      </div>
+    `;
+  } else {
+    priceHTML = `
+      <div class="course-pricing">
+        <span class="price-current">${formatPrice(price)}đ</span>
+      </div>
+    `;
+  }
+
   return `
     <div class="course-card">
-      ${featuredBadge}
       <div class="course-image">
         <a href="${introUrl}">
           <img src="${course.image}" alt="${course.title}" loading="lazy" />
         </a>
+        <div class="course-featured"><i class="fa-solid fa-fire"></i></div>
       </div>
-      <div class="course-info">
-        <a href="${introUrl}"><h3>${course.title}</h3></a>
-        <div class="skill-level">
-          <span class="level ${course.level}">${levelText}</span>
-        </div>
-        <p class="line-clamp-2">${course.description}</p>
-        <div class="progress-container">
-          <div class="progress-bar" data-progress="0" data-course-id="${course.id}">
-            <div class="progress"></div>
+      <div class="course-content">
+        <a href="${introUrl}" class="course-title-link"><h3 class="course-title">${course.title}</h3></a>
+        <div class="course-meta">
+          <span class="level-badge ${course.level}">${levelText}</span>
+          <div class="meta-info">
+            <span><i class="far fa-clock"></i> ${course.duration}</span>
+            <span><i class="far fa-file-alt"></i> ${course.lessons} bài</span>
           </div>
-          <span class="progress-text">0% Hoàn Thành</span>
         </div>
-        <a href="${buttonHref}" class="${buttonClass}">${buttonText}</a>
+        ${priceHTML}
+        <a href="${buttonHref}" class="${buttonClass}">
+          <i class="fas ${buttonIcon}"></i>
+          ${buttonText}
+        </a>
       </div>
     </div>
   `;

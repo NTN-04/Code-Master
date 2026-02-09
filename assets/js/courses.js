@@ -4,7 +4,7 @@ import {
   get,
 } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-database.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-auth.js";
-import progressManager from "./progress-manager.js";
+// import progressManager from "./progress-manager.js"; // Đã loại bỏ thanh tiến trình khỏi card
 import { cacheManager, CACHE_KEYS } from "./utils/cache-manager.js";
 import loadingSkeleton from "./utils/loading-skeleton.js";
 import { getUserEnrollments } from "./utils/enrollment.js";
@@ -18,8 +18,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Khởi tạo bộ lọc khóa học (sẽ chạy sau khi tải xong dữ liệu)
   initCourseFiltering();
-  // Khởi tạo đồng bộ tiến trình
-  progressManager.initAuth();
 });
 
 // Tải khóa học từ Firebase Realtime Database
@@ -47,9 +45,6 @@ async function loadCoursesFromDatabase(user) {
 
       // Render khóa học
       await renderCourses(coursesData, categoriesData, enrolledCourses);
-
-      // Khởi tạo thanh tiến trình từ firebase
-      progressManager.initProgressBars();
     } else {
       showNoCoursesMessage();
       loadingSkeleton.hide(coursesGrid);
@@ -91,19 +86,19 @@ async function renderCourses(
   loadingSkeleton.hide(coursesGrid);
 }
 
-// Tạo HTML cho một thẻ khóa học
+// Tạo HTML cho một thẻ khóa học - Modern E-commerce Style
 function createCourseCard(course, categoriesData, enrolledCourses) {
   const category = categoriesData[course.category] || {};
   const categoryName = category.name || course.category;
   const categoryIcon = category.icon || "📚";
-  const categoryColor = category.color || "#fff";
   const introUrl = `course-intro.html?id=${course.id}`;
   const isEnrolled = enrolledCourses.has(course.id);
   const buttonHref = isEnrolled
     ? `course-detail.html?id=${course.id}`
     : introUrl;
-  const buttonClass = isEnrolled ? "btn btn-primary" : "btn btn-secondary";
+  const buttonClass = isEnrolled ? "btn-cta enrolled" : "btn-cta";
   const buttonText = isEnrolled ? "Tiếp tục học" : "Xem chi tiết";
+  const buttonIcon = isEnrolled ? "fa-play-circle" : "fa-arrow-right";
   const prefetchAttr = isEnrolled
     ? ""
     : ` onmouseenter="prefetchCourseData('${course.id}')"`;
@@ -116,40 +111,71 @@ function createCourseCard(course, categoriesData, enrolledCourses) {
   };
   const levelText = levelMap[course.level] || course.level;
 
+  // Tính toán giá và giảm giá
+  const price = Number(course.price) || 0;
+  const originalPrice = Number(course.originalPrice) || 0;
+  const hasDiscount = originalPrice > price && price > 0;
+  const discountPercent = hasDiscount
+    ? Math.round(((originalPrice - price) / originalPrice) * 100)
+    : 0;
+
+  // Format giá tiền
+  const formatPrice = (value) => value.toLocaleString("vi-VN");
+
+  // Render phần giá
+  let priceHTML = "";
+  if (price === 0) {
+    priceHTML = `
+      <div class="course-pricing">
+        <span class="price-free">Miễn phí</span>
+      </div>
+    `;
+  } else if (hasDiscount) {
+    priceHTML = `
+      <div class="course-pricing has-discount">
+        <div class="price-wrapper">
+          <span class="price-original">${formatPrice(originalPrice)}đ</span>
+          <span class="price-current">${formatPrice(price)}đ</span>
+        </div>
+        <span class="discount-badge">-${discountPercent}%</span>
+      </div>
+    `;
+  } else {
+    priceHTML = `
+      <div class="course-pricing">
+        <span class="price-current">${formatPrice(price)}đ</span>
+      </div>
+    `;
+  }
+
+  // Thêm data attributes cho filtering
+  const isFree = price === 0;
+  const hasSale = hasDiscount;
+  const isFeatured = !!course.featured;
+
   return `
-    <div class="course-card" data-level="${course.level}" data-category="${
-    course.category
-  }">
+    <div class="course-card" data-level="${course.level}" data-category="${course.category}" data-featured="${isFeatured}" data-free="${isFree}" data-sale="${hasSale}">
       <div class="course-image">
         <a href="${introUrl}">
           <img src="${course.image}" alt="${course.title}" loading="lazy" />
         </a>
-        <div class="course-tag" style="color:${categoryColor}">${categoryIcon} ${categoryName}</div>
-        ${
-          course.featured
-            ? `<div class="course-tag-featured"><i class="fa-solid fa-fire"></i></div>`
-            : ""
-        }
+        <div class="course-category">${categoryIcon} ${categoryName}</div>
+        ${course.featured ? `<div class="course-featured"><i class="fa-solid fa-fire"></i></div>` : ""}
       </div>
-      <div class="course-info">
-        <a href="${introUrl}"><h3>${course.title}</h3></a>
-        <div class="skill-level">
-          <span class="level ${course.level}">${levelText}</span>
-        </div>
-        <p class="line-clamp-2">${course.description}</p>
+      <div class="course-content">
+        <a href="${introUrl}" class="course-title-link"><h3 class="course-title">${course.title}</h3></a>
         <div class="course-meta">
-          <span><i class="far fa-clock"></i> ${course.duration}</span>
-          <span><i class="far fa-file-alt"></i> ${course.lessons} bài học</span>
-        </div>
-        <div class="progress-container" >
-          <div class="progress-bar" data-progress="0" data-course-id="${
-            course.id
-          }">
-            <div class="progress"></div>
+          <span class="level-badge ${course.level}">${levelText}</span>
+          <div class="meta-info">
+            <span><i class="far fa-clock"></i> ${course.duration}</span>
+            <span><i class="far fa-file-alt"></i> ${course.lessons} bài</span>
           </div>
-          <span class="progress-text">0% Hoàn Thành</span>
         </div>
-        <a href="${buttonHref}" class="${buttonClass}"${prefetchAttr}>${buttonText}</a>
+        ${priceHTML}
+        <a href="${buttonHref}" class="${buttonClass}"${prefetchAttr}>
+          <i class="fas ${buttonIcon}"></i>
+          ${buttonText}
+        </a>
       </div>
     </div>
   `;
@@ -189,6 +215,7 @@ function initCourseFiltering() {
   const searchInput = document.getElementById("course-search");
   const levelFilter = document.getElementById("filter-level");
   const categoryFilter = document.getElementById("filter-category");
+  const typeFilter = document.getElementById("filter-type");
 
   // Tải danh mục cho dropdown filter
   loadCategoriesForFilter();
@@ -203,26 +230,33 @@ function initCourseFiltering() {
     const searchTerm = searchInput ? searchInput.value.toLowerCase() : "";
     const levelValue = levelFilter ? levelFilter.value : "all";
     const categoryValue = categoryFilter ? categoryFilter.value : "all";
+    const typeValue = typeFilter ? typeFilter.value : "all";
 
     let visibleCount = 0;
 
     courseCards.forEach((card) => {
       const title = card.querySelector("h3")?.textContent.toLowerCase() || "";
-      const description =
-        card.querySelector("p")?.textContent.toLowerCase() || "";
       const level = card.getAttribute("data-level");
       const category = card.getAttribute("data-category");
+      const isFeatured = card.getAttribute("data-featured") === "true";
+      const isFree = card.getAttribute("data-free") === "true";
+      const hasSale = card.getAttribute("data-sale") === "true";
 
       // Kiểm tra điều kiện lọc
-      const matchesSearch =
-        title.includes(searchTerm) || description.includes(searchTerm);
+      const matchesSearch = title.includes(searchTerm);
       const matchesLevel = levelValue === "all" || level === levelValue;
-      const matchesCategory =
-        categoryValue === "all" || category === categoryValue;
+      const matchesCategory = categoryValue === "all" || category === categoryValue;
+      
+      // Kiểm tra loại khóa học
+      let matchesType = true;
+      if (typeValue === "featured") matchesType = isFeatured;
+      else if (typeValue === "sale") matchesType = hasSale;
+      else if (typeValue === "free") matchesType = isFree;
+      else if (typeValue === "paid") matchesType = !isFree;
 
       // Hiển thị hoặc ẩn thẻ
-      if (matchesSearch && matchesLevel && matchesCategory) {
-        card.style.display = "block";
+      if (matchesSearch && matchesLevel && matchesCategory && matchesType) {
+        card.style.display = "flex";
         visibleCount++;
       } else {
         card.style.display = "none";
@@ -249,6 +283,9 @@ function initCourseFiltering() {
   }
   if (categoryFilter) {
     categoryFilter.addEventListener("change", filterCourses);
+  }
+  if (typeFilter) {
+    typeFilter.addEventListener("change", filterCourses);
   }
 }
 

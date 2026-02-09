@@ -13,9 +13,13 @@ import {
   get,
   update,
   remove,
+  query,
+  orderByChild,
+  equalTo,
 } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-database.js";
 import progressManager from "./progress-manager.js";
-import { formatDate } from "./utils/date.js";
+import { formatDate, formatDateTime } from "./utils/date.js";
+import { sanitizeText } from "./utils/sanitize.js";
 import { showFloatingNotification as showNotification } from "./utils/notifications.js";
 
 // Chức năng Trang Hồ Sơ
@@ -28,6 +32,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Load khóa học của tôi
   loadUserCourses();
+
+  // Load lịch sử mua hàng
+  loadPurchaseHistory();
 
   // Load tài nguyên đã lưu
   loadSavedResources();
@@ -109,7 +116,7 @@ function initResourceFilters() {
   // Lọc theo loại tài nguyên
   const filterBtns = document.querySelectorAll(".resources-filter .filter-btn");
   const resourceItems = document.querySelectorAll(
-    ".saved-resources .resource-item"
+    ".saved-resources .resource-item",
   );
   filterBtns.forEach((btn) => {
     btn.addEventListener("click", function () {
@@ -224,7 +231,7 @@ function loadUserSetting() {
 function initSettingsForms() {
   // Xử lý biểu mẫu thông tin cá nhân
   const personalInfoForm = document.querySelector(
-    "#settings .settings-section:nth-child(1) form"
+    "#settings .settings-section:nth-child(1) form",
   );
 
   // Nếu người dùng chọn ảnh mới
@@ -243,7 +250,7 @@ function initSettingsForms() {
         selectedFile = fileInput.files[0];
         const url = URL.createObjectURL(selectedFile);
         const avatarReview = document.querySelector(
-          ".profile-picture-upload img"
+          ".profile-picture-upload img",
         );
         if (avatarReview) avatarReview.src = url;
       }
@@ -319,7 +326,7 @@ function initSettingsForms() {
 
   // Xử lý biểu mẫu thay đổi mật khẩu
   const passwordForm = document.querySelector(
-    "#settings .settings-section:nth-child(2) form"
+    "#settings .settings-section:nth-child(2) form",
   );
   if (passwordForm) {
     passwordForm.addEventListener("submit", async function (e) {
@@ -362,7 +369,7 @@ function initSettingsForms() {
         // Xác thực lại với mật khẩu hiện tại
         const credential = EmailAuthProvider.credential(
           user.email,
-          currentPassword
+          currentPassword,
         );
         await reauthenticateWithCredential(user, credential);
 
@@ -411,7 +418,7 @@ function initSettingsForms() {
 
   // Xử lý biểu mẫu tùy chọn thông báo
   const notificationForm = document.querySelector(
-    "#settings .settings-section:nth-child(3) form"
+    "#settings .settings-section:nth-child(3) form",
   );
   if (notificationForm) {
     notificationForm.addEventListener("submit", function (e) {
@@ -455,12 +462,12 @@ function handleDeleteAccount() {
     // Xử lý xác nhận
     const confirmText = confirmDiv.querySelector("#delete-confirm-text");
     const confirmPassword = confirmDiv.querySelector(
-      "#delete-confirm-password"
+      "#delete-confirm-password",
     );
     const confirmBtn = confirmDiv.querySelector("#delete-confirm-btn");
     const cancelBtn = confirmDiv.querySelector("#delete-cancel-btn");
     const validationMsg = confirmDiv.querySelector(
-      "#delete-validation-message"
+      "#delete-validation-message",
     );
 
     function validate() {
@@ -496,7 +503,7 @@ function handleDeleteAccount() {
         if (!user) throw new Error("Bạn chưa đăng nhập!");
         const credential = EmailAuthProvider.credential(
           user.email,
-          confirmPassword.value
+          confirmPassword.value,
         );
         await reauthenticateWithCredential(user, credential);
 
@@ -510,7 +517,7 @@ function handleDeleteAccount() {
         localStorage.clear();
         showNotification(
           "Tài khoản đã được xóa vĩnh viễn. Tạm biệt!",
-          "success"
+          "success",
         );
         setTimeout(() => (window.location.href = "index.html"), 2000);
       } catch (err) {
@@ -547,7 +554,7 @@ function handleDeleteAccount() {
 function checkFormPasswordChange() {
   onAuthStateChanged(auth, (user) => {
     const passwordSection = document.querySelector(
-      "#settings .settings-section:nth-child(2)"
+      "#settings .settings-section:nth-child(2)",
     );
 
     if (user && passwordSection) {
@@ -573,7 +580,7 @@ function checkFormPasswordChange() {
         `;
         passwordSection.parentNode.insertBefore(
           infoDiv,
-          passwordSection.nextSibling
+          passwordSection.nextSibling,
         );
       }
     }
@@ -660,10 +667,10 @@ async function loadUserCourses() {
             <p class="line-clamp-2">${course.description}</p>
             <div class="course-meta">
               <span><i class="far fa-clock"></i> Truy cập gần nhất: ${formatDate(
-                lastAccessed
+                lastAccessed,
               )}</span>
               <span><i class="far fa-file-alt"></i> Bắt đầu học: ${formatDate(
-                firstAccessed
+                firstAccessed,
               )}</span>
             </div>
             <div class="progress-container">
@@ -674,8 +681,8 @@ async function loadUserCourses() {
             </div>
             <div class="course-actions">
               <a href="course-detail.html?id=${courseId}" class="btn btn-primary">${
-          isCompleted ? "Xem lại" : "Tiếp tục học"
-        }
+                isCompleted ? "Xem lại" : "Tiếp tục học"
+              }
               </a> 
              </div>
           </div>
@@ -790,7 +797,7 @@ async function loadSavedResources() {
                   </button>
                 </div>
         </div>
-      `
+      `,
         )
         .join("");
 
@@ -819,7 +826,7 @@ function removeBookmark() {
           try {
             const bookmarkRef = ref(
               database,
-              `bookmarks/${user.uid}/${btn.dataset.id}`
+              `bookmarks/${user.uid}/${btn.dataset.id}`,
             );
             await remove(bookmarkRef);
             showNotification("Đã xóa tài nguyên đã lưu.");
@@ -827,7 +834,7 @@ function removeBookmark() {
 
             // Đổi icon trên trang tài nguyên về chưa lưu (nếu đang mở)
             const bookmarkBtn = document.querySelector(
-              `.btn-bookmark[onclick*="${btn.dataset.id}"]`
+              `.btn-bookmark[onclick*="${btn.dataset.id}"]`,
             );
             if (bookmarkBtn) {
               const icon = bookmarkBtn.querySelector("i");
@@ -842,5 +849,344 @@ function removeBookmark() {
         });
       }
     });
+  });
+}
+
+// ==================== PURCHASE HISTORY ====================
+
+// Format currency
+function formatCurrency(amount) {
+  return new Intl.NumberFormat("vi-VN", {
+    style: "currency",
+    currency: "VND",
+  }).format(amount);
+}
+
+// Get status config for display
+function getOrderStatusConfig(status) {
+  const configs = {
+    pending: {
+      class: "status-pending",
+      text: "Chờ thanh toán",
+      icon: "fas fa-clock",
+    },
+    completed: {
+      class: "status-completed",
+      text: "Hoàn thành",
+      icon: "fas fa-check-circle",
+    },
+    failed: {
+      class: "status-failed",
+      text: "Thất bại",
+      icon: "fas fa-times-circle",
+    },
+    cancelled: {
+      class: "status-cancelled",
+      text: "Đã hủy",
+      icon: "fas fa-ban",
+    },
+    refunded: {
+      class: "status-refunded",
+      text: "Hoàn tiền",
+      icon: "fas fa-undo",
+    },
+  };
+  return (
+    configs[status] || { class: "", text: status, icon: "fas fa-info-circle" }
+  );
+}
+
+// Load purchase history
+async function loadPurchaseHistory() {
+  const container = document.getElementById("purchase-list");
+  if (!container) return;
+
+  onAuthStateChanged(auth, async (user) => {
+    if (!user) {
+      container.innerHTML = `
+        <div class="empty-state">
+          <i class="fas fa-sign-in-alt"></i>
+          <p>Vui lòng đăng nhập để xem lịch sử mua hàng</p>
+        </div>
+      `;
+      return;
+    }
+
+    try {
+      // Query orders for current user using orderByChild and equalTo
+      const ordersRef = ref(database, "orders");
+      const userOrdersQuery = query(
+        ordersRef,
+        orderByChild("userId"),
+        equalTo(user.uid),
+      );
+      const ordersSnap = await get(userOrdersQuery);
+
+      let userOrders = [];
+      if (ordersSnap.exists()) {
+        userOrders = Object.entries(ordersSnap.val())
+          .map(([id, order]) => ({ id, ...order }))
+          .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+      }
+
+      if (userOrders.length === 0) {
+        container.innerHTML = `
+          <div class="empty-state">
+            <i class="fas fa-shopping-cart"></i>
+            <p>Bạn chưa có đơn hàng nào</p>
+            <a href="courses.html" class="btn btn-primary">Khám phá khóa học</a>
+          </div>
+        `;
+        return;
+      }
+
+      // Load courses for reference
+      const coursesSnap = await get(ref(database, "courses"));
+      const courses = coursesSnap.exists() ? coursesSnap.val() : {};
+
+      // Render orders
+      container.innerHTML = userOrders
+        .map((order) => renderOrderCard(order, courses))
+        .join("");
+
+      // Initialize purchase filters
+      initPurchaseFilters();
+    } catch (error) {
+      console.error("Error loading purchase history:", error);
+      container.innerHTML = `
+        <div class="error-state">
+          <i class="fas fa-exclamation-triangle"></i>
+          <p>Lỗi tải lịch sử mua hàng: ${error.message}</p>
+        </div>
+      `;
+    }
+  });
+}
+
+// Render single order card
+function renderOrderCard(order, courses) {
+  const course = courses[order.courseId] || {};
+  const statusConfig = getOrderStatusConfig(order.status);
+  const createdDate = formatDateTime(order.createdAt);
+
+  // Sanitize user-input data
+  const safeOrderId = sanitizeText(order.orderId || "");
+  const safeCourseTitle = sanitizeText(
+    course.title || order.courseId || "Khóa học",
+  );
+  const safeCourseLevel = sanitizeText(course.level || "N/A");
+  const safePaymentMethod = sanitizeText(order.paymentMethod || "VietQR");
+  const safeThumbnail = sanitizeText(
+    course.thumbnail || "./assets/images/default-course.png",
+  );
+
+  return `
+    <div class="purchase-card" data-status="${sanitizeText(order.status)}" data-order-id="${safeOrderId}">
+      <div class="purchase-header">
+        <div class="order-info">
+          <span class="order-id">
+            <i class="fas fa-receipt"></i>
+            ${safeOrderId}
+          </span>
+          <span class="order-date">${createdDate}</span>
+        </div>
+        <span class="order-status ${statusConfig.class}">
+          <i class="${statusConfig.icon}"></i>
+          ${statusConfig.text}
+        </span>
+      </div>
+      
+      <div class="purchase-body">
+        <div class="course-thumbnail">
+          <img src="${safeThumbnail}" alt="${safeCourseTitle}">
+        </div>
+        <div class="course-info">
+          <h4>${safeCourseTitle}</h4>
+          <p class="course-level">
+            <i class="fas fa-signal"></i>
+            ${safeCourseLevel}
+          </p>
+        </div>
+        <div class="order-amount">
+          <span class="amount">${formatCurrency(order.amount)}</span>
+          <span class="payment-method">
+            <i class="fas fa-qrcode"></i>
+            ${safePaymentMethod}
+          </span>
+        </div>
+      </div>
+      
+      <div class="purchase-footer">
+        ${
+          order.status === "pending"
+            ? `
+          <a href="checkout.html?courseId=${sanitizeText(order.courseId)}&orderId=${safeOrderId}" class="btn btn-primary btn-sm">
+            <i class="fas fa-credit-card"></i>
+            Tiếp tục thanh toán
+          </a>
+        `
+            : ""
+        }
+        ${
+          order.status === "completed"
+            ? `
+          <a href="course-intro.html?id=${sanitizeText(order.courseId)}" class="btn btn-outline btn-sm">
+            <i class="fas fa-play"></i>
+            Vào học ngay
+          </a>
+        `
+            : ""
+        }
+        <button class="btn btn-secondary btn-sm btn-view-detail" data-order='${JSON.stringify(order).replace(/'/g, "&#39;")}'>
+          <i class="fas fa-eye"></i>
+          Chi tiết
+        </button>
+      </div>
+    </div>
+  `;
+}
+
+// Initialize purchase filter buttons
+function initPurchaseFilters() {
+  const filterBtns = document.querySelectorAll(".purchase-filter .filter-btn");
+  const purchaseCards = document.querySelectorAll(".purchase-card");
+
+  filterBtns.forEach((btn) => {
+    btn.addEventListener("click", function () {
+      filterBtns.forEach((b) => b.classList.remove("active"));
+      btn.classList.add("active");
+
+      const filter = btn.getAttribute("data-filter");
+      purchaseCards.forEach((card) => {
+        if (filter === "all" || card.getAttribute("data-status") === filter) {
+          card.style.display = "";
+        } else {
+          card.style.display = "none";
+        }
+      });
+    });
+  });
+
+  // View detail buttons
+  document.querySelectorAll(".btn-view-detail").forEach((btn) => {
+    btn.addEventListener("click", function () {
+      const order = JSON.parse(this.dataset.order);
+      showOrderDetailModal(order);
+    });
+  });
+}
+
+// Show order detail modal
+function showOrderDetailModal(order) {
+  const statusConfig = getOrderStatusConfig(order.status);
+  const createdDate = formatDateTime(order.createdAt);
+  const completedDate = order.completedAt
+    ? formatDateTime(order.completedAt)
+    : null;
+
+  // Sanitize data for XSS protection
+  const safeOrderId = sanitizeText(order.orderId || "");
+  const safeCourseName = sanitizeText(order.courseName || order.courseId || "");
+  const safeCourseId = sanitizeText(order.courseId || "");
+  const safePaymentMethod = sanitizeText(order.paymentMethod || "VietQR");
+  const safeTransferContent = order.transferContent
+    ? sanitizeText(order.transferContent)
+    : null;
+
+  // Create modal if not exists
+  let modal = document.getElementById("order-detail-modal");
+  if (!modal) {
+    modal = document.createElement("div");
+    modal.id = "order-detail-modal";
+    modal.className = "modal-overlay";
+    document.body.appendChild(modal);
+  }
+
+  modal.innerHTML = `
+    <div class="modal-content order-modal">
+      <div class="modal-header">
+        <h3><i class="fas fa-receipt"></i> Chi tiết đơn hàng</h3>
+        <button class="modal-close" onclick="document.getElementById('order-detail-modal').classList.remove('active')">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="order-detail-section">
+          <h4>Thông tin đơn hàng</h4>
+          <div class="detail-row">
+            <span class="label">Mã đơn hàng:</span>
+            <span class="value"><code>${safeOrderId}</code></span>
+          </div>
+          <div class="detail-row">
+            <span class="label">Trạng thái:</span>
+            <span class="value order-status ${statusConfig.class}">
+              <i class="${statusConfig.icon}"></i> ${statusConfig.text}
+            </span>
+          </div>
+          <div class="detail-row">
+            <span class="label">Số tiền:</span>
+            <span class="value amount">${formatCurrency(order.amount)}</span>
+          </div>
+          <div class="detail-row">
+            <span class="label">Phương thức:</span>
+            <span class="value">${safePaymentMethod}</span>
+          </div>
+          <div class="detail-row">
+            <span class="label">Ngày tạo:</span>
+            <span class="value">${createdDate}</span>
+          </div>
+          ${
+            completedDate
+              ? `
+            <div class="detail-row">
+              <span class="label">Ngày hoàn thành:</span>
+              <span class="value">${completedDate}</span>
+            </div>
+          `
+              : ""
+          }
+          ${
+            safeTransferContent
+              ? `
+            <div class="detail-row">
+              <span class="label">Nội dung CK:</span>
+              <span class="value"><code>${safeTransferContent}</code></span>
+            </div>
+          `
+              : ""
+          }
+        </div>
+
+        <div class="order-detail-section">
+          <h4>Thông tin khóa học</h4>
+          <div class="detail-row">
+            <span class="label">Khóa học:</span>
+            <span class="value">${safeCourseName}</span>
+          </div>
+        </div>
+
+        ${
+          order.status === "pending"
+            ? `
+          <div class="order-actions">
+            <a href="checkout.html?courseId=${safeCourseId}&orderId=${safeOrderId}" class="btn btn-primary">
+              <i class="fas fa-credit-card"></i>
+              Tiếp tục thanh toán
+            </a>
+          </div>
+        `
+            : ""
+        }
+      </div>
+    </div>
+  `;
+
+  modal.classList.add("active");
+
+  // Close on backdrop click
+  modal.addEventListener("click", (e) => {
+    if (e.target === modal) {
+      modal.classList.remove("active");
+    }
   });
 }

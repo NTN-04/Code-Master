@@ -317,7 +317,9 @@ h2:after {
   margin-top: 0.75rem;
   border-left: 2px solid var(--border-color);
   overflow: hidden;
-  transition: max-height 0.3s ease, opacity 0.3s ease;
+  transition:
+    max-height 0.3s ease,
+    opacity 0.3s ease;
 }
 
 .lesson-preview-item {
@@ -436,7 +438,9 @@ h2:after {
   border-radius: 16px;
   padding: 2px;
   background: linear-gradient(135deg, #667eea, #764ba2);
-  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
   -webkit-mask-composite: xor;
   mask-composite: exclude;
   opacity: 0.3;
@@ -461,6 +465,29 @@ h2:after {
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+}
+
+/* Original Price (Strikethrough) */
+.course-price .original-price {
+  display: block;
+  font-size: 1rem;
+  color: #888;
+  text-decoration: line-through;
+  margin-bottom: 0.25rem;
+  opacity: 0.7;
+}
+
+/* Discount Badge */
+.course-price .discount-badge {
+  display: inline-block;
+  background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+  color: white;
+  font-size: 0.875rem;
+  font-weight: 700;
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  margin-top: 0.5rem;
+  box-shadow: 0 2px 8px rgba(238, 90, 36, 0.3);
 }
 
 .price-label {
@@ -517,6 +544,19 @@ h2:after {
   background: linear-gradient(135deg, #218838 0%, #1aa67d 100%);
   transform: translateY(-2px);
   box-shadow: 0 6px 20px rgba(40, 167, 69, 0.4);
+}
+
+/* Button for paid courses */
+.enrollment-button.paid {
+  background: linear-gradient(135deg, #f59e0b 0%, #f97316 100%);
+  color: white;
+  text-transform: none;
+}
+
+.enrollment-button.paid:hover {
+  background: linear-gradient(135deg, #d97706 0%, #ea580c 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(245, 158, 11, 0.4);
 }
 
 .enrollment-button i {

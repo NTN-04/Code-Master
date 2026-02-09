@@ -7,14 +7,20 @@
  * Skeleton types templates
  */
 const SKELETON_TEMPLATES = {
-  // Course card skeleton
+  // Course card skeleton - Modern E-commerce Style
   courseCard: `
     <div class="course-card skeleton skeleton-card">
-      <div class="skeleton-image"></div>
-      <div class="skeleton-content">
+      <div class="course-image">
+        <div class="skeleton-image"></div>
+      </div>
+      <div class="course-content">
         <div class="skeleton-title"></div>
-        <div class="skeleton-text"></div>
-        <div class="skeleton-text short"></div>
+        <div class="skeleton-meta">
+          <div class="skeleton-badge"></div>
+          <div class="skeleton-text short"></div>
+        </div>
+        <div class="skeleton-price"></div>
+        <div class="skeleton-button"></div>
       </div>
     </div>
   `,
@@ -132,12 +138,12 @@ export const loadingSkeleton = {
     this._applySkeletonOverlay(
       mainContainer,
       mainTemplate,
-      hideOriginalContent
+      hideOriginalContent,
     );
     this._applySkeletonOverlay(
       sidebarContainer,
       sidebarTemplate,
-      hideOriginalContent
+      hideOriginalContent,
     );
   },
 
@@ -171,7 +177,7 @@ export const loadingSkeleton = {
 
     // Remove skeleton elements và skeleton overlay
     el.querySelectorAll(
-      ".skeleton, .skeleton-card, .skeleton-overlay, .loading-spinner"
+      ".skeleton, .skeleton-card, .skeleton-overlay, .loading-spinner",
     ).forEach((skeleton) => {
       skeleton.remove();
     });

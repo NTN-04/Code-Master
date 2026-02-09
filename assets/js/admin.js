@@ -19,6 +19,8 @@ import AnalyticsManager from "./admin/admin-analytics.js";
 import Dashboard from "./admin/admin-dashboard.js";
 import SettingsManager from "./admin/admin-setting.js";
 import CommentsManager from "./admin/admin-comments.js";
+import OrdersManager from "./admin/admin-orders.js";
+import PaymentLogsManager from "./admin/admin-payment-logs.js";
 
 // Bộ điều khiển chính cho trang Quản trị Admin
 class AdminPanel {
@@ -33,6 +35,8 @@ class AdminPanel {
     this.dashboard = new Dashboard(this);
     this.settings = new SettingsManager(this);
     this.comments = new CommentsManager(this);
+    this.orders = new OrdersManager(this);
+    this.paymentLogs = new PaymentLogsManager(this);
 
     this.notificationManager = createNotificationManager({
       containerId: "notification",
@@ -70,6 +74,7 @@ class AdminPanel {
     this.users.setupEventListeners();
     this.courses.setupEventListeners();
     this.blogs.setupEventListeners();
+    this.orders.setupEventListeners();
   }
 
   // Điều hướng
@@ -112,6 +117,10 @@ class AdminPanel {
           break;
         case "blogs":
           this.loadBlogsData();
+          break;
+        case "orders":
+          this.loadOrdersData();
+          this.initOrdersSubTabs();
           break;
         case "comments":
           this.loadCommentsData();
@@ -169,6 +178,55 @@ class AdminPanel {
     } catch (error) {
       console.error("Error loading blog data:", error);
       this.showNotification("Lỗi tải dữ liệu bài viết blog", "error");
+    }
+  }
+
+  // Quản lý đơn hàng
+  async loadOrdersData() {
+    try {
+      await this.orders.loadData();
+    } catch (error) {
+      console.error("Error loading orders data:", error);
+      this.showNotification("Lỗi tải dữ liệu đơn hàng", "error");
+    }
+  }
+
+  // Khởi tạo sub-tabs trong Orders section
+  initOrdersSubTabs() {
+    const subTabs = document.querySelectorAll(".orders-sub-tabs .sub-tab");
+    const subTabContents = document.querySelectorAll(
+      "#orders .sub-tab-content",
+    );
+
+    subTabs.forEach((tab) => {
+      tab.addEventListener("click", () => {
+        const targetTab = tab.dataset.subtab;
+
+        // Update active tab
+        subTabs.forEach((t) => t.classList.remove("active"));
+        tab.classList.add("active");
+
+        // Show target content
+        subTabContents.forEach((content) => content.classList.remove("active"));
+
+        if (targetTab === "orders-list") {
+          document.getElementById("orders-list-tab")?.classList.add("active");
+        } else if (targetTab === "webhook-logs") {
+          document.getElementById("webhook-logs-tab")?.classList.add("active");
+          // Load payment logs khi chuyển sang tab này
+          this.loadPaymentLogsData();
+        }
+      });
+    });
+  }
+
+  // Logs thanh toán tự động
+  async loadPaymentLogsData() {
+    try {
+      await this.paymentLogs.loadData();
+    } catch (error) {
+      console.error("Error loading payment logs:", error);
+      this.showNotification("Lỗi tải logs thanh toán", "error");
     }
   }
 

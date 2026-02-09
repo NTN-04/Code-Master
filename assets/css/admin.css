@@ -50,6 +50,24 @@ body.dark-mode .admin-table tr:hover {
   background: #4a5568;
 }
 
+/* Dark mode for sub-tabs */
+body.dark-mode .orders-sub-tabs {
+  border-bottom-color: #4a5568;
+}
+
+body.dark-mode .orders-sub-tabs .sub-tab {
+  color: #a0aec0;
+}
+
+body.dark-mode .orders-sub-tabs .sub-tab:hover {
+  background: rgba(52, 152, 219, 0.1);
+}
+
+body.dark-mode .orders-sub-tabs .sub-tab.active {
+  color: #4facfe;
+  border-bottom-color: #4facfe;
+}
+
 body.dark-mode .admin-sidebar {
   background: #1a1d24;
   border-right-color: #4a5568;
@@ -1872,4 +1890,336 @@ body.dark-mode .modal-tabs .tab-btn.active {
   #admin-blog-detail-modal .modal-footer {
     padding: 1rem 0.7rem;
   }
+}
+
+/* ==================== ORDERS MANAGEMENT ==================== */
+
+/* Orders Sub-tabs */
+.orders-sub-tabs {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+  border-bottom: 2px solid var(--gray-light, #e9ecef);
+  padding-bottom: 0;
+}
+
+.orders-sub-tabs .sub-tab {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.25rem;
+  background: transparent;
+  border: none;
+  border-bottom: 3px solid transparent;
+  cursor: pointer;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--gray-dark, #666);
+  transition: all 0.2s ease;
+  margin-bottom: -2px;
+}
+
+.orders-sub-tabs .sub-tab:hover {
+  color: var(--primary-color, #3498db);
+  background: rgba(52, 152, 219, 0.05);
+}
+
+.orders-sub-tabs .sub-tab.active {
+  color: var(--primary-color, #3498db);
+  border-bottom-color: var(--primary-color, #3498db);
+}
+
+.orders-sub-tabs .sub-tab i {
+  font-size: 1rem;
+}
+
+/* Badge for realtime indicator on tab */
+.orders-sub-tabs .badge-realtime {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  background: #4ade80;
+  border-radius: 50%;
+  animation: pulse 2s infinite;
+}
+
+/* Sub-tab content */
+.sub-tab-content {
+  display: none;
+}
+
+.sub-tab-content.active {
+  display: block;
+}
+
+/* Stats grid with 4 columns */
+.stats-grid-4 {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+/* Stats grid with 2 columns */
+.stats-grid-2 {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+  max-width: 600px;
+}
+
+@media (max-width: 576px) {
+  .stats-grid-2 {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 1200px) {
+  .stats-grid-4 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 576px) {
+  .stats-grid-4 {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Order ID cell */
+.order-id {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.order-id code {
+  font-size: 0.8rem;
+  background: var(--gray-light, #f1f3f5);
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-family: "Consolas", monospace;
+}
+
+.btn-icon.btn-copy {
+  padding: 0.25rem;
+  background: transparent;
+  border: none;
+  color: var(--gray-dark, #666);
+  cursor: pointer;
+  opacity: 0.6;
+  transition: opacity 0.2s;
+}
+
+.btn-icon.btn-copy:hover {
+  opacity: 1;
+  color: var(--primary-color);
+}
+
+/* User info in table */
+.user-info-cell {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.user-avatar-small {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.user-info-cell .user-name {
+  font-weight: 500;
+  color: var(--text-color);
+}
+
+.user-info-cell .user-email {
+  font-size: 0.8rem;
+  color: var(--gray-dark, #666);
+}
+
+/* Course info in table */
+.course-info-cell .course-name {
+  font-weight: 500;
+}
+
+/* Amount cell */
+.amount-cell {
+  color: var(--success-color, #2ecc71);
+  font-weight: 600;
+}
+
+/* Status badges */
+.status-badge.status-warning {
+  background: #fff3cd;
+  color: #856404;
+}
+
+.status-badge.status-inactive {
+  background: #f8d7da;
+  color: #721c24;
+}
+
+/* Order detail modal */
+.order-detail {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.order-detail-section {
+  background: var(--gray-light, #f8f9fa);
+  border-radius: 8px;
+  padding: 1rem 1.25rem;
+}
+
+body.dark-mode .order-detail-section {
+  background: #2d3748;
+}
+
+.order-detail-section h4 {
+  margin: 0 0 1rem 0;
+  font-size: 1rem;
+  color: var(--primary-color);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.detail-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.75rem 2rem;
+}
+
+.detail-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.detail-item.full-width {
+  grid-column: 1 / -1;
+}
+
+.detail-item label {
+  font-size: 0.8rem;
+  color: var(--gray-dark, #666);
+  font-weight: 500;
+}
+
+.detail-item span {
+  font-size: 0.95rem;
+  color: var(--text-color);
+}
+
+.detail-item code {
+  font-size: 0.85rem;
+  background: var(--gray-medium, #e9ecef);
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  font-family: "Consolas", monospace;
+  word-break: break-all;
+}
+
+body.dark-mode .detail-item code {
+  background: #4a5568;
+}
+
+.detail-item .amount {
+  color: var(--success-color);
+  font-weight: 600;
+  font-size: 1.1rem;
+}
+
+/* Empty state */
+.empty-state {
+  padding: 3rem;
+  text-align: center;
+  color: var(--gray-dark, #666);
+}
+
+.empty-state i {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  opacity: 0.5;
+}
+
+.empty-state p {
+  margin: 0;
+  font-size: 1rem;
+}
+
+/* Responsive table */
+@media (max-width: 992px) {
+  .detail-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ==================== PAYMENT LOGS ==================== */
+
+/* Badge info for realtime indicator */
+.card-header .badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.card-header .badge-info {
+  margin-top: 7px;
+  background: #3498db;
+  color: white;
+}
+
+.card-header .badge-info::before {
+  content: "";
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  background: #4ade80;
+  border-radius: 50%;
+  margin-right: 0.5rem;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+/* Error message in logs table */
+.error-message {
+  color: var(--danger-color, #e74c3c);
+  font-size: 0.85rem;
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Code styling in tables */
+#payment-logs-body code {
+  font-family: "Consolas", "Monaco", monospace;
+  font-size: 0.8rem;
+  background: var(--gray-light, #f1f3f5);
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  word-break: break-all;
+}
+
+body.dark-mode #payment-logs-body code {
+  background: #1a1d24;
+  color: #4ade80;
 }

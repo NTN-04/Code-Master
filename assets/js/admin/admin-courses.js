@@ -245,7 +245,8 @@ export default class CoursesManager {
     document.getElementById("course-ide-template").value =
       course.ideTemplate || "";
 
-    // Dữ liệu mới
+    // Dữ liệu giá
+    document.getElementById("course-original-price").value = course.originalPrice || 0;
     document.getElementById("course-price").value = course.price || 0;
     document.getElementById("course-video-intro").value =
       course.videoIntro || "";
@@ -347,7 +348,8 @@ export default class CoursesManager {
     // Render options cho IDE Template select
     this.renderIdeTemplateOptions();
 
-    // Reset các trường mới
+    // Reset các trường giá và video
+    document.getElementById("course-original-price").value = "";
     document.getElementById("course-price").value = "";
     document.getElementById("course-video-intro").value = "";
     document.getElementById("course-ide-template").value = "";
@@ -590,6 +592,7 @@ export default class CoursesManager {
       category: document.getElementById("course-category").value,
       image: imageUrl,
       updatedAt: new Date().toISOString().slice(0, 10),
+      originalPrice: Number(document.getElementById("course-original-price").value) || 0,
       price: Number(document.getElementById("course-price").value) || 0,
       videoIntro:
         document.getElementById("course-video-intro").value.trim() || "",
