@@ -5,9 +5,11 @@
 
 /* === HEADER SECTION === */
 .courses-header {
-  background: linear-gradient(135deg, 
-    rgba(94, 187, 255, 0.15) 0%, 
-    rgba(161, 116, 255, 0.2) 100%);
+  background: linear-gradient(
+    135deg,
+    rgba(94, 187, 255, 0.15) 0%,
+    rgba(161, 116, 255, 0.2) 100%
+  );
   padding: 80px 0 60px;
   text-align: center;
   position: relative;
@@ -21,20 +23,33 @@
   left: -50%;
   width: 200%;
   height: 200%;
-  background: radial-gradient(circle, rgba(94, 187, 255, 0.05) 0%, transparent 70%);
+  background: radial-gradient(
+    circle,
+    rgba(94, 187, 255, 0.05) 0%,
+    transparent 70%
+  );
   animation: float-bg 20s ease-in-out infinite;
 }
 
 @keyframes float-bg {
-  0%, 100% { transform: translate(0, 0); }
-  50% { transform: translate(5%, 5%); }
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+  50% {
+    transform: translate(5%, 5%);
+  }
 }
 
 .courses-header h1 {
   font-size: 3rem;
   font-weight: 800;
   margin-bottom: 16px;
-  background: linear-gradient(135deg, var(--brand-blue) 0%, var(--brand-purple) 100%);
+  background: linear-gradient(
+    135deg,
+    var(--brand-blue) 0%,
+    var(--brand-purple) 100%
+  );
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -92,7 +107,11 @@
 }
 
 .search-box button {
-  background: linear-gradient(135deg, var(--brand-blue) 0%, var(--brand-purple) 100%);
+  background: linear-gradient(
+    135deg,
+    var(--brand-blue) 0%,
+    var(--brand-purple) 100%
+  );
   color: white;
   border: none;
   padding: 0 24px;
@@ -250,6 +269,7 @@
   margin-bottom: 12px;
   transition: color 0.3s ease;
   display: -webkit-box;
+  line-clamp: 2;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
@@ -341,7 +361,11 @@
 .price-current {
   font-size: 1.4rem;
   font-weight: 800;
-  background: linear-gradient(135deg, var(--brand-blue) 0%, var(--brand-purple) 100%);
+  background: linear-gradient(
+    135deg,
+    var(--brand-blue) 0%,
+    var(--brand-purple) 100%
+  );
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -371,7 +395,11 @@
   gap: 8px;
   width: 100%;
   padding: 14px 20px;
-  background: linear-gradient(135deg, var(--brand-blue) 0%, var(--brand-purple) 100%);
+  background: linear-gradient(
+    135deg,
+    var(--brand-blue) 0%,
+    var(--brand-purple) 100%
+  );
   color: white;
   text-decoration: none;
   font-size: 0.95rem;
@@ -409,7 +437,11 @@
 
 .no-results i {
   font-size: 4rem;
-  background: linear-gradient(135deg, var(--brand-blue) 0%, var(--brand-purple) 100%);
+  background: linear-gradient(
+    135deg,
+    var(--brand-blue) 0%,
+    var(--brand-purple) 100%
+  );
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -463,7 +495,7 @@
     margin-left: auto;
     margin-right: auto;
   }
-  
+
   .course-card .course-image {
     padding-top: 60%; /* Tăng chiều cao ảnh cho cân đối */
   }
@@ -585,4 +617,3 @@
     padding: 5px 12px;
   }
 }
-

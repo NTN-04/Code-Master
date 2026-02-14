@@ -6,7 +6,11 @@ import {
   set,
 } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-database.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-auth.js";
-import { showFloatingNotification as showNotification } from "./utils/notifications.js";
+import {
+  showFloatingNotification as showNotification,
+  createNotification,
+  NOTIFICATION_TYPES,
+} from "./utils/notifications.js";
 import { sanitizeText } from "./utils/sanitize.js";
 import { cacheManager, CACHE_KEYS } from "./utils/cache-manager.js";
 import loadingSkeleton from "./utils/loading-skeleton.js";
@@ -288,18 +292,20 @@ function renderCourseIntro(course, modules) {
   const priceTag = document.getElementById("course-price");
   const originalPriceEl = document.getElementById("course-original-price");
   const discountBadge = document.getElementById("course-discount-badge");
-  
+
   const price = Number(course.price) || 0;
   const originalPrice = Number(course.originalPrice) || 0;
   const hasDiscount = originalPrice > price && price > 0;
-  
+
   if (price > 0) {
     priceTag.textContent = `${price.toLocaleString("vi-VN")} VNĐ`;
     priceTag.className = "price-tag";
-    
+
     // Hiển thị giá gốc và badge giảm giá nếu có khuyến mãi
     if (hasDiscount && originalPriceEl && discountBadge) {
-      const discountPercent = Math.round(((originalPrice - price) / originalPrice) * 100);
+      const discountPercent = Math.round(
+        ((originalPrice - price) / originalPrice) * 100,
+      );
       originalPriceEl.textContent = `${originalPrice.toLocaleString("vi-VN")} VNĐ`;
       originalPriceEl.style.display = "inline";
       discountBadge.textContent = `-${discountPercent}%`;
@@ -574,6 +580,22 @@ async function handleEnrollment() {
       currentCourseId,
     );
     cacheManager.remove(cacheKey);
+
+    // Tạo thông báo đăng ký khóa học thành công
+    try {
+      await createNotification(currentUser.uid, {
+        type: NOTIFICATION_TYPES.COURSE_ENROLLED,
+        title: "Đăng ký khóa học thành công",
+        message: `Bạn đã đăng ký thành công khóa học "${currentCourse?.title || "Khóa học mới"}". Bắt đầu học ngay nhé!`,
+        link: `course-detail.html?id=${currentCourseId}`,
+        data: {
+          courseId: currentCourseId,
+          courseName: currentCourse?.title,
+        },
+      });
+    } catch (notifError) {
+      console.warn("Không thể tạo thông báo:", notifError);
+    }
 
     // Show success message
     showNotification("Đăng ký thành công! Chuyển hướng...", "success");

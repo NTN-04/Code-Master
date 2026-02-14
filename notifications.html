@@ -1,0 +1,436 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Thông Báo | CodeMaster</title>
+    <link rel="icon" href="./assets/images/favicon.ico" type="image/x-icon" />
+    <link rel="stylesheet" href="./assets/css/style.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <style>
+      /* Page specific styles */
+      .notifications-page {
+        padding: 40px 0 80px;
+        min-height: 60vh;
+        background: #f8fafc;
+      }
+
+      .notifications-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 24px;
+        flex-wrap: wrap;
+        gap: 16px;
+      }
+
+      .notifications-header h1 {
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: #1e293b;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .notifications-header h1 i {
+        color: var(--brand-blue, #5ebbff);
+      }
+
+      .notifications-actions {
+        display: flex;
+        gap: 12px;
+      }
+
+      .notifications-actions button {
+        padding: 10px 16px;
+        border: none;
+        border-radius: 8px;
+        font-size: 0.9rem;
+        font-weight: 500;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        transition: all 0.2s ease;
+      }
+
+      .btn-mark-all {
+        background: var(--brand-blue, #5ebbff);
+        color: white;
+      }
+
+      .btn-mark-all:hover {
+        background: #3ea6e8;
+      }
+
+      .btn-clear-all {
+        background: #fee2e2;
+        color: #ef4444;
+      }
+
+      .btn-clear-all:hover {
+        background: #fecaca;
+      }
+
+      /* Filter tabs */
+      .notifications-filter {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 24px;
+        flex-wrap: wrap;
+      }
+
+      .filter-tab {
+        padding: 8px 16px;
+        border: 1px solid #e2e8f0;
+        border-radius: 20px;
+        background: white;
+        font-size: 0.9rem;
+        color: #64748b;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .filter-tab:hover {
+        border-color: var(--brand-blue, #5ebbff);
+        color: var(--brand-blue, #5ebbff);
+      }
+
+      .filter-tab.active {
+        background: var(
+          --brand-gradient,
+          linear-gradient(to right, #5ebbff, #a174ff)
+        );
+        color: white;
+        border-color: transparent;
+      }
+
+      /* Notifications list container */
+      .notifications-container {
+        background: white;
+        border-radius: 16px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+        overflow: hidden;
+      }
+
+      /* Notification item in page */
+      .page-notification-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 16px;
+        padding: 20px 24px;
+        border-bottom: 1px solid #f1f5f9;
+        transition: background 0.2s ease;
+        cursor: pointer;
+        position: relative;
+      }
+
+      .page-notification-item:hover {
+        background: #f8fafc;
+      }
+
+      .page-notification-item:last-child {
+        border-bottom: none;
+      }
+
+      .page-notification-item.unread {
+        background: linear-gradient(90deg, #eff6ff 0%, white 100%);
+      }
+
+      .page-notification-item.unread::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 4px;
+        background: var(--brand-blue, #5ebbff);
+      }
+
+      .page-notification-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+        flex-shrink: 0;
+      }
+
+      .page-notification-content {
+        flex: 1;
+        min-width: 0;
+      }
+
+      .page-notification-title {
+        font-size: 1rem;
+        font-weight: 600;
+        color: #1e293b;
+        margin-bottom: 4px;
+      }
+
+      .page-notification-message {
+        font-size: 0.9rem;
+        color: #64748b;
+        line-height: 1.5;
+        margin-bottom: 8px;
+      }
+
+      .page-notification-time {
+        font-size: 0.8rem;
+        color: #94a3b8;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      .page-notification-time i {
+        font-size: 0.75rem;
+      }
+
+      .page-notification-actions {
+        display: flex;
+        gap: 8px;
+        opacity: 0;
+        transition: opacity 0.2s ease;
+      }
+
+      .page-notification-item:hover .page-notification-actions {
+        opacity: 1;
+      }
+
+      .page-notification-actions button {
+        width: 36px;
+        height: 36px;
+        border: none;
+        border-radius: 8px;
+        background: #f1f5f9;
+        color: #64748b;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s ease;
+      }
+
+      .page-notification-actions button:hover {
+        background: #e2e8f0;
+      }
+
+      .page-notification-actions button.delete-btn:hover {
+        background: #fee2e2;
+        color: #ef4444;
+      }
+
+      /* Empty state */
+      .notifications-empty {
+        padding: 80px 20px;
+        text-align: center;
+        color: #94a3b8;
+      }
+
+      .notifications-empty i {
+        font-size: 4rem;
+        margin-bottom: 16px;
+        opacity: 0.5;
+      }
+
+      .notifications-empty h3 {
+        font-size: 1.25rem;
+        color: #64748b;
+        margin-bottom: 8px;
+      }
+
+      .notifications-empty p {
+        font-size: 0.9rem;
+      }
+
+      /* Loading state */
+      .notifications-loading {
+        padding: 60px 20px;
+        text-align: center;
+        color: #64748b;
+      }
+
+      .notifications-loading i {
+        font-size: 2rem;
+        margin-bottom: 12px;
+        animation: spin 1s linear infinite;
+      }
+
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      /* Login required state */
+      .login-required {
+        padding: 80px 20px;
+        text-align: center;
+      }
+
+      .login-required i {
+        font-size: 4rem;
+        color: var(--brand-blue, #5ebbff);
+        margin-bottom: 16px;
+      }
+
+      .login-required h3 {
+        font-size: 1.5rem;
+        color: #1e293b;
+        margin-bottom: 12px;
+      }
+
+      .login-required p {
+        color: #64748b;
+        margin-bottom: 24px;
+      }
+
+      .login-required a {
+        display: inline-block;
+        padding: 12px 32px;
+        background: var(
+          --brand-gradient,
+          linear-gradient(to right, #5ebbff, #a174ff)
+        );
+        color: white;
+        text-decoration: none;
+        border-radius: 8px;
+        font-weight: 600;
+        transition:
+          transform 0.2s ease,
+          box-shadow 0.2s ease;
+      }
+
+      .login-required a:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(94, 187, 255, 0.4);
+      }
+
+      /* Pagination */
+      .notifications-pagination {
+        display: flex;
+        justify-content: center;
+        gap: 8px;
+        margin-top: 24px;
+      }
+
+      .notifications-pagination button {
+        padding: 10px 16px;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        background: white;
+        color: #64748b;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .notifications-pagination button:hover:not(:disabled) {
+        border-color: var(--brand-blue, #5ebbff);
+        color: var(--brand-blue, #5ebbff);
+      }
+
+      .notifications-pagination button:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+
+      /* Responsive */
+      @media (max-width: 768px) {
+        .notifications-header {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+
+        .notifications-actions {
+          width: 100%;
+        }
+
+        .notifications-actions button {
+          flex: 1;
+          justify-content: center;
+        }
+
+        .page-notification-item {
+          padding: 16px;
+        }
+
+        .page-notification-actions {
+          opacity: 1;
+          flex-direction: column;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- load với component -->
+    <header id="header-placeholder"></header>
+
+    <div class="main-content">
+      <section class="notifications-page">
+        <div class="container">
+          <!-- Header -->
+          <div class="notifications-header">
+            <h1><i class="fas fa-bell"></i> Thông Báo</h1>
+            <div class="notifications-actions" id="notifications-actions">
+              <button class="btn-mark-all" id="mark-all-btn">
+                <i class="fas fa-check-double"></i>
+                Đánh dấu tất cả đã đọc
+              </button>
+              <button class="btn-clear-all" id="clear-all-btn">
+                <i class="fas fa-trash-alt"></i>
+                Xóa tất cả
+              </button>
+            </div>
+          </div>
+
+          <!-- Filter tabs -->
+          <div class="notifications-filter" id="notifications-filter">
+            <button class="filter-tab active" data-filter="all">Tất cả</button>
+            <button class="filter-tab" data-filter="unread">Chưa đọc</button>
+            <button class="filter-tab" data-filter="payment">Thanh toán</button>
+            <button class="filter-tab" data-filter="course">Khóa học</button>
+            <button class="filter-tab" data-filter="comment">Bình luận</button>
+            <button class="filter-tab" data-filter="system">Hệ thống</button>
+          </div>
+
+          <!-- Notifications list -->
+          <div class="notifications-container" id="notifications-container">
+            <div class="notifications-loading">
+              <i class="fas fa-spinner"></i>
+              <p>Đang tải thông báo...</p>
+            </div>
+          </div>
+
+          <!-- Pagination -->
+          <div
+            class="notifications-pagination"
+            id="notifications-pagination"
+            style="display: none"
+          >
+            <button id="prev-page-btn" disabled>
+              <i class="fas fa-chevron-left"></i> Trước
+            </button>
+            <button id="next-page-btn">
+              Tiếp <i class="fas fa-chevron-right"></i>
+            </button>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- load với component -->
+    <footer id="footer-placeholder"></footer>
+
+    <!-- Scripts -->
+    <script src="./assets/js/components.js"></script>
+    <script type="module" src="./assets/js/notifications-page.js"></script>
+  </body>
+</html>

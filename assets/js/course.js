@@ -12,6 +12,11 @@ import {
   renderLanguageSelector,
   updateUIBasedOnFeatures,
 } from "./ide/ide.js";
+import {
+  createNotification,
+  NOTIFICATION_TYPES,
+} from "./utils/notifications.js";
+import { initThemeToggleForLearning } from "./components/ThemeToggle.js";
 
 // Biến lưu template IDE cho khóa học hiện tại (null = không có IDE)
 let currentIdeTemplate = null;
@@ -41,6 +46,9 @@ function toggleIDETab(show) {
 
 // Các phần tử DOM cho trang khóa học
 document.addEventListener("DOMContentLoaded", async function () {
+  // Khởi tạo toggle dark/light mode từ central ThemeToggle module
+  initThemeToggleForLearning();
+
   const courseId = getCourseIdFromUrl();
   const modules = await fetchCourseModules(courseId);
   renderSidebar(modules);
@@ -162,7 +170,7 @@ function setActiveLessonLink(lessonId) {
   const lessonLinks = document.querySelectorAll(".lesson-link");
   lessonLinks.forEach((l) => l.classList.remove("active"));
   const activeLink = document.querySelector(
-    `.lesson-link[data-lesson="${lessonId}"]`
+    `.lesson-link[data-lesson="${lessonId}"]`,
   );
   if (activeLink) activeLink.classList.add("active");
 }
@@ -238,11 +246,98 @@ function getCourseIdFromUrl() {
   return params.get("id");
 }
 
+// Các mốc tiến trình cần thông báo
+const PROGRESS_MILESTONES = [25, 50, 75, 100];
+
+/**
+ * Kiểm tra và tạo thông báo khi đạt mốc tiến trình
+ */
+async function checkAndNotifyMilestone(
+  userId,
+  courseId,
+  previousProgress,
+  currentProgress,
+) {
+  try {
+    // Tìm milestone vừa đạt được
+    const reachedMilestone = PROGRESS_MILESTONES.find(
+      (milestone) =>
+        previousProgress < milestone && currentProgress >= milestone,
+    );
+
+    if (!reachedMilestone) return;
+
+    // Kiểm tra xem milestone này đã được thông báo chưa (lưu trong DB)
+    const notifiedMilestonesRef = ref(
+      database,
+      `userProgress/${userId}/courses/${courseId}/notifiedMilestones`,
+    );
+    const notifiedSnapshot = await get(notifiedMilestonesRef);
+    let notifiedMilestones = [];
+    if (notifiedSnapshot.exists()) {
+      notifiedMilestones = notifiedSnapshot.val();
+    }
+
+    // Nếu milestone đã được thông báo, bỏ qua
+    if (notifiedMilestones.includes(reachedMilestone)) {
+      console.log(
+        `📣 Milestone ${reachedMilestone}% already notified, skipping`,
+      );
+      return;
+    }
+
+    // Lấy tên khóa học
+    let courseName = "Khóa học";
+    try {
+      const courseRef = ref(database, `courses/${courseId}`);
+      const courseSnapshot = await get(courseRef);
+      if (courseSnapshot.exists()) {
+        courseName = courseSnapshot.val().title || courseName;
+      }
+    } catch (e) {
+      console.warn("Không thể lấy tên khóa học:", e);
+    }
+
+    // Tạo thông báo dựa trên milestone
+    let title, message, type;
+
+    if (reachedMilestone === 100) {
+      type = NOTIFICATION_TYPES.COURSE_COMPLETED;
+      title = "Chúc mừng! Hoàn thành khóa học";
+      message = `Bạn đã hoàn thành 100% khóa học "${courseName}". Tuyệt vời!`;
+    } else {
+      type = NOTIFICATION_TYPES.PROGRESS_MILESTONE;
+      title = `Đạt ${reachedMilestone}% tiến trình!`;
+      message = `Bạn đã hoàn thành ${reachedMilestone}% khóa học "${courseName}". Tiếp tục cố gắng nhé!`;
+    }
+
+    await createNotification(userId, {
+      type,
+      title,
+      message,
+      link: `course-detail.html?id=${courseId}`,
+      data: {
+        courseId,
+        courseName,
+        milestone: reachedMilestone,
+      },
+    });
+
+    // Lưu milestone đã thông báo vào DB
+    notifiedMilestones.push(reachedMilestone);
+    await set(notifiedMilestonesRef, notifiedMilestones);
+
+    console.log(`📣 Milestone notification created: ${reachedMilestone}%`);
+  } catch (error) {
+    console.warn("Không thể tạo thông báo milestone:", error);
+  }
+}
+
 // Đánh dấu tiến trình học bài
 function trackLessonProgress(lessonId) {
   // Lấy liên kết bài học để đánh dấu đã hoàn thành
   const lessonLink = document.querySelector(
-    `.lesson-link[data-lesson="${lessonId}"]`
+    `.lesson-link[data-lesson="${lessonId}"]`,
   );
 
   if (lessonLink) {
@@ -275,7 +370,7 @@ async function saveLessonCompletionToDB(courseId, lessonId) {
         // Lấy danh sách bài học đã hoàn thành từ DB
         const progressRef = ref(
           database,
-          `userProgress/${user.uid}/courses/${courseId}/completedLessons`
+          `userProgress/${user.uid}/courses/${courseId}/completedLessons`,
         );
         const snapshot = await get(progressRef);
         let completedLessons = [];
@@ -283,13 +378,17 @@ async function saveLessonCompletionToDB(courseId, lessonId) {
         if (snapshot.exists()) {
           completedLessons = snapshot.val();
         }
-        // Thêm bài học nếu chưa có
-        if (!completedLessons.includes(lessonId)) {
-          completedLessons.push(lessonId);
-        }
 
-        // Cập nhật bài học đã hoàn thành lên DB
-        await set(progressRef, completedLessons);
+        // Kiểm tra xem bài học đã hoàn thành chưa
+        const wasAlreadyCompleted = completedLessons.includes(lessonId);
+        const previousLessonCount = completedLessons.length;
+
+        // Thêm bài học nếu chưa có
+        if (!wasAlreadyCompleted) {
+          completedLessons.push(lessonId);
+          // Cập nhật bài học đã hoàn thành lên DB
+          await set(progressRef, completedLessons);
+        }
 
         // Tính phần trăm hoàn thành và cập nhật
         const totalLessons = document.querySelectorAll(".lesson-link").length;
@@ -301,21 +400,38 @@ async function saveLessonCompletionToDB(courseId, lessonId) {
         // cập nhật progress
         const percentRef = ref(
           database,
-          `userProgress/${user.uid}/courses/${courseId}/progress`
+          `userProgress/${user.uid}/courses/${courseId}/progress`,
         );
         await set(percentRef, progressPercentage);
+
+        // Chỉ kiểm tra milestone nếu có bài học mới được hoàn thành
+        if (!wasAlreadyCompleted) {
+          // Tính progress trước đó để check milestone
+          const previousProgress =
+            totalLessons > 0
+              ? Math.round((previousLessonCount / totalLessons) * 100)
+              : 0;
+
+          // Kiểm tra và tạo thông báo cho các milestone
+          await checkAndNotifyMilestone(
+            user.uid,
+            courseId,
+            previousProgress,
+            progressPercentage,
+          );
+        }
 
         // cập nhật thời gian truy cập lần cuối
         const lastAccessedRef = ref(
           database,
-          `userProgress/${user.uid}/courses/${courseId}/lastAccessed`
+          `userProgress/${user.uid}/courses/${courseId}/lastAccessed`,
         );
         await set(lastAccessedRef, new Date().toISOString());
 
         // Cập nhật thời gian lần đầu học
         const firstAccessedRef = ref(
           database,
-          `userProgress/${user.uid}/courses/${courseId}/firstAccessed`
+          `userProgress/${user.uid}/courses/${courseId}/firstAccessed`,
         );
         const firstSnap = await get(firstAccessedRef);
         if (!firstSnap.exists()) {
@@ -341,7 +457,7 @@ async function initCourseProgress() {
     try {
       const progressRef = ref(
         database,
-        `userProgress/${user.uid}/courses/${courseId}/completedLessons`
+        `userProgress/${user.uid}/courses/${courseId}/completedLessons`,
       );
       const snapshot = await get(progressRef);
       let completedLessons = [];
@@ -350,7 +466,7 @@ async function initCourseProgress() {
       }
       completedLessons.forEach((lessonId) => {
         const lessonLink = document.querySelector(
-          `.lesson-link[data-lesson="${lessonId}"]`
+          `.lesson-link[data-lesson="${lessonId}"]`,
         );
         if (lessonLink) {
           lessonLink.classList.add("completed");
@@ -364,7 +480,7 @@ async function initCourseProgress() {
       // Lấy phần trăm hoàn thành từ DB
       const percentRef = ref(
         database,
-        `userProgress/${user.uid}/courses/${courseId}/progress`
+        `userProgress/${user.uid}/courses/${courseId}/progress`,
       );
       const percentSnap = await get(percentRef);
       let progressPercentage = 0;
@@ -392,7 +508,7 @@ async function saveLastViewedLesson(courseId, lessonId) {
   try {
     const lastViewedRef = ref(
       database,
-      `userProgress/${user.uid}/courses/${courseId}/lastViewedLesson`
+      `userProgress/${user.uid}/courses/${courseId}/lastViewedLesson`,
     );
     await set(lastViewedRef, {
       lessonId: lessonId,
@@ -408,7 +524,7 @@ async function getLastViewedLesson(courseId, userId) {
   try {
     const lastViewedRef = ref(
       database,
-      `userProgress/${userId}/courses/${courseId}/lastViewedLesson`
+      `userProgress/${userId}/courses/${courseId}/lastViewedLesson`,
     );
     const snapshot = await get(lastViewedRef);
     if (snapshot.exists()) {
@@ -435,7 +551,7 @@ async function autoFocusLesson(courseId, userId) {
   if (lastLessonId) {
     // Kiểm tra bài học cuối cùng có tồn tại trong danh sách không
     const lastLessonLink = document.querySelector(
-      `.lesson-link[data-lesson="${lastLessonId}"]`
+      `.lesson-link[data-lesson="${lastLessonId}"]`,
     );
     if (lastLessonLink) {
       targetLessonId = lastLessonId;
@@ -449,7 +565,7 @@ async function autoFocusLesson(courseId, userId) {
 
   // Mở module chứa bài học target
   const targetLink = document.querySelector(
-    `.lesson-link[data-lesson="${targetLessonId}"]`
+    `.lesson-link[data-lesson="${targetLessonId}"]`,
   );
   if (targetLink) {
     // Tìm module chứa bài học
@@ -457,7 +573,7 @@ async function autoFocusLesson(courseId, userId) {
     if (lessonList) {
       const moduleId = lessonList.id;
       const moduleHeader = document.querySelector(
-        `.module-header[data-toggle="${moduleId}"]`
+        `.module-header[data-toggle="${moduleId}"]`,
       );
       if (moduleHeader) {
         // Mở module này
@@ -500,7 +616,7 @@ function updateProgressUI(progressPercentage) {
         certificateBtn.addEventListener("click", async () => {
           const courseId = getCourseIdFromUrl();
           const titleEl = document.querySelector(
-            ".course-info .course-info-title"
+            ".course-info .course-info-title",
           );
           const courseTitle =
             titleEl?.textContent?.trim() || "Khóa học CodeMaster";
@@ -553,12 +669,12 @@ function renderSidebar(modules) {
                 <span class="lesson-duration">${lesson.duration || ""}</span>
               </a>
             </li>
-          `
+          `,
             )
             .join("")}
         </ul>
       </li>
-    `
+    `,
     )
     .join("");
 }
@@ -738,7 +854,7 @@ function renderQuiz(quiz, lessonId) {
                   <input type="radio" name="quiz-${lessonId}-${idx}" value="${oidx}">
                   <span>${escapeHtml(opt)}</span>
                 </label>
-              `
+              `,
                 )
                 .join("")}
             </div>
@@ -746,7 +862,7 @@ function renderQuiz(quiz, lessonId) {
             <div class="quiz-rationale"></div>
             <button class="btn btn-primary check-answer">Kiểm tra đáp án</button>
           </div>
-        `
+        `,
           )
           .join("")}
       </div>
@@ -761,7 +877,7 @@ function renderQuiz(quiz, lessonId) {
 // Khởi tạo xử lý tương tác quiz và phản hồi
 function initQuizEvents(lesson) {
   const quizSection = document.querySelector(
-    `.quiz-section[data-lesson="${lesson.id}"]`
+    `.quiz-section[data-lesson="${lesson.id}"]`,
   );
   if (!quizSection) return;
 
@@ -805,7 +921,7 @@ function initQuizEvents(lesson) {
     // Khôi phục lựa chọn đã chọn của người dùng nếu có
     if (userAnswers[index] !== null) {
       const selectedRadio = currentQuestionEl.querySelector(
-        `input[type='radio'][value="${userAnswers[index]}"]`
+        `input[type='radio'][value="${userAnswers[index]}"]`,
       );
       if (selectedRadio) {
         selectedRadio.checked = true;
@@ -823,7 +939,7 @@ function initQuizEvents(lesson) {
     const questionData = lesson.quiz[questionIndex];
     const container = quizQuestions[questionIndex];
     const selected = container.querySelector(
-      `input[name="quiz-${lesson.id}-${questionIndex}"]:checked`
+      `input[name="quiz-${lesson.id}-${questionIndex}"]:checked`,
     );
     const feedback = container.querySelector(".quiz-feedback");
     const rationaleDisplay = container.querySelector(".quiz-rationale");
@@ -867,7 +983,7 @@ function initQuizEvents(lesson) {
 
     if (questionData.rationale) {
       rationaleDisplay.textContent = `Giải thích: ${escapeHtml(
-        questionData.rationale
+        questionData.rationale,
       )}`;
       rationaleDisplay.classList.add("active");
     }

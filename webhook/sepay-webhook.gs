@@ -288,11 +288,67 @@ function enrollUserToCourse(userId, courseId, orderId) {
     // 2. Cập nhật purchasedCourses của user
     updateUserPurchasedCourses(userId, courseId);
 
+    // 3. Tạo thông báo thanh toán thành công
+    createPaymentNotification(userId, courseId, orderId);
+
     log(`✅ User ${userId} enrolled in course ${courseId}`);
     return true;
   } catch (error) {
     log("Error enrolling user:", error.toString());
     return false;
+  }
+}
+
+/**
+ * Tạo thông báo thanh toán thành công
+ */
+function createPaymentNotification(userId, courseId, orderId) {
+  try {
+    // Lấy tên khóa học
+    let courseName = "Khóa học mới";
+    const courseUrl = `${CONFIG.FIREBASE_URL}/courses/${courseId}.json?auth=${CONFIG.FIREBASE_SECRET}`;
+    const courseResponse = UrlFetchApp.fetch(courseUrl, {
+      method: "GET",
+      muteHttpExceptions: true,
+    });
+
+    if (courseResponse.getResponseCode() === 200) {
+      const courseData = JSON.parse(courseResponse.getContentText());
+      if (courseData && courseData.title) {
+        courseName = courseData.title;
+      }
+    }
+
+    // Tạo notification trong Firebase
+    const notificationsUrl = `${CONFIG.FIREBASE_URL}/notifications/${userId}.json?auth=${CONFIG.FIREBASE_SECRET}`;
+
+    const notificationData = {
+      type: "payment_success",
+      title: "Thanh toán thành công",
+      message: `Bạn đã mua thành công khóa học "${courseName}". Bắt đầu học ngay nhé!`,
+      link: `course-detail.html?id=${courseId}`,
+      data: {
+        courseId: courseId,
+        courseName: courseName,
+        orderId: orderId,
+      },
+      read: false,
+      createdAt: Date.now(),
+    };
+
+    const notifResponse = UrlFetchApp.fetch(notificationsUrl, {
+      method: "POST",
+      contentType: "application/json",
+      payload: JSON.stringify(notificationData),
+      muteHttpExceptions: true,
+    });
+
+    if (notifResponse.getResponseCode() === 200) {
+      log(`✅ Payment notification created for user ${userId}`);
+    }
+  } catch (error) {
+    log("Warning: Could not create payment notification:", error.toString());
+    // Không throw error vì notification không critical
   }
 }
 

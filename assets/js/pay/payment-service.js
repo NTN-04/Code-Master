@@ -13,6 +13,10 @@ import {
   orderByChild,
   equalTo,
 } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-database.js";
+import {
+  createNotification,
+  NOTIFICATION_TYPES,
+} from "../utils/notifications.js";
 
 // ============ CONSTANTS ============
 export const ORDER_STATUS = {
@@ -445,6 +449,35 @@ export async function enrollAfterPayment(userId, courseId, orderId) {
           updatedAt: new Date().toISOString(),
         });
       }
+    }
+
+    // 3. Lấy thông tin khóa học để tạo thông báo
+    let courseName = "Khóa học mới";
+    try {
+      const courseRef = ref(database, `courses/${courseId}`);
+      const courseSnapshot = await get(courseRef);
+      if (courseSnapshot.exists()) {
+        courseName = courseSnapshot.val().title || courseName;
+      }
+    } catch (e) {
+      console.warn("Không thể lấy tên khóa học:", e);
+    }
+
+    // 4. Tạo thông báo thanh toán thành công
+    try {
+      await createNotification(userId, {
+        type: NOTIFICATION_TYPES.PAYMENT_SUCCESS,
+        title: "Thanh toán thành công",
+        message: `Bạn đã mua thành công khóa học "${courseName}". Bắt đầu học ngay nhé!`,
+        link: `course-detail.html?id=${courseId}`,
+        data: {
+          courseId,
+          courseName,
+          orderId,
+        },
+      });
+    } catch (notifError) {
+      console.warn("Không thể tạo thông báo:", notifError);
     }
 
     console.log(
