@@ -1,5 +1,5 @@
 <!-- forum.html - Giao diện diễn đàn Q&A CodeMaster -->
-<!DOCTYPE html>
+<!doctype html>
 <html lang="vi">
   <head>
     <meta charset="UTF-8" />
@@ -12,12 +12,6 @@
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
     />
-    <!-- Markdown SimpleMDE cho nội dung -->
-    <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.css"
-    />
-    <script src="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.js"></script>
   </head>
   <body>
     <!-- load với component -->
@@ -41,7 +35,7 @@
             và các kỹ thuật lập trình web.
           </p>
         </div>
-        <div class="blog-cta">
+        <!-- <div class="blog-cta">
           <button id="open-post-modal" class="btn btn-primary">
             <i class="fa fa-plus"></i> Viết blog
           </button>
@@ -52,7 +46,7 @@
           >
             My blog
           </button>
-        </div>
+        </div> -->
       </div>
       <div class="main">
         <section class="blog-list-section">
@@ -82,43 +76,6 @@
         </aside>
       </div>
     </main>
-
-    <!-- Modal đăng bài -->
-    <div id="post-modal" class="modal" style="display: none">
-      <div class="modal-content">
-        <span class="close-modal" id="close-post-modal">&times;</span>
-        <h2>Đăng bài viết mới</h2>
-        <form id="blog-post-form">
-          <div>
-            <textarea id="post-title" placeholder="Tiêu đề" required></textarea>
-            <input
-              type="text"
-              id="post-tags"
-              placeholder="Tags (cách nhau bởi dấu phẩy)"
-            />
-
-            <input type="file" id="post-image" accept="image/*" />
-            <!-- review ảnh khi úp -->
-            <img
-              id="image-preview"
-              style="
-                display: none;
-                max-width: 90%;
-                margin: 10px 0;
-                border-radius: 8px;
-              "
-            />
-          </div>
-          <div class="blog-main-content">
-            <textarea
-              id="post-content"
-              placeholder="Nội dung (Markdown)"
-            ></textarea>
-            <button type="submit" class="btn btn-success">Đăng bài</button>
-          </div>
-        </form>
-      </div>
-    </div>
 
     <!-- load bằng components -->
     <footer id="footer-placeholder"></footer>

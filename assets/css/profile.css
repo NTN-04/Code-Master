@@ -120,6 +120,11 @@
   margin-bottom: 30px;
 }
 
+/* Roadmap Widget Container */
+.roadmap-container {
+  margin-bottom: 30px;
+}
+
 /* Filters */
 .courses-filter,
 .resources-filter {

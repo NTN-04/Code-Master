@@ -21,6 +21,7 @@ import progressManager from "./progress-manager.js";
 import { formatDate, formatDateTime } from "./utils/date.js";
 import { sanitizeText } from "./utils/sanitize.js";
 import { showFloatingNotification as showNotification } from "./utils/notifications.js";
+import { initRoadmapWidget } from "./components/roadmap-widget.js";
 
 // Chức năng Trang Hồ Sơ
 document.addEventListener("DOMContentLoaded", function () {
@@ -32,6 +33,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Load khóa học của tôi
   loadUserCourses();
+
+  // Load AI Roadmap Widget
+  loadRoadmapWidget();
 
   // Load lịch sử mua hàng
   loadPurchaseHistory();
@@ -588,6 +592,15 @@ function checkFormPasswordChange() {
 }
 
 /* === COURSE HỌC CỦA TÔI === */
+
+// Load AI Roadmap Widget
+function loadRoadmapWidget() {
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      initRoadmapWidget("roadmap-widget-container", user.uid);
+    }
+  });
+}
 
 async function loadUserCourses() {
   const userCoursesContainer = document.querySelector(".user-courses");

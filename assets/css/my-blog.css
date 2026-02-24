@@ -32,9 +32,20 @@
   margin-right: 6px;
 }
 
+/* Header actions */
+.my-blog-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
 .my-blog-content {
   display: flex;
   gap: 30px;
+}
+#open-post-modal {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  font-size: 16px;
 }
 
 /* User Sidebar */
@@ -356,7 +367,8 @@
 .close-modal:hover {
   color: #ff5252;
 }
-#blog-post-form {
+#blog-post-form,
+#edit-blog-form {
   display: grid;
   grid-template-columns: 0.5fr 1fr;
   gap: 10px;
@@ -368,7 +380,9 @@
   max-width: 100%;
 }
 #blog-post-form input,
-#blog-post-form textarea {
+#blog-post-form textarea,
+#edit-blog-form input,
+#edit-blog-form textarea {
   width: 100%;
   padding: 0.7rem 1rem;
   margin-bottom: 10px;
@@ -380,16 +394,20 @@
   transition: border 0.2s;
 }
 #blog-post-form input[type="text"]:focus,
-#blog-post-form textarea:focus {
+#blog-post-form textarea:focus,
+#edit-blog-form input[type="text"]:focus,
+#edit-blog-form textarea:focus {
   border-color: #007bff;
   outline: none;
 }
-#blog-post-form textarea {
+#blog-post-form textarea,
+#edit-blog-form textarea {
   min-height: 90px;
   max-height: 300px;
 }
 
-#blog-post-form .btn-success {
+#blog-post-form .btn-success,
+#edit-blog-form .btn-success {
   float: right;
   margin: 20px 0 0;
   background: #007bff;
@@ -402,7 +420,8 @@
   cursor: pointer;
   transition: background 0.2s;
 }
-#blog-post-form .btn-success:hover {
+#blog-post-form .btn-success:hover,
+#edit-blog-form .btn-success:hover {
   background: #0056b3;
 }
 #blog-post-form .SimpleMDEContainer {
@@ -466,7 +485,9 @@
   border-radius: 5px;
   cursor: pointer;
   font-weight: 500;
-  transition: background 0.2s, color 0.2s;
+  transition:
+    background 0.2s,
+    color 0.2s;
 }
 .blog-pagination .page-btn.active,
 .blog-pagination .page-btn:hover {
@@ -493,7 +514,9 @@
   padding: 15px;
   transform: translateX(100%);
   opacity: 0;
-  transition: transform 0.3s ease, opacity 0.3s ease;
+  transition:
+    transform 0.3s ease,
+    opacity 0.3s ease;
 }
 
 .toast.show {
