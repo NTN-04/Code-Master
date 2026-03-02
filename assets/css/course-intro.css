@@ -1,14 +1,20 @@
-/* Course Intro Page - Modern Design (F8 Inspired) */
+/* Course Intro Page - Modern Design (CodeMaster 2.0) */
+/* ============================================================
+   Unified with brand colors: --brand-blue, --brand-purple
+   Supports dark mode via theme.css variables
+   ============================================================ */
+
 h2:after {
   content: none;
 }
+
 /* Container Layout */
 .course-intro-container {
   max-width: 1400px;
   margin: 0 auto;
   padding: 2rem 1rem;
   display: grid;
-  grid-template-columns: 1fr 380px;
+  grid-template-columns: 1fr 400px;
   gap: 2.5rem;
   align-items: start;
 }
@@ -24,9 +30,9 @@ h2:after {
 .course-intro-header {
   margin-bottom: 2rem;
   padding: 2.5rem;
-  background: var(--card-bg);
-  border-radius: 20px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  background: var(--bg-card);
+  border-radius: 24px;
+  box-shadow: var(--shadow-lg);
   border: 1px solid var(--border-color);
   position: relative;
   overflow: hidden;
@@ -39,9 +45,30 @@ h2:after {
   left: 0;
   right: 0;
   height: 4px;
-  background: linear-gradient(90deg, #667eea 0%, #764ba2 50%, #667eea 100%);
+  background: linear-gradient(
+    90deg,
+    var(--brand-blue) 0%,
+    var(--brand-purple) 50%,
+    var(--brand-blue) 100%
+  );
   background-size: 200% 100%;
   animation: gradientShift 3s ease infinite;
+}
+
+/* Subtle gradient orb decoration */
+.course-intro-header::after {
+  content: "";
+  position: absolute;
+  top: -100px;
+  right: -100px;
+  width: 250px;
+  height: 250px;
+  background: radial-gradient(
+    circle,
+    rgba(94, 187, 255, 0.08) 0%,
+    transparent 70%
+  );
+  pointer-events: none;
 }
 
 @keyframes gradientShift {
@@ -57,10 +84,12 @@ h2:after {
 .course-intro-header h1 {
   font-size: 2.5rem;
   margin-bottom: 1.25rem;
-  color: var(--text-color);
+  color: var(--text-primary);
   font-weight: 800;
   line-height: 1.2;
   letter-spacing: -0.5px;
+  position: relative;
+  z-index: 1;
 }
 
 .course-intro-meta {
@@ -68,6 +97,8 @@ h2:after {
   gap: 1.5rem;
   flex-wrap: wrap;
   align-items: center;
+  position: relative;
+  z-index: 1;
 }
 
 .course-intro-meta span {
@@ -79,55 +110,65 @@ h2:after {
 }
 
 .course-intro-meta i {
-  color: var(--primary-color);
+  background: var(--brand-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
   font-size: 1rem;
 }
 
-/* Level Badge */
+/* Level Badge - Modern Gradient Style */
 .course-level-badge {
   display: inline-flex;
   align-items: center;
-  padding: 0.6rem 1.2rem;
-  border-radius: 25px;
+  padding: 0.5rem 1rem;
+  border-radius: 50px;
   font-weight: 700;
-  font-size: 0.875rem;
+  font-size: 0.8rem;
   gap: 0.4rem;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease;
 }
 
 .course-level-badge:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .course-level-badge.beginner {
-  background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
-  color: #155724;
-  border: 2px solid #28a745;
+  background: linear-gradient(135deg, #e6fcf5 0%, #c3fae8 100%);
+  color: #0ca678;
+  border: none;
+  box-shadow: 0 2px 10px rgba(12, 166, 120, 0.2);
 }
 
 .course-level-badge.intermediate {
-  background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
-  color: #856404;
-  border: 2px solid #ffc107;
+  background: linear-gradient(135deg, #fff9db 0%, #ffec99 100%);
+  color: #f08c00;
+  border: none;
+  box-shadow: 0 2px 10px rgba(240, 140, 0, 0.2);
 }
 
 .course-level-badge.advanced {
-  background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
-  color: #721c24;
-  border: 2px solid #dc3545;
+  background: linear-gradient(135deg, #ffe3e3 0%, #ffc9c9 100%);
+  color: #e03131;
+  border: none;
+  box-shadow: 0 2px 10px rgba(224, 49, 49, 0.2);
 }
 
 /* Description */
 .course-description {
   margin-bottom: 2rem;
   padding: 2rem;
-  background: var(--card-bg);
-  border-radius: 16px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  background: var(--bg-card);
+  border-radius: 20px;
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--border-color);
+  transition: all 0.4s ease;
+}
+
+.course-description:hover {
+  box-shadow: var(--shadow-lg);
 }
 
 .course-description p {
@@ -137,86 +178,132 @@ h2:after {
   margin: 0;
 }
 
-/* Content Boxes */
+/* Content Boxes - Modern Card Pattern */
 .learning-outcomes-box,
 .course-content-box,
 .requirements-box {
-  background: var(--card-bg);
-  border-radius: 16px;
+  background: var(--bg-card);
+  border-radius: 20px;
   padding: 2rem;
   margin-bottom: 2rem;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-  border: 1px solid transparent;
-  transition: all 0.3s ease;
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--border-color);
+  transition: all 0.4s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Animated gradient top border on hover */
+.learning-outcomes-box::before,
+.course-content-box::before,
+.requirements-box::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: var(--brand-gradient);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.4s ease;
 }
 
 .learning-outcomes-box:hover,
 .course-content-box:hover,
 .requirements-box:hover {
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
-  border-color: var(--primary-color);
+  box-shadow: var(--shadow-xl);
+  border-color: transparent;
+  transform: translateY(-4px);
+}
+
+.learning-outcomes-box:hover::before,
+.course-content-box:hover::before,
+.requirements-box:hover::before {
+  transform: scaleX(1);
 }
 
 .learning-outcomes-box h2,
 .course-content-box h2,
 .requirements-box h2 {
-  font-size: 1.6rem;
-  margin-bottom: 2rem;
-  color: var(--text-color);
+  font-size: 1.5rem;
+  margin-bottom: 1.75rem;
+  color: var(--text-primary);
   font-weight: 700;
   display: flex;
   align-items: center;
   gap: 0.75rem;
   padding-bottom: 1rem;
-  border-bottom: 3px solid transparent;
-  border-image: linear-gradient(
-    90deg,
-    var(--primary-color) 0%,
-    transparent 100%
-  );
-  border-image-slice: 1;
-  border-width: 0 0 3px 0;
+  border-bottom: 2px solid var(--border-color);
 }
 
 .learning-outcomes-box h2 i,
 .course-content-box h2 i,
 .requirements-box h2 i {
-  color: var(--primary-color);
-  font-size: 1.4rem;
-  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  background: linear-gradient(
+    135deg,
+    rgba(94, 187, 255, 0.15),
+    rgba(161, 116, 255, 0.15)
+  );
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  background-clip: padding-box;
+}
+
+.learning-outcomes-box h2 i::before,
+.course-content-box h2 i::before,
+.requirements-box h2 i::before {
+  background: var(--brand-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 /* Outcomes List */
 .outcomes-list {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 1.25rem;
+  gap: 1rem;
 }
 
 .outcome-item {
   display: flex;
   align-items: flex-start;
   gap: 0.75rem;
-  padding: 0.75rem;
-  background: var(--bg-color);
-  border-radius: 10px;
-  transition: all 0.2s ease;
+  padding: 1rem;
+  background: var(--bg-secondary);
+  border-radius: 12px;
+  transition: all 0.3s ease;
+  border: 1px solid transparent;
 }
 
 .outcome-item:hover {
-  background: rgba(40, 167, 69, 0.05);
+  background: rgba(64, 192, 87, 0.08);
   transform: translateX(5px);
+  border-color: rgba(64, 192, 87, 0.2);
 }
 
 .outcome-item i {
-  color: #28a745;
-  font-size: 1.25rem;
-  margin-top: 0.15rem;
+  width: 24px;
+  height: 24px;
+  background: rgba(64, 192, 87, 0.15);
+  color: #40c057;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
   flex-shrink: 0;
+  margin-top: 2px;
 }
 
 .outcome-item span {
-  color: var(--text-color);
+  color: var(--text-primary);
   line-height: 1.6;
   font-size: 0.95rem;
 }
@@ -231,91 +318,133 @@ h2:after {
 .requirement-item {
   display: flex;
   align-items: flex-start;
-  gap: 0.75rem;
-  padding: 0.75rem;
-  background: var(--bg-color);
-  border-radius: 10px;
-  border-left: 3px solid var(--primary-color);
-  transition: all 0.2s ease;
+  gap: 1rem;
+  padding: 1rem;
+  background: var(--bg-secondary);
+  border-radius: 12px;
+  border-left: 4px solid var(--brand-blue);
+  transition: all 0.3s ease;
 }
 
 .requirement-item:hover {
-  background: rgba(0, 123, 255, 0.05);
+  background: rgba(94, 187, 255, 0.08);
   transform: translateX(5px);
 }
 
 .requirement-item i {
-  color: var(--primary-color);
+  background: var(--brand-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
   font-size: 1rem;
-  margin-top: 0.2rem;
+  margin-top: 0.15rem;
   flex-shrink: 0;
 }
 
 .requirement-item span {
-  color: var(--text-color);
+  color: var(--text-primary);
   line-height: 1.6;
   font-size: 0.95rem;
 }
 
-/* Course Modules */
+/* Course Modules - Modern Accordion */
 .course-modules-list {
   list-style: none;
   padding: 0;
   margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
 }
 
 .module-item {
-  background: var(--bg-color);
-  border-radius: 12px;
-  margin-bottom: 1rem;
+  background: var(--bg-secondary);
+  border-radius: 16px;
+  padding: 1.25rem;
   border: 1px solid var(--border-color);
   transition: all 0.3s ease;
 }
 
 .module-item:hover {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-  border-color: var(--primary-color);
+  box-shadow: var(--shadow-md);
+  border-color: var(--brand-blue);
+}
+
+.module-item.expanded {
+  border-color: var(--brand-purple);
+  box-shadow: var(--shadow-lg);
 }
 
 .module-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 0.75rem;
 }
 
 .module-title {
   font-weight: 600;
-  font-size: 1.1rem;
-  color: var(--text-color);
+  font-size: 1.05rem;
+  color: var(--text-primary);
   display: flex;
   align-items: center;
   gap: 0.75rem;
 }
 
 .module-toggle-icon {
-  color: var(--primary-color);
-  font-size: 0.9rem;
-  transition: transform 0.3s ease;
+  width: 28px;
+  height: 28px;
+  background: linear-gradient(
+    135deg,
+    rgba(94, 187, 255, 0.15),
+    rgba(161, 116, 255, 0.15)
+  );
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  transition: all 0.3s ease;
   flex-shrink: 0;
+}
+
+.module-toggle-icon::before {
+  background: var(--brand-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.module-item.expanded .module-toggle-icon {
+  background: var(--brand-gradient);
+}
+
+.module-item.expanded .module-toggle-icon::before {
+  color: white;
+  -webkit-text-fill-color: white;
 }
 
 .module-meta {
   color: var(--text-secondary);
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   display: flex;
   align-items: center;
   gap: 0.4rem;
-  background: rgba(0, 123, 255, 0.1);
-  padding: 0.35rem 0.75rem;
-  border-radius: 12px;
-  font-weight: 500;
+  background: linear-gradient(
+    135deg,
+    rgba(94, 187, 255, 0.1),
+    rgba(161, 116, 255, 0.1)
+  );
+  padding: 0.4rem 0.875rem;
+  border-radius: 20px;
+  font-weight: 600;
 }
 
 .lessons-preview {
   padding-left: 1.5rem;
-  margin-top: 0.75rem;
+  margin-top: 1rem;
+  padding-top: 1rem;
   border-left: 2px solid var(--border-color);
+  border-top: 1px solid var(--border-color);
   overflow: hidden;
   transition:
     max-height 0.3s ease,
@@ -323,13 +452,13 @@ h2:after {
 }
 
 .lesson-preview-item {
-  padding: 0.6rem 0;
+  padding: 0.75rem 0;
   color: var(--text-secondary);
   font-size: 0.95rem;
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  border-bottom: 1px dashed var(--border-color);
+  border-bottom: 1px dashed var(--border-light);
   transition: all 0.2s ease;
 }
 
@@ -338,12 +467,15 @@ h2:after {
 }
 
 .lesson-preview-item:hover {
-  color: var(--primary-color);
+  color: var(--brand-blue);
   padding-left: 0.5rem;
 }
 
 .lesson-preview-item i {
-  color: var(--primary-color);
+  background: var(--brand-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
   font-size: 0.9rem;
   flex-shrink: 0;
 }
@@ -352,10 +484,10 @@ h2:after {
 .course-intro-sidebar {
   position: sticky;
   top: 90px;
-  background: var(--card-bg);
-  border-radius: 16px;
+  background: var(--bg-card);
+  border-radius: 24px;
   padding: 0;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-xl);
   overflow: hidden;
   border: 1px solid var(--border-color);
 }
@@ -365,7 +497,11 @@ h2:after {
   position: relative;
   width: 100%;
   padding-top: 56.25%; /* 16:9 */
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(
+    135deg,
+    var(--brand-blue) 0%,
+    var(--brand-purple) 100%
+  );
   overflow: hidden;
   cursor: pointer;
 }
@@ -378,7 +514,7 @@ h2:after {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform 0.3s ease;
+  transition: transform 0.4s ease;
 }
 
 .course-thumbnail-wrapper:hover img,
@@ -395,73 +531,71 @@ h2:after {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  font-size: 3rem;
+  font-size: 3.5rem;
   color: white;
   opacity: 0.9;
   transition: all 0.3s ease;
-  text-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+  text-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+  filter: drop-shadow(0 0 20px rgba(94, 187, 255, 0.4));
 }
 
 .course-thumbnail-wrapper:hover::after {
   opacity: 1;
-  transform: translate(-50%, -50%) scale(1.1);
+  transform: translate(-50%, -50%) scale(1.15);
+  filter: drop-shadow(0 0 30px rgba(94, 187, 255, 0.6));
 }
 
 /* Sidebar Content */
 .sidebar-content {
-  padding: 1.5rem;
+  padding: 1.75rem;
 }
 
-/* Price Tag */
+/* Price Tag - Modern Gradient Style */
 .course-price {
   text-align: center;
   margin-bottom: 1.5rem;
-  padding: 1.25rem;
+  padding: 1.5rem;
   background: linear-gradient(
     135deg,
-    rgba(102, 126, 234, 0.08) 0%,
-    rgba(118, 75, 162, 0.08) 100%
+    rgba(94, 187, 255, 0.08) 0%,
+    rgba(161, 116, 255, 0.08) 100%
   );
   border-radius: 16px;
-  border: 2px solid transparent;
-  background-clip: padding-box;
   position: relative;
+  border: 1px solid var(--border-color);
 }
 
 .course-price::before {
   content: "";
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  top: -1px;
+  left: -1px;
+  right: -1px;
+  bottom: -1px;
   border-radius: 16px;
-  padding: 2px;
-  background: linear-gradient(135deg, #667eea, #764ba2);
-  -webkit-mask:
-    linear-gradient(#fff 0 0) content-box,
-    linear-gradient(#fff 0 0);
-  -webkit-mask-composite: xor;
-  mask-composite: exclude;
-  opacity: 0.3;
+  background: var(--brand-gradient);
+  opacity: 0.15;
+  z-index: 0;
+  pointer-events: none;
 }
 
 .price-tag {
-  font-size: 2rem;
+  font-size: 2.25rem;
   font-weight: 900;
   display: block;
   margin-bottom: 0;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: var(--brand-gradient);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
   letter-spacing: -1px;
   line-height: 1;
-  text-shadow: 0 2px 10px rgba(102, 126, 234, 0.3);
+  position: relative;
+  z-index: 1;
 }
 
 .price-tag.free {
-  background: var(--primary-color);
+  background: linear-gradient(135deg, #40c057 0%, #20c997 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -471,10 +605,12 @@ h2:after {
 .course-price .original-price {
   display: block;
   font-size: 1rem;
-  color: #888;
+  color: var(--text-tertiary);
   text-decoration: line-through;
   margin-bottom: 0.25rem;
-  opacity: 0.7;
+  opacity: 0.8;
+  position: relative;
+  z-index: 1;
 }
 
 /* Discount Badge */
@@ -482,12 +618,14 @@ h2:after {
   display: inline-block;
   background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
   color: white;
-  font-size: 0.875rem;
+  font-size: 0.8rem;
   font-weight: 700;
-  padding: 0.25rem 0.75rem;
-  border-radius: 20px;
-  margin-top: 0.5rem;
-  box-shadow: 0 2px 8px rgba(238, 90, 36, 0.3);
+  padding: 0.35rem 1rem;
+  border-radius: 50px;
+  margin-top: 0.75rem;
+  box-shadow: 0 4px 12px rgba(238, 90, 36, 0.3);
+  position: relative;
+  z-index: 1;
 }
 
 .price-label {
@@ -498,52 +636,51 @@ h2:after {
   font-weight: 600;
 }
 
-/* Enrollment Button */
+/* Enrollment Button - Unified with Landing Page */
 .enrollment-button {
   width: 100%;
   padding: 1rem 1.5rem;
-  font-size: 1.1rem;
+  font-size: 1.05rem;
   font-weight: 700;
   border: none;
-  border-radius: 12px;
+  border-radius: 14px;
   cursor: pointer;
   transition: all 0.3s ease;
   text-decoration: none;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
+  gap: 0.625rem;
   text-align: center;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .enrollment-button.primary {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: var(--brand-gradient);
   color: white;
+  box-shadow: 0 4px 20px rgba(94, 187, 255, 0.3);
 }
 
 .enrollment-button.primary:hover {
-  background: linear-gradient(135deg, #5568d3 0%, #6a3f8a 100%);
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 30px rgba(94, 187, 255, 0.4);
 }
 
 .enrollment-button.primary:active {
-  transform: translateY(0);
-  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 15px rgba(94, 187, 255, 0.3);
 }
 
 .enrollment-button.enrolled {
-  background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+  background: linear-gradient(135deg, #40c057 0%, #20c997 100%);
   color: white;
+  box-shadow: 0 4px 20px rgba(64, 192, 87, 0.3);
 }
 
 .enrollment-button.enrolled:hover {
-  background: linear-gradient(135deg, #218838 0%, #1aa67d 100%);
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(40, 167, 69, 0.4);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 30px rgba(64, 192, 87, 0.4);
 }
 
 /* Button for paid courses */
@@ -551,31 +688,31 @@ h2:after {
   background: linear-gradient(135deg, #f59e0b 0%, #f97316 100%);
   color: white;
   text-transform: none;
+  box-shadow: 0 4px 20px rgba(245, 158, 11, 0.3);
 }
 
 .enrollment-button.paid:hover {
-  background: linear-gradient(135deg, #d97706 0%, #ea580c 100%);
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(245, 158, 11, 0.4);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 30px rgba(245, 158, 11, 0.4);
 }
 
 .enrollment-button i {
-  font-size: 1.2rem;
+  font-size: 1.15rem;
 }
 
 /* Sidebar Info */
 .sidebar-info {
   margin-top: 1.5rem;
   padding-top: 1.5rem;
-  border-top: 2px solid var(--border-color);
+  border-top: 1px solid var(--border-color);
 }
 
 .sidebar-info-item {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0.875rem 0;
-  border-bottom: 1px solid var(--border-color);
+  padding: 1rem 0;
+  border-bottom: 1px solid var(--border-light);
 }
 
 .sidebar-info-item:last-child {
@@ -588,16 +725,33 @@ h2:after {
   font-size: 0.95rem;
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.625rem;
 }
 
 .sidebar-info-item .label i {
-  color: var(--primary-color);
-  font-size: 1rem;
+  width: 28px;
+  height: 28px;
+  background: linear-gradient(
+    135deg,
+    rgba(94, 187, 255, 0.1),
+    rgba(161, 116, 255, 0.1)
+  );
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+}
+
+.sidebar-info-item .label i::before {
+  background: var(--brand-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .sidebar-info-item .value {
-  color: var(--text-color);
+  color: var(--text-primary);
   font-weight: 700;
   font-size: 1rem;
 }
@@ -606,9 +760,35 @@ h2:after {
 .detailed-description {
   margin-bottom: 2rem;
   padding: 2rem;
-  background: var(--card-bg);
-  border-radius: 16px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  background: var(--bg-card);
+  border-radius: 20px;
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--border-color);
+  transition: all 0.4s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.detailed-description::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: var(--brand-gradient);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.4s ease;
+}
+
+.detailed-description:hover {
+  box-shadow: var(--shadow-xl);
+  transform: translateY(-4px);
+}
+
+.detailed-description:hover::before {
+  transform: scaleX(1);
 }
 
 .detailed-description h1,
@@ -616,40 +796,31 @@ h2:after {
 .detailed-description h3 {
   margin-top: 1.5rem;
   margin-bottom: 1rem;
-  color: var(--text-color);
+  color: var(--text-primary);
   font-weight: 700;
 }
 
 .detailed-description h1 {
-  font-size: 2rem;
+  font-size: 1.875rem;
   padding-bottom: 0.75rem;
   margin-bottom: 1.5rem;
-  border-bottom: 3px solid transparent;
-  border-image: linear-gradient(
-    90deg,
-    var(--primary-color) 0%,
-    transparent 100%
-  );
-  border-image-slice: 1;
+  border-bottom: 2px solid var(--border-color);
   position: relative;
 }
 
 .detailed-description h2 {
-  font-size: 1.6rem;
+  font-size: 1.5rem;
   padding-bottom: 0.5rem;
-  border-bottom: 2px solid transparent;
-  border-image: linear-gradient(
-    90deg,
-    var(--primary-color) 0%,
-    transparent 80%
-  );
-  border-image-slice: 1;
+  border-bottom: 1px solid var(--border-color);
   margin-bottom: 1rem;
 }
 
 .detailed-description h3 {
-  font-size: 1.3rem;
-  color: var(--primary-color);
+  font-size: 1.25rem;
+  background: var(--brand-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .detailed-description p {
@@ -668,22 +839,23 @@ h2:after {
 
 .detailed-description li {
   margin-bottom: 0.5rem;
+  color: var(--text-secondary);
 }
 
 .detailed-description code {
   background: var(--bg-secondary);
   padding: 0.2rem 0.5rem;
   border-radius: 6px;
-  font-family: "Courier New", monospace;
-  font-size: 0.9rem;
-  color: #e83e8c;
+  font-family: "Fira Code", "Consolas", monospace;
+  font-size: 0.875rem;
+  color: var(--brand-purple);
   border: 1px solid var(--border-color);
 }
 
 .detailed-description pre {
   background: var(--bg-secondary);
   padding: 1.25rem;
-  border-radius: 12px;
+  border-radius: 16px;
   overflow-x: auto;
   margin-bottom: 1rem;
   border: 1px solid var(--border-color);
@@ -693,22 +865,22 @@ h2:after {
   background: transparent;
   padding: 0;
   border: none;
-  color: var(--text-color);
+  color: var(--text-primary);
 }
 
 .detailed-description blockquote {
-  border-left: 4px solid var(--primary-color);
+  border-left: 4px solid var(--brand-blue);
   padding-left: 1.25rem;
   margin: 1.5rem 0;
   color: var(--text-secondary);
   font-style: italic;
-  background: rgba(0, 123, 255, 0.05);
+  background: rgba(94, 187, 255, 0.05);
   padding: 1rem 1rem 1rem 1.25rem;
-  border-radius: 0 8px 8px 0;
+  border-radius: 0 12px 12px 0;
 }
 
 .detailed-description a {
-  color: var(--primary-color);
+  color: var(--brand-blue);
   text-decoration: none;
   font-weight: 600;
   transition: all 0.2s ease;
@@ -716,34 +888,34 @@ h2:after {
 
 .detailed-description a:hover {
   text-decoration: underline;
-  color: var(--primary-hover);
+  color: var(--brand-purple);
 }
 
 .detailed-description img {
   max-width: 100%;
   height: auto;
-  border-radius: 12px;
+  border-radius: 16px;
   margin: 1rem 0;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-md);
 }
 
 .detailed-description table {
   width: 100%;
   border-collapse: collapse;
   margin: 1rem 0;
-  border-radius: 8px;
+  border-radius: 12px;
   overflow: hidden;
 }
 
 .detailed-description table th,
 .detailed-description table td {
-  padding: 0.75rem;
+  padding: 0.875rem;
   text-align: left;
   border: 1px solid var(--border-color);
 }
 
 .detailed-description table th {
-  background: var(--primary-color);
+  background: var(--brand-gradient);
   color: white;
   font-weight: 600;
 }
@@ -816,9 +988,17 @@ h2:after {
 }
 
 /* Dark Mode Enhancements */
-[data-theme="dark"] .module-item {
-  background: var(--bg-secondary);
-  border-color: rgba(255, 255, 255, 0.1);
+[data-theme="dark"] .course-intro-header {
+  background: var(--bg-card);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+}
+
+[data-theme="dark"] .course-intro-header::before {
+  background: linear-gradient(
+    135deg,
+    rgba(94, 187, 255, 0.15),
+    rgba(161, 116, 255, 0.15)
+  );
 }
 
 [data-theme="dark"] .learning-outcomes-box,
@@ -826,28 +1006,59 @@ h2:after {
 [data-theme="dark"] .requirements-box,
 [data-theme="dark"] .course-description,
 [data-theme="dark"] .detailed-description {
-  background: var(--bg-secondary);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  background: var(--bg-card);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  border-color: rgba(255, 255, 255, 0.08);
 }
 
-[data-theme="dark"] .course-intro-header {
+[data-theme="dark"] .module-item {
   background: var(--bg-secondary);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  border-color: rgba(255, 255, 255, 0.08);
 }
 
-[data-theme="dark"] .course-intro-sidebar {
-  background: var(--bg-secondary);
-  border-color: rgba(255, 255, 255, 0.1);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+[data-theme="dark"] .module-item:hover {
+  background: rgba(94, 187, 255, 0.05);
+  border-color: rgba(94, 187, 255, 0.2);
 }
 
 [data-theme="dark"] .outcome-item,
 [data-theme="dark"] .requirement-item {
-  background: var(--card-bg);
+  background: var(--bg-secondary);
+}
+
+[data-theme="dark"] .outcome-item:hover,
+[data-theme="dark"] .requirement-item:hover {
+  background: rgba(94, 187, 255, 0.08);
 }
 
 [data-theme="dark"] .module-meta {
-  background: rgba(102, 126, 234, 0.2);
+  background: rgba(94, 187, 255, 0.15);
+}
+
+[data-theme="dark"] .course-intro-sidebar {
+  background: var(--bg-card);
+  border-color: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+}
+
+[data-theme="dark"] .sidebar-info-item .label i {
+  background: linear-gradient(
+    135deg,
+    rgba(94, 187, 255, 0.2),
+    rgba(161, 116, 255, 0.2)
+  );
+}
+
+[data-theme="dark"] .enrollment-button:hover {
+  box-shadow: 0 8px 32px rgba(94, 187, 255, 0.4);
+}
+
+[data-theme="dark"] .detailed-description blockquote {
+  background: rgba(94, 187, 255, 0.08);
+}
+
+[data-theme="dark"] .level-badge {
+  box-shadow: none;
 }
 
 /* Animations */

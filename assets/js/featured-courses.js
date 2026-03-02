@@ -7,12 +7,45 @@ import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.8.0/fi
 // import progressManager from "./progress-manager.js"; // Đã loại bỏ thanh tiến trình khỏi card
 import loadingSkeleton from "./utils/loading-skeleton.js";
 import { getUserEnrollments } from "./utils/enrollment.js";
+import { initRoadmapWidget } from "./components/roadmap-widget.js";
 
 document.addEventListener("DOMContentLoaded", function () {
   onAuthStateChanged(auth, async (user) => {
     await loadFeaturedCourses(user);
+    // Initialize roadmap widget for logged-in users on landing page
+    initLandingRoadmapWidget(user);
   });
 });
+
+/**
+ * Initialize roadmap widget on landing page for logged-in users
+ */
+function initLandingRoadmapWidget(user) {
+  const widgetContainer = document.getElementById("roadmap-widget-container");
+  const staticPathsGrid = document.getElementById("static-paths-grid");
+  const guestHeader = document.querySelector(".paths-header-guest");
+  const userHeader = document.querySelector(".paths-header-user");
+
+  // Only proceed if elements exist (landing page)
+  if (!widgetContainer || !staticPathsGrid) return;
+
+  if (user) {
+    // User logged in: show roadmap widget, hide static paths
+    widgetContainer.style.display = "block";
+    staticPathsGrid.style.display = "none";
+    if (guestHeader) guestHeader.style.display = "none";
+    if (userHeader) userHeader.style.display = "block";
+
+    // Initialize the roadmap widget
+    initRoadmapWidget("roadmap-widget-container", user.uid);
+  } else {
+    // Guest: show static paths, hide roadmap widget
+    widgetContainer.style.display = "none";
+    staticPathsGrid.style.display = "grid";
+    if (guestHeader) guestHeader.style.display = "block";
+    if (userHeader) userHeader.style.display = "none";
+  }
+}
 
 async function loadFeaturedCourses(user) {
   const grid = document.getElementById("featured-courses-grid");

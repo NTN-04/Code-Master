@@ -1,171 +1,60 @@
+/* ============================================================
+   BLOG CSS - Modern & Professional Design
+   CodeMaster E-Learning Platform
+   ============================================================ */
+
+/* ============================================================
+   1. BLOG LISTING - Container & Layout
+   ============================================================ */
 .blog-container {
-  /* display: flex; */
-  /* gap: 2rem; */
   max-width: 1200px;
   margin: 0 auto;
   padding: 2rem 1rem;
 }
+
 .main {
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr 280px;
   gap: 2rem;
+  align-items: start;
 }
+
 .blog-list-section {
-  padding: 0px 0 40px;
-  flex: 2;
+  padding: 0 0 40px;
+  min-width: 0;
 }
+
 .blog-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1.5rem;
+  margin-bottom: 2rem;
   padding-top: 40px;
 }
-.blog-header h1 {
+
+.blog-heading h1 {
   font-size: 2.2rem;
-  margin-bottom: 12px;
+  margin-bottom: 0.5rem;
+  color: var(--text-primary);
+  font-weight: 800;
 }
+
 .blog-desc {
-  color: #666;
-  margin-bottom: 2rem;
+  color: var(--text-secondary);
+  margin-bottom: 0;
+  font-size: 1.05rem;
+  line-height: 1.6;
 }
+
 #open-post-modal,
 #my-blog {
   font-size: 1rem;
   margin-bottom: 12px;
 }
-.blog-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-.blog-card {
-  background: #fff;
-  border-radius: 8px;
-  border: 2px solid #e8e8e8;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-  margin-bottom: 1.5rem;
-  display: flex;
-  align-items: flex-start;
-  gap: 1.5rem;
-  padding: 1.5rem;
-  transition: box-shadow 0.2s;
-}
-.blog-card:hover {
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
-}
-.blog-avatar {
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-  object-fit: cover;
-  margin-right: 0.7rem;
-}
-.blog-info {
-  flex: 1;
-}
-.blog-title {
-  font-size: 1.15rem;
-  font-weight: 600;
-  margin: 0 0 0.3rem 0;
-  color: #222;
-}
-.blog-meta {
-  color: #888;
-  font-size: 0.97em;
-  margin-bottom: 0.3rem;
-  display: flex;
-  align-items: center;
-  gap: 0.7rem;
-}
-.blog-tags {
-  margin-bottom: 0.5rem;
-}
-.blog-tag {
-  background: #e9ecef;
-  color: #333;
-  border-radius: 3px;
-  padding: 0.2rem 0.7rem;
-  font-size: 0.95em;
-  margin-right: 0.4rem;
-  display: inline-block;
-}
-.blog-image {
-  width: 120px;
-  height: 70px;
-  border-radius: 6px;
-  object-fit: cover;
-}
-.blog-content {
-  word-break: break-word;
-  overflow-wrap: break-word;
-  color: #444;
-  font-size: 1em;
-  margin-bottom: 0.5rem;
-}
-.blog-actions {
-  display: flex;
-  align-items: center;
-  gap: 1.2rem;
-  font-size: 0.97em;
-  color: #888;
-}
 
-/* Phân trang */
-.blog-pagination {
-  display: flex;
-  gap: 0.5rem;
-  justify-content: center;
-  margin: 1.5rem 0 0.5rem 0;
-}
-.blog-pagination .page-btn {
-  background: #fff;
-  border: 1px solid #007bff;
-  color: #007bff;
-  padding: 0.4rem 1rem;
-  border-radius: 5px;
-  cursor: pointer;
-  font-weight: 500;
-  transition: background 0.2s, color 0.2s;
-}
-.blog-pagination .page-btn.active,
-.blog-pagination .page-btn:hover {
-  background: #007bff;
-  color: #fff;
-}
-
-/* Sidebar */
-.blog-sidebar {
-  height: fit-content;
-  background: #f8f9fa;
-  border-radius: 8px;
-  padding: 1.2rem;
-}
-.blog-sidebar h2 {
-  font-size: 1.2rem;
-  color: #666;
-}
-.blog-topic-list {
-  max-width: 270px;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.6rem;
-  margin-bottom: 1.5rem;
-}
-.blog-topic {
-  background: #ecf1f6;
-  color: #333;
-  border-radius: 3px;
-  padding: 0.3rem 1rem;
-  font-size: 0.97em;
-  cursor: pointer;
-  transition: background 0.2s;
-}
-.blog-topic:hover {
-  background: #007bff;
-  color: #fff;
-}
-
-/* search */
+/* ============================================================
+   2. SEARCH BAR
+   ============================================================ */
 .blog-search {
   display: flex;
   align-items: center;
@@ -173,32 +62,306 @@
   flex-direction: row-reverse;
   margin: 10px 0 30px;
 }
+
 .blog-search input {
   width: 550px;
-  padding: 8px 12px;
-  border: 1px solid #ccc;
+  padding: 12px 16px;
+  border: 2px solid var(--border-color);
   outline: none;
-  border-radius: 0 8px 8px 0;
+  border-radius: 0 16px 16px 0;
   font-size: 1rem;
-}
-.blog-search input:focus {
-  border-color: var(--primary-color);
-}
-.blog-search button {
-  padding: 8px 12px;
-  font-size: 1.1rem;
-  background-color: var(--accent-color);
-  color: white;
-  border: none;
-  border-radius: 8px 0 0 8px;
-  cursor: pointer;
-  transition: var(--transition);
-}
-.blog-search button:hover {
-  background-color: #ff5252;
+  background: var(--bg-card);
+  color: var(--text-primary);
+  transition: all 0.3s ease;
 }
 
-/* --------------- Blog detail --------------- */
+.blog-search input:focus {
+  border-color: var(--brand-blue);
+  box-shadow: 0 0 0 4px rgba(94, 187, 255, 0.1);
+}
+
+.blog-search button {
+  padding: 12px 16px;
+  font-size: 1.1rem;
+  background: var(--brand-gradient);
+  color: white;
+  border: none;
+  border-radius: 16px 0 0 16px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.blog-search button:hover {
+  opacity: 0.9;
+  box-shadow: 0 4px 15px rgba(94, 187, 255, 0.3);
+}
+
+/* ============================================================
+   3. BLOG CARDS
+   ============================================================ */
+.blog-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.blog-card {
+  background: var(--bg-card);
+  border-radius: 20px;
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: flex-start;
+  gap: 1.5rem;
+  padding: 1.5rem;
+  transition: all 0.4s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.blog-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: var(--brand-gradient);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.4s ease;
+}
+
+.blog-card:hover {
+  box-shadow: var(--shadow-xl);
+  transform: translateY(-6px);
+  border-color: transparent;
+}
+
+.blog-card:hover::before {
+  transform: scaleX(1);
+}
+
+.blog-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-right: 0.5rem;
+  border: 2px solid transparent;
+  background-image: var(--brand-gradient);
+  background-origin: border-box;
+  background-clip: content-box, border-box;
+  box-shadow: 0 2px 8px rgba(94, 187, 255, 0.15);
+  flex-shrink: 0;
+}
+
+.blog-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.blog-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  margin: 0 0 0.4rem 0;
+  color: var(--text-primary);
+  transition: color 0.2s ease;
+}
+
+.blog-card:hover .blog-title {
+  background: var(--brand-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.blog-meta {
+  color: var(--text-tertiary);
+  font-size: 0.9em;
+  margin-bottom: 0.4rem;
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+}
+
+.blog-tags {
+  margin-bottom: 0.5rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.blog-tag {
+  background: var(--bg-tertiary);
+  color: var(--text-secondary);
+  border-radius: 20px;
+  padding: 0.2rem 0.75rem;
+  font-size: 0.85em;
+  display: inline-block;
+  transition: all 0.2s ease;
+  border: 1px solid transparent;
+}
+
+.blog-tag:hover {
+  background: linear-gradient(
+    135deg,
+    rgba(94, 187, 255, 0.1),
+    rgba(161, 116, 255, 0.1)
+  );
+  border-color: rgba(94, 187, 255, 0.3);
+  color: var(--brand-blue);
+}
+
+.blog-image {
+  width: 130px;
+  height: 80px;
+  border-radius: 12px;
+  object-fit: cover;
+  flex-shrink: 0;
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.3s ease;
+}
+
+.blog-card:hover .blog-image {
+  transform: scale(1.03);
+}
+
+.blog-content {
+  word-break: break-word;
+  overflow-wrap: break-word;
+  color: var(--text-secondary);
+  font-size: 0.95em;
+  margin-bottom: 0.5rem;
+  line-height: 1.6;
+}
+
+.blog-actions {
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+  font-size: 0.9em;
+  color: var(--text-tertiary);
+}
+
+.blog-actions span {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  transition: color 0.2s ease;
+}
+
+.blog-actions span:hover {
+  color: var(--brand-blue);
+}
+
+/* ============================================================
+   4. PAGINATION
+   ============================================================ */
+.blog-pagination {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+  margin: 2rem 0 0.5rem 0;
+}
+
+.blog-pagination .page-btn {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
+  padding: 0.5rem 1rem;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.blog-pagination .page-btn:hover {
+  border-color: var(--brand-blue);
+  color: var(--brand-blue);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(94, 187, 255, 0.15);
+}
+
+.blog-pagination .page-btn.active {
+  background: var(--brand-gradient);
+  color: white;
+  border-color: transparent;
+  box-shadow: 0 4px 15px rgba(94, 187, 255, 0.3);
+}
+
+/* ============================================================
+   5. SIDEBAR
+   ============================================================ */
+.blog-sidebar {
+  height: fit-content;
+  position: sticky;
+  top: 90px;
+  background: var(--bg-card);
+  border-radius: 20px;
+  padding: 1.5rem;
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-md);
+  transition: all 0.3s ease;
+}
+
+.blog-sidebar:hover {
+  box-shadow: var(--shadow-lg);
+}
+
+.blog-sidebar h2 {
+  font-size: 1.05rem;
+  color: var(--text-primary);
+  margin-bottom: 1rem;
+  font-weight: 700;
+  position: relative;
+  padding-bottom: 0.75rem;
+}
+
+.blog-sidebar h2::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 40px;
+  height: 3px;
+  background: var(--brand-gradient);
+  border-radius: 2px;
+}
+
+.blog-topic-list {
+  max-width: 280px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 0;
+}
+
+.blog-topic {
+  background: var(--bg-tertiary);
+  color: var(--text-secondary);
+  border-radius: 20px;
+  padding: 0.4rem 1rem;
+  font-size: 0.9em;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: 1px solid transparent;
+  font-weight: 500;
+}
+
+.blog-topic:hover,
+.blog-topic.active {
+  background: var(--brand-gradient);
+  color: white;
+  border-color: transparent;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(94, 187, 255, 0.25);
+}
+
+/* ============================================================
+   6. BLOG DETAIL PAGE
+   ============================================================ */
 .loading {
   position: relative;
   top: 80%;
@@ -209,15 +372,29 @@
   justify-content: center;
   min-height: 200px;
   font-size: 1.1rem;
-  color: #555;
+  color: var(--text-secondary);
   text-align: center;
 }
+
 .blog-back {
   margin: 0 0 30px 3px;
+  color: var(--text-secondary);
 }
+
+.blog-back a {
+  color: var(--brand-blue);
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.2s ease;
+}
+
+.blog-back a:hover {
+  color: var(--brand-purple);
+}
+
 .blog-detail-container {
   display: flex;
-  gap: 1.5rem;
+  gap: 2rem;
   max-width: 1200px;
   margin: 0 auto;
   padding: 2rem 1rem;
@@ -226,7 +403,9 @@
 .blog-detail-content {
   width: 800px;
   padding: 0;
+  min-width: 0;
 }
+
 .blog-detail-sidebar {
   width: 340px;
   margin-top: 55px;
@@ -234,51 +413,90 @@
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
+  position: sticky;
+  top: 90px;
+  height: fit-content;
 }
+
 .blog-detail-card {
-  background: #fff;
-  border-radius: 12px;
-  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.07);
-  padding: 2.5rem 2.5rem 2rem 2.5rem;
+  background: var(--bg-card);
+  border-radius: 20px;
+  box-shadow: var(--shadow-md);
+  padding: 2.5rem;
   margin-bottom: 2rem;
+  border: 1px solid var(--border-color);
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
 }
+
+.blog-detail-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: var(--brand-gradient);
+}
+
 .blog-detail-meta-row {
   display: flex;
   align-items: center;
   gap: 1.5rem;
-  font-size: 1rem;
-  color: #888;
+  font-size: 0.95rem;
+  color: var(--text-tertiary);
   margin-bottom: 1.2rem;
 }
+
 .blog-detail-meta-author {
   display: flex;
   align-items: center;
   gap: 0.5rem;
 }
+
 .blog-detail-author-link {
-  color: var(--primary-color, #2563eb);
-  font-weight: 500;
+  color: var(--brand-blue);
+  font-weight: 600;
   text-decoration: none;
+  transition: color 0.2s ease;
 }
+
+.blog-detail-author-link:hover {
+  color: var(--brand-purple);
+}
+
+.blog-detail-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-bottom: 0.5rem;
+}
+
 .blog-detail-title {
   font-size: 2rem;
-  font-weight: 700;
+  font-weight: 800;
   margin-bottom: 1.2rem;
-  color: var(--text-color, #222);
+  color: var(--text-primary);
+  line-height: 1.3;
 }
+
 .blog-detail-image {
   width: 100%;
-  max-height: 350px;
+  max-height: 400px;
   object-fit: cover;
-  border-radius: 10px;
+  border-radius: 16px;
   margin-bottom: 1.5rem;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  box-shadow: var(--shadow-md);
 }
-/* Định dạng nội dung markdown trong blog-detail */
+
+/* ============================================================
+   7. BLOG DETAIL - Markdown Content
+   ============================================================ */
 .blog-detail-content-view {
-  font-size: 1.08rem;
-  color: #222;
-  line-height: 1.7;
+  font-size: 1.05rem;
+  color: var(--text-primary);
+  line-height: 1.8;
   margin-top: 1.5rem;
   overflow-x: auto;
   word-break: break-word;
@@ -289,12 +507,33 @@
 .blog-detail-content-view h3,
 .blog-detail-content-view h4 {
   font-weight: 700;
-  margin: 1.2em 0 0.7em 0;
-  color: #1a237e;
+  margin: 1.5em 0 0.7em 0;
+  color: var(--text-primary);
+}
+
+.blog-detail-content-view h1 {
+  font-size: 1.75rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid var(--border-color);
+}
+
+.blog-detail-content-view h2 {
+  font-size: 1.5rem;
+  padding-bottom: 0.4rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.blog-detail-content-view h3 {
+  font-size: 1.25rem;
+  background: var(--brand-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .blog-detail-content-view p {
-  margin: 0.7em 0;
+  margin: 0.8em 0;
+  color: var(--text-secondary);
 }
 
 .blog-detail-content-view ul,
@@ -302,160 +541,262 @@
   list-style: unset;
   margin: 1em 0 1em 2em;
   padding-left: 1.2em;
+  color: var(--text-secondary);
 }
 
 .blog-detail-content-view blockquote {
-  border-left: 4px solid #007bff;
-  background: #f5f7fa;
-  color: #555;
-  margin: 1em 0;
-  padding: 0.7em 1em;
+  border-left: 4px solid var(--brand-blue);
+  background: rgba(94, 187, 255, 0.05);
+  color: var(--text-secondary);
+  margin: 1.2em 0;
+  padding: 1rem 1.25rem;
   font-style: italic;
-  border-radius: 4px;
+  border-radius: 0 12px 12px 0;
 }
 
 .blog-detail-content-view a {
-  color: #007bff;
+  color: var(--brand-blue);
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.2s ease;
+}
+
+.blog-detail-content-view a:hover {
+  color: var(--brand-purple);
   text-decoration: underline;
-  word-break: break-all;
 }
 
 .blog-detail-content-view img {
   max-width: 100%;
-  border-radius: 7px;
+  border-radius: 16px;
   margin: 1em 0;
   display: block;
+  box-shadow: var(--shadow-md);
 }
 
 .blog-detail-content-view table {
   border-collapse: collapse;
   width: 100%;
   margin: 1em 0;
-  background: #fafbfc;
+  border-radius: 12px;
+  overflow: hidden;
 }
 
 .blog-detail-content-view th,
 .blog-detail-content-view td {
-  border: 1px solid #e0e0e0;
-  padding: 0.5em 0.8em;
+  border: 1px solid var(--border-color);
+  padding: 0.75em 1em;
   text-align: left;
 }
 
+.blog-detail-content-view th {
+  background: var(--brand-gradient);
+  color: white;
+  font-weight: 600;
+}
+
+.blog-detail-content-view tr:nth-child(even) {
+  background: var(--bg-secondary);
+}
+
 .blog-detail-content-view pre {
-  background: #23272e;
-  color: #fff;
-  padding: 1em;
-  border-radius: 7px;
+  background: var(--code-bg);
+  color: var(--code-text);
+  padding: 1.25rem;
+  border-radius: 16px;
   overflow-x: auto;
   max-width: 100%;
   margin: 1.2em 0;
-  font-size: 1em;
+  font-size: 0.95em;
+  border: 1px solid var(--border-color);
 }
 
 .blog-detail-content-view code {
-  background: #f3f3f3;
-  color: #d63384;
-  padding: 0.2em 0.4em;
-  border-radius: 4px;
-  font-size: 0.98em;
-  font-family: "Fira Mono", "Consolas", "Menlo", monospace;
+  background: var(--bg-tertiary);
+  color: var(--brand-purple);
+  padding: 0.2em 0.5em;
+  border-radius: 6px;
+  font-size: 0.9em;
+  font-family: "Fira Code", "Consolas", monospace;
+  border: 1px solid var(--border-color);
 }
 
 .blog-detail-content-view pre code {
   background: none;
-  color: #fff;
+  color: inherit;
   padding: 0;
+  border: none;
   font-size: 1em;
 }
-/* Sidebar tác giả*/
+
+/* ============================================================
+   8. SIDEBAR - Author Card
+   ============================================================ */
 .blog-sidebar-author-card {
-  background: #fff;
-  border-radius: 12px;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.07);
-  padding: 2rem 1.5rem 1.5rem 1.5rem;
+  background: var(--bg-card);
+  border-radius: 20px;
+  box-shadow: var(--shadow-md);
+  padding: 2rem 1.5rem 1.5rem;
   text-align: center;
+  border: 1px solid var(--border-color);
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
 }
+
+.blog-sidebar-author-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 60px;
+  background: var(--brand-gradient);
+  opacity: 0.1;
+}
+
+.blog-sidebar-author-card:hover {
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-4px);
+}
+
 .blog-sidebar-author-avatar {
   width: 90px;
   height: 90px;
   margin: 0 auto 1rem auto;
   border-radius: 50%;
   overflow: hidden;
-  border: 3px solid #e3e8f0;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  border: 3px solid transparent;
+  background-image: var(--brand-gradient);
+  background-origin: border-box;
+  background-clip: content-box, border-box;
+  box-shadow: 0 4px 15px rgba(94, 187, 255, 0.2);
+  position: relative;
+  z-index: 1;
 }
+
 .blog-sidebar-author-avatar img {
   width: 100%;
   height: 100%;
   object-fit: cover;
   border-radius: 50%;
 }
+
 .blog-sidebar-author-name {
-  font-size: 1.2rem;
-  font-weight: 600;
-  color: var(--primary-color, #2563eb);
-  margin-bottom: 0.2rem;
+  font-size: 1.15rem;
+  font-weight: 700;
+  background: var(--brand-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 0.3rem;
+  position: relative;
+  z-index: 1;
 }
+
+.blog-sidebar-author-location {
+  color: var(--text-tertiary);
+  font-size: 0.9rem;
+  margin-bottom: 0.75rem;
+}
+
 .blog-sidebar-author-meta {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 15px;
   cursor: pointer;
-}
-#blog-comment-btn i:hover {
-  color: #d63384;
+  position: relative;
+  z-index: 1;
 }
 
-/* Sidebar bài viết cùng tác giả */
+.blog-sidebar-author-meta span {
+  color: var(--text-secondary);
+  transition: color 0.2s ease;
+}
+
+.blog-sidebar-author-meta span:hover {
+  color: var(--brand-blue);
+}
+
+#blog-comment-btn i:hover {
+  color: var(--brand-purple);
+}
+
+/* ============================================================
+   9. SIDEBAR - Related Posts
+   ============================================================ */
 .blog-sidebar-related {
-  background: #fff;
-  border-radius: 12px;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.07);
-  padding: 1.5rem 1.2rem 1.2rem 1.2rem;
+  background: var(--bg-card);
+  border-radius: 20px;
+  box-shadow: var(--shadow-md);
+  padding: 1.5rem;
+  border: 1px solid var(--border-color);
+  transition: all 0.3s ease;
 }
+
+.blog-sidebar-related:hover {
+  box-shadow: var(--shadow-lg);
+}
+
 .blog-sidebar-related-title {
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: var(--primary-color, #2563eb);
+  font-size: 0.9rem;
+  font-weight: 700;
+  background: var(--brand-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
   margin-bottom: 1rem;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
 }
+
 .blog-sidebar-related-list {
   display: flex;
   flex-direction: column;
-  gap: 0.7rem;
+  gap: 0.6rem;
 }
+
 .related-blog-item {
   display: flex;
   align-items: center;
-  gap: 0.7rem;
+  gap: 0.75rem;
   text-decoration: none;
-  color: var(--text-color, #222);
-  background: #f7f9fb;
-  border-radius: 8px;
-  padding: 0.4rem 0.7rem;
-  transition: background 0.2s;
+  color: var(--text-primary);
+  background: var(--bg-secondary);
+  border-radius: 12px;
+  padding: 0.6rem 0.75rem;
+  transition: all 0.3s ease;
+  border: 1px solid transparent;
 }
+
 .related-blog-item:hover {
-  background: #e3e8f0;
+  background: var(--bg-tertiary);
+  transform: translateX(4px);
+  border-color: rgba(94, 187, 255, 0.2);
 }
+
 .related-blog-item img {
   width: 48px;
-  height: 36px;
+  height: 40px;
   object-fit: cover;
-  border-radius: 6px;
-  background: #eee;
+  border-radius: 8px;
+  background: var(--bg-tertiary);
+  flex-shrink: 0;
 }
+
 .related-blog-item span {
-  font-size: 0.98rem;
+  font-size: 0.9rem;
   font-weight: 500;
-  color: #222;
+  color: var(--text-primary);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-/* --- Modal đăng bài viết --- */
+/* ============================================================
+   10. MODAL - Post Blog
+   ============================================================ */
 .modal {
   position: fixed;
   z-index: 2000;
@@ -463,27 +804,48 @@
   top: 0;
   width: 100vw;
   height: 100vh;
-  background: rgba(0, 0, 0, 0.45);
+  background: var(--bg-overlay);
+  backdrop-filter: blur(6px);
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background 0.2s;
+  transition: background 0.3s;
 }
+
 .modal-content {
-  background: #fff;
+  background: var(--bg-card);
   padding: 2rem;
   margin: 0 40px 0 20px;
-  border-radius: 12px;
+  border-radius: 20px;
   max-width: 1200px;
   max-height: 90vh;
   overflow: auto;
   position: relative;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
-  animation: modalFadeIn 0.25s;
+  box-shadow: var(--shadow-xl);
+  animation: modalFadeIn 0.3s ease;
+  border: 1px solid var(--border-color);
 }
+
+.modal-content::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: var(--brand-gradient);
+  border-radius: 20px 20px 0 0;
+}
+
+.modal-content h2 {
+  color: var(--text-primary);
+  font-weight: 700;
+  margin-bottom: 1rem;
+}
+
 @keyframes modalFadeIn {
   from {
-    transform: translateY(-40px) scale(0.98);
+    transform: translateY(-40px) scale(0.96);
     opacity: 0;
   }
   to {
@@ -491,46 +853,62 @@
     opacity: 1;
   }
 }
+
 .close-modal {
   position: absolute;
   right: 1.2rem;
   top: 1.2rem;
   font-size: 1.7rem;
-  color: #888;
+  color: var(--text-tertiary);
   cursor: pointer;
-  transition: color 0.2s;
+  transition: all 0.2s ease;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
 }
+
 .close-modal:hover {
-  color: #ff5252;
+  color: #ef4444;
+  background: rgba(239, 68, 68, 0.1);
 }
+
 #blog-post-form {
   display: grid;
   grid-template-columns: 0.5fr 1fr;
   gap: 10px;
 }
+
 .blog-main-content {
   word-break: break-all;
   overflow-wrap: anywhere;
   min-width: 0;
   max-width: 100%;
 }
+
 #blog-post-form input,
 #blog-post-form textarea {
   width: 100%;
-  padding: 0.7rem 1rem;
+  padding: 0.75rem 1rem;
   margin-bottom: 10px;
-  border: 1px solid #ccc;
-  border-radius: 7px;
+  border: 2px solid var(--border-color);
+  border-radius: 12px;
   font-size: 1rem;
-  background: #fafbfc;
+  background: var(--input-bg);
+  color: var(--text-primary);
   resize: vertical;
-  transition: border 0.2s;
+  transition: all 0.3s ease;
 }
+
 #blog-post-form input[type="text"]:focus,
 #blog-post-form textarea:focus {
-  border-color: #007bff;
+  border-color: var(--brand-blue);
   outline: none;
+  box-shadow: 0 0 0 4px rgba(94, 187, 255, 0.1);
 }
+
 #blog-post-form textarea {
   min-height: 90px;
   max-height: 300px;
@@ -539,100 +917,269 @@
 #blog-post-form .btn-success {
   float: right;
   margin: 20px 0 0;
-  background: #007bff;
-  color: #fff;
+  background: var(--brand-gradient);
+  color: white;
   border: none;
-  padding: 0.7rem 1rem;
-  border-radius: 7px;
-  font-size: 1.1rem;
-  font-weight: 600;
+  padding: 0.75rem 1.5rem;
+  border-radius: 12px;
+  font-size: 1.05rem;
+  font-weight: 700;
   cursor: pointer;
-  transition: background 0.2s;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(94, 187, 255, 0.25);
 }
+
 #blog-post-form .btn-success:hover {
-  background: #0056b3;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(94, 187, 255, 0.4);
 }
+
 #blog-post-form .SimpleMDEContainer {
   margin-bottom: 0;
 }
+
 .CodeMirror .CodeMirror-code .cm-header-1 {
   font-size: 120% !important;
 }
-/* toolbar của simpleMde */
+
+/* SimpleMDE Toolbar */
 .editor-toolbar {
   position: sticky !important;
   top: 5px;
   z-index: 10;
-  background: #1f71f5ee;
-  opacity: 0.9 !important;
+  background: var(--brand-gradient) !important;
+  opacity: 0.95 !important;
+  border-radius: 12px 12px 0 0 !important;
 }
 
+.editor-toolbar a {
+  color: white !important;
+}
+
+.editor-toolbar a:hover {
+  background: rgba(255, 255, 255, 0.15) !important;
+  border-radius: 6px;
+}
+
+/* ============================================================
+   11. RESPONSIVE DESIGN
+   ============================================================ */
 @media (max-width: 1024px) {
   .main {
-    flex-direction: column;
+    grid-template-columns: 1fr;
     gap: 10px;
   }
+
   .blog-header {
     flex-direction: column;
     align-items: flex-start;
   }
+
   .blog-sidebar {
-    margin-top: 2rem;
+    margin-top: 0;
+    position: relative;
+    top: 0;
   }
+
+  .blog-topic-list {
+    max-width: 100%;
+  }
+
   .modal-content {
     height: 90vh;
   }
+
   #blog-post-form {
     grid-template-columns: 1fr;
   }
+
   #blog-post-form #image-preview {
     width: 200px;
     height: 150px;
   }
+
   /* blog detail */
   .blog-detail-container {
     flex-direction: column;
     padding: 2rem 1rem;
   }
+
   .blog-detail-sidebar {
     width: 100%;
     margin-top: 30px;
     padding: 0;
+    position: relative;
+    top: 0;
   }
+
   .blog-sidebar-author-card {
-    width: 340px;
+    max-width: 400px;
     margin: 0 auto;
   }
+
   .blog-detail-content {
     width: 100%;
     padding: 0;
   }
+
   .blog-detail-card {
     width: 100%;
-    padding: 1.2rem 1rem 1rem 1rem;
+    padding: 1.5rem;
   }
 }
+
 @media (max-width: 768px) {
   .modal-content {
-    max-width: 90vw;
+    max-width: 95vw;
+    margin: 0 10px;
+    padding: 1.5rem;
+    border-radius: 16px;
+  }
+
+  .blog-search input {
+    width: 100%;
+  }
+
+  .blog-search {
+    width: 100%;
   }
 }
+
 @media (max-width: 576px) {
   .blog-search {
-    width: 350px;
+    width: 100%;
   }
+
   .blog-card {
     flex-direction: column;
+    border-radius: 16px;
+    padding: 1.25rem;
   }
+
   .blog-image {
     width: 100%;
-    height: 140px;
+    height: 160px;
+    border-radius: 12px;
     object-fit: cover;
-    margin-top: 1rem;
+    margin-top: 0.5rem;
   }
+
   .blog-detail-meta-row {
     flex-direction: column;
     gap: 0.5rem;
-    font-size: 0.97rem;
+    font-size: 0.9rem;
+  }
+
+  .blog-detail-title {
+    font-size: 1.5rem;
+  }
+
+  .blog-detail-card {
+    border-radius: 16px;
+    padding: 1.25rem;
+  }
+
+  .blog-heading h1 {
+    font-size: 1.75rem;
   }
 }
+
+/* ============================================================
+   12. DARK MODE ENHANCEMENTS
+   ============================================================ */
+[data-theme="dark"] .blog-card {
+  border-color: rgba(255, 255, 255, 0.06);
+}
+
+[data-theme="dark"] .blog-card:hover {
+  border-color: rgba(94, 187, 255, 0.15);
+  box-shadow:
+    0 20px 40px rgba(0, 0, 0, 0.4),
+    0 0 0 1px rgba(94, 187, 255, 0.1);
+}
+
+[data-theme="dark"] .blog-sidebar {
+  border-color: rgba(255, 255, 255, 0.06);
+}
+
+[data-theme="dark"] .blog-topic:hover,
+[data-theme="dark"] .blog-topic.active {
+  box-shadow: 0 4px 15px rgba(94, 187, 255, 0.3);
+}
+
+[data-theme="dark"] .blog-detail-card {
+  border-color: rgba(255, 255, 255, 0.06);
+}
+
+[data-theme="dark"] .blog-sidebar-author-card {
+  border-color: rgba(255, 255, 255, 0.06);
+}
+
+[data-theme="dark"] .blog-sidebar-author-card::before {
+  opacity: 0.15;
+}
+
+[data-theme="dark"] .blog-sidebar-related {
+  border-color: rgba(255, 255, 255, 0.06);
+}
+
+[data-theme="dark"] .related-blog-item:hover {
+  background: rgba(94, 187, 255, 0.08);
+}
+
+[data-theme="dark"] .blog-search input {
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="dark"] .blog-search input:focus {
+  border-color: var(--brand-blue);
+  box-shadow: 0 0 0 4px rgba(94, 187, 255, 0.15);
+}
+
+[data-theme="dark"] .modal-content {
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+[data-theme="dark"] .blog-detail-content-view blockquote {
+  background: rgba(94, 187, 255, 0.08);
+}
+
+[data-theme="dark"] .blog-detail-content-view pre {
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+[data-theme="dark"] .blog-tag:hover {
+  background: rgba(94, 187, 255, 0.15);
+}
+
+[data-theme="dark"] .blog-pagination .page-btn {
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="dark"] .blog-pagination .page-btn:hover {
+  border-color: var(--brand-blue);
+}
+
+/* ============================================================
+   13. ANIMATIONS
+   ============================================================ */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.blog-card {
+  animation: fadeInUp 0.5s ease forwards;
+}
+
+.blog-card:nth-child(1) { animation-delay: 0.05s; }
+.blog-card:nth-child(2) { animation-delay: 0.1s; }
+.blog-card:nth-child(3) { animation-delay: 0.15s; }
+.blog-card:nth-child(4) { animation-delay: 0.2s; }
+.blog-card:nth-child(5) { animation-delay: 0.25s; }

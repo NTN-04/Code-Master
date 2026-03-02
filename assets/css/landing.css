@@ -1,0 +1,1512 @@
+/* ============================================================
+   LANDING PAGE CSS - Modern & Professional Design
+   CodeMaster E-Learning Platform
+   ============================================================ */
+
+/* ============================================================
+   1. HERO SECTION - Split Layout with Gradient
+   ============================================================ */
+.landing-hero {
+  min-height: 90vh;
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  padding: 100px 0 80px;
+}
+
+.landing-hero::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background:
+    radial-gradient(
+      ellipse at 20% 20%,
+      rgba(94, 187, 255, 0.15) 0%,
+      transparent 50%
+    ),
+    radial-gradient(
+      ellipse at 80% 80%,
+      rgba(161, 116, 255, 0.15) 0%,
+      transparent 50%
+    ),
+    radial-gradient(
+      ellipse at 50% 50%,
+      rgba(94, 187, 255, 0.05) 0%,
+      transparent 70%
+    );
+  pointer-events: none;
+}
+
+/* Animated gradient orbs */
+.landing-hero .hero-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.4;
+  animation: float-orb 20s ease-in-out infinite;
+}
+
+.landing-hero .hero-orb-1 {
+  width: 400px;
+  height: 400px;
+  background: var(--brand-blue);
+  top: -100px;
+  right: -100px;
+  animation-delay: 0s;
+}
+
+.landing-hero .hero-orb-2 {
+  width: 300px;
+  height: 300px;
+  background: var(--brand-purple);
+  bottom: -50px;
+  left: -50px;
+  animation-delay: -10s;
+}
+
+@keyframes float-orb {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  25% {
+    transform: translate(30px, -30px) scale(1.1);
+  }
+  50% {
+    transform: translate(-20px, 20px) scale(0.95);
+  }
+  75% {
+    transform: translate(20px, 30px) scale(1.05);
+  }
+}
+
+.landing-hero .container {
+  position: relative;
+  z-index: 2;
+}
+
+.hero-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 60px;
+  align-items: center;
+}
+
+.hero-text {
+  color: white;
+}
+
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(94, 187, 255, 0.15);
+  border: 1px solid rgba(94, 187, 255, 0.3);
+  padding: 8px 16px;
+  border-radius: 50px;
+  font-size: 0.875rem;
+  color: var(--brand-blue);
+  margin-bottom: 24px;
+  animation: pulse-badge 2s ease-in-out infinite;
+}
+
+@keyframes pulse-badge {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(94, 187, 255, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 8px rgba(94, 187, 255, 0);
+  }
+}
+
+.hero-badge i {
+  font-size: 1rem;
+}
+
+.hero-text h1 {
+  font-size: 3.5rem;
+  font-weight: 800;
+  line-height: 1.1;
+  margin-bottom: 24px;
+  letter-spacing: -0.02em;
+}
+
+.hero-text h1 .gradient-text {
+  background: var(--brand-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.hero-text p {
+  font-size: 1.25rem;
+  color: rgba(255, 255, 255, 0.8);
+  line-height: 1.7;
+  margin-bottom: 32px;
+  max-width: 500px;
+}
+
+.hero-buttons {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.btn-hero-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 32px;
+  background: var(--brand-gradient);
+  color: white;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  box-shadow: 0 4px 20px rgba(94, 187, 255, 0.3);
+}
+
+.btn-hero-primary:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 30px rgba(94, 187, 255, 0.4);
+  color: white;
+}
+
+.btn-hero-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 32px;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  color: white;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none;
+}
+
+.btn-hero-secondary:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.4);
+  transform: translateY(-3px);
+  color: white;
+}
+
+/* Hero Visual */
+.hero-visual {
+  position: relative;
+}
+
+.hero-card-stack {
+  position: relative;
+  perspective: 1000px;
+}
+
+.hero-floating-card {
+  position: absolute;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 16px;
+  padding: 20px;
+  color: white;
+  animation: float-card 6s ease-in-out infinite;
+}
+
+.hero-floating-card:nth-child(1) {
+  top: 0;
+  left: 0;
+  animation-delay: 0s;
+}
+
+.hero-floating-card:nth-child(2) {
+  top: 60px;
+  right: 0;
+  animation-delay: -2s;
+}
+
+.hero-floating-card:nth-child(3) {
+  bottom: 40px;
+  left: 40px;
+  animation-delay: -4s;
+}
+
+@keyframes float-card {
+  0%,
+  100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-15px) rotate(2deg);
+  }
+}
+
+.hero-main-visual {
+  background: linear-gradient(
+    145deg,
+    rgba(94, 187, 255, 0.2),
+    rgba(161, 116, 255, 0.2)
+  );
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 24px;
+  padding: 40px;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-code-preview {
+  background: #1a1a2e;
+  border-radius: 16px;
+  padding: 24px;
+  font-family: "Fira Code", "Consolas", monospace;
+  font-size: 0.9rem;
+  color: #e2e8f0;
+  position: relative;
+}
+
+.hero-code-preview::before {
+  content: "";
+  position: absolute;
+  top: 12px;
+  left: 16px;
+  width: 12px;
+  height: 12px;
+  background: #ff5f56;
+  border-radius: 50%;
+  box-shadow:
+    20px 0 0 #ffbd2e,
+    40px 0 0 #27ca40;
+}
+
+.hero-code-preview pre {
+  margin-top: 20px;
+  white-space: pre-wrap;
+  line-height: 1.6;
+}
+
+.hero-code-preview .code-keyword {
+  color: #c792ea;
+}
+.hero-code-preview .code-function {
+  color: #82aaff;
+}
+.hero-code-preview .code-string {
+  color: #c3e88d;
+}
+.hero-code-preview .code-comment {
+  color: #546e7a;
+}
+
+/* ============================================================
+   2. STATS BANNER
+   ============================================================ */
+.stats-banner {
+  background: var(--brand-gradient);
+  padding: 40px 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.stats-banner::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  pointer-events: none;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 32px;
+  position: relative;
+  z-index: 1;
+}
+
+.stat-item {
+  text-align: center;
+  color: white;
+}
+
+.stat-number {
+  font-size: 3rem;
+  font-weight: 800;
+  line-height: 1;
+  margin-bottom: 8px;
+}
+
+.stat-label {
+  font-size: 1rem;
+  opacity: 0.9;
+  font-weight: 500;
+}
+
+/* ============================================================
+   3. FEATURES / WHY US SECTION
+   ============================================================ */
+.features-section {
+  padding: 100px 0;
+  background: var(--bg-secondary);
+}
+
+.section-header {
+  text-align: center;
+  margin-bottom: 60px;
+}
+
+.section-header .section-tag {
+  display: inline-block;
+  background: rgba(94, 187, 255, 0.1);
+  color: var(--brand-blue);
+  padding: 8px 20px;
+  border-radius: 50px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  margin-bottom: 16px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.section-header h2 {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin-bottom: 16px;
+}
+
+.section-header h2::after {
+  display: none;
+}
+
+.section-header p {
+  font-size: 1.125rem;
+  color: var(--text-secondary);
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 32px;
+}
+
+.feature-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 20px;
+  padding: 32px;
+  transition: all 0.4s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.feature-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: var(--brand-gradient);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.4s ease;
+}
+
+.feature-card:hover {
+  transform: translateY(-8px);
+  box-shadow: var(--shadow-xl);
+  border-color: transparent;
+}
+
+.feature-card:hover::before {
+  transform: scaleX(1);
+}
+
+.feature-icon {
+  width: 64px;
+  height: 64px;
+  background: linear-gradient(
+    135deg,
+    rgba(94, 187, 255, 0.1),
+    rgba(161, 116, 255, 0.1)
+  );
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.feature-icon i {
+  font-size: 1.75rem;
+  background: var(--brand-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.feature-card h3 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 12px;
+}
+
+.feature-card p {
+  color: var(--text-secondary);
+  line-height: 1.7;
+  margin-bottom: 0;
+}
+
+/* ============================================================
+   4. AI ROADMAP SECTION
+   ============================================================ */
+.ai-roadmap-section {
+  padding: 100px 0;
+  background: linear-gradient(
+    180deg,
+    var(--bg-primary) 0%,
+    var(--bg-secondary) 100%
+  );
+  position: relative;
+  overflow: hidden;
+}
+
+.ai-roadmap-section::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 800px;
+  height: 800px;
+  background: radial-gradient(
+    circle,
+    rgba(161, 116, 255, 0.1) 0%,
+    transparent 70%
+  );
+  pointer-events: none;
+}
+
+.ai-roadmap-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 60px;
+  align-items: center;
+}
+
+.ai-roadmap-content h2 {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin-bottom: 20px;
+  text-align: left;
+}
+
+.ai-roadmap-content h2::after {
+  display: none;
+}
+
+.ai-roadmap-content > p {
+  font-size: 1.125rem;
+  color: var(--text-secondary);
+  line-height: 1.7;
+  margin-bottom: 32px;
+}
+
+.ai-features-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.ai-feature-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.ai-feature-item i {
+  width: 24px;
+  height: 24px;
+  background: rgba(64, 192, 87, 0.1);
+  color: var(--success-color);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.ai-feature-item span {
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.ai-roadmap-visual {
+  position: relative;
+}
+
+.ai-visual-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 24px;
+  padding: 32px;
+  box-shadow: var(--shadow-xl);
+  position: relative;
+  overflow: hidden;
+}
+
+.ai-visual-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: var(--brand-gradient);
+}
+
+.ai-preview-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.ai-preview-header i {
+  font-size: 1.5rem;
+  color: var(--brand-purple);
+}
+
+.ai-preview-header span {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.ai-preview-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.ai-step {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px;
+  background: var(--bg-secondary);
+  border-radius: 12px;
+  transition: all 0.3s ease;
+}
+
+.ai-step:hover {
+  background: var(--bg-hover);
+  transform: translateX(8px);
+}
+
+.ai-step-number {
+  width: 32px;
+  height: 32px;
+  background: var(--brand-gradient);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.875rem;
+  flex-shrink: 0;
+}
+
+.ai-step-content h4 {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+
+.ai-step-content p {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  margin-bottom: 0;
+}
+
+/* ============================================================
+   5. FEATURED COURSES SECTION (Enhanced)
+   ============================================================ */
+.landing-courses {
+  padding: 100px 0;
+  background: var(--bg-primary);
+}
+
+.landing-courses .section-header {
+  margin-bottom: 48px;
+}
+
+.landing-courses .courses-grid {
+  gap: 32px;
+  margin-bottom: 48px;
+}
+
+.landing-courses .view-all {
+  text-align: center;
+}
+
+.btn-view-all {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 32px;
+  background: transparent;
+  color: var(--text-primary);
+  font-size: 1rem;
+  font-weight: 600;
+  border: 2px solid var(--border-color);
+  border-radius: 12px;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.btn-view-all:hover {
+  border-color: var(--brand-blue);
+  color: var(--brand-blue);
+  transform: translateY(-3px);
+}
+
+.btn-view-all i {
+  transition: transform 0.3s ease;
+}
+
+.btn-view-all:hover i {
+  transform: translateX(4px);
+}
+
+/* ============================================================
+   6. LEARNING PATHS SECTION (Redesigned)
+   ============================================================ */
+.landing-paths {
+  padding: 100px 0;
+  background: var(--bg-secondary);
+}
+
+/* View all paths button */
+.view-all-paths {
+  text-align: center;
+  margin-top: 48px;
+}
+
+/* Roadmap Widget Landing Styles */
+.roadmap-widget-landing {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.roadmap-widget-landing .roadmap-widget {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 24px;
+  padding: 32px;
+  box-shadow: var(--shadow-xl);
+}
+
+.roadmap-widget-landing .roadmap-header {
+  margin-bottom: 24px;
+}
+
+.roadmap-widget-landing .roadmap-title h3 {
+  font-size: 1.5rem;
+  color: var(--text-primary);
+}
+
+.roadmap-widget-landing .roadmap-title i {
+  font-size: 1.75rem;
+  background: var(--brand-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.roadmap-widget-landing .roadmap-refresh {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+}
+
+.roadmap-widget-landing .roadmap-refresh:hover {
+  background: var(--brand-gradient);
+  color: white;
+  border-color: transparent;
+}
+
+.roadmap-widget-landing .roadmap-summary {
+  margin-bottom: 24px;
+}
+
+.roadmap-widget-landing .ai-summary {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 16px 20px;
+  background: linear-gradient(
+    135deg,
+    rgba(94, 187, 255, 0.1),
+    rgba(161, 116, 255, 0.1)
+  );
+  border-radius: 16px;
+  color: var(--text-primary);
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+.roadmap-widget-landing .ai-summary i {
+  color: var(--brand-purple);
+  font-size: 1.25rem;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.roadmap-widget-landing .cache-badge {
+  font-size: 0.75rem;
+  background: var(--bg-secondary);
+  padding: 4px 8px;
+  border-radius: 6px;
+  margin-left: 8px;
+  white-space: nowrap;
+}
+
+.roadmap-widget-landing .roadmap-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 24px;
+}
+
+.roadmap-widget-landing .recommendation-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 20px;
+  overflow: hidden;
+  transition: all 0.4s ease;
+}
+
+.roadmap-widget-landing .recommendation-card:hover {
+  transform: translateY(-8px);
+  box-shadow: var(--shadow-xl);
+  border-color: transparent;
+}
+
+.roadmap-widget-landing .rec-card-link {
+  text-decoration: none;
+  display: block;
+}
+
+.roadmap-widget-landing .rec-card-image {
+  position: relative;
+  height: 160px;
+  overflow: hidden;
+}
+
+.roadmap-widget-landing .rec-card-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s ease;
+}
+
+.roadmap-widget-landing .recommendation-card:hover .rec-card-image img {
+  transform: scale(1.08);
+}
+
+.roadmap-widget-landing .rec-level-badge {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.roadmap-widget-landing .rec-level-badge.beginner {
+  background: linear-gradient(135deg, #e6fcf5 0%, #c3fae8 100%);
+  color: #0ca678;
+}
+
+.roadmap-widget-landing .rec-level-badge.intermediate {
+  background: linear-gradient(135deg, #fff9db 0%, #ffec99 100%);
+  color: #f08c00;
+}
+
+.roadmap-widget-landing .rec-level-badge.advanced {
+  background: linear-gradient(135deg, #ffe3e3 0%, #ffc9c9 100%);
+  color: #e03131;
+}
+
+.roadmap-widget-landing .rec-card-content {
+  padding: 20px;
+}
+
+.roadmap-widget-landing .rec-card-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 12px;
+  line-height: 1.4;
+}
+
+.roadmap-widget-landing .rec-card-meta {
+  display: flex;
+  gap: 16px;
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+  margin-bottom: 12px;
+}
+
+.roadmap-widget-landing .rec-card-meta span {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.roadmap-widget-landing .rec-card-meta i {
+  color: var(--brand-blue);
+}
+
+.roadmap-widget-landing .rec-card-reason {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 12px;
+  background: var(--bg-secondary);
+  border-radius: 12px;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.roadmap-widget-landing .rec-card-reason i {
+  color: var(--brand-purple);
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+/* No preferences state */
+.roadmap-widget-landing .roadmap-no-preferences {
+  text-align: center;
+  padding: 40px 20px;
+}
+
+.roadmap-widget-landing .no-pref-icon {
+  width: 80px;
+  height: 80px;
+  background: linear-gradient(
+    135deg,
+    rgba(94, 187, 255, 0.15),
+    rgba(161, 116, 255, 0.15)
+  );
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 20px;
+}
+
+.roadmap-widget-landing .no-pref-icon i {
+  font-size: 2rem;
+  background: var(--brand-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.roadmap-widget-landing .roadmap-no-preferences p {
+  color: var(--text-secondary);
+  font-size: 1rem;
+  line-height: 1.6;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.roadmap-widget-landing .roadmap-prompt {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.roadmap-widget-landing .roadmap-prompt i {
+  color: var(--warning-color);
+  font-size: 1.25rem;
+}
+
+/* Action buttons */
+.roadmap-widget-landing .roadmap-actions {
+  margin-top: 24px;
+  text-align: center;
+}
+
+.roadmap-widget-landing .btn-start-survey,
+.roadmap-widget-landing .btn-update-preferences {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 28px;
+  background: var(--brand-gradient);
+  color: white;
+  font-size: 1rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.roadmap-widget-landing .btn-start-survey:hover,
+.roadmap-widget-landing .btn-update-preferences:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(94, 187, 255, 0.35);
+}
+
+.roadmap-widget-landing .btn-update-preferences {
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+}
+
+.roadmap-widget-landing .btn-update-preferences:hover {
+  border-color: var(--brand-blue);
+  color: var(--brand-blue);
+  box-shadow: none;
+}
+
+/* Empty and error states */
+.roadmap-widget-landing .roadmap-empty,
+.roadmap-widget-landing .roadmap-error {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--text-secondary);
+}
+
+.roadmap-widget-landing .roadmap-empty i,
+.roadmap-widget-landing .roadmap-error i {
+  font-size: 2.5rem;
+  margin-bottom: 16px;
+  opacity: 0.5;
+}
+
+.roadmap-widget-landing .roadmap-error i {
+  color: var(--danger-color);
+}
+
+.roadmap-widget-landing .btn-retry {
+  margin-top: 16px;
+  padding: 10px 20px;
+  background: var(--brand-gradient);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.roadmap-widget-landing .btn-retry:hover {
+  transform: translateY(-2px);
+}
+
+/* Skeleton loading */
+.roadmap-widget-landing .roadmap-skeleton {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 24px;
+}
+
+.roadmap-widget-landing .skeleton-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+.paths-grid-landing {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 32px;
+}
+
+.path-card-landing {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 24px;
+  padding: 32px;
+  transition: all 0.4s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.path-card-landing::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: var(--brand-gradient);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  z-index: 0;
+}
+
+.path-card-landing:hover {
+  transform: translateY(-8px);
+  box-shadow: var(--shadow-xl);
+  border-color: transparent;
+}
+
+.path-card-landing:hover::before {
+  opacity: 0.03;
+}
+
+.path-card-landing > * {
+  position: relative;
+  z-index: 1;
+}
+
+.path-icon-landing {
+  width: 72px;
+  height: 72px;
+  background: linear-gradient(
+    135deg,
+    rgba(94, 187, 255, 0.15),
+    rgba(161, 116, 255, 0.15)
+  );
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 24px;
+}
+
+.path-icon-landing i {
+  font-size: 2rem;
+  background: var(--brand-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.path-card-landing h3 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 12px;
+}
+
+.path-card-landing > p {
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin-bottom: 24px;
+}
+
+.path-techs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 24px;
+}
+
+.path-tech {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: var(--bg-secondary);
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.path-tech i {
+  color: var(--brand-blue);
+}
+
+.btn-path {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 24px;
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  font-size: 0.95rem;
+  font-weight: 600;
+  border-radius: 12px;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.btn-path:hover {
+  background: var(--brand-gradient);
+  color: white;
+  transform: translateX(4px);
+}
+
+/* ============================================================
+   7. RESOURCES SECTION (Redesigned)
+   ============================================================ */
+.landing-resources {
+  padding: 100px 0;
+  background: var(--bg-primary);
+}
+
+.resources-grid-landing {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 32px;
+}
+
+.resource-card-landing {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 20px;
+  padding: 32px;
+  text-align: center;
+  transition: all 0.4s ease;
+  position: relative;
+}
+
+.resource-card-landing:hover {
+  transform: translateY(-8px);
+  box-shadow: var(--shadow-xl);
+  border-color: transparent;
+}
+
+.resource-icon-landing {
+  width: 80px;
+  height: 80px;
+  background: linear-gradient(
+    135deg,
+    rgba(94, 187, 255, 0.1),
+    rgba(161, 116, 255, 0.1)
+  );
+  border-radius: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 24px;
+  transition: all 0.4s ease;
+}
+
+.resource-card-landing:hover .resource-icon-landing {
+  background: var(--brand-gradient);
+  transform: scale(1.1) rotate(5deg);
+}
+
+.resource-icon-landing i {
+  font-size: 2rem;
+  background: var(--brand-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  transition: all 0.4s ease;
+}
+
+.resource-card-landing:hover .resource-icon-landing i {
+  background: white;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.resource-card-landing h3 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 12px;
+}
+
+.resource-card-landing p {
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin-bottom: 24px;
+}
+
+.btn-resource {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  background: transparent;
+  color: var(--text-primary);
+  font-size: 0.9rem;
+  font-weight: 600;
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.btn-resource:hover {
+  border-color: var(--brand-blue);
+  color: var(--brand-blue);
+  transform: translateY(-2px);
+}
+
+/* ============================================================
+   8. CTA SECTION
+   ============================================================ */
+.cta-section {
+  padding: 100px 0;
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+.cta-section::before,
+.cta-section::after {
+  content: "";
+  position: absolute;
+  width: 400px;
+  height: 400px;
+  border-radius: 50%;
+  filter: blur(100px);
+  opacity: 0.3;
+}
+
+.cta-section::before {
+  background: var(--brand-blue);
+  top: -200px;
+  left: -200px;
+}
+
+.cta-section::after {
+  background: var(--brand-purple);
+  bottom: -200px;
+  right: -200px;
+}
+
+.cta-content {
+  text-align: center;
+  position: relative;
+  z-index: 1;
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.cta-content h2 {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: white;
+  margin-bottom: 20px;
+}
+
+.cta-content h2::after {
+  display: none;
+}
+
+.cta-content p {
+  font-size: 1.125rem;
+  color: rgba(255, 255, 255, 0.8);
+  margin-bottom: 32px;
+}
+
+.cta-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+/* ============================================================
+   9. RESPONSIVE DESIGN
+   ============================================================ */
+@media (max-width: 1024px) {
+  .hero-grid {
+    grid-template-columns: 1fr;
+    gap: 40px;
+    text-align: center;
+  }
+
+  .hero-text h1 {
+    font-size: 2.75rem;
+  }
+
+  .hero-text p {
+    margin: 0 auto 32px;
+  }
+
+  .hero-buttons {
+    justify-content: center;
+  }
+
+  .hero-visual {
+    order: -1;
+  }
+
+  .ai-roadmap-grid {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+
+  .ai-roadmap-content {
+    text-align: center;
+  }
+
+  .ai-roadmap-content h2 {
+    text-align: center;
+  }
+
+  .ai-features-list {
+    align-items: center;
+  }
+
+  .features-grid,
+  .paths-grid-landing,
+  .resources-grid-landing {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .landing-hero {
+    min-height: auto;
+    padding: 80px 0 60px;
+  }
+
+  .hero-text h1 {
+    font-size: 2.25rem;
+  }
+
+  .hero-text p {
+    font-size: 1.1rem;
+  }
+
+  .hero-buttons {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .btn-hero-primary,
+  .btn-hero-secondary {
+    width: 100%;
+    max-width: 280px;
+    justify-content: center;
+  }
+
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+  }
+
+  .stat-number {
+    font-size: 2.25rem;
+  }
+
+  .features-section,
+  .ai-roadmap-section,
+  .landing-courses,
+  .landing-paths,
+  .landing-resources,
+  .cta-section {
+    padding: 60px 0;
+  }
+
+  .section-header h2 {
+    font-size: 2rem;
+  }
+
+  .features-grid,
+  .paths-grid-landing,
+  .resources-grid-landing {
+    grid-template-columns: 1fr;
+  }
+
+  .cta-content h2 {
+    font-size: 2rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .hero-text h1 {
+    font-size: 1.75rem;
+  }
+
+  .stat-number {
+    font-size: 1.75rem;
+  }
+
+  .section-header h2 {
+    font-size: 1.5rem;
+  }
+
+  .cta-content h2 {
+    font-size: 1.5rem;
+  }
+
+  .cta-buttons {
+    flex-direction: column;
+    align-items: center;
+  }
+}
+
+/* ============================================================
+   10. DARK MODE ENHANCEMENTS
+   ============================================================ */
+[data-theme="dark"] .landing-hero {
+  background: linear-gradient(135deg, #020617 0%, #0f172a 50%, #1e293b 100%);
+}
+
+[data-theme="dark"] .hero-code-preview {
+  background: #0f172a;
+  border: 1px solid var(--border-color);
+}
+
+[data-theme="dark"] .feature-card,
+[data-theme="dark"] .path-card-landing,
+[data-theme="dark"] .resource-card-landing,
+[data-theme="dark"] .ai-visual-card {
+  background: var(--bg-card);
+}
+
+[data-theme="dark"] .ai-step {
+  background: var(--bg-tertiary);
+}
+
+[data-theme="dark"] .ai-step:hover {
+  background: var(--bg-hover);
+}
+
+[data-theme="dark"] .path-tech {
+  background: var(--bg-tertiary);
+}
+
+[data-theme="dark"] .btn-path {
+  background: var(--bg-tertiary);
+}
+
+[data-theme="dark"] .cta-section {
+  background: linear-gradient(135deg, #020617 0%, #0f172a 100%);
+}

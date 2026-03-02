@@ -1,143 +1,292 @@
-/* Resources Page Styles */
+/* ============================================================
+   RESOURCES CSS - Modern & Professional Design
+   CodeMaster E-Learning Platform
+   ============================================================ */
 
-/* Resources Header */
+/* ============================================================
+   1. RESOURCES HEADER - Giống Style Khóa Học
+   ============================================================ */
 .resources-header {
-  background: linear-gradient(135deg, #4a6fff 0%, #764ba2 100%);
-  color: white;
-  padding: 60px 0;
+  background: linear-gradient(
+    135deg,
+    rgba(94, 187, 255, 0.15) 0%,
+    rgba(161, 116, 255, 0.2) 100%
+  );
+  padding: 80px 0 60px;
   text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.resources-header::before {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(
+    circle,
+    rgba(94, 187, 255, 0.05) 0%,
+    transparent 70%
+  );
+  animation: float-bg 20s ease-in-out infinite;
+}
+
+@keyframes float-bg {
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+  50% {
+    transform: translate(5%, 5%);
+  }
 }
 
 .resources-header h1 {
-  font-size: 2.5rem;
-  margin-bottom: 15px;
+  font-size: 3rem;
+  font-weight: 800;
+  margin-bottom: 16px;
+  background: linear-gradient(
+    135deg,
+    var(--brand-blue) 0%,
+    var(--brand-purple) 100%
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  position: relative;
+  z-index: 1;
 }
 
 .resources-header p {
+  font-size: 1.15rem;
+  color: var(--text-primary);
+  opacity: 0.8;
   max-width: 700px;
   margin: 0 auto 30px;
-  font-size: 1.1rem;
-  opacity: 0.9;
+  position: relative;
+  z-index: 1;
+  line-height: 1.7;
 }
 
+/* Search Box - Modern Style */
 .resources-search {
   display: flex;
-  max-width: 500px;
+  max-width: 550px;
   margin: 0 auto;
+  background: var(--bg-card);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: var(--shadow-lg);
+  border: 1px solid var(--border-color);
+  position: relative;
+  z-index: 1;
 }
 
 .resources-search input {
   flex: 1;
-  padding: 12px 15px;
+  padding: 12px 20px;
   border: none;
   outline: none;
-  border-radius: var(--border-radius) 0 0 var(--border-radius);
   font-size: 1rem;
+  background: transparent;
+  color: var(--text-primary);
+}
+
+.resources-search input::placeholder {
+  color: var(--text-tertiary);
 }
 
 .resources-search button {
-  padding: 0 20px;
-  font-size: 1.2rem;
-  background-color: var(--accent-color);
+  padding: 12px 20px;
+  font-size: 1rem;
+  background: var(--brand-gradient);
   color: white;
   border: none;
-  border-radius: 0 var(--border-radius) var(--border-radius) 0;
   cursor: pointer;
-  transition: var(--transition);
+  transition: all 0.3s ease;
 }
 
 .resources-search button:hover {
-  background-color: #ff5252;
+  opacity: 0.9;
+  box-shadow: 0 4px 15px rgba(94, 187, 255, 0.4);
 }
 
-/* Tabs Navigation */
+/* ============================================================
+   2. TABS NAVIGATION - Modern Pill Style
+   ============================================================ */
 .resources-tabs {
   padding: 60px 0;
+  background: var(--bg-secondary);
 }
 
 .tabs {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
+  gap: 10px;
   margin-bottom: 40px;
-  border-bottom: 1px solid var(--gray-medium);
+  background: var(--bg-card);
+  padding: 10px;
+  border-radius: 16px;
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--border-color);
 }
 
 .tab-btn {
-  padding: 12px 25px;
-  margin: 0 5px;
-  background: none;
+  padding: 12px 24px;
+  margin: 0;
+  background: transparent;
   border: none;
-  font-size: 1rem;
-  font-weight: 500;
-  color: var(--text-color);
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-secondary);
   cursor: pointer;
   position: relative;
-  transition: var(--transition);
+  transition: all 0.3s ease;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.tab-btn::before {
+  content: "";
+  height: 2px;
+  position: absolute;
+  inset: 0;
+  background: var(--brand-gradient);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  border-radius: 12px;
 }
 
 .tab-btn::after {
-  content: "";
-  position: absolute;
-  bottom: -1px;
-  left: 0;
-  width: 0;
-  height: 3px;
-  background-color: var(--primary-color);
-  transition: var(--transition);
-}
-
-.tab-btn.active {
-  color: var(--primary-color);
-}
-
-.tab-btn.active::after {
-  width: 100%;
+  display: none;
 }
 
 .tab-btn:hover {
-  color: var(--primary-color);
+  color: var(--text-primary);
+  background: var(--bg-hover);
+}
+
+.tab-btn.active::before {
+  opacity: 1;
+}
+
+.tab-btn.active span,
+.tab-btn span {
+  position: relative;
+  z-index: 1;
 }
 
 .tab-content {
   display: none;
+  animation: fadeIn 0.4s ease;
 }
 
 .tab-content.active {
   display: block;
 }
 
-/* Documentation Section */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.tab-content h2 {
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin-bottom: 30px;
+  color: var(--text-primary);
+  text-align: center;
+}
+
+.tab-content h2::after {
+  content: "";
+  display: block;
+  width: 60px;
+  height: 4px;
+  background: var(--brand-gradient);
+  margin: 15px auto 0;
+  border-radius: 2px;
+}
+
+/* ============================================================
+   3. RESOURCE CARDS (Tài Liệu) - Modern Design
+   ============================================================ */
 .resources-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 30px;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 25px;
 }
 
 .resource-card {
   position: relative;
-  padding: unset;
+  padding: 0;
   display: flex;
-  background-color: white;
-  border-radius: var(--border-radius);
+  background: var(--bg-card);
+  border-radius: 20px;
   overflow: hidden;
-  box-shadow: var(--box-shadow);
-  transition: var(--transition);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-sm);
+  transition: all 0.4s ease;
+}
+
+.resource-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: var(--brand-gradient);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.4s ease;
 }
 
 .resource-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+  transform: translateY(-6px);
+  box-shadow: var(--shadow-xl);
+  border-color: transparent;
+}
+
+.resource-card:hover::before {
+  transform: scaleX(1);
 }
 
 .resource-icon {
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: var(--primary-color);
-  color: white;
-  width: 80px;
+  width: 90px;
   font-size: 2rem;
+  position: relative;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.resource-icon::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--brand-gradient);
+  opacity: 0.15;
+}
+
+.resource-icon i {
+  position: relative;
+  z-index: 1;
+  background: var(--brand-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .resource-info {
@@ -147,178 +296,162 @@
 
 .resource-info h3 {
   margin-bottom: 10px;
-  font-size: 1.2rem;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--text-primary);
 }
 
 .resource-info p {
-  color: #666;
+  color: var(--text-secondary);
   margin-bottom: 15px;
   font-size: 0.95rem;
+  line-height: 1.6;
 }
 
-/* Code Examples Section */
+/* ============================================================
+   4. EXAMPLE CARDS (Ví Dụ Mã Nguồn) - Modern Design
+   ============================================================ */
 .examples-grid {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 30px;
+  gap: 25px;
 }
 
 .example-card {
   position: relative;
-  background-color: white;
-  border-radius: var(--border-radius);
+  background: var(--bg-card);
+  border-radius: 20px;
   padding: 25px;
-  box-shadow: var(--box-shadow);
-  transition: var(--transition);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-sm);
+  transition: all 0.4s ease;
+}
+
+.example-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: var(--brand-gradient);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.4s ease;
+  border-radius: 20px 20px 0 0;
 }
 
 .example-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+  transform: translateY(-6px);
+  box-shadow: var(--shadow-xl);
+  border-color: transparent;
+}
+
+.example-card:hover::before {
+  transform: scaleX(1);
 }
 
 .example-card h3 {
   margin-bottom: 15px;
-  font-size: 1.3rem;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text-primary);
 }
 
 .example-tags {
   display: flex;
   gap: 10px;
   margin-bottom: 15px;
+  flex-wrap: wrap;
 }
 
 .example-tags span {
-  background-color: var(--gray-light);
-  color: var(--text-color);
-  padding: 5px 10px;
+  background: linear-gradient(
+    135deg,
+    rgba(94, 187, 255, 0.15),
+    rgba(161, 116, 255, 0.15)
+  );
+  color: var(--brand-purple);
+  padding: 6px 14px;
   border-radius: 20px;
   font-size: 0.8rem;
-  font-weight: 500;
+  font-weight: 600;
+  border: 1px solid rgba(161, 116, 255, 0.2);
+}
+
+.example-card > p {
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  line-height: 1.6;
 }
 
 .example-preview {
   margin: 20px 0;
   overflow: hidden;
-  border-radius: var(--border-radius);
+  border-radius: 14px;
+  border: 1px solid var(--border-color);
 }
 
 .example-preview pre {
   white-space: pre;
   max-height: 300px;
   overflow-y: auto;
-  background-color: #282c34;
-  color: #abb2bf;
+  background: var(--code-bg);
+  color: var(--code-text);
   padding: 20px;
   margin: 0;
-  font-family: "Courier New", Courier, monospace;
-  line-height: 1.5;
-}
-/* --- Modal ví dụ mã nguồn ---- */
-.example-modal {
-  position: fixed;
-  left: 0;
-  top: 0;
-  width: 100vw;
-  height: 100vh;
-  background: rgba(0, 0, 0, 0.6);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 9999;
-}
-.example-modal .modal-content {
-  background: #fff;
-  padding: 0;
-  border-radius: 8px;
-  position: relative;
-  z-index: 2;
-  width: 90vw;
-  height: 90vh;
-  max-height: 650px;
-  max-width: 1000px;
-  overflow: hidden;
-}
-.example-modal .modal-backdrop {
-  position: absolute;
-  left: 0;
-  top: 0;
-  width: 100vw;
-  height: 100vh;
-  background: rgba(0, 0, 0, 0.1);
-  z-index: 1;
-  cursor: pointer;
-}
-.example-modal .modal-close {
-  position: absolute;
-  top: 50px;
-  right: 20px;
-  padding: 3px 10px;
-  font-size: 2rem;
-  border: none;
-  border-radius: 8px;
-  outline: none;
-  cursor: pointer;
-  color: #666;
-  transition: var(--transition);
-}
-.example-modal .modal-close:hover {
-  background-color: #ff5252;
-  color: #fff;
-}
-.example-modal iframe {
-  border: none;
-  width: 100%;
-  height: 100%;
-  border-radius: 0 0 8px 8px;
+  font-family: "Consolas", "Monaco", monospace;
+  line-height: 1.6;
+  font-size: 0.9rem;
 }
 
-/* Phân trang */
-.pagination {
-  display: flex;
-  justify-content: center;
-  gap: 8px;
-  margin-top: 30px;
+/* Dark mode code preview */
+[data-theme="dark"] .example-preview pre {
+  background: #1e293b;
+  color: #e2e8f0;
 }
-.pagination button {
-  font-size: 1.1rem;
-  padding: 8px 16px;
-  background-color: #cccccc;
-  color: var(--primary-color);
-  border: none;
-  outline: none;
-  cursor: pointer;
-  border-radius: 5px;
-  transition: var(--transition);
-}
-.pagination button.active,
-.pagination button:hover {
-  background-color: var(--primary-color);
-  color: #fff;
-}
-.pagination button:disabled {
-  cursor: not-allowed;
-  opacity: 0.7;
-}
-/* Video Tutorials Section */
+
+/* ============================================================
+   5. VIDEO CARDS (Video Hướng Dẫn) - Modern Design
+   ============================================================ */
 .videos-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-  gap: 30px;
+  gap: 25px;
 }
 
 .video-card {
   position: relative;
-  background-color: white;
-  border-radius: var(--border-radius);
+  background: var(--bg-card);
+  border-radius: 20px;
   overflow: hidden;
-  box-shadow: var(--box-shadow);
-  transition: var(--transition);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-sm);
+  transition: all 0.4s ease;
+}
+
+.video-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: var(--brand-gradient);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.4s ease;
+  z-index: 10;
 }
 
 .video-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+  transform: translateY(-6px);
+  box-shadow: var(--shadow-xl);
+  border-color: transparent;
+}
+
+.video-card:hover::before {
+  transform: scaleX(1);
 }
 
 .video-thumbnail {
@@ -331,11 +464,11 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: var(--transition);
+  transition: transform 0.4s ease;
 }
 
 .video-card:hover .video-thumbnail img {
-  transform: scale(1.05);
+  transform: scale(1.08);
 }
 
 .play-icon {
@@ -343,20 +476,25 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 60px;
-  height: 60px;
-  background-color: rgba(0, 0, 0, 0.7);
+  width: 65px;
+  height: 65px;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(5px);
   border-radius: 50%;
   display: flex;
   justify-content: center;
   align-items: center;
   color: white;
   font-size: 1.5rem;
-  transition: var(--transition);
+  transition: all 0.4s ease;
+  border: 2px solid rgba(255, 255, 255, 0.3);
 }
 
 .video-card:hover .play-icon {
-  background-color: var(--primary-color);
+  background: var(--brand-gradient);
+  border-color: transparent;
+  transform: translate(-50%, -50%) scale(1.1);
+  box-shadow: 0 4px 20px rgba(94, 187, 255, 0.5);
 }
 
 .video-info {
@@ -364,116 +502,221 @@
 }
 
 .video-info h3 {
-  font-size: 1.2rem;
+  font-size: 1.15rem;
   margin-bottom: 10px;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.4;
 }
 
 .video-info p {
-  color: #666;
+  color: var(--text-secondary);
   margin-bottom: 15px;
+  font-size: 0.95rem;
+  line-height: 1.6;
 }
 
 .video-meta {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-start;
+  gap: 20px;
   margin-bottom: 15px;
-  color: var(--gray-dark);
+  color: var(--text-tertiary);
   font-size: 0.9rem;
 }
 
-/* Books Section */
+.video-meta span {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.video-meta i {
+  color: var(--brand-blue);
+}
+
+/* ============================================================
+   6. BOOK CARDS (Sách & Ebook) - Modern Design
+   ============================================================ */
 .books-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-  gap: 30px;
+  grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+  gap: 25px;
 }
 
 .book-card {
   display: flex;
-  background-color: white;
-  border-radius: var(--border-radius);
+  background: var(--bg-card);
+  border-radius: 20px;
   overflow: hidden;
-  box-shadow: var(--box-shadow);
-  transition: var(--transition);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-sm);
+  transition: all 0.4s ease;
+  position: relative;
+}
+
+.book-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: var(--brand-gradient);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.4s ease;
 }
 
 .book-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+  transform: translateY(-6px);
+  box-shadow: var(--shadow-xl);
+  border-color: transparent;
+}
+
+.book-card:hover::before {
+  transform: scaleX(1);
 }
 
 .book-cover {
-  width: 120px;
+  width: 130px;
   height: auto;
   overflow: hidden;
+  flex-shrink: 0;
 }
 
 .book-cover img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  transition: transform 0.4s ease;
+}
+
+.book-card:hover .book-cover img {
+  transform: scale(1.05);
 }
 
 .book-info {
   padding: 20px;
   flex: 1;
+  display: flex;
+  flex-direction: column;
 }
 
 .book-info h3 {
   font-size: 1.1rem;
-  margin-bottom: 5px;
+  margin-bottom: 6px;
+  font-weight: 700;
+  color: var(--text-primary);
 }
 
 .book-author {
-  color: var(--gray-dark);
+  color: var(--text-tertiary);
   font-style: italic;
   margin-bottom: 10px;
   font-size: 0.9rem;
 }
 
 .book-description {
-  color: #666;
+  color: var(--text-secondary);
   margin-bottom: 15px;
   font-size: 0.95rem;
+  line-height: 1.6;
+  flex: 1;
 }
 
 .book-details {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-start;
+  gap: 20px;
   margin-bottom: 15px;
-  color: var(--gray-dark);
+  color: var(--text-tertiary);
   font-size: 0.9rem;
 }
 
-/* Tools Section */
+.book-details span {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.book-details i {
+  color: var(--brand-blue);
+}
+
+.book-details .fa-star {
+  color: #fbbf24;
+}
+
+/* ============================================================
+   7. TOOL CARDS (Công Cụ Phát Triển) - Modern Design
+   ============================================================ */
 .tools-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 30px;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 25px;
 }
 
 .tool-card {
   display: flex;
-  background-color: white;
-  border-radius: var(--border-radius);
+  background: var(--bg-card);
+  border-radius: 20px;
   overflow: hidden;
-  box-shadow: var(--box-shadow);
-  transition: var(--transition);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-sm);
+  transition: all 0.4s ease;
+  position: relative;
+}
+
+.tool-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: var(--brand-gradient);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.4s ease;
 }
 
 .tool-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+  transform: translateY(-6px);
+  box-shadow: var(--shadow-xl);
+  border-color: transparent;
+}
+
+.tool-card:hover::before {
+  transform: scaleX(1);
 }
 
 .tool-icon {
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: var(--secondary-color-2);
-  color: white;
-  width: 80px;
+  width: 90px;
   font-size: 2rem;
+  position: relative;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.tool-icon::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--brand-gradient);
+  opacity: 0.15;
+}
+
+.tool-icon i {
+  position: relative;
+  z-index: 1;
+  background: var(--brand-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .tool-info {
@@ -483,43 +726,114 @@
 
 .tool-info h3 {
   margin-bottom: 10px;
-  font-size: 1.2rem;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--text-primary);
 }
 
 .tool-info p {
-  color: #666;
+  color: var(--text-secondary);
   margin-bottom: 15px;
   font-size: 0.95rem;
+  line-height: 1.6;
 }
 
 .tool-features {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
+  gap: 8px;
   margin-bottom: 15px;
 }
 
 .tool-features span {
-  background-color: var(--gray-light);
-  color: var(--text-color);
-  padding: 5px 10px;
+  background: linear-gradient(
+    135deg,
+    rgba(94, 187, 255, 0.1),
+    rgba(161, 116, 255, 0.1)
+  );
+  color: var(--brand-purple);
+  padding: 5px 12px;
   border-radius: 20px;
   font-size: 0.8rem;
   font-weight: 500;
+  border: 1px solid rgba(161, 116, 255, 0.15);
 }
-/* Bookmark */
+
+/* ============================================================
+   8. BUTTONS - Shared Styles
+   ============================================================ */
+.btn {
+  padding: 12px 24px;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.btn-outline {
+  background: transparent;
+  color: var(--brand-blue);
+  border: 2px solid var(--brand-blue);
+}
+
+.btn-outline:hover {
+  background: var(--brand-gradient);
+  color: white;
+  border-color: transparent;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(94, 187, 255, 0.3);
+}
+
+/* ============================================================
+   9. BOOKMARK BUTTON
+   ============================================================ */
 .btn-bookmark {
   position: absolute;
-  top: 10px;
-  right: 10px;
+  top: 15px;
+  right: 15px;
   z-index: 10;
-  background: transparent;
+  background: var(--bg-card);
   border: none;
   outline: none;
-  font-size: 20px;
-  color: var(--primary-color);
+  font-size: 18px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: var(--shadow-md);
 }
+
+.btn-bookmark i {
+  background: var(--brand-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.btn-bookmark:hover {
+  transform: scale(1.1);
+  box-shadow: var(--shadow-lg);
+}
+
+.btn-bookmark.bookmarked {
+  background: var(--brand-gradient);
+}
+
+.btn-bookmark.bookmarked i {
+  -webkit-text-fill-color: white;
+  background: none;
+}
+
 .video-card .btn-bookmark {
   position: absolute;
   top: unset;
@@ -527,49 +841,211 @@
   right: 20px;
 }
 
-/* Thông báo toast */
+/* ============================================================
+   10. MODAL - Glassmorphism Style
+   ============================================================ */
+.example-modal {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.example-modal .modal-content {
+  background: var(--bg-card);
+  padding: 0;
+  border-radius: 20px;
+  position: relative;
+  z-index: 2;
+  width: 90vw;
+  height: 90vh;
+  max-height: 700px;
+  max-width: 1000px;
+  overflow: hidden;
+  box-shadow: var(--shadow-xl);
+  border: 1px solid var(--border-color);
+}
+
+.example-modal .modal-backdrop {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100vw;
+  height: 100vh;
+  background: transparent;
+  z-index: 1;
+  cursor: pointer;
+}
+
+.example-modal .modal-close {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  padding: 8px 14px;
+  font-size: 1.5rem;
+  border: none;
+  border-radius: 12px;
+  outline: none;
+  cursor: pointer;
+  color: var(--text-secondary);
+  background: var(--bg-hover);
+  transition: all 0.3s ease;
+  z-index: 10;
+}
+
+.example-modal .modal-close:hover {
+  background: #fee2e2;
+  color: #ef4444;
+}
+
+.example-modal iframe {
+  border: none;
+  width: 100%;
+  height: 100%;
+  border-radius: 0 0 20px 20px;
+}
+
+/* ============================================================
+   11. PAGINATION - Modern Style
+   ============================================================ */
+.pagination {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 40px;
+}
+
+.pagination button {
+  font-size: 1rem;
+  padding: 10px 18px;
+  background: var(--bg-card);
+  color: var(--text-secondary);
+  border: 2px solid var(--border-color);
+  outline: none;
+  cursor: pointer;
+  border-radius: 12px;
+  transition: all 0.3s ease;
+  font-weight: 600;
+}
+
+.pagination button:hover {
+  border-color: var(--brand-blue);
+  color: var(--brand-blue);
+  background: var(--bg-hover);
+}
+
+.pagination button.active {
+  background: var(--brand-gradient);
+  color: white;
+  border-color: transparent;
+  box-shadow: 0 4px 15px rgba(94, 187, 255, 0.3);
+}
+
+.pagination button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+/* ============================================================
+   12. NOTIFICATION & STATES
+   ============================================================ */
 .notification {
   position: fixed;
   top: 135px;
   right: 30px;
+  z-index: 1000;
 }
 
-/* No Results Message */
 .no-results {
   display: none;
   flex-direction: column;
   align-items: center;
   text-align: center;
-  padding: 60px 0;
+  padding: 60px 20px;
 }
 
 .no-results i {
-  font-size: 3rem;
-  color: var(--gray-dark);
+  font-size: 4rem;
   margin-bottom: 20px;
+  opacity: 0.3;
+  background: var(--brand-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .no-results h3 {
   margin-bottom: 10px;
   font-size: 1.5rem;
+  color: var(--text-primary);
 }
 
 .no-results p {
-  color: var(--gray-dark);
+  color: var(--text-secondary);
 }
 
-/* Responsive Styles */
-@media (max-width: 768px) {
+/* ============================================================
+   13. RESPONSIVE STYLES
+   ============================================================ */
+@media (max-width: 992px) {
+  .resources-header h1 {
+    font-size: 2.5rem;
+  }
+
   .tabs {
-    flex-wrap: nowrap;
     overflow-x: auto;
-    padding-bottom: 10px;
     justify-content: flex-start;
+    padding-bottom: 10px;
+    flex-wrap: nowrap;
+    -webkit-overflow-scrolling: touch;
   }
 
   .tab-btn {
-    padding: 10px 15px;
     white-space: nowrap;
+    flex-shrink: 0;
+  }
+}
+
+@media (max-width: 768px) {
+  .resources-header {
+    padding: 60px 0 40px;
+  }
+
+  .resources-header h1 {
+    font-size: 2rem;
+  }
+
+  .resources-header p {
+    font-size: 1rem;
+    padding: 0 20px;
+  }
+
+  .resources-search {
+    margin: 0 20px;
+    max-width: none;
+  }
+
+  .tabs {
+    margin: 0 10px 40px;
+    padding: 8px;
+  }
+
+  .tab-btn {
+    padding: 10px 18px;
+    font-size: 0.9rem;
+  }
+
+  .resources-grid,
+  .tools-grid {
+    grid-template-columns: 1fr;
+    padding: 0 15px;
   }
 
   .resource-card,
@@ -590,64 +1066,176 @@
   }
 
   #documentation .btn-bookmark {
-    color: #fff;
+    background: var(--bg-card);
+    box-shadow: var(--shadow-md);
   }
+
   .btn-next,
   .btn-prev {
     margin: unset;
     width: unset;
   }
-  /* modal example */
+
   .example-modal .modal-content {
-    width: 90vw;
-    max-width: 90vw;
+    width: 95vw;
+    max-width: 95vw;
+    border-radius: 16px;
+  }
+
+  .example-modal .modal-close {
+    top: 10px;
+    right: 10px;
   }
 }
 
 @media (max-width: 576px) {
+  .resources-header {
+    padding: 50px 0 30px;
+  }
+
+  .resources-header h1 {
+    font-size: 1.75rem;
+  }
+
+  .resources-tabs {
+    padding: 40px 0;
+  }
+
   .videos-grid,
   .books-grid {
     grid-template-columns: 1fr;
+    padding: 0 15px;
   }
 
   .examples-grid {
     grid-template-columns: 1fr;
     gap: 16px;
-    padding: 0 4px;
+    padding: 0 10px;
   }
+
   .example-card {
     width: 100%;
     box-sizing: border-box;
     margin: 0;
-    padding: 10px;
-    border-radius: 6px;
-    font-size: 0.97rem;
-    min-width: 0;
-    max-width: 100%;
+    padding: 15px;
+    border-radius: 16px;
   }
+
   .example-preview pre {
     max-width: 100%;
     overflow-x: auto;
     word-break: break-all;
-    padding: 10px;
+    padding: 15px;
     font-size: 0.8rem;
-    border-radius: 5px;
-    max-height: 180px;
+    border-radius: 10px;
+    max-height: 200px;
   }
 
   #examples .btn.btn-outline {
-    font-size: 0.98rem;
-    padding: 8px 0;
+    font-size: 0.95rem;
+    padding: 10px 20px;
     width: 100%;
     margin: 0 auto 8px;
   }
-  /* .btn-bookmark {
-    top: 8px;
-    right: 8px;
-    font-size: 18px;
-  } */
-  /* modal example */
+
   .example-modal .modal-content {
-    width: 85vw;
+    width: 92vw;
+    height: 85vh;
   }
+
+  .pagination {
+    flex-wrap: wrap;
+  }
+
+  .pagination button {
+    padding: 8px 14px;
+    font-size: 0.9rem;
+  }
+}
+
+/* ============================================================
+   14. DARK MODE SUPPORT
+   ============================================================ */
+[data-theme="dark"] .resources-header {
+  background: linear-gradient(
+    135deg,
+    rgba(94, 187, 255, 0.1) 0%,
+    rgba(161, 116, 255, 0.15) 100%
+  );
+}
+
+[data-theme="dark"] .resources-header::before {
+  background: radial-gradient(
+    circle,
+    rgba(94, 187, 255, 0.03) 0%,
+    transparent 70%
+  );
+}
+
+[data-theme="dark"] .resources-search {
+  background: var(--bg-card);
+  border-color: var(--border-color);
+}
+
+[data-theme="dark"] .tabs {
+  background: var(--bg-card);
+  border-color: var(--border-color);
+}
+
+[data-theme="dark"] .resource-card,
+[data-theme="dark"] .example-card,
+[data-theme="dark"] .video-card,
+[data-theme="dark"] .book-card,
+[data-theme="dark"] .tool-card {
+  background: var(--bg-card);
+  border-color: var(--border-color);
+}
+
+[data-theme="dark"] .resource-icon::before,
+[data-theme="dark"] .tool-icon::before {
+  opacity: 0.1;
+}
+
+[data-theme="dark"] .example-tags span,
+[data-theme="dark"] .tool-features span {
+  background: linear-gradient(
+    135deg,
+    rgba(94, 187, 255, 0.1),
+    rgba(161, 116, 255, 0.1)
+  );
+  border-color: rgba(161, 116, 255, 0.2);
+}
+
+[data-theme="dark"] .play-icon {
+  background: rgba(0, 0, 0, 0.7);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+[data-theme="dark"] .btn-bookmark {
+  background: var(--bg-tertiary);
+  box-shadow: var(--shadow-md);
+}
+
+[data-theme="dark"] .pagination button {
+  background: var(--bg-card);
+  border-color: var(--border-color);
+}
+
+[data-theme="dark"] .example-modal .modal-content {
+  background: var(--bg-card);
+  border-color: var(--border-color);
+}
+
+[data-theme="dark"] .example-modal .modal-close {
+  background: var(--bg-tertiary);
+  color: var(--text-secondary);
+}
+
+[data-theme="dark"] .example-modal .modal-close:hover {
+  background: rgba(239, 68, 68, 0.2);
+  color: #f87171;
+}
+
+[data-theme="dark"] .no-results i {
+  opacity: 0.2;
 }

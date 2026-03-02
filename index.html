@@ -1,12 +1,13 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="vi">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>CodeMaster - Học Lập Trình</title>
+    <title>CodeMaster - Nền Tảng Học Lập Trình</title>
     <link rel="icon" href="./assets/images/favicon.ico" type="image/x-icon" />
-    <!--  -->
     <link rel="stylesheet" href="./assets/css/style.css" />
+    <link rel="stylesheet" href="./assets/css/landing.css" />
+    <link rel="stylesheet" href="./assets/css/roadmap.css" />
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
@@ -16,231 +17,516 @@
   </head>
 
   <body>
-    <!-- load với component -->
+    <!-- Header Component -->
     <header id="header-placeholder"></header>
 
     <div class="main-content">
-      <section class="hero">
-        <!-- !-- Floating elements -->
-        <div class="hero-floating">
-          <i class="fas fa-code" style="font-size: 60px"></i>
-        </div>
-        <div class="hero-floating">
-          <i class="fas fa-laptop-code" style="font-size: 80px"></i>
-        </div>
-        <div class="hero-floating">
-          <i class="fas fa-graduation-cap" style="font-size: 70px"></i>
-        </div>
+      <!-- ================== HERO SECTION ================== -->
+      <section class="landing-hero">
+        <!-- Animated orbs -->
+        <div class="hero-orb hero-orb-1"></div>
+        <div class="hero-orb hero-orb-2"></div>
 
         <div class="container">
-          <div class="hero-content">
-            <h1
-              data-aos="fade-down"
-              data-aos-easing="easy"
-              data-aos-duration="1000"
+          <div class="hero-grid">
+            <!-- Hero Text -->
+            <div
+              class="hero-text"
+              data-aos="fade-right"
+              data-aos-duration="800"
             >
-              Làm Chủ Kỹ Năng Lập Trình Với
-              <span class="highlight">CodeMaster</span>
-            </h1>
-            <p class="hero-subtitle" data-aos="flip-left">
-              🚀 Nền tảng học lập trình miễn phí
-            </p>
-            <p data-aos="flip-left">
-              Học phát triển web, phát triển ứng dụng di động, khóa học dữ liệu
-              và nhiều hơn nữa thông qua các khóa học và dự án tương tác chất
-              lượng cao.
-            </p>
-            <div class="buttons" data-aos="fade-up" data-aos-delay="500">
-              <a href="courses.html" class="btn btn-primary">
-                <i class="fas fa-rocket"></i> Khám Phá Khóa Học
-              </a>
-              <a
-                href="course-detail.html?id=html-css"
-                class="btn btn-secondary"
-              >
-                <i class="fas fa-play-circle"></i> Xem Demo
-              </a>
+              <div class="hero-badge">
+                <i class="fas fa-bolt"></i>
+                <span>Miễn phí 100% - Học ngay hôm nay</span>
+              </div>
+              <h1>
+                Làm Chủ Kỹ Năng<br />
+                <span class="gradient-text">Lập Trình</span> Cùng<br />
+                CodeMaster
+              </h1>
+              <p>
+                Nền tảng học lập trình trực tuyến với lộ trình cá nhân hóa bằng
+                AI, khóa học chất lượng cao và cộng đồng hỗ trợ nhiệt tình.
+              </p>
+              <div class="hero-buttons">
+                <a href="courses.html" class="btn-hero-primary">
+                  <i class="fas fa-rocket"></i> Bắt Đầu Học Ngay
+                </a>
+                <a
+                  href="course-detail.html?id=html-css"
+                  class="btn-hero-secondary"
+                >
+                  <i class="fas fa-play-circle"></i> Xem Demo Miễn Phí
+                </a>
+              </div>
+            </div>
+
+            <!-- Hero Visual -->
+            <div
+              class="hero-visual"
+              data-aos="fade-left"
+              data-aos-duration="800"
+              data-aos-delay="200"
+            >
+              <div class="hero-main-visual">
+                <div class="hero-code-preview">
+                  <pre><span class="code-comment">// Chào mừng đến CodeMaster!</span>
+<span class="code-keyword">const</span> <span class="code-function">startLearning</span> = () => {
+  <span class="code-keyword">return</span> {
+    courses: <span class="code-string">"Chất lượng cao"</span>,
+    roadmap: <span class="code-string">"Cá nhân hóa AI"</span>,
+    support: <span class="code-string">"24/7"</span>
+  };
+};</pre>
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </section>
 
-      <section id="featured" class="featured-courses">
+      <!-- ================== STATS BANNER ================== -->
+      <section class="stats-banner">
         <div class="container">
-          <h2>Khóa Học Nổi Bật</h2>
+          <div class="stats-grid" data-aos="fade-up">
+            <div class="stat-item">
+              <div class="stat-number">50+</div>
+              <div class="stat-label">Khóa Học</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-number">10K+</div>
+              <div class="stat-label">Học Viên</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-number">500+</div>
+              <div class="stat-label">Bài Học</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-number">4.9</div>
+              <div class="stat-label">Đánh Giá</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================== FEATURES SECTION ================== -->
+      <section class="features-section">
+        <div class="container">
+          <div class="section-header" data-aos="fade-up">
+            <span class="section-tag">Tại sao chọn chúng tôi</span>
+            <h2>Học Lập Trình Hiệu Quả Với CodeMaster</h2>
+            <p>
+              Chúng tôi cung cấp phương pháp học tập hiện đại, được thiết kế để
+              bạn nắm vững kỹ năng lập trình một cách nhanh chóng và hiệu quả.
+            </p>
+          </div>
+
+          <div class="features-grid">
+            <div class="feature-card" data-aos="fade-up" data-aos-delay="0">
+              <div class="feature-icon">
+                <i class="fas fa-brain"></i>
+              </div>
+              <h3>AI Cá Nhân Hóa</h3>
+              <p>
+                Lộ trình học tập được AI tạo riêng dựa trên trình độ và mục tiêu
+                của bạn.
+              </p>
+            </div>
+
+            <div class="feature-card" data-aos="fade-up" data-aos-delay="100">
+              <div class="feature-icon">
+                <i class="fas fa-laptop-code"></i>
+              </div>
+              <h3>Thực Hành Trực Tiếp</h3>
+              <p>
+                Code editor tích hợp, chạy code ngay trên trình duyệt không cần
+                cài đặt.
+              </p>
+            </div>
+
+            <div class="feature-card" data-aos="fade-up" data-aos-delay="200">
+              <div class="feature-icon">
+                <i class="fas fa-certificate"></i>
+              </div>
+              <h3>Chứng Chỉ Hoàn Thành</h3>
+              <p>
+                Nhận chứng chỉ sau khi hoàn thành khóa học để thêm vào CV của
+                bạn.
+              </p>
+            </div>
+
+            <div class="feature-card" data-aos="fade-up" data-aos-delay="300">
+              <div class="feature-icon">
+                <i class="fas fa-users"></i>
+              </div>
+              <h3>Cộng Đồng Hỗ Trợ</h3>
+              <p>
+                Tham gia cộng đồng học viên năng động, hỗ trợ lẫn nhau 24/7.
+              </p>
+            </div>
+
+            <div class="feature-card" data-aos="fade-up" data-aos-delay="400">
+              <div class="feature-icon">
+                <i class="fas fa-sync-alt"></i>
+              </div>
+              <h3>Cập Nhật Liên Tục</h3>
+              <p>
+                Nội dung được cập nhật thường xuyên theo xu hướng công nghệ mới
+                nhất.
+              </p>
+            </div>
+
+            <div class="feature-card" data-aos="fade-up" data-aos-delay="500">
+              <div class="feature-icon">
+                <i class="fas fa-mobile-alt"></i>
+              </div>
+              <h3>Học Mọi Lúc Mọi Nơi</h3>
+              <p>
+                Truy cập trên mọi thiết bị, học tập linh hoạt theo lịch trình
+                của bạn.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================== AI ROADMAP SECTION ================== -->
+      <section class="ai-roadmap-section">
+        <div class="container">
+          <div class="ai-roadmap-grid">
+            <div class="ai-roadmap-content" data-aos="fade-right">
+              <h2>
+                Lộ Trình Học Tập<br />
+                <span class="gradient-text">Cá Nhân Hóa Bằng AI</span>
+              </h2>
+              <p>
+                Hệ thống AI thông minh phân tích trình độ, mục tiêu nghề nghiệp
+                và phong cách học tập của bạn để tạo ra lộ trình phù hợp nhất.
+              </p>
+              <div class="ai-features-list">
+                <div class="ai-feature-item">
+                  <i class="fas fa-check"></i>
+                  <span>Phân tích trình độ hiện tại tự động</span>
+                </div>
+                <div class="ai-feature-item">
+                  <i class="fas fa-check"></i>
+                  <span>Đề xuất khóa học phù hợp với mục tiêu</span>
+                </div>
+                <div class="ai-feature-item">
+                  <i class="fas fa-check"></i>
+                  <span>Điều chỉnh lộ trình theo tiến độ học</span>
+                </div>
+                <div class="ai-feature-item">
+                  <i class="fas fa-check"></i>
+                  <span>Gợi ý bài tập và dự án thực hành</span>
+                </div>
+              </div>
+              <a href="courses.html" class="btn-hero-primary">
+                <i class="fas fa-magic"></i> Tạo Lộ Trình Của Bạn
+              </a>
+            </div>
+
+            <div
+              class="ai-roadmap-visual"
+              data-aos="fade-left"
+              data-aos-delay="200"
+            >
+              <div class="ai-visual-card">
+                <div class="ai-preview-header">
+                  <i class="fas fa-route"></i>
+                  <span>Lộ trình Front-End Developer</span>
+                </div>
+                <div class="ai-preview-steps">
+                  <div class="ai-step">
+                    <div class="ai-step-number">1</div>
+                    <div class="ai-step-content">
+                      <h4>HTML & CSS Cơ Bản</h4>
+                      <p>Nền tảng xây dựng giao diện web</p>
+                    </div>
+                  </div>
+                  <div class="ai-step">
+                    <div class="ai-step-number">2</div>
+                    <div class="ai-step-content">
+                      <h4>JavaScript Nâng Cao</h4>
+                      <p>Lập trình tương tác và logic</p>
+                    </div>
+                  </div>
+                  <div class="ai-step">
+                    <div class="ai-step-number">3</div>
+                    <div class="ai-step-content">
+                      <h4>React Framework</h4>
+                      <p>Xây dựng ứng dụng hiện đại</p>
+                    </div>
+                  </div>
+                  <div class="ai-step">
+                    <div class="ai-step-number">4</div>
+                    <div class="ai-step-content">
+                      <h4>Dự Án Thực Tế</h4>
+                      <p>Portfolio & triển khai sản phẩm</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================== FEATURED COURSES ================== -->
+      <section id="featured" class="landing-courses">
+        <div class="container">
+          <div class="section-header" data-aos="fade-up">
+            <span class="section-tag">Khóa học</span>
+            <h2>Khóa Học Nổi Bật</h2>
+            <p>
+              Các khóa học được thiết kế bài bản, từ cơ bản đến nâng cao, phù
+              hợp với mọi trình độ.
+            </p>
+          </div>
+
           <div
             class="courses-grid"
             id="featured-courses-grid"
             data-aos="fade-up"
+            data-aos-delay="100"
           >
-            >
-            <!-- <div class="course-card">
-              <div class="course-image">
-                <img
-                  src="./assets/images/img-course/html-css.png"
-                  alt="Khóa Học HTML & CSS"
-                />
-              </div>
-              <div class="course-info">
-                <h3>Nền Tảng HTML & CSS</h3>
-                <div class="skill-level">
-                  <span class="level beginner">Người Mới</span>
-                </div>
-                <p>Học các khối nền tảng của phát triển web với HTML và CSS.</p>
-                <div class="progress-container">
-                  <div class="progress-bar" data-progress="0">
-                    <div class="progress"></div>
-                  </div>
-                  <span class="progress-text">0% Hoàn Thành</span>
-                </div>
-                <a href="courses/html-css.html" class="btn btn-primary"
-                  >Bắt Đầu Học</a
-                >
-              </div>
-            </div> -->
+            <!-- Courses loaded by JS -->
           </div>
-          <div class="view-all">
-            <a href="courses.html" class="btn btn-secondary"
-              >Xem Tất Cả Khóa Học</a
-            >
+
+          <div class="view-all" data-aos="fade-up" data-aos-delay="200">
+            <a href="courses.html" class="btn-view-all">
+              Xem Tất Cả Khóa Học <i class="fas fa-arrow-right"></i>
+            </a>
           </div>
         </div>
       </section>
 
-      <section class="learning-paths">
+      <!-- ================== LEARNING PATHS / ROADMAP WIDGET ================== -->
+      <section class="landing-paths">
         <div class="container">
-          <h2>Lộ Trình Học</h2>
-          <div class="paths-grid">
+          <!-- Header for guests -->
+          <div class="section-header paths-header-guest" data-aos="fade-up">
+            <span class="section-tag">Lộ trình</span>
+            <h2>Chọn Con Đường Của Bạn</h2>
+            <p>
+              Các lộ trình học tập được thiết kế bởi chuyên gia, giúp bạn đạt
+              mục tiêu nghề nghiệp một cách có hệ thống.
+            </p>
+          </div>
+
+          <!-- Header for logged-in users -->
+          <div
+            class="section-header paths-header-user"
+            style="display: none"
+            data-aos="fade-up"
+          >
+            <span class="section-tag">AI Gợi ý</span>
+            <h2>Lộ Trình Dành Riêng Cho Bạn</h2>
+            <p>
+              Dựa trên mục tiêu và trình độ của bạn, AI đề xuất các khóa học phù
+              hợp nhất.
+            </p>
+          </div>
+
+          <!-- Roadmap Widget Container (for logged-in users) -->
+          <div
+            id="roadmap-widget-container"
+            class="roadmap-widget-landing"
+            style="display: none"
+          ></div>
+
+          <!-- Static paths (for guests) -->
+          <div class="paths-grid-landing" id="static-paths-grid">
             <div
-              class="path-card"
-              data-aos="fade-up-left"
-              data-aos-anchor-placement="top-bottom"
+              class="path-card-landing"
+              data-aos="fade-up"
+              data-aos-delay="0"
             >
-              <div class="path-icon">
+              <div class="path-icon-landing">
                 <i class="fas fa-laptop-code"></i>
               </div>
-              <h3>Phát Triển Front-End</h3>
-              <p class="line-clamp-2">
-                Học cách tạo giao diện người dùng đẹp và responsive.
+              <h3>Front-End Developer</h3>
+              <p>
+                Xây dựng giao diện người dùng đẹp, responsive và tương tác cao.
               </p>
-              <ul>
-                <li>HTML & CSS</li>
-                <li>JavaScript</li>
-                <li>React</li>
-              </ul>
-              <a href="paths/frontend.html" class="btn btn-outline"
-                >Xem Lộ Trình</a
-              >
+              <div class="path-techs">
+                <span class="path-tech"><i class="fab fa-html5"></i> HTML</span>
+                <span class="path-tech"
+                  ><i class="fab fa-css3-alt"></i> CSS</span
+                >
+                <span class="path-tech"
+                  ><i class="fab fa-js"></i> JavaScript</span
+                >
+                <span class="path-tech"
+                  ><i class="fab fa-react"></i> React</span
+                >
+              </div>
+              <a href="paths/frontend.html" class="btn-path">
+                Xem Lộ Trình <i class="fas fa-arrow-right"></i>
+              </a>
             </div>
 
             <div
-              class="path-card"
+              class="path-card-landing"
               data-aos="fade-up"
-              data-aos-anchor-placement="top-bottom"
+              data-aos-delay="100"
             >
-              <div class="path-icon">
+              <div class="path-icon-landing">
                 <i class="fas fa-server"></i>
               </div>
-              <h3>Phát Triển Back-End</h3>
-              <p class="line-clamp-2">
-                Xây dựng ứng dụng mạnh mẽ phía máy chủ và các API.
+              <h3>Back-End Developer</h3>
+              <p>
+                Xây dựng server, API và quản lý cơ sở dữ liệu cho ứng dụng web.
               </p>
-              <ul>
-                <li>Node.js</li>
-                <li>Express</li>
-                <li>Cơ sở dữ liệu</li>
-              </ul>
-              <a href="paths/backend.html" class="btn btn-outline"
-                >Xem Lộ Trình</a
-              >
+              <div class="path-techs">
+                <span class="path-tech"
+                  ><i class="fab fa-node-js"></i> Node.js</span
+                >
+                <span class="path-tech"
+                  ><i class="fas fa-database"></i> SQL</span
+                >
+                <span class="path-tech"
+                  ><i class="fas fa-plug"></i> REST API</span
+                >
+              </div>
+              <a href="paths/backend.html" class="btn-path">
+                Xem Lộ Trình <i class="fas fa-arrow-right"></i>
+              </a>
             </div>
 
             <div
-              class="path-card"
-              data-aos="fade-up-right"
-              data-aos-anchor-placement="top-bottom"
+              class="path-card-landing"
+              data-aos="fade-up"
+              data-aos-delay="200"
             >
-              <div class="path-icon">
+              <div class="path-icon-landing">
                 <i class="fas fa-mobile-alt"></i>
               </div>
-              <h3>Phát Triển Di Động</h3>
-              <p class="line-clamp-2">
-                Phát triển ứng dụng di động cho iOS và Android.
-              </p>
-              <ul>
-                <li>React Native</li>
-                <li>Flutter</li>
-                <li>Native APIs</li>
-              </ul>
-              <a href="paths/mobile.html" class="btn btn-outline"
-                >Xem Lộ Trình</a
-              >
+              <h3>Mobile Developer</h3>
+              <p>Phát triển ứng dụng di động đa nền tảng cho iOS và Android.</p>
+              <div class="path-techs">
+                <span class="path-tech"
+                  ><i class="fab fa-react"></i> React Native</span
+                >
+                <span class="path-tech"
+                  ><i class="fas fa-feather"></i> Flutter</span
+                >
+              </div>
+              <a href="paths/mobile.html" class="btn-path">
+                Xem Lộ Trình <i class="fas fa-arrow-right"></i>
+              </a>
             </div>
+          </div>
+
+          <!-- View all paths link (always visible) -->
+          <div class="view-all-paths" data-aos="fade-up" data-aos-delay="300">
+            <a href="courses.html" class="btn-view-all">
+              Xem Tất Cả Lộ Trình <i class="fas fa-arrow-right"></i>
+            </a>
           </div>
         </div>
       </section>
 
-      <section class="resources">
+      <!-- ================== RESOURCES ================== -->
+      <section class="landing-resources">
         <div class="container">
-          <h2>Tài Nguyên Học Tập</h2>
-          <div
-            class="resources-grid"
-            data-aos="zoom-out-down"
-            data-aos-anchor-placement="top-bottom"
-            data-aos-once="true"
-          >
-            <div class="resource-card">
-              <div class="resource-icon">
+          <div class="section-header" data-aos="fade-up">
+            <span class="section-tag">Tài nguyên</span>
+            <h2>Tài Nguyên Học Tập</h2>
+            <p>
+              Kho tài liệu phong phú hỗ trợ bạn trong suốt hành trình học lập
+              trình.
+            </p>
+          </div>
+
+          <div class="resources-grid-landing">
+            <div
+              class="resource-card-landing"
+              data-aos="fade-up"
+              data-aos-delay="0"
+            >
+              <div class="resource-icon-landing">
                 <i class="fas fa-book"></i>
               </div>
-              <h3>Tài Liệu</h3>
-              <p class="line-clamp-2">
-                Các hướng dẫn và tài liệu tham khảo toàn diện cho các ngôn ngữ
-                lập trình và framework khác nhau.
+              <h3>Tài Liệu Chi Tiết</h3>
+              <p>
+                Hướng dẫn và tài liệu tham khảo toàn diện cho các ngôn ngữ và
+                framework phổ biến.
               </p>
-              <a href="resources.html#documentation" class="btn btn-outline"
-                >Xem Tài Liệu</a
-              >
+              <a href="resources.html#documentation" class="btn-resource">
+                Xem Tài Liệu <i class="fas fa-external-link-alt"></i>
+              </a>
             </div>
-            <div class="resource-card">
-              <div class="resource-icon">
+
+            <div
+              class="resource-card-landing"
+              data-aos="fade-up"
+              data-aos-delay="100"
+            >
+              <div class="resource-icon-landing">
                 <i class="fas fa-code"></i>
               </div>
               <h3>Ví Dụ Mã Nguồn</h3>
-              <p class="line-clamp-2">
-                Các đoạn mã và dự án mẫu thực tế để giúp bạn học qua thực hành.
+              <p>
+                Các đoạn code mẫu và dự án thực tế giúp bạn học qua thực hành.
               </p>
-              <a href="resources.html#examples" class="btn btn-outline"
-                >Xem Ví Dụ</a
-              >
+              <a href="resources.html#examples" class="btn-resource">
+                Xem Ví Dụ <i class="fas fa-external-link-alt"></i>
+              </a>
             </div>
 
-            <div class="resource-card">
-              <div class="resource-icon">
+            <div
+              class="resource-card-landing"
+              data-aos="fade-up"
+              data-aos-delay="200"
+            >
+              <div class="resource-icon-landing">
                 <i class="fas fa-video"></i>
               </div>
               <h3>Video Hướng Dẫn</h3>
-              <p class="line-clamp-2">
-                Các hướng dẫn video từng bước giải thích các khái niệm lập trình
-                phức tạp.
+              <p>
+                Video bài giảng từng bước, giải thích các khái niệm phức tạp một
+                cách dễ hiểu.
               </p>
-              <a href="resources.html#videos" class="btn btn-outline"
-                >Xem Hướng Dẫn</a
-              >
+              <a href="resources.html#videos" class="btn-resource">
+                Xem Video <i class="fas fa-external-link-alt"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================== CTA SECTION ================== -->
+      <section class="cta-section">
+        <div class="container">
+          <div class="cta-content" data-aos="zoom-in">
+            <h2>Sẵn Sàng Bắt Đầu Hành Trình?</h2>
+            <p>
+              Tham gia cùng hàng nghìn học viên đang chinh phục kỹ năng lập
+              trình. Hoàn toàn miễn phí, bắt đầu ngay hôm nay!
+            </p>
+            <div class="cta-buttons">
+              <a href="login.html" class="btn-hero-primary">
+                <i class="fas fa-user-plus"></i> Đăng Ký Miễn Phí
+              </a>
+              <a href="courses.html" class="btn-hero-secondary">
+                <i class="fas fa-search"></i> Khám Phá Khóa Học
+              </a>
             </div>
           </div>
         </div>
       </section>
     </div>
 
-    <!-- load bằng components -->
+    <!-- Footer Component -->
     <footer id="footer-placeholder"></footer>
 
-    <!-- js aos -->
+    <!-- Scripts -->
     <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
     <script>
       AOS.init({
         duration: 600,
+        once: true,
       });
     </script>
     <script src="./assets/js/script.js"></script>

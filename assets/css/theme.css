@@ -194,7 +194,7 @@ button,
 /* Body */
 [data-theme="dark"] body {
   background-color: var(--bg-secondary);
-  color: var(--text-primary);
+  color: var(--text-primary) !important;
 }
 
 /* Header - exclude admin-header */
@@ -251,7 +251,9 @@ header:not(.admin-header) {
 /* === BODY TEXT === */
 [data-theme="dark"] p,
 [data-theme="dark"]
-  span:not(.badge):not(.level-badge):not(.tag):not([class*="icon"]),
+  span:not(.badge):not(.level-badge)::not(.level):not(.tag):not(
+    [class*="icon"]
+  ),
 [data-theme="dark"] li:not(.nav-mobile-list li) {
   color: var(--text-secondary) !important;
 }

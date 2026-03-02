@@ -50,7 +50,7 @@ function renderWidgetStructure() {
       <div class="roadmap-header">
         <div class="roadmap-title">
           <i class="fas fa-robot"></i>
-          <h3>Lộ trình dành cho bạn</h3>
+          <h3>Gợi ý lộ trình dành cho bạn</h3>
         </div>
         <button class="roadmap-refresh" id="roadmap-refresh" title="Làm mới gợi ý">
           <i class="fas fa-sync-alt"></i>
