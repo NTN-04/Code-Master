@@ -5,6 +5,7 @@ import {
   onValue,
   remove,
   update,
+  push,
 } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-database.js";
 import { auth, database } from "./firebaseConfig.js";
 import { uploadToCloudinary } from "./cloudinary-service.js";
@@ -33,6 +34,7 @@ async function checkAuth() {
   // Lấy user từ Firebase Auth
   onAuthStateChanged(auth, async (user) => {
     if (!user) {
+      userBlogs = []; // Xóa dữ liệu bài viết khi đăng xuất
       window.location.href = "login.html";
       return;
     }
@@ -54,7 +56,7 @@ async function checkAuth() {
       // Đồng bộ lại localStorage nếu cần
       localStorage.setItem(
         "profile-avatar-" + currentUser.uid,
-        userData.avatar
+        userData.avatar,
       );
     } else if (base64) {
       userAvatar.src = base64;
@@ -104,7 +106,7 @@ function filterAndRenderBlogs() {
   // Áp dụng bộ lọc trạng thái (nếu kp all)
   if (currentFilter !== "all") {
     filteredBlogs = filteredBlogs.filter(
-      (blog) => blog.status === currentFilter
+      (blog) => blog.status === currentFilter,
     );
   }
 
@@ -116,7 +118,7 @@ function filterAndRenderBlogs() {
         blog.title.toLowerCase().includes(query) ||
         blog.description.toLowerCase().includes(query) ||
         (blog.tags &&
-          blog.tags.some((tag) => tag.toLowerCase().includes(query)))
+          blog.tags.some((tag) => tag.toLowerCase().includes(query))),
     );
   }
 
@@ -301,26 +303,27 @@ function renderPagination(totalPages) {
 }
 
 // Sửa bài viết
+// SimpleMDE cho modal edit (riêng biệt với post)
+let simpleMdeEdit = null;
+
 function handleEditBlog(blog) {
   // DOM
   const editBlogModal = document.getElementById("edit-blog-modal");
-  const closeEditModal = document.getElementById("close-post-modal");
-  const editBlogForm = document.getElementById("blog-post-form");
+  const editBlogForm = document.getElementById("edit-blog-form");
   const editTitleInput = document.getElementById("edit-title");
   const editContent = document.getElementById("edit-content");
   const editTagsInput = document.getElementById("edit-tags");
   const editImageInput = document.getElementById("edit-image");
-  const editImagePreview = document.getElementById("image-preview");
+  const editImagePreview = document.getElementById("edit-image-preview");
 
   if (editBlogModal) {
     openModal(editBlogModal, { display: "flex" });
-    // Đóng modal backdrop và btn close
     attachModalDismiss(editBlogModal, { closeOnBackdrop: true });
   }
 
-  // SimpleMDE
-  if (!window.simpleMDE) {
-    window.simpleMDE = new window.SimpleMDE({
+  // Khởi tạo SimpleMDE cho edit
+  if (!simpleMdeEdit) {
+    simpleMdeEdit = new window.SimpleMDE({
       element: editContent,
       toolbar: [
         "bold",
@@ -336,14 +339,10 @@ function handleEditBlog(blog) {
         "code",
         {
           name: "inline-code",
-          action: function (editor) {
-            var cm = editor.codemirror;
-            var selection = cm.getSelection();
-            if (selection) {
-              cm.replaceSelection("`" + selection + "`");
-            } else {
-              cm.replaceSelection("`your code here`");
-            }
+          action: (editor) => {
+            const cm = editor.codemirror;
+            const selection = cm.getSelection();
+            cm.replaceSelection(selection ? `\`${selection}\`` : "`code`");
           },
           className: "fa fa-keyboard",
           title: "Chèn code nội tuyến",
@@ -355,17 +354,16 @@ function handleEditBlog(blog) {
         "|",
         "guide",
       ],
-      placeholder: "Nhập nội dung Markdown của bạn ở đây...",
+      placeholder: "Nhập nội dung Markdown...",
       spellChecker: false,
       status: false,
     });
   }
-  const mde = simpleMDE;
 
-  // đỗ dữ liệu vào form
+  // Đổ dữ liệu vào form
   editTitleInput.value = blog.title;
   editTagsInput.value = (blog.tags || []).join(", ");
-  mde.value(blog.content || "");
+  simpleMdeEdit.value(blog.content || "");
   if (blog.image) {
     editImagePreview.src = blog.image;
     editImagePreview.style.display = "block";
@@ -397,7 +395,7 @@ function handleEditBlog(blog) {
       showToast("Vui lòng nhập tiêu đề!", "warning");
       return;
     }
-    if (!mde.value().trim()) {
+    if (!simpleMdeEdit.value().trim()) {
       showToast("Vui lòng nhập nội dung!", "warning");
       return;
     }
@@ -410,7 +408,7 @@ function handleEditBlog(blog) {
     // Tạo object dữ liệu update
     const blogData = {
       title: editTitleInput.value.trim(),
-      content: mde.value(),
+      content: simpleMdeEdit.value(),
       tags,
       updatedAt: new Date().toLocaleDateString("vi-VN"),
       status: "pending",
@@ -448,7 +446,7 @@ function deleteBlog(blogId, blogTitle) {
   const blogRef = ref(database, `blogs/${blogId}`);
 
   const confirmation = confirm(
-    `Bạn có chắc chắn muốn xóa bài viết "${blogTitle}"?`
+    `Bạn có chắc chắn muốn xóa bài viết "${blogTitle}"?`,
   );
 
   if (confirmation) {
@@ -523,10 +521,10 @@ function showNoPostsMessage() {
 function updateStatusCounts() {
   const allCount = userBlogs.length;
   const publishedCount = userBlogs.filter(
-    (blog) => blog.status === "published"
+    (blog) => blog.status === "published",
   ).length;
   const pendingCount = userBlogs.filter(
-    (blog) => blog.status === "pending"
+    (blog) => blog.status === "pending",
   ).length;
 
   document.getElementById("all-count").textContent = allCount;
@@ -571,10 +569,168 @@ function performSearch() {
   filterAndRenderBlogs();
 }
 
+// ===== MODAL ĐĂNG BÀI MỚI =====
+
+// Biến SimpleMDE cho modal đăng bài
+let simpleMdePost = null;
+
+// Thiết lập modal đăng bài mới
+function setupPostModal() {
+  const openModalBtn = document.getElementById("open-post-modal");
+  const postModal = document.getElementById("post-modal");
+  const postForm = document.getElementById("blog-post-form");
+  const postImageInput = document.getElementById("post-image");
+  const postImagePreview = document.getElementById("post-image-preview");
+
+  if (!openModalBtn || !postModal || !postForm) return;
+
+  // Đóng modal khi click backdrop
+  attachModalDismiss(postModal, { closeOnBackdrop: true });
+
+  // Xử lý preview ảnh
+  if (postImageInput) {
+    postImageInput.addEventListener("change", (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      if (!file.type.startsWith("image/")) return;
+      if (file.size > 5 * 1024 * 1024) {
+        showToast("Ảnh tối đa 5MB", "error");
+        return;
+      }
+      postImageInput._selectedFile = file;
+      if (postImagePreview) {
+        postImagePreview.src = URL.createObjectURL(file);
+        postImagePreview.style.display = "block";
+      }
+    });
+  }
+
+  // Mở modal
+  openModalBtn.addEventListener("click", () => {
+    openModal(postModal, { display: "flex" });
+    // Khởi tạo SimpleMDE lần đầu
+    if (!simpleMdePost) {
+      simpleMdePost = new window.SimpleMDE({
+        element: document.getElementById("post-content"),
+        toolbar: [
+          "bold",
+          "italic",
+          "heading",
+          "|",
+          "quote",
+          "unordered-list",
+          "ordered-list",
+          "|",
+          "link",
+          "image",
+          "code",
+          {
+            name: "inline-code",
+            action: (editor) => {
+              const cm = editor.codemirror;
+              const selection = cm.getSelection();
+              cm.replaceSelection(selection ? `\`${selection}\`` : "`code`");
+            },
+            className: "fa fa-keyboard",
+            title: "Chèn code nội tuyến",
+          },
+          "|",
+          "preview",
+          "side-by-side",
+          "fullscreen",
+          "|",
+          "guide",
+        ],
+        placeholder: "Nhập nội dung Markdown...",
+        spellChecker: false,
+        status: false,
+      });
+    }
+  });
+
+  // Submit form
+  postForm.addEventListener("submit", handlePostFormSubmit);
+}
+
+// Xử lý đăng bài mới
+async function handlePostFormSubmit(e) {
+  e.preventDefault();
+
+  if (!currentUser) {
+    showToast("Vui lòng đăng nhập!", "error");
+    return;
+  }
+
+  const title = document.getElementById("post-title").value.trim();
+  const content = simpleMdePost?.value() || "";
+  const tagsInput = document.getElementById("post-tags").value;
+  const postImageInput = document.getElementById("post-image");
+  const postImagePreview = document.getElementById("post-image-preview");
+
+  // Validate
+  if (!title) {
+    showToast("Vui lòng nhập tiêu đề!", "warning");
+    return;
+  }
+  if (!content.trim()) {
+    showToast("Vui lòng nhập nội dung!", "warning");
+    return;
+  }
+
+  const tags = tagsInput
+    .split(",")
+    .map((t) => t.trim().toLowerCase())
+    .filter(Boolean);
+
+  // Upload ảnh nếu có
+  let image = "";
+  if (postImageInput?._selectedFile) {
+    image = await uploadToCloudinary(postImageInput._selectedFile);
+    if (!image) {
+      showToast("Upload ảnh thất bại", "error");
+      return;
+    }
+  }
+
+  // Lấy thông tin user
+  const userRef = ref(database, `users/${currentUser.uid}`);
+  const userSnap = await get(userRef);
+  const userData = userSnap.exists() ? userSnap.val() : {};
+
+  const blogData = {
+    title,
+    content,
+    tags,
+    image,
+    authorId: currentUser.uid,
+    authorName: currentUser.displayName || userData.username || "Ẩn danh",
+    authorAvatar: userData.avatar || "assets/images/avatar-default.jpg",
+    createdAt: new Date().toLocaleDateString("vi-VN"),
+    status: "pending",
+  };
+
+  try {
+    await push(ref(database, "blogs"), blogData);
+    showToast("Đăng bài thành công! Chờ admin duyệt.", "success");
+
+    // Reset form
+    e.target.reset();
+    if (simpleMdePost) simpleMdePost.value("");
+    if (postImageInput) postImageInput._selectedFile = null;
+    if (postImagePreview) postImagePreview.style.display = "none";
+
+    closeModal(document.getElementById("post-modal"));
+  } catch (err) {
+    console.error("Lỗi đăng bài:", err);
+    showToast("Có lỗi xảy ra!", "error");
+  }
+}
+
 // Khởi tạo trang
 function initPage() {
   checkAuth();
   addEventListeners();
+  setupPostModal();
 }
 
 // Bắt đầu khi DOM đã sẵn sàng

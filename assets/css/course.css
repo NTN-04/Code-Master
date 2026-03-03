@@ -212,89 +212,10 @@
   padding: 30px;
 }
 
-/* Banner chào mừng khóa học */
+/* Lesson Content */
 .lesson-content {
   width: 100%;
   height: 100%;
-}
-.lesson-content .welcome-banner {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background: linear-gradient(90deg, #4a6fff 0%, #f093fb 100%);
-  color: #fff;
-  border-radius: 18px;
-  padding: 30px 38px;
-  margin-bottom: 36px;
-  box-shadow: 0 8px 32px rgba(67, 97, 238, 0.13);
-  min-height: 400px;
-  position: relative;
-  overflow: hidden;
-  animation: fadeInBanner 0.7s cubic-bezier(0.4, 0, 0.2, 1);
-}
-@keyframes fadeInBanner {
-  from {
-    opacity: 0;
-    transform: translateY(-30px);
-  }
-  to {
-    opacity: 1;
-    transform: none;
-  }
-}
-.banner-content {
-  max-width: 65%;
-  z-index: 2;
-}
-.banner-content h1 {
-  font-size: 2.4rem;
-  margin-bottom: 18px;
-  font-weight: 800;
-  letter-spacing: 0.5px;
-  line-height: 1.2;
-}
-.banner-subtitle {
-  font-size: 1.18rem;
-  margin-bottom: 32px;
-  opacity: 0.97;
-  line-height: 1.6;
-}
-.banner-content .btn {
-  font-size: 1.15rem;
-  padding: 14px 38px;
-  border-radius: 10px;
-  font-weight: 700;
-  box-shadow: 0 2px 12px rgba(67, 97, 238, 0.13);
-  transition: background 0.2s, transform 0.2s;
-  background: #fff;
-  color: #4361ee;
-  border: none;
-}
-.banner-content .btn:hover {
-  background: #2747c7;
-  color: #fff;
-  transform: translateY(-2px) scale(1.04);
-}
-.banner-image img {
-  max-width: 270px;
-  border-radius: 16px;
-  box-shadow: 0 4px 24px rgba(67, 97, 238, 0.13);
-  z-index: 2;
-  transition: transform 0.3s;
-}
-.banner-image img:hover {
-  transform: scale(1.04) rotate(-2deg);
-}
-.lesson-content .welcome-banner::before {
-  content: "";
-  position: absolute;
-  right: -80px;
-  top: -60px;
-  width: 320px;
-  height: 320px;
-  background: rgba(255, 255, 255, 0.07);
-  border-radius: 50%;
-  z-index: 1;
 }
 
 .lesson-video {
@@ -562,6 +483,23 @@ code {
   align-items: center;
   font-weight: 600;
 }
+
+/* Nút xóa lịch sử hội thoại - Phase 1 */
+.clear-history-btn {
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  color: #fff;
+  font-size: 0.9rem;
+  cursor: pointer;
+  padding: 6px 10px;
+  border-radius: 6px;
+  margin-right: 8px;
+  transition: all 0.2s ease;
+}
+.clear-history-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
 #ai-chat-close {
   background: none;
   border: none;
@@ -722,6 +660,120 @@ code {
   margin: 10px 0;
   font-style: italic;
   opacity: 0.9;
+}
+
+/* ============================================
+   PHASE 2: Streaming Effect - Typing Cursor
+   ============================================ */
+#ai-chatbot .msg-bubble.streaming::after {
+  content: "▋";
+  animation: blink 0.8s infinite;
+  margin-left: 2px;
+  font-weight: 100;
+}
+
+@keyframes blink {
+  0%,
+  50% {
+    opacity: 1;
+  }
+  51%,
+  100% {
+    opacity: 0;
+  }
+}
+
+/* ============================================
+   PHASE 2: Quick Replies - Gợi ý câu hỏi
+   ============================================ */
+.quick-replies {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 10px 12px;
+  background: #f0f2f5;
+  border-left: 1px solid #e0e7ef;
+  border-right: 1px solid #e0e7ef;
+}
+
+.quick-reply-btn {
+  background: #fff;
+  border: 1px solid #e0e7ef;
+  color: #6366f1;
+  padding: 8px 14px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.quick-reply-btn:hover {
+  background: #6366f1;
+  color: #fff;
+  border-color: #6366f1;
+  transform: translateY(-1px);
+}
+
+.quick-reply-btn:active {
+  transform: translateY(0);
+}
+
+/* ============================================
+   PHASE 3: Feedback Buttons - Like/Dislike
+   ============================================ */
+.feedback-btns {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.feedback-btn {
+  background: rgba(255, 255, 255, 0.15);
+  border: none;
+  color: #fff;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.feedback-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: scale(1.05);
+}
+
+.feedback-btn.like:hover {
+  background: rgba(74, 222, 128, 0.3);
+}
+
+.feedback-btn.dislike:hover {
+  background: rgba(248, 113, 113, 0.3);
+}
+
+.feedback-btn.active {
+  background: rgba(255, 255, 255, 0.4);
+}
+
+.feedback-btn.like.active {
+  background: rgba(74, 222, 128, 0.5);
+}
+
+.feedback-btn.dislike.active {
+  background: rgba(248, 113, 113, 0.5);
+}
+
+.feedback-thanks {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.75rem;
+  font-style: italic;
+  margin-top: 6px;
 }
 
 /* Responsive Styles */

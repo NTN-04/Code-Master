@@ -1,34 +1,64 @@
-import { database } from "./firebaseConfig.js";
+import { auth, database } from "./firebaseConfig.js";
 import {
   ref,
   get,
 } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-database.js";
-import progressManager from "./progress-manager.js";
+import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-auth.js";
+// import progressManager from "./progress-manager.js"; // Đã loại bỏ thanh tiến trình khỏi card
+import loadingSkeleton from "./utils/loading-skeleton.js";
+import { getUserEnrollments } from "./utils/enrollment.js";
+import { initRoadmapWidget } from "./components/roadmap-widget.js";
 
 document.addEventListener("DOMContentLoaded", function () {
-  loadFeaturedCourses();
-
-  // khởi tạo đồng bộ tiến trình
-  progressManager.initAuth();
+  onAuthStateChanged(auth, async (user) => {
+    await loadFeaturedCourses(user);
+    // Initialize roadmap widget for logged-in users on landing page
+    initLandingRoadmapWidget(user);
+  });
 });
 
-async function loadFeaturedCourses() {
+/**
+ * Initialize roadmap widget on landing page for logged-in users
+ */
+function initLandingRoadmapWidget(user) {
+  const widgetContainer = document.getElementById("roadmap-widget-container");
+  const staticPathsGrid = document.getElementById("static-paths-grid");
+  const guestHeader = document.querySelector(".paths-header-guest");
+  const userHeader = document.querySelector(".paths-header-user");
+
+  // Only proceed if elements exist (landing page)
+  if (!widgetContainer || !staticPathsGrid) return;
+
+  if (user) {
+    // User logged in: show roadmap widget, hide static paths
+    widgetContainer.style.display = "block";
+    staticPathsGrid.style.display = "none";
+    if (guestHeader) guestHeader.style.display = "none";
+    if (userHeader) userHeader.style.display = "block";
+
+    // Initialize the roadmap widget
+    initRoadmapWidget("roadmap-widget-container", user.uid);
+  } else {
+    // Guest: show static paths, hide roadmap widget
+    widgetContainer.style.display = "none";
+    staticPathsGrid.style.display = "grid";
+    if (guestHeader) guestHeader.style.display = "block";
+    if (userHeader) userHeader.style.display = "none";
+  }
+}
+
+async function loadFeaturedCourses(user) {
   const grid = document.getElementById("featured-courses-grid");
   if (!grid) return;
 
-  // loading skeleton cho course-card
-  let skeletonHTML = "";
-  for (let i = 0; i < 3; i++) {
-    skeletonHTML += `
-      <div class="skeleton skeleton-card">  
-      </div>
-    `;
-  }
-  grid.innerHTML = skeletonHTML;
+  // Hiển thị skeleton loading
+  loadingSkeleton.showCourses(grid, 3);
 
   try {
-    const coursesRef = ref(database, "courses");
-    const snapshot = await get(coursesRef);
+    const [enrolledCourses, snapshot] = await Promise.all([
+      getUserEnrollments(user?.uid),
+      get(ref(database, "courses")),
+    ]);
 
     // thông báo k có khóa học nổi bật
     if (!snapshot.exists()) {
@@ -38,6 +68,7 @@ async function loadFeaturedCourses() {
         <h3>Chưa có khóa học nào nổi bật.</h3>
       </div>
       `;
+      loadingSkeleton.hide(grid);
       return;
     }
 
@@ -54,20 +85,24 @@ async function loadFeaturedCourses() {
         <h3>Chưa có khóa học nào nổi bật.</h3>
       </div>
       `;
+      loadingSkeleton.hide(grid);
       return;
     }
 
     // render
-    grid.innerHTML = courses.map(createFeaturedCourseCard).join("");
-    // Khởi tạo progress bar từ firebase
-    progressManager.initProgressBars();
+    grid.innerHTML = courses
+      .map((course) => createFeaturedCourseCard(course, enrolledCourses))
+      .join("");
+    // Remove loading state để enable interaction
+    loadingSkeleton.hide(grid);
   } catch (err) {
     grid.innerHTML = `<div class="error-message">Không thể tải khóa học nổi bật.</div>`;
+    loadingSkeleton.hide(grid);
     console.error(err);
   }
 }
 
-function createFeaturedCourseCard(course) {
+function createFeaturedCourseCard(course, enrolledCourses) {
   // Map level sang tiếng Việt
   const levelMap = {
     beginner: "Người Mới",
@@ -75,39 +110,75 @@ function createFeaturedCourseCard(course) {
     advanced: "Nâng Cao",
   };
   const levelText = levelMap[course.level] || course.level;
+  const introUrl = `course-intro.html?id=${course.id}`;
+  const isEnrolled = enrolledCourses.has(course.id);
+  const buttonHref = isEnrolled
+    ? `course-detail.html?id=${course.id}`
+    : introUrl;
+  const buttonClass = isEnrolled ? "btn-cta enrolled" : "btn-cta";
+  const buttonText = isEnrolled ? "Tiếp tục học" : "Xem chi tiết";
+  const buttonIcon = isEnrolled ? "fa-play-circle" : "fa-arrow-right";
 
-  // Badge cho khóa học nổi bật
-  const featuredBadge = course.featured
-    ? '<div class="featured-badge"><i class="fas fa-star"></i> Nổi bật</div>'
-    : "";
+  // Tính toán giá và giảm giá
+  const price = Number(course.price) || 0;
+  const originalPrice = Number(course.originalPrice) || 0;
+  const hasDiscount = originalPrice > price && price > 0;
+  const discountPercent = hasDiscount
+    ? Math.round(((originalPrice - price) / originalPrice) * 100)
+    : 0;
+
+  // Format giá tiền
+  const formatPrice = (value) => value.toLocaleString("vi-VN");
+
+  // Render phần giá
+  let priceHTML = "";
+  if (price === 0) {
+    priceHTML = `
+      <div class="course-pricing">
+        <span class="price-free">Miễn phí</span>
+      </div>
+    `;
+  } else if (hasDiscount) {
+    priceHTML = `
+      <div class="course-pricing has-discount">
+        <div class="price-wrapper">
+          <span class="price-original">${formatPrice(originalPrice)}đ</span>
+          <span class="price-current">${formatPrice(price)}đ</span>
+        </div>
+        <span class="discount-badge">-${discountPercent}%</span>
+      </div>
+    `;
+  } else {
+    priceHTML = `
+      <div class="course-pricing">
+        <span class="price-current">${formatPrice(price)}đ</span>
+      </div>
+    `;
+  }
+
   return `
     <div class="course-card">
-      ${featuredBadge}
       <div class="course-image">
-        <img src="${course.image}" alt="${course.title}" loading="lazy" />
+        <a href="${introUrl}">
+          <img src="${course.image}" alt="${course.title}" loading="lazy" />
+        </a>
+        <div class="course-featured"><i class="fa-solid fa-fire"></i></div>
       </div>
-      <div class="course-info">
-        <h3>${course.title}</h3>
-        <div class="skill-level">
-          <span class="level ${course.level}">${levelText}</span>
-        </div>
-        <p class="line-clamp-2">${course.description}</p>
-        <div class="progress-container">
-          <div class="progress-bar" data-progress="0" data-course-id="${
-            course.id
-          }">
-            <div class="progress"></div>
+      <div class="course-content">
+        <a href="${introUrl}" class="course-title-link"><h3 class="course-title">${course.title}</h3></a>
+        <div class="course-meta">
+          <span class="level-badge ${course.level}">${levelText}</span>
+          <div class="meta-info">
+            <span><i class="far fa-clock"></i> ${course.duration}</span>
+            <span><i class="far fa-file-alt"></i> ${course.lessons} bài</span>
           </div>
-          <span class="progress-text">0% Hoàn Thành</span>
         </div>
-        <a href="${startCourse(
-          course.id
-        )}" class="btn btn-primary">Bắt Đầu Học</a>
+        ${priceHTML}
+        <a href="${buttonHref}" class="${buttonClass}">
+          <i class="fas ${buttonIcon}"></i>
+          ${buttonText}
+        </a>
       </div>
     </div>
   `;
-}
-// Khi click nút bắt đầu học
-function startCourse(courseId) {
-  return `course-detail.html?id=${courseId}`;
 }

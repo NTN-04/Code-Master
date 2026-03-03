@@ -11,6 +11,10 @@ import {
   off,
 } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-database.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-auth.js";
+import {
+  createNotification,
+  NOTIFICATION_TYPES,
+} from "./utils/notifications.js";
 
 class CommentSystem {
   constructor(courseId, lessonId, container = null, isPanel = false) {
@@ -274,8 +278,8 @@ class CommentSystem {
       <div class="comment-item" data-comment-id="${comment.id}">
         <div class="comment-header">
           <img src="${userAvatar}" alt="${
-      comment.userName
-    }" class="comment-avatar">
+            comment.userName
+          }" class="comment-avatar">
           <span class="comment-author">${comment.userName}</span>
           <span class="comment-time">${timeAgo}</span>
           ${
@@ -286,7 +290,7 @@ class CommentSystem {
         </div>
         
         <div class="comment-content">${this.formatCommentContent(
-          comment.content
+          comment.content,
         )}</div>
         
         <div class="comment-actions">
@@ -317,15 +321,15 @@ class CommentSystem {
 
     return `
       <button class="comment-action ${likeClass}" data-action="like" data-comment-id="${
-      comment.id
-    }">
+        comment.id
+      }">
         <i class="fas fa-thumbs-up"></i>
         <span class="comment-action-count">${comment.likes || 0}</span>
       </button>
       
       <button class="comment-action ${dislikeClass}" data-action="dislike" data-comment-id="${
-      comment.id
-    }">
+        comment.id
+      }">
         <i class="fas fa-thumbs-down"></i>
         <span class="comment-action-count">${comment.dislikes || 0}</span>
       </button>
@@ -458,7 +462,7 @@ class CommentSystem {
         </div>
         
         <div class="reply-content">${this.formatCommentContent(
-          reply.content
+          reply.content,
         )}</div>
         
         <div class="reply-actions">
@@ -614,7 +618,7 @@ class CommentSystem {
                 replyId: target.dataset.replyId,
                 parentId: target.dataset.parentId,
               },
-              "like"
+              "like",
             );
           } else {
             // Đây là comment vote
@@ -623,7 +627,7 @@ class CommentSystem {
                 type: "comment",
                 commentId: target.dataset.commentId,
               },
-              "like"
+              "like",
             );
           }
           break;
@@ -636,7 +640,7 @@ class CommentSystem {
                 replyId: target.dataset.replyId,
                 parentId: target.dataset.parentId,
               },
-              "dislike"
+              "dislike",
             );
           } else {
             // Đây là comment vote
@@ -645,7 +649,7 @@ class CommentSystem {
                 type: "comment",
                 commentId: target.dataset.commentId,
               },
-              "dislike"
+              "dislike",
             );
           }
           break;
@@ -687,7 +691,7 @@ class CommentSystem {
     try {
       const commentsRef = ref(
         database,
-        `comments/${this.courseId}/${this.lessonId}`
+        `comments/${this.courseId}/${this.lessonId}`,
       );
       const snapshot = await get(commentsRef);
 
@@ -720,7 +724,7 @@ class CommentSystem {
   setupRealtimeListeners() {
     const commentsRef = ref(
       database,
-      `comments/${this.courseId}/${this.lessonId}`
+      `comments/${this.courseId}/${this.lessonId}`,
     );
 
     // Thay vì render lại toàn bộ, chỉ cập nhật thuộc tính đã thay đổi
@@ -809,7 +813,7 @@ class CommentSystem {
               this.updateCommentLikesUI(
                 commentId,
                 newCommentData.likes,
-                newCommentData.dislikes
+                newCommentData.dislikes,
               );
             }
           }
@@ -835,13 +839,13 @@ class CommentSystem {
   // phương thức để cập nhật UI số lượng like/dislike
   updateCommentLikesUI(commentId, likes, dislikes) {
     const commentElement = document.querySelector(
-      `[data-comment-id="${commentId}"]`
+      `[data-comment-id="${commentId}"]`,
     );
     if (!commentElement) return;
 
     const likeButton = commentElement.querySelector(`[data-action="like"]`);
     const dislikeButton = commentElement.querySelector(
-      `[data-action="dislike"]`
+      `[data-action="dislike"]`,
     );
 
     if (likeButton) {
@@ -853,7 +857,7 @@ class CommentSystem {
 
     if (dislikeButton) {
       const dislikeCounter = dislikeButton.querySelector(
-        ".comment-action-count"
+        ".comment-action-count",
       );
       if (dislikeCounter) {
         dislikeCounter.textContent = dislikes || 0;
@@ -880,7 +884,7 @@ class CommentSystem {
 
     if (content.length > this.maxCommentLength) {
       this.showError(
-        `Bình luận không được vượt quá ${this.maxCommentLength} ký tự.`
+        `Bình luận không được vượt quá ${this.maxCommentLength} ký tự.`,
       );
       return;
     }
@@ -919,7 +923,7 @@ class CommentSystem {
 
       const commentsRef = ref(
         database,
-        `comments/${this.courseId}/${this.lessonId}`
+        `comments/${this.courseId}/${this.lessonId}`,
       );
       const newCommentRef = push(commentsRef);
 
@@ -955,7 +959,7 @@ class CommentSystem {
     }
 
     const replyForm = document.querySelector(
-      `[data-comment-id="${commentId}"].reply-form`
+      `[data-comment-id="${commentId}"].reply-form`,
     );
     const textarea = replyForm.querySelector(".comment-textarea");
     const content = textarea.value.trim();
@@ -967,7 +971,7 @@ class CommentSystem {
 
     if (content.length > this.maxCommentLength) {
       this.showError(
-        `Phản hồi không được vượt quá ${this.maxCommentLength} ký tự.`
+        `Phản hồi không được vượt quá ${this.maxCommentLength} ký tự.`,
       );
       return;
     }
@@ -996,11 +1000,48 @@ class CommentSystem {
 
       const replyRef = ref(
         database,
-        `comments/${this.courseId}/${this.lessonId}/${commentId}/replies`
+        `comments/${this.courseId}/${this.lessonId}/${commentId}/replies`,
       );
       const newReplyRef = push(replyRef);
 
       await set(newReplyRef, replyData);
+
+      // Tạo thông báo cho người viết bình luận gốc
+      try {
+        const commentRef = ref(
+          database,
+          `comments/${this.courseId}/${this.lessonId}/${commentId}`,
+        );
+        const commentSnapshot = await get(commentRef);
+
+        if (commentSnapshot.exists()) {
+          const originalComment = commentSnapshot.val();
+          const originalAuthorId = originalComment.userId;
+
+          // Chỉ gửi thông báo nếu người reply khác với người viết comment gốc
+          if (originalAuthorId && originalAuthorId !== this.currentUser.uid) {
+            const replierName =
+              this.userDB?.username ||
+              this.currentUser.displayName ||
+              "Người dùng";
+
+            await createNotification(originalAuthorId, {
+              type: NOTIFICATION_TYPES.COMMENT_REPLY,
+              title: "Có người trả lời bình luận của bạn",
+              message: `${replierName} đã trả lời bình luận của bạn: "${content.substring(0, 100)}${content.length > 100 ? "..." : ""}"`,
+              link: `course-detail.html?id=${this.courseId}&lesson=${this.lessonId}#comment-${commentId}`,
+              data: {
+                courseId: this.courseId,
+                lessonId: this.lessonId,
+                commentId: commentId,
+                replierId: this.currentUser.uid,
+              },
+            });
+          }
+        }
+      } catch (notifError) {
+        console.warn("Không thể tạo thông báo reply:", notifError);
+      }
 
       this.cancelReply(replyForm);
       this.showSuccess("Phản hồi đã được gửi thành công!");
@@ -1041,7 +1082,7 @@ class CommentSystem {
         } else {
           btn.classList.remove(
             "active",
-            type === "like" ? "liked" : "disliked"
+            type === "like" ? "liked" : "disliked",
           );
         }
       };
@@ -1083,7 +1124,7 @@ class CommentSystem {
         : null;
       const oppositeType = voteType === "like" ? "dislike" : "like";
       const oppositeButton = container?.querySelector(
-        `[data-action="${oppositeType}"]`
+        `[data-action="${oppositeType}"]`,
       );
       // Xác định thao tác cần thực hiện
       let action;
@@ -1103,13 +1144,13 @@ class CommentSystem {
       //   : [];
       const currentCount = button
         ? parseInt(
-            button.querySelector(".comment-action-count")?.textContent || "0"
+            button.querySelector(".comment-action-count")?.textContent || "0",
           )
         : 0;
       const oppositeCount = oppositeButton
         ? parseInt(
             oppositeButton.querySelector(".comment-action-count")
-              ?.textContent || "0"
+              ?.textContent || "0",
           )
         : 0;
 
@@ -1147,10 +1188,10 @@ class CommentSystem {
         setTimeout(() => {
           // Kiểm tra xem button có còn tồn tại không sau render
           const newButton = container?.querySelector(
-            `[data-action="${voteType}"]`
+            `[data-action="${voteType}"]`,
           );
           const newOppositeButton = container?.querySelector(
-            `[data-action="${oppositeType}"]`
+            `[data-action="${oppositeType}"]`,
           );
 
           if (newButton && button !== newButton) {
@@ -1181,7 +1222,7 @@ class CommentSystem {
           ) {
             updateButtonActiveState(newOppositeButton, false, oppositeType);
             const counter = newOppositeButton.querySelector(
-              ".comment-action-count"
+              ".comment-action-count",
             );
             if (counter) {
               counter.textContent = Math.max(0, oppositeCount - 1);
@@ -1235,14 +1276,14 @@ class CommentSystem {
         id = target.replyId;
         updateRef = ref(
           database,
-          `comments/${this.courseId}/${this.lessonId}/${target.parentId}/replies/${id}`
+          `comments/${this.courseId}/${this.lessonId}/${target.parentId}/replies/${id}`,
         );
       } else {
         // Đếm vote cho comment
         id = target.commentId;
         updateRef = ref(
           database,
-          `comments/${this.courseId}/${this.lessonId}/${id}`
+          `comments/${this.courseId}/${this.lessonId}/${id}`,
         );
       }
 
@@ -1285,7 +1326,7 @@ class CommentSystem {
       try {
         const commentRef = ref(
           database,
-          `comments/${this.courseId}/${this.lessonId}/${commentId}`
+          `comments/${this.courseId}/${this.lessonId}/${commentId}`,
         );
         await remove(commentRef);
 
@@ -1321,7 +1362,7 @@ class CommentSystem {
       try {
         const commentRef = ref(
           database,
-          `comments/${this.courseId}/${this.lessonId}/${parentId}/replies/${replyId}`
+          `comments/${this.courseId}/${this.lessonId}/${parentId}/replies/${replyId}`,
         );
         await remove(commentRef);
 
@@ -1365,7 +1406,7 @@ class CommentSystem {
       this.showError(
         `Vui lòng đăng nhập để sửa ${
           params.type === "comment" ? "bình luận" : "phản hồi"
-        }.`
+        }.`,
       );
       return;
     }
@@ -1383,7 +1424,7 @@ class CommentSystem {
       contentElement = itemElement?.querySelector(".comment-content");
       contentRef = ref(
         database,
-        `comments/${this.courseId}/${this.lessonId}/${params.id}`
+        `comments/${this.courseId}/${this.lessonId}/${params.id}`,
       );
     } else {
       // Xử lý cho reply
@@ -1400,14 +1441,14 @@ class CommentSystem {
       contentElement = itemElement?.querySelector(".reply-content");
       contentRef = ref(
         database,
-        `comments/${this.courseId}/${this.lessonId}/${params.parentId}/replies/${params.id}`
+        `comments/${this.courseId}/${this.lessonId}/${params.parentId}/replies/${params.id}`,
       );
     }
 
     // Kiểm tra quyền
     if (!contentData || contentData.userId !== this.currentUser.uid) {
       this.showError(
-        `Bạn không có quyền sửa ${isComment ? "bình luận" : "phản hồi"} này.`
+        `Bạn không có quyền sửa ${isComment ? "bình luận" : "phản hồi"} này.`,
       );
       return;
     }
@@ -1473,7 +1514,7 @@ class CommentSystem {
         // Kiểm tra nội dung
         if (!newContent) {
           this.showError(
-            `Vui lòng nhập nội dung ${isComment ? "bình luận" : "phản hồi"}.`
+            `Vui lòng nhập nội dung ${isComment ? "bình luận" : "phản hồi"}.`,
           );
           return;
         }
@@ -1482,7 +1523,7 @@ class CommentSystem {
           this.showError(
             `${isComment ? "Bình luận" : "Phản hồi"} không được vượt quá ${
               this.maxCommentLength
-            } ký tự.`
+            } ký tự.`,
           );
           return;
         }
@@ -1507,17 +1548,17 @@ class CommentSystem {
           editForm.parentNode.replaceChild(contentElement, editForm);
 
           this.showSuccess(
-            `${isComment ? "Bình luận" : "Phản hồi"} đã được cập nhật.`
+            `${isComment ? "Bình luận" : "Phản hồi"} đã được cập nhật.`,
           );
         } catch (error) {
           console.error(
             `Lỗi khi cập nhật ${isComment ? "bình luận" : "phản hồi"}:`,
-            error
+            error,
           );
           this.showError(
             `Không thể cập nhật ${
               isComment ? "bình luận" : "phản hồi"
-            }. Vui lòng thử lại.`
+            }. Vui lòng thử lại.`,
           );
 
           const saveBtn = editForm.querySelector('[data-action="save-edit"]');
@@ -1552,13 +1593,13 @@ class CommentSystem {
 
       const reportRef = ref(
         database,
-        `commentReports/${commentId}/${this.currentUser.uid}`
+        `commentReports/${commentId}/${this.currentUser.uid}`,
       );
       await set(reportRef, reportData);
 
       this.closeReportModal();
       this.showSuccess(
-        "Báo cáo đã được gửi. Cảm ơn bạn đã góp phần xây dựng cộng đồng tích cực!"
+        "Báo cáo đã được gửi. Cảm ơn bạn đã góp phần xây dựng cộng đồng tích cực!",
       );
     } catch (error) {
       console.error("Lỗi khi gửi báo cáo:", error);
@@ -1578,7 +1619,7 @@ class CommentSystem {
 
     // Hiển thị form trả lời cụ thể
     const replyForm = document.querySelector(
-      `[data-comment-id="${commentId}"].reply-form`
+      `[data-comment-id="${commentId}"].reply-form`,
     );
     if (replyForm) {
       replyForm.classList.add("active");
@@ -1649,12 +1690,12 @@ class CommentSystem {
     const charCount = textarea.value.length;
     const maxLength = parseInt(textarea.getAttribute("maxlength"));
     const formContainers = textarea.closest(
-      ".comment-form, .reply-form, .edit-comment-form, .edit-reply-form"
+      ".comment-form, .reply-form, .edit-comment-form, .edit-reply-form",
     );
     if (!formContainers) return;
 
     const charCountElement = formContainers.querySelector(
-      ".comment-char-count"
+      ".comment-char-count",
     );
 
     if (charCountElement) {
@@ -1709,7 +1750,7 @@ class CommentSystem {
     try {
       const voteRef = ref(
         database,
-        `commentVotes/${id}/${this.currentUser.uid}`
+        `commentVotes/${id}/${this.currentUser.uid}`,
       );
       const snapshot = await get(voteRef);
 
@@ -1838,7 +1879,7 @@ class CommentSystem {
     if (this.listeners.has("comments")) {
       const commentsRef = ref(
         database,
-        `comments/${this.courseId}/${this.lessonId}`
+        `comments/${this.courseId}/${this.lessonId}`,
       );
       off(commentsRef); // Hủy tất cả listeners trên ref này
     }

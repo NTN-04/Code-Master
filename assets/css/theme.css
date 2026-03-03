@@ -1,0 +1,1451 @@
+/* ============================================================
+   THEME CSS - Dark/Light Mode Variables & Styles
+   ============================================================ */
+
+/* ============================================================
+   1. LIGHT THEME (Default)
+   ============================================================ */
+
+:root,
+[data-theme="light"] {
+  /* Background Colors */
+  --bg-primary: #ffffff;
+  --bg-secondary: #f8fafc;
+  --bg-tertiary: #f1f5f9;
+  --bg-card: #ffffff;
+  --bg-hover: #f1f5f9;
+  --bg-overlay: rgba(0, 0, 0, 0.5);
+
+  /* Text Colors */
+  --text-primary: #1e293b;
+  --text-secondary: #64748b;
+  --text-tertiary: #94a3b8;
+  --text-inverse: #ffffff;
+
+  /* Border Colors */
+  --border-color: #e2e8f0;
+  --border-light: #f1f5f9;
+
+  /* Shadow */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-md:
+    0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-lg:
+    0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --shadow-xl:
+    0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+
+  /* Header */
+  --header-bg: #ffffff;
+  --header-border: #e2e8f0;
+
+  /* Footer */
+  --footer-bg: #1e293b;
+  --footer-text: #cbd5e1;
+
+  /* Input */
+  --input-bg: #ffffff;
+  --input-border: #e2e8f0;
+  --input-focus-border: var(--brand-blue);
+
+  /* Code blocks */
+  --code-bg: #f1f5f9;
+  --code-text: #1e293b;
+}
+
+/* ============================================================
+   2. DARK THEME
+   ============================================================ */
+
+[data-theme="dark"] {
+  /* Background Colors */
+  --bg-primary: #0f172a;
+  --bg-secondary: #1e293b;
+  --bg-tertiary: #334155;
+  --bg-card: #1e293b;
+  --bg-hover: #334155;
+  --bg-overlay: rgba(0, 0, 0, 0.7);
+
+  /* Text Colors */
+  --text-primary: #f1f5f9;
+  --text-secondary: #cbd5e1;
+  --text-tertiary: #94a3b8;
+  --text-inverse: #0f172a;
+
+  /* Border Colors */
+  --border-color: #334155;
+  --border-light: #475569;
+
+  /* Shadow */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-md:
+    0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
+  --shadow-lg:
+    0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -2px rgba(0, 0, 0, 0.3);
+  --shadow-xl:
+    0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 10px 10px -5px rgba(0, 0, 0, 0.4);
+
+  /* Header */
+  --header-bg: #1e293b;
+  --header-border: #334155;
+
+  /* Footer */
+  --footer-bg: #0f172a;
+  --footer-text: #94a3b8;
+
+  /* Input */
+  --input-bg: #1e293b;
+  --input-border: #475569;
+  --input-focus-border: var(--brand-blue);
+
+  /* Code blocks */
+  --code-bg: #1e293b;
+  --code-text: #e2e8f0;
+}
+
+/* ============================================================
+   3. THEME TRANSITION
+   ============================================================ */
+
+body,
+header,
+footer,
+.main-content,
+.card,
+.course-card,
+.blog-card,
+input,
+textarea,
+select,
+button,
+.notification-dropdown,
+.avatar-dropdown {
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease,
+    border-color 0.3s ease,
+    box-shadow 0.3s ease;
+}
+
+/* ============================================================
+   4. THEME TOGGLE BUTTON
+   ============================================================ */
+
+.theme-toggle-btn {
+  position: relative;
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-secondary);
+  transition: all 0.3s ease;
+  overflow: hidden;
+}
+
+.theme-toggle-btn:hover {
+  background: var(--bg-hover);
+  color: var(--brand-blue);
+  transform: scale(1.1);
+}
+
+.theme-toggle-btn:focus {
+  outline: none;
+}
+
+/* Icon container */
+.theme-toggle-btn i {
+  position: absolute;
+  font-size: 1.1rem;
+  transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+/* Light mode: show sun, hide moon */
+.theme-toggle-btn .theme-icon-light {
+  opacity: 1;
+  transform: rotate(0deg) scale(1);
+}
+
+.theme-toggle-btn .theme-icon-dark {
+  opacity: 0;
+  transform: rotate(-90deg) scale(0.5);
+}
+
+/* Dark mode: hide sun, show moon */
+.theme-toggle-btn.dark-mode .theme-icon-light {
+  opacity: 0;
+  transform: rotate(90deg) scale(0.5);
+}
+
+.theme-toggle-btn.dark-mode .theme-icon-dark {
+  opacity: 1;
+  transform: rotate(0deg) scale(1);
+  color: #fbbf24;
+}
+
+/* ============================================================
+   5. APPLY THEME VARIABLES TO EXISTING ELEMENTS
+   ============================================================ */
+
+/* Body */
+[data-theme="dark"] body {
+  background-color: var(--bg-secondary);
+  color: var(--text-primary) !important;
+}
+
+/* Header - exclude admin-header */
+header:not(.admin-header) {
+  background-color: var(--header-bg) !important;
+  border-bottom-color: var(--header-border) !important;
+}
+
+/* Ensure admin header keeps white text (not affected by theme) */
+.admin-header {
+  color: white !important;
+}
+
+.admin-header * {
+  color: inherit;
+}
+
+.admin-header .btn-logout {
+  color: white !important;
+}
+
+/* notification-bell-btn */
+[data-theme="dark"] .notification-bell-btn {
+  color: var(--text-primary);
+}
+
+/* Navigation links */
+[data-theme="dark"] .nav-pc ul li a {
+  color: var(--text-primary);
+}
+
+.nav-pc ul li a:hover {
+  color: var(--pr);
+}
+/* tiêu đề, p sections */
+[data-theme="dark"] .courses-grid-section h2,
+[data-theme="dark"] .featured-courses h2,
+[data-theme="dark"] .section-title,
+[data-theme="dark"] h1,
+[data-theme="dark"] h2,
+[data-theme="dark"] h3,
+[data-theme="dark"] h4,
+[data-theme="dark"] h5,
+[data-theme="dark"] h6 {
+  color: var(--text-primary) !important;
+}
+
+/* hero section text */
+[data-theme="dark"] .hero-section p,
+[data-theme="dark"] .hero-section span {
+  color: var(--text-secondary) !important;
+}
+
+/* === BODY TEXT === */
+[data-theme="dark"] p,
+[data-theme="dark"]
+  span:not(.badge):not(.level-badge)::not(.level):not(.tag):not(
+    [class*="icon"]
+  ),
+[data-theme="dark"] li:not(.nav-mobile-list li) {
+  color: var(--text-secondary) !important;
+}
+
+/* Mobile nav */
+[data-theme="dark"] .nav-mobile {
+  background-color: var(--bg-primary);
+}
+
+[data-theme="dark"] .toggle-menu,
+[data-theme="dark"] .nav-mobile-header i,
+[data-theme="dark"] .nav-mobile-list li a {
+  color: var(--text-primary) !important;
+}
+
+[data-theme="dark"] .nav-mobile-list li a:hover,
+[data-theme="dark"] .nav-mobile-list li a.active {
+  background: var(--bg-hover) !important;
+}
+
+[data-theme="dark"] .nav-mobile-overlay {
+  background: var(--bg-primary) !important;
+}
+
+[data-theme="dark"] .nav-mobile-header {
+  border-color: var(--border-color) !important;
+}
+
+/* Cards */
+[data-theme="dark"] .course-card,
+[data-theme="dark"] .resource-card,
+[data-theme="dark"] .blog-card,
+[data-theme="dark"] .card {
+  background-color: var(--bg-card) !important;
+  border-color: var(--border-color) !important;
+}
+
+/* Inputs */
+[data-theme="dark"] input,
+[data-theme="dark"] textarea,
+[data-theme="dark"] select {
+  background-color: var(--input-bg);
+  border-color: var(--input-border);
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] input:focus,
+[data-theme="dark"] textarea:focus,
+[data-theme="dark"] select:focus {
+  border-color: var(--input-focus-border);
+}
+
+[data-theme="dark"] input::placeholder,
+[data-theme="dark"] textarea::placeholder {
+  color: var(--text-tertiary);
+}
+
+/* Code blocks */
+[data-theme="dark"] code,
+[data-theme="dark"] pre {
+  background-color: var(--code-bg) !important;
+  color: var(--code-text) !important;
+}
+
+/* Footer */
+[data-theme="dark"] footer,
+[data-theme="dark"] .footer {
+  background: var(--bg-secondary) !important;
+  color: var(--text-secondary) !important;
+}
+
+/* Scrollbar for dark mode */
+[data-theme="dark"] ::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+[data-theme="dark"] ::-webkit-scrollbar-track {
+  background: var(--bg-secondary);
+}
+
+[data-theme="dark"] ::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: 4px;
+}
+
+[data-theme="dark"] ::-webkit-scrollbar-thumb:hover {
+  background: var(--border-light);
+}
+
+/* ============================================================
+   6. MOBILE THEME TOGGLE (inside nav-mobile-list)
+   ============================================================ */
+
+/* Theme toggle item in mobile menu */
+.theme-toggle-item {
+  border-top: 1px solid var(--border-color, #e2e8f0);
+  margin-top: 8px;
+  padding-top: 8px;
+}
+
+.theme-toggle-mobile-btn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 12px 16px;
+  background: transparent;
+  border: none;
+  color: var(--text-primary, #1e293b);
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: left;
+}
+
+.theme-toggle-mobile-btn:hover {
+  background: var(--bg-hover, #f1f5f9);
+}
+
+.theme-toggle-mobile-btn .icon {
+  width: 20px;
+  text-align: center;
+  color: var(--brand-purple, #a174ff);
+}
+
+/* ============================================================
+   7. RESPONSIVE
+   ============================================================ */
+
+@media (max-width: 768px) {
+  .theme-toggle-btn {
+    width: 36px;
+    height: 36px;
+  }
+
+  .theme-toggle-btn i {
+    font-size: 1rem;
+  }
+}
+
+/* ============================================================
+   8. COURSES PAGE - Dark Mode
+   ============================================================ */
+
+/* Filter section */
+[data-theme="dark"] .courses-filter {
+  background: var(--bg-card);
+  border-color: var(--border-color);
+  box-shadow: var(--shadow-md);
+}
+
+[data-theme="dark"] .search-box input,
+[data-theme="dark"] .filter-options select {
+  background: var(--bg-tertiary);
+  border-color: var(--border-color);
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .search-box input:focus,
+[data-theme="dark"] .filter-options select:focus {
+  background: var(--bg-secondary);
+  border-color: var(--brand-blue);
+}
+
+[data-theme="dark"] .search-box input::placeholder {
+  color: var(--text-tertiary);
+}
+
+/* Grid section */
+[data-theme="dark"] .courses-grid-section {
+  background-color: var(--bg-primary);
+}
+
+/* Course card */
+[data-theme="dark"] .course-card {
+  background: var(--bg-card);
+  border-color: var(--border-color);
+}
+
+[data-theme="dark"] .course-card:hover {
+  border-color: var(--brand-blue);
+  box-shadow: 0 20px 50px rgba(94, 187, 255, 0.1);
+}
+
+[data-theme="dark"] .course-title {
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .course-content {
+  background: var(--bg-card);
+}
+
+[data-theme="dark"] .meta-info {
+  color: var(--text-secondary);
+}
+
+[data-theme="dark"] .course-pricing {
+  border-top-color: var(--border-color);
+}
+
+[data-theme="dark"] .no-courses-message,
+[data-theme="dark"] .error-message,
+[data-theme="dark"] .no-results {
+  background: var(--bg-card);
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .no-results h3,
+[data-theme="dark"] .no-courses-message h3 {
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .no-results p,
+[data-theme="dark"] .no-courses-message p {
+  color: var(--text-secondary);
+}
+
+/* ============================================================
+   9. COURSE DETAIL PAGE - Dark Mode
+   ============================================================ */
+
+/* Sidebar */
+[data-theme="dark"] .progress-tracker,
+[data-theme="dark"] .module-list {
+  background-color: var(--bg-card);
+  box-shadow: var(--shadow-md);
+}
+
+[data-theme="dark"] .progress-tracker h3,
+[data-theme="dark"] .module-list h3 {
+  color: var(--text-primary);
+  border-bottom-color: var(--border-color);
+}
+
+[data-theme="dark"] .module {
+  border-bottom-color: var(--border-color);
+}
+
+[data-theme="dark"] .module-header {
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .module-header:hover {
+  background-color: var(--bg-hover);
+}
+
+[data-theme="dark"] .lesson {
+  border-top-color: var(--border-color);
+}
+
+[data-theme="dark"] .lesson-link {
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .lesson-link:hover {
+  background-color: var(--bg-hover);
+  color: var(--brand-blue);
+}
+
+[data-theme="dark"] .lesson-link.active {
+  background-color: rgba(94, 187, 255, 0.15);
+  color: var(--brand-blue);
+}
+
+[data-theme="dark"] .lesson-duration {
+  color: var(--text-tertiary);
+}
+
+[data-theme="dark"] .lesson-check {
+  color: var(--text-tertiary);
+}
+
+/* Main content */
+[data-theme="dark"] .course-main {
+  background-color: var(--bg-card);
+  box-shadow: var(--shadow-md);
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .lesson-text {
+  color: var(--text-secondary);
+}
+
+[data-theme="dark"] .lesson-navigation {
+  border-top-color: var(--border-color);
+}
+
+/* Exercise & Quiz sections */
+[data-theme="dark"] .exercise-section {
+  background-color: var(--bg-tertiary);
+  border-left-color: var(--brand-blue);
+}
+
+[data-theme="dark"] .exercise-section h3 {
+  color: var(--brand-blue);
+}
+
+[data-theme="dark"] .quiz-section {
+  background-color: var(--bg-tertiary);
+  border-color: var(--border-color);
+}
+
+[data-theme="dark"] .quiz-section h3 {
+  color: var(--brand-blue);
+}
+
+[data-theme="dark"] .quiz-option {
+  background-color: var(--bg-secondary);
+  border-color: var(--border-color);
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .quiz-option:hover {
+  background-color: var(--bg-hover);
+}
+
+[data-theme="dark"] .quiz-option.selected {
+  background-color: rgba(94, 187, 255, 0.15);
+  border-color: var(--brand-blue);
+}
+
+[data-theme="dark"] .quiz-rationale {
+  background-color: rgba(16, 185, 129, 0.15);
+  color: #10b981;
+}
+
+/* Comment toggle button */
+[data-theme="dark"] .btn-comment-toggle {
+  background-color: var(--bg-tertiary);
+  border-color: var(--border-color);
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .btn-comment-toggle:hover {
+  background-color: var(--bg-hover);
+}
+
+/* AI Chatbot */
+[data-theme="dark"] #ai-chat-messages {
+  background: var(--bg-secondary);
+  border-color: var(--border-color);
+}
+
+[data-theme="dark"] #ai-chat-form {
+  border-color: var(--border-color);
+}
+
+[data-theme="dark"] #ai-chat-input {
+  background: var(--bg-card);
+  color: var(--text-primary);
+}
+
+/* ============================================================
+   10. COURSE INTRO PAGE - Dark Mode
+   ============================================================ */
+
+/* Header */
+[data-theme="dark"] .course-intro-header {
+  background: var(--bg-card);
+  border-color: var(--border-color);
+  box-shadow: var(--shadow-md);
+}
+
+[data-theme="dark"] .course-intro-header h1 {
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .course-intro-meta span {
+  color: var(--text-secondary);
+}
+
+/* Description */
+[data-theme="dark"] .course-description {
+  background: var(--bg-card);
+  box-shadow: var(--shadow-sm);
+}
+
+[data-theme="dark"] .course-description p {
+  color: var(--text-secondary);
+}
+
+/* Content boxes */
+[data-theme="dark"] .learning-outcomes-box,
+[data-theme="dark"] .course-content-box,
+[data-theme="dark"] .requirements-box {
+  background: var(--bg-card);
+  box-shadow: var(--shadow-sm);
+}
+
+[data-theme="dark"] .learning-outcomes-box:hover,
+[data-theme="dark"] .course-content-box:hover,
+[data-theme="dark"] .requirements-box:hover {
+  box-shadow: var(--shadow-md);
+}
+
+[data-theme="dark"] .learning-outcomes-box h2,
+[data-theme="dark"] .course-content-box h2,
+[data-theme="dark"] .requirements-box h2 {
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .outcome-item,
+[data-theme="dark"] .requirement-item {
+  background: var(--bg-tertiary);
+}
+
+[data-theme="dark"] .outcome-item:hover {
+  background: rgba(16, 185, 129, 0.1);
+}
+
+[data-theme="dark"] .requirement-item:hover {
+  background: rgba(94, 187, 255, 0.1);
+}
+
+[data-theme="dark"] .outcome-item span,
+[data-theme="dark"] .requirement-item span {
+  color: var(--text-secondary);
+}
+
+/* Module items */
+[data-theme="dark"] .module-item {
+  background: var(--bg-tertiary);
+  border-color: var(--border-color);
+}
+
+[data-theme="dark"] .module-item:hover {
+  border-color: var(--brand-blue);
+}
+
+[data-theme="dark"] .module-title {
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .lessons-preview {
+  border-left-color: var(--border-light);
+}
+
+[data-theme="dark"] .lesson-preview-item {
+  color: var(--text-secondary);
+  border-bottom-color: var(--border-color);
+}
+
+[data-theme="dark"] .lesson-preview-item:hover {
+  color: var(--brand-blue);
+}
+
+/* Sidebar */
+[data-theme="dark"] .course-intro-sidebar {
+  background: var(--bg-card);
+  border-color: var(--border-color);
+  box-shadow: var(--shadow-lg);
+}
+
+[data-theme="dark"] .sidebar-content {
+  background: var(--bg-card);
+}
+
+[data-theme="dark"] .course-price {
+  background: linear-gradient(
+    135deg,
+    rgba(94, 187, 255, 0.1) 0%,
+    rgba(161, 116, 255, 0.1) 100%
+  );
+}
+
+[data-theme="dark"] .price-tag,
+[data-theme="dark"] .price-current {
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .course-features li {
+  color: var(--text-secondary);
+  border-bottom-color: var(--border-color);
+}
+
+[data-theme="dark"] .instructor-card {
+  background: var(--bg-tertiary);
+  border-color: var(--border-color);
+}
+
+[data-theme="dark"] .instructor-name {
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .instructor-bio {
+  color: var(--text-secondary);
+}
+
+/* ============================================================
+   11. CHECKOUT PAGE - Dark Mode
+   ============================================================ */
+
+/* Override checkout bg */
+[data-theme="dark"] .checkout-page {
+  background: var(--bg-primary);
+}
+
+/* Topbar */
+[data-theme="dark"] .checkout-topbar {
+  background: var(--bg-secondary);
+  border-bottom-color: var(--border-color);
+}
+
+[data-theme="dark"] .back-button {
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .back-button:hover {
+  background: var(--brand-gradient);
+  color: white;
+}
+
+/* QR Payment Box */
+[data-theme="dark"] .qr-payment-box {
+  background: var(--bg-card);
+  border-color: var(--border-color);
+  box-shadow: var(--shadow-md);
+}
+
+[data-theme="dark"] .qr-section-header h1 {
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .qr-section-header p {
+  color: var(--text-secondary);
+}
+
+/* QR Code container */
+[data-theme="dark"] .qr-code-container {
+  background-color: white; /* Keep white for QR visibility */
+}
+
+/* Payment timer */
+[data-theme="dark"] .payment-timer {
+  background: linear-gradient(
+    135deg,
+    rgba(251, 191, 36, 0.15) 0%,
+    rgba(245, 158, 11, 0.15) 100%
+  );
+}
+
+[data-theme="dark"] .timer-content {
+  color: #fbbf24;
+}
+
+[data-theme="dark"] .timer-progress {
+  background: rgba(251, 191, 36, 0.2);
+}
+
+/* Payment status */
+[data-theme="dark"] .payment-status {
+  background: rgba(94, 187, 255, 0.1);
+}
+
+[data-theme="dark"] .status-text .status-main {
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .status-text .status-hint {
+  color: var(--text-secondary);
+}
+
+/* Bank info card */
+[data-theme="dark"] .bank-info-card {
+  background: var(--bg-card);
+  border-color: var(--border-color);
+  box-shadow: var(--shadow-md);
+}
+
+[data-theme="dark"] .bank-info-header {
+  color: var(--text-primary);
+  border-bottom-color: var(--border-color);
+}
+
+[data-theme="dark"] .bank-info-row {
+  border-bottom-color: var(--border-color);
+}
+
+[data-theme="dark"] .bank-info-row .label {
+  color: var(--text-secondary);
+}
+
+[data-theme="dark"] .bank-info-row .value {
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .bank-info-row.content-row .value {
+  background: rgba(220, 38, 38, 0.15);
+}
+
+/* Order summary */
+[data-theme="dark"] .order-summary-card {
+  background: var(--bg-card);
+  border-color: var(--border-color);
+  box-shadow: var(--shadow-md);
+}
+
+[data-theme="dark"] .order-summary-header {
+  color: var(--text-primary);
+  border-bottom-color: var(--border-color);
+}
+
+[data-theme="dark"] .course-info .course-title-checkout {
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .course-info .course-meta-checkout {
+  color: var(--text-secondary);
+}
+
+[data-theme="dark"] .summary-row {
+  color: var(--text-secondary);
+  border-bottom-color: var(--border-color);
+}
+
+[data-theme="dark"] .summary-row .value {
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .summary-row.total {
+  color: var(--text-primary);
+  border-top-color: var(--border-color);
+}
+
+/* Support card */
+[data-theme="dark"] .support-card {
+  background: var(--bg-card);
+  border-color: var(--border-color);
+}
+
+[data-theme="dark"] .support-card h3 {
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .support-card p,
+[data-theme="dark"] .support-hotline span {
+  color: var(--text-secondary);
+}
+
+/* Footer */
+[data-theme="dark"] .checkout-footer {
+  background: var(--bg-secondary);
+  border-top-color: var(--border-color);
+  color: var(--text-secondary);
+}
+
+[data-theme="dark"] .checkout-footer a {
+  color: var(--text-primary);
+}
+
+/* Order info card */
+[data-theme="dark"] .order-info-card {
+  background: var(--bg-card);
+  border-color: var(--border-color);
+  box-shadow: var(--shadow-md);
+}
+
+[data-theme="dark"] .course-summary-info h3 {
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .course-summary-meta {
+  color: var(--text-secondary);
+}
+
+[data-theme="dark"] .order-pricing {
+  border-top-color: var(--border-color);
+}
+
+[data-theme="dark"] .price-row {
+  color: var(--text-secondary);
+}
+
+[data-theme="dark"] .price-row.total {
+  color: var(--text-primary);
+  border-top-color: var(--border-color);
+}
+
+/* Payment method card */
+[data-theme="dark"] .payment-method-card {
+  background: var(--bg-card);
+  border-color: var(--border-color);
+  box-shadow: var(--shadow-md);
+}
+
+[data-theme="dark"] .payment-option-content {
+  border-color: var(--border-color);
+}
+
+[data-theme="dark"] .payment-option:hover .payment-option-content {
+  border-color: var(--brand-blue);
+  background: rgba(94, 187, 255, 0.1);
+}
+
+[data-theme="dark"] .payment-option.active .payment-option-content {
+  border-color: var(--brand-purple);
+  background: linear-gradient(
+    135deg,
+    rgba(94, 187, 255, 0.15),
+    rgba(161, 116, 255, 0.15)
+  );
+}
+
+[data-theme="dark"] .payment-name {
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .payment-desc {
+  color: var(--text-secondary);
+}
+
+/* Instructions card */
+[data-theme="dark"] .instructions-card {
+  background: var(--bg-card);
+  border-color: var(--border-color);
+  box-shadow: var(--shadow-md);
+}
+
+[data-theme="dark"] .instruction-item {
+  background: var(--bg-tertiary);
+}
+
+[data-theme="dark"] .instruction-item .instruction-text {
+  color: var(--text-secondary);
+}
+
+/* ============================================================
+   12. COURSE INTRO PAGE - Additional Dark Mode Styles
+   ============================================================ */
+
+/* Detailed description (Markdown content) */
+[data-theme="dark"] .detailed-description {
+  background: var(--bg-card);
+  box-shadow: var(--shadow-sm);
+}
+
+[data-theme="dark"] .detailed-description h1,
+[data-theme="dark"] .detailed-description h2,
+[data-theme="dark"] .detailed-description h3 {
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .detailed-description p,
+[data-theme="dark"] .detailed-description li {
+  color: var(--text-secondary);
+}
+
+[data-theme="dark"] .detailed-description code {
+  background: var(--bg-tertiary);
+  color: #f472b6;
+  border-color: var(--border-color);
+}
+
+[data-theme="dark"] .detailed-description pre {
+  background: var(--bg-secondary);
+  border-color: var(--border-color);
+}
+
+[data-theme="dark"] .detailed-description pre code {
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .detailed-description blockquote {
+  background: var(--bg-tertiary);
+  border-left-color: var(--brand-blue);
+}
+
+/* Sidebar info */
+[data-theme="dark"] .sidebar-info {
+  border-top-color: var(--border-color);
+}
+
+[data-theme="dark"] .sidebar-info-item {
+  border-bottom-color: var(--border-color);
+}
+
+[data-theme="dark"] .sidebar-info-item .label {
+  color: var(--text-secondary);
+}
+
+[data-theme="dark"] .sidebar-info-item .value {
+  color: var(--text-primary);
+}
+
+/* Instructor card */
+[data-theme="dark"] .instructor-info {
+  background: var(--bg-tertiary);
+  border-color: var(--border-color);
+}
+
+[data-theme="dark"] .instructor-details h4 {
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .instructor-details p {
+  color: var(--text-secondary);
+}
+
+/* Course features */
+[data-theme="dark"] .course-features {
+  background: var(--bg-tertiary);
+  border-radius: 12px;
+  padding: 1rem;
+}
+
+[data-theme="dark"] .course-features li {
+  color: var(--text-secondary);
+  border-bottom-color: var(--border-color);
+}
+
+[data-theme="dark"] .course-features li i {
+  color: var(--brand-blue);
+}
+
+/* ============================================================
+   13. LEARNING LAYOUT - Dark Mode (Course Detail Page)
+   ============================================================ */
+
+/* Learning body background */
+[data-theme="dark"] body.learning-body {
+  background-color: var(--bg-primary);
+}
+
+/* Learning header */
+[data-theme="dark"] .learning-header {
+  background-color: var(--bg-secondary);
+  border-bottom-color: var(--border-color);
+}
+
+[data-theme="dark"] .header-course-title {
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .circular-progress .progress-text {
+  color: var(--text-primary);
+}
+
+/* Main scroll area */
+[data-theme="dark"] .main-scroll-area {
+  background-color: var(--bg-primary);
+}
+
+[data-theme="dark"] .main-scroll-area::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+}
+
+/* Content scroll */
+[data-theme="dark"] .content-scroll {
+  background-color: var(--bg-card);
+}
+
+[data-theme="dark"] .learning-main .lesson-content h2 {
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .learning-main .lesson-text {
+  color: var(--text-secondary);
+}
+
+[data-theme="dark"] .learning-main .lesson-header-actions {
+  border-bottom-color: var(--border-color);
+}
+
+/* Learning footer */
+[data-theme="dark"] .learning-footer {
+  background-color: var(--bg-secondary);
+  border-top-color: var(--border-color);
+}
+
+[data-theme="dark"] .footer-center .btn-nav {
+  background-color: var(--bg-tertiary);
+  color: var(--text-primary);
+  border-color: var(--border-color);
+}
+
+[data-theme="dark"] .footer-center .btn-nav:hover {
+  background-color: var(--bg-hover);
+}
+
+/* Learning sidebar */
+[data-theme="dark"] .learning-sidebar {
+  background-color: var(--bg-card);
+  border-left-color: var(--border-color);
+}
+
+[data-theme="dark"] .sidebar-header {
+  background-color: var(--bg-secondary);
+  border-bottom-color: var(--border-color);
+}
+
+[data-theme="dark"] .sidebar-header h3 {
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .sidebar-tabs {
+  border-bottom-color: var(--border-color);
+}
+
+[data-theme="dark"] .sidebar-tab {
+  color: var(--text-secondary);
+}
+
+[data-theme="dark"] .sidebar-tab:hover {
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .sidebar-tab.active {
+  color: var(--brand-blue);
+  border-bottom-color: var(--brand-blue);
+}
+
+[data-theme="dark"] .curriculum-module {
+  border-bottom-color: var(--border-color);
+}
+
+[data-theme="dark"] .module-header-sidebar {
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .module-header-sidebar:hover {
+  background-color: var(--bg-hover);
+}
+
+[data-theme="dark"] .lesson-item {
+  color: var(--text-secondary);
+}
+
+[data-theme="dark"] .lesson-item:hover {
+  background-color: var(--bg-hover);
+  color: var(--brand-blue);
+}
+
+[data-theme="dark"] .lesson-item.active {
+  background-color: rgba(94, 187, 255, 0.15);
+  color: var(--brand-blue);
+}
+
+[data-theme="dark"] .lesson-item.completed .lesson-icon {
+  color: #10b981;
+}
+
+/* Header buttons */
+[data-theme="dark"] .btn-back {
+  color: var(--text-secondary);
+}
+
+[data-theme="dark"] .btn-back:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .btn-prev-lesson {
+  background-color: var(--bg-tertiary);
+  border-color: var(--border-color);
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .btn-prev-lesson:hover {
+  background-color: var(--bg-hover);
+  border-color: var(--text-tertiary);
+}
+
+/* Sidebar module list */
+[data-theme="dark"] .learning-sidebar .module-header {
+  background-color: var(--bg-tertiary);
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .learning-sidebar .module-header:hover {
+  background-color: var(--bg-hover);
+}
+
+[data-theme="dark"] .learning-sidebar .module-toggle i {
+  color: var(--text-secondary);
+}
+
+[data-theme="dark"] .learning-sidebar .module {
+  border-bottom-color: var(--border-color);
+}
+
+[data-theme="dark"] .learning-sidebar .lesson-list {
+  background-color: var(--bg-card);
+}
+
+[data-theme="dark"] .learning-sidebar .lesson {
+  border-bottom-color: var(--border-color);
+}
+
+[data-theme="dark"] .learning-sidebar .lesson-link {
+  color: var(--text-secondary);
+}
+
+[data-theme="dark"] .learning-sidebar .lesson-link:hover {
+  background-color: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .learning-sidebar .lesson-link.active {
+  background: linear-gradient(
+    to right,
+    rgba(94, 187, 255, 0.15),
+    rgba(161, 116, 255, 0.15)
+  );
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .learning-sidebar .lesson-check {
+  color: var(--text-tertiary);
+}
+
+[data-theme="dark"] .learning-sidebar .lesson-duration {
+  color: var(--text-tertiary);
+}
+
+/* Quiz section */
+[data-theme="dark"] .learning-main .quiz-section {
+  background-color: var(--bg-tertiary);
+  border-color: var(--border-color);
+}
+
+/* Tab switcher */
+[data-theme="dark"] .tab-switcher {
+  background-color: var(--bg-secondary);
+  border-bottom-color: var(--border-color);
+}
+
+[data-theme="dark"] .tab-btn {
+  color: var(--text-secondary);
+}
+
+[data-theme="dark"] .tab-btn:hover {
+  color: var(--text-primary);
+  background-color: var(--bg-hover);
+}
+
+[data-theme="dark"] .tab-btn.active {
+  color: var(--text-primary);
+}
+
+/* Preview pane */
+[data-theme="dark"] .preview-pane {
+  border-color: var(--border-color);
+  background-color: #fff;
+}
+
+[data-theme="dark"] .preview-header {
+  background-color: var(--bg-secondary);
+  border-bottom-color: var(--border-color);
+  color: var(--text-secondary);
+}
+
+/* Scrollbar styles for sidebar */
+[data-theme="dark"] .sidebar-content::-webkit-scrollbar-track {
+  background: var(--bg-tertiary);
+}
+
+[data-theme="dark"] .sidebar-content::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+}
+
+[data-theme="dark"] .sidebar-content::-webkit-scrollbar-thumb:hover {
+  background: var(--text-tertiary);
+}
+
+/* ============================================================
+   14. COMMENTS PANEL - Dark Mode
+   ============================================================ */
+
+/* Comments overlay */
+[data-theme="dark"] .comments-overlay {
+  background-color: rgba(0, 0, 0, 0.6);
+}
+
+/* Comments panel */
+[data-theme="dark"] .comments-panel {
+  background-color: var(--bg-card);
+  box-shadow: -4px 0 24px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] .comments-panel-header {
+  background-color: var(--bg-secondary);
+  border-bottom-color: var(--border-color);
+}
+
+[data-theme="dark"] .comments-panel-header h3 {
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .comment-close-btn {
+  color: var(--text-secondary);
+}
+
+[data-theme="dark"] .comment-close-btn:hover {
+  background-color: var(--bg-hover);
+}
+
+/* Comments section */
+[data-theme="dark"] .comments-section {
+  background-color: var(--bg-card);
+}
+
+[data-theme="dark"] .comments-header {
+  border-bottom-color: var(--border-color);
+}
+
+[data-theme="dark"] .comments-title {
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .comments-count {
+  color: var(--text-secondary);
+}
+
+/* Comment form */
+[data-theme="dark"] .comment-textarea {
+  background-color: var(--bg-tertiary);
+  border-color: var(--border-color);
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .comment-textarea:focus {
+  border-color: var(--brand-blue);
+  box-shadow: 0 0 0 3px rgba(94, 187, 255, 0.15);
+}
+
+[data-theme="dark"] .comment-textarea::placeholder {
+  color: var(--text-tertiary);
+}
+
+[data-theme="dark"] .comment-user-name {
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .comment-user-role {
+  color: var(--text-secondary);
+}
+
+[data-theme="dark"] .comment-char-count {
+  color: var(--text-secondary);
+}
+
+[data-theme="dark"] .btn-comment-secondary {
+  border-color: var(--border-color);
+  color: var(--text-secondary);
+}
+
+[data-theme="dark"] .btn-comment-secondary:hover {
+  background-color: var(--bg-hover);
+}
+
+/* Comments list */
+[data-theme="dark"] .comment-item {
+  border-bottom-color: var(--border-color);
+}
+
+[data-theme="dark"] .comment-author {
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .comment-time,
+[data-theme="dark"] .comment-edited {
+  color: var(--text-tertiary);
+}
+
+[data-theme="dark"] .comment-content {
+  color: var(--text-secondary);
+}
+
+[data-theme="dark"] .comment-action {
+  color: var(--text-tertiary);
+}
+
+[data-theme="dark"] .comment-action:hover {
+  background-color: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+/* Replies */
+[data-theme="dark"] .comment-replies {
+  border-left-color: var(--border-color);
+}
+
+[data-theme="dark"] .reply-item {
+  border-bottom-color: var(--border-color);
+}
+
+/* Empty state */
+[data-theme="dark"] .comments-empty {
+  color: var(--text-secondary);
+}
+
+[data-theme="dark"] .comments-empty i {
+  color: var(--text-tertiary);
+}

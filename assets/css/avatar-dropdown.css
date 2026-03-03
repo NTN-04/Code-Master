@@ -1,0 +1,402 @@
+/* ============================================================
+   AVATAR DROPDOWN CSS - Styles cho Avatar và Dropdown menu
+   ============================================================ */
+
+/* ============================================================
+   1. USER AREA - Container cho theme toggle, bell, avatar
+   ============================================================ */
+
+.user-area {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* ============================================================
+   2. LOGIN BUTTON (khi chưa đăng nhập)
+   ============================================================ */
+
+.login-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  background: var(
+    --brand-gradient,
+    linear-gradient(to right, #5ebbff, #a174ff)
+  );
+  color: white !important;
+  border-radius: 25px;
+  font-weight: 500;
+  font-size: 0.95rem;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 10px rgba(94, 187, 255, 0.3);
+}
+
+.login-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(94, 187, 255, 0.4);
+}
+
+.login-btn i {
+  font-size: 0.9rem;
+}
+
+/* ============================================================
+   3. AVATAR DROPDOWN WRAPPER
+   ============================================================ */
+
+.avatar-dropdown-wrapper {
+  position: relative;
+}
+
+/* Avatar Button */
+.avatar-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px 4px 4px;
+  background: transparent;
+  border: 2px solid transparent;
+  border-radius: 30px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.avatar-btn:hover {
+  background: var(--bg-hover, #f1f5f9);
+}
+
+.avatar-dropdown-wrapper.active .avatar-btn {
+  background: var(--bg-hover, #f1f5f9);
+  border-color: var(--brand-blue, #5ebbff);
+}
+
+.avatar-btn:focus {
+  outline: none;
+}
+
+/* Avatar Image */
+.avatar-img {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--border-color, #e2e8f0);
+  transition: border-color 0.3s ease;
+}
+
+.avatar-btn:hover .avatar-img {
+  border-color: var(--brand-blue, #5ebbff);
+}
+
+/* Chevron Icon */
+.avatar-chevron {
+  font-size: 0.7rem;
+  color: var(--text-secondary, #64748b);
+  transition: transform 0.3s ease;
+}
+
+.avatar-dropdown-wrapper.active .avatar-chevron {
+  transform: rotate(180deg);
+}
+
+/* ============================================================
+   4. AVATAR DROPDOWN PANEL
+   ============================================================ */
+
+.avatar-dropdown {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  width: 280px;
+  background: var(--bg-card, #ffffff);
+  border-radius: 12px;
+  box-shadow: var(--shadow-xl, 0 20px 25px -5px rgba(0, 0, 0, 0.1));
+  border: 1px solid var(--border-color, #e2e8f0);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-10px);
+  transition: all 0.3s ease;
+  z-index: 1000;
+  overflow: hidden;
+}
+
+.avatar-dropdown.show {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+/* Arrow pointer */
+.avatar-dropdown::before {
+  content: "";
+  position: absolute;
+  top: -8px;
+  right: 20px;
+  width: 14px;
+  height: 14px;
+  background: var(--bg-card, #ffffff);
+  border-left: 1px solid var(--border-color, #e2e8f0);
+  border-top: 1px solid var(--border-color, #e2e8f0);
+  transform: rotate(45deg);
+}
+
+/* ============================================================
+   5. DROPDOWN HEADER - User Info
+   ============================================================ */
+
+.avatar-dropdown-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  background: linear-gradient(
+    135deg,
+    rgba(94, 187, 255, 0.1),
+    rgba(161, 116, 255, 0.1)
+  );
+  border-bottom: 1px solid var(--border-color, #e2e8f0);
+}
+
+.dropdown-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--brand-blue, #5ebbff);
+}
+
+.dropdown-user-info {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.dropdown-user-name {
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: var(--text-primary, #1e293b);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dropdown-user-email {
+  font-size: 0.8rem;
+  color: var(--text-secondary, #64748b);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ============================================================
+   6. DROPDOWN MENU ITEMS
+   ============================================================ */
+
+.avatar-dropdown-menu {
+  padding: 8px 0;
+}
+
+.dropdown-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  color: var(--text-primary, #1e293b);
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.dropdown-menu-item:hover {
+  background: var(--bg-hover, #f1f5f9);
+  color: var(--brand-blue, #5ebbff);
+}
+
+.dropdown-menu-item i {
+  width: 20px;
+  text-align: center;
+  font-size: 0.95rem;
+  color: var(--text-secondary, #64748b);
+  transition: color 0.2s ease;
+}
+
+.dropdown-menu-item:hover i {
+  color: var(--brand-blue, #5ebbff);
+}
+
+.dropdown-menu-item span {
+  font-size: 0.9rem;
+}
+
+/* ============================================================
+   7. DROPDOWN FOOTER - Logout
+   ============================================================ */
+
+.avatar-dropdown-footer {
+  padding: 8px;
+  border-top: 1px solid var(--border-color, #e2e8f0);
+}
+
+.dropdown-logout-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 10px 16px;
+  background: transparent;
+  border: 1px solid #ef4444;
+  border-radius: 8px;
+  color: #ef4444;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.dropdown-logout-btn:hover {
+  background: #ef4444;
+  color: white;
+}
+
+.dropdown-logout-btn i {
+  font-size: 0.9rem;
+}
+
+/* ============================================================
+   8. MOBILE NAV ENHANCEMENTS
+   ============================================================ */
+
+/* Divider */
+.nav-mobile-divider {
+  height: 1px;
+  background: var(--border-color, #e2e8f0);
+  margin: 12px 16px;
+}
+
+/* User section */
+.nav-mobile-user {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px !important;
+  background: linear-gradient(
+    135deg,
+    rgba(94, 187, 255, 0.1),
+    rgba(161, 116, 255, 0.1)
+  );
+  margin: 0 8px 8px;
+  border-radius: 10px;
+}
+
+.mobile-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--brand-blue, #5ebbff);
+}
+
+.mobile-user-name {
+  font-weight: 600;
+  color: var(--text-primary, #1e293b);
+  font-size: 0.95rem;
+}
+
+/* Mobile logout button */
+#mobile-logout-btn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 12px 16px;
+  background: transparent;
+  border: none;
+  color: #ef4444;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: left;
+}
+
+#mobile-logout-btn:hover {
+  background: rgba(239, 68, 68, 0.1);
+}
+
+#mobile-logout-btn .icon {
+  color: #ef4444;
+}
+
+/* ============================================================
+   9. RESPONSIVE - Mobile: hide avatar & theme toggle in header
+   ============================================================ */
+
+@media (max-width: 768px) {
+  /* Hide avatar dropdown, theme toggle, and login button in header on mobile */
+  .user-area .avatar-dropdown-wrapper,
+  .user-area .theme-toggle-btn,
+  .user-area .login-btn {
+    display: none !important;
+  }
+
+  .user-area {
+    gap: 8px;
+    order: 2; /* Position after hamburger menu */
+  }
+
+  /* Keep notification bell visible in header */
+  .user-area .notification-bell-wrapper {
+    display: flex !important;
+  }
+
+  /* Style bell button in mobile header (icon only, no text) */
+  .user-area .notification-bell-btn {
+    padding: 8px;
+    margin-right: 10px;
+  }
+
+  .user-area .notification-bell-btn::after {
+    display: none;
+  }
+
+  /* Group user-area and navbar-on-mobile together */
+  header .container {
+    flex-wrap: nowrap;
+  }
+
+  .navbar-on-mobile {
+    order: 3; /* After user-area */
+    display: flex;
+    align-items: center;
+  }
+}
+
+/* ============================================================
+   10. DARK MODE ADJUSTMENTS
+   ============================================================ */
+
+[data-theme="dark"] .avatar-dropdown-header {
+  background: linear-gradient(
+    135deg,
+    rgba(94, 187, 255, 0.15),
+    rgba(161, 116, 255, 0.15)
+  );
+}
+
+[data-theme="dark"] .nav-mobile-user {
+  background: linear-gradient(
+    135deg,
+    rgba(94, 187, 255, 0.15),
+    rgba(161, 116, 255, 0.15)
+  );
+}
+
+[data-theme="dark"] .login-btn {
+  box-shadow: 0 2px 10px rgba(94, 187, 255, 0.2);
+}
+
+[data-theme="dark"] .login-btn:hover {
+  box-shadow: 0 4px 15px rgba(94, 187, 255, 0.3);
+}

@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="vi">
   <head>
     <meta charset="UTF-8" />
@@ -80,6 +80,12 @@
             <a href="#blogs" data-section="blogs">
               <i class="fas fa-blog"></i>
               <span>Quản lý bài viết</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="#orders" data-section="orders">
+              <i class="fas fa-shopping-cart"></i>
+              <span>Quản lý đơn hàng</span>
             </a>
           </li>
           <li class="nav-item">
@@ -336,6 +342,237 @@
             </div>
           </div>
         </div>
+      </section>
+
+      <!-- Orders Management Section -->
+      <section id="orders" class="admin-section">
+        <div class="section-header">
+          <h1>Quản lý đơn hàng</h1>
+          <div class="section-actions">
+            <button class="btn" id="orders-refresh-btn" title="Làm mới">
+              <i class="fas fa-sync-alt"></i>
+            </button>
+            <button class="btn btn-primary" id="orders-export-btn">
+              <i class="fas fa-file-export"></i>
+              Xuất Excel
+            </button>
+          </div>
+        </div>
+
+        <!-- Sub-tabs -->
+        <div class="orders-sub-tabs">
+          <button class="sub-tab active" data-subtab="orders-list">
+            <i class="fas fa-list"></i>
+            Danh sách đơn hàng
+          </button>
+          <button class="sub-tab" data-subtab="webhook-logs">
+            <i class="fas fa-file-invoice-dollar"></i>
+            Logs Webhook
+            <span class="badge badge-realtime" id="logs-badge"></span>
+          </button>
+        </div>
+
+        <!-- Tab Content: Orders List -->
+        <div id="orders-list-tab" class="sub-tab-content active">
+          <!-- Orders Stats Cards -->
+          <div class="stats-grid stats-grid-4">
+            <div class="stat-card">
+              <div
+                class="stat-icon"
+                style="
+                  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                "
+              >
+                <i class="fas fa-receipt"></i>
+              </div>
+              <div class="stat-info">
+                <h3 id="orders-total">0</h3>
+                <p>Tổng đơn hàng</p>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div
+                class="stat-icon"
+                style="
+                  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+                "
+              >
+                <i class="fas fa-clock"></i>
+              </div>
+              <div class="stat-info">
+                <h3 id="orders-pending">0</h3>
+                <p>Chờ thanh toán</p>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div
+                class="stat-icon"
+                style="
+                  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+                "
+              >
+                <i class="fas fa-check-circle"></i>
+              </div>
+              <div class="stat-info">
+                <h3 id="orders-completed">0</h3>
+                <p>Hoàn thành</p>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div
+                class="stat-icon"
+                style="
+                  background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+                "
+              >
+                <i class="fas fa-money-bill-wave"></i>
+              </div>
+              <div class="stat-info">
+                <h3 id="orders-revenue">0 ₫</h3>
+                <p>Doanh thu</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Orders Filter -->
+          <div class="admin-card">
+            <div class="card-header">
+              <h3>Bộ lọc đơn hàng</h3>
+            </div>
+            <div class="card-body">
+              <div class="filter-row">
+                <div class="filter-group">
+                  <label for="orders-search">Tìm kiếm</label>
+                  <input
+                    type="text"
+                    id="orders-search"
+                    class="form-control"
+                    placeholder="Mã đơn, email, tên khóa học..."
+                  />
+                </div>
+                <div class="filter-group">
+                  <label for="orders-status-filter">Trạng thái</label>
+                  <select id="orders-status-filter" class="form-control">
+                    <option value="all">Tất cả</option>
+                    <option value="pending">Chờ thanh toán</option>
+                    <option value="completed">Hoàn thành</option>
+                    <option value="cancelled">Đã hủy</option>
+                    <option value="failed">Thất bại</option>
+                    <option value="refunded">Hoàn tiền</option>
+                  </select>
+                </div>
+                <div class="filter-group">
+                  <label for="orders-date-from">Từ ngày</label>
+                  <input
+                    type="date"
+                    id="orders-date-from"
+                    class="form-control"
+                  />
+                </div>
+                <div class="filter-group">
+                  <label for="orders-date-to">Đến ngày</label>
+                  <input type="date" id="orders-date-to" class="form-control" />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Orders Table -->
+          <div class="admin-card">
+            <div class="card-header">
+              <h3>Danh sách đơn hàng</h3>
+            </div>
+            <div class="card-body">
+              <div class="table-responsive">
+                <table class="admin-table">
+                  <thead>
+                    <tr>
+                      <th>Mã đơn hàng</th>
+                      <th>Khách hàng</th>
+                      <th>Khóa học</th>
+                      <th>Số tiền</th>
+                      <th>Trạng thái</th>
+                      <th>Phương thức</th>
+                      <th>Ngày tạo</th>
+                      <th>Thao tác</th>
+                    </tr>
+                  </thead>
+                  <tbody id="orders-table-body">
+                    <tr>
+                      <td colspan="8" class="text-center">Đang tải...</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- End Orders List Tab -->
+
+        <!-- Tab Content: Webhook Logs -->
+        <div id="webhook-logs-tab" class="sub-tab-content">
+          <!-- Webhook Logs Stats -->
+          <div class="stats-grid stats-grid-2">
+            <div class="stat-card">
+              <div
+                class="stat-icon"
+                style="
+                  background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+                "
+              >
+                <i class="fas fa-check-circle"></i>
+              </div>
+              <div class="stat-info">
+                <h3 id="logs-success-count">0</h3>
+                <p>Thành công</p>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div
+                class="stat-icon"
+                style="
+                  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+                "
+              >
+                <i class="fas fa-times-circle"></i>
+              </div>
+              <div class="stat-info">
+                <h3 id="logs-error-count">0</h3>
+                <p>Lỗi</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Webhook Logs Table -->
+          <div class="admin-card">
+            <div class="card-header">
+              <h3>Lịch sử thanh toán tự động</h3>
+              <span class="badge badge-info">Realtime</span>
+            </div>
+            <div class="card-body">
+              <div class="table-responsive">
+                <table class="admin-table">
+                  <thead>
+                    <tr>
+                      <th>Trạng thái</th>
+                      <th>Mã đơn hàng</th>
+                      <th>Transaction ID</th>
+                      <th>Số tiền</th>
+                      <th>Thời gian</th>
+                      <th>Lỗi</th>
+                    </tr>
+                  </thead>
+                  <tbody id="payment-logs-body">
+                    <tr>
+                      <td colspan="6" class="text-center">Đang tải...</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- End Webhook Logs Tab -->
       </section>
 
       <!-- Comment Section -->
@@ -646,80 +883,181 @@
 
     <!-- Course Modal -->
     <div class="modal" id="course-modal">
-      <div class="modal-content">
+      <div class="modal-content modal-md">
         <div class="modal-header">
           <h3 id="course-modal-title">Thêm khóa học</h3>
           <button class="close-modal">&times;</button>
         </div>
         <div class="modal-body">
           <form id="course-form">
-            <!-- id course lấy từ database khi edit -->
-            <input type="hidden" id="course-id" />
-            <div class="form-group" id="form-custom-id">
-              <label>ID:</label>
-              <input
-                type="text"
-                id="course-custom-id"
-                required
-                placeholder="VD: html-css"
-              />
+            <!-- Tabs Navigation -->
+            <div class="modal-tabs">
+              <button
+                type="button"
+                class="tab-btn active"
+                data-tab="tab-course-basic"
+              >
+                Thông tin cơ bản
+              </button>
+              <button
+                type="button"
+                class="tab-btn"
+                data-tab="tab-course-detail"
+              >
+                Chi tiết & Landing Page
+              </button>
             </div>
-            <div class="form-group">
-              <label>Tiêu đề khóa học:</label>
-              <input type="text" id="course-title" required />
-            </div>
-            <div class="form-group">
-              <label>Mô tả:</label>
-              <textarea id="course-description" rows="3" required></textarea>
-            </div>
-            <div class="form-row">
-              <div class="form-group">
-                <label>Cấp độ:</label>
-                <select id="course-level" required>
-                  <option value="beginner">Người mới</option>
-                  <option value="intermediate">Trung cấp</option>
-                  <option value="advanced">Nâng cao</option>
-                </select>
-              </div>
-              <div class="form-group">
-                <label>Thời lượng:</label>
+
+            <!-- Tab 1: Thông tin cơ bản -->
+            <div id="tab-course-basic" class="tab-content active">
+              <!-- id course lấy từ database khi edit -->
+              <input type="hidden" id="course-id" />
+              <div class="form-group" id="form-custom-id">
+                <label>ID:</label>
                 <input
                   type="text"
-                  id="course-duration"
-                  placeholder="20 giờ"
+                  id="course-custom-id"
                   required
+                  placeholder="VD: html-css"
+                />
+              </div>
+              <div class="form-group">
+                <label>Tiêu đề khóa học:</label>
+                <input type="text" id="course-title" required />
+              </div>
+              <div class="form-group">
+                <label>Mô tả ngắn:</label>
+                <textarea id="course-description" rows="3" required></textarea>
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Cấp độ:</label>
+                  <select id="course-level" required>
+                    <option value="beginner">Người mới</option>
+                    <option value="intermediate">Trung cấp</option>
+                    <option value="advanced">Nâng cao</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label>Thời lượng:</label>
+                  <input
+                    type="text"
+                    id="course-duration"
+                    placeholder="20 giờ"
+                    required
+                  />
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Số bài học:</label>
+                  <input type="number" id="course-lessons" required />
+                </div>
+                <div class="form-group">
+                  <label>Danh mục:</label>
+                  <select id="course-category" required>
+                    <option value="web">Phát triển Web</option>
+                    <option value="mobile">Phát triển Mobile</option>
+                    <option value="data">Khoa học dữ liệu</option>
+                    <option value="ai">Trí tuệ nhân tạo</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-group">
+                <label>IDE Template:</label>
+                <select id="course-ide-template">
+                  <option value="">Không sử dụng IDE (CodeEditor)</option>
+                  <!-- Các options sẽ được render động từ JS -->
+                </select>
+                <small class="form-hint">
+                  Chọn loại IDE phù hợp với nội dung khóa học. Học viên sẽ có
+                  thể viết và chạy code trực tiếp.
+                </small>
+              </div>
+              <div id="form-featured">
+                <input type="checkbox" id="course-featured" />
+                <label for="course-featured"> Khóa học nổi bật </label>
+              </div>
+              <div class="form-group">
+                <label>Ảnh đại diện:</label>
+                <input
+                  type="file"
+                  id="course-image"
+                  accept="image/*"
+                  required
+                />
+                <img
+                  src=""
+                  alt="ảnh đại diện"
+                  id="course-image-preview"
+                  style="width: 100px; margin-top: 5px; object-fit: cover"
                 />
               </div>
             </div>
-            <div class="form-row">
-              <div class="form-group">
-                <label>Số bài học:</label>
-                <input type="number" id="course-lessons" required />
+
+            <!-- Tab 2: Chi tiết & Landing Page -->
+            <div id="tab-course-detail" class="tab-content">
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Giá gốc (VNĐ): </label>
+                  <input
+                    type="number"
+                    id="course-original-price"
+                    placeholder="Giá trước khuyến mãi"
+                    min="0"
+                  />
+                </div>
+                <div class="form-group">
+                  <label>Giá bán (VNĐ):</label>
+                  <input
+                    type="number"
+                    id="course-price"
+                    placeholder="0 = Miễn phí"
+                    min="0"
+                  />
+                </div>
               </div>
+              <div class="form-row" style="grid-template-columns: 1fr;">
+                <div class="form-group">
+                  <label>Video giới thiệu (Youtube Embed URL):</label>
+                  <input
+                    type="text"
+                    id="course-video-intro"
+                    placeholder="https://www.youtube.com/embed/..."
+                  />
+                </div>
+              </div>
+
               <div class="form-group">
-                <label>Danh mục:</label>
-                <select id="course-category" required>
-                  <option value="web">Phát triển Web</option>
-                  <option value="mobile">Phát triển Mobile</option>
-                  <option value="data">Khoa học dữ liệu</option>
-                  <option value="ai">Trí tuệ nhân tạo</option>
-                </select>
+                <label>Mô tả chi tiết (Markdown):</label>
+                <textarea id="course-detailed-desc"></textarea>
+              </div>
+
+              <div class="form-group">
+                <label>Bạn sẽ học được gì (Mục tiêu):</label>
+                <div id="outcomes-list" class="dynamic-list"></div>
+                <button
+                  type="button"
+                  class="btn btn-sm btn-secondary"
+                  id="add-outcome-btn"
+                >
+                  <i class="fas fa-plus"></i> Thêm mục tiêu
+                </button>
+              </div>
+
+              <div class="form-group">
+                <label>Yêu cầu đầu vào:</label>
+                <div id="requirements-list" class="dynamic-list"></div>
+                <button
+                  type="button"
+                  class="btn btn-sm btn-secondary"
+                  id="add-requirement-btn"
+                >
+                  <i class="fas fa-plus"></i> Thêm yêu cầu
+                </button>
               </div>
             </div>
-            <div id="form-featured">
-              <input type="checkbox" id="course-featured" />
-              <label for="course-featured"> Khóa học nổi bật </label>
-            </div>
-            <div class="form-group">
-              <label>Ảnh đại diện:</label>
-              <input type="file" id="course-image" accept="image/*" required />
-              <img
-                src=""
-                alt="ảnh đại diện"
-                id="course-image-preview"
-                style="width: 100px; margin-top: 5px; object-fit: cover"
-              />
-            </div>
+
             <div class="form-actions">
               <button type="submit" class="btn btn-primary">Lưu</button>
               <button type="button" class="btn btn-secondary cancel-btn">
@@ -1020,6 +1358,20 @@
           >
             Duyệt bài
           </button>
+          <button class="btn btn-secondary cancel-btn">Đóng</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal chi tiết đơn hàng -->
+    <div class="modal" id="order-detail-modal">
+      <div class="modal-content modal-md">
+        <div class="modal-header">
+          <h3><i class="fas fa-receipt"></i> Chi tiết đơn hàng</h3>
+          <button class="close-modal">&times;</button>
+        </div>
+        <div class="modal-body" id="order-detail-body"></div>
+        <div class="modal-footer">
           <button class="btn btn-secondary cancel-btn">Đóng</button>
         </div>
       </div>

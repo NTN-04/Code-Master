@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="vi">
   <head>
     <meta charset="UTF-8" />
@@ -7,6 +7,7 @@
     <link rel="icon" href="./assets/images/favicon.ico" type="image/x-icon" />
     <link rel="stylesheet" href="./assets/css/style.css" />
     <link rel="stylesheet" href="./assets/css/profile.css" />
+    <link rel="stylesheet" href="./assets/css/roadmap.css" />
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
@@ -52,6 +53,9 @@
             <button class="tab-btn active" data-tab="my-courses">
               Khóa Học Của Tôi
             </button>
+            <button class="tab-btn" data-tab="purchase-history">
+              Lịch Sử Mua Hàng
+            </button>
             <button class="tab-btn" data-tab="saved-resources">
               Tài Nguyên Đã Lưu
             </button>
@@ -63,6 +67,9 @@
 
           <div class="tab-content active" id="my-courses">
             <h2>Khóa Học Của Tôi</h2>
+
+            <!-- AI Roadmap Widget -->
+            <div id="roadmap-widget-container" class="roadmap-container"></div>
 
             <div class="courses-filter">
               <div class="filter-options">
@@ -89,6 +96,36 @@
 
             <div class="user-courses">
               <!-- Load các course đã học từ database bằng js -->
+            </div>
+          </div>
+
+          <!-- Purchase History Tab -->
+          <div class="tab-content" id="purchase-history">
+            <h2>Lịch Sử Mua Hàng</h2>
+
+            <div class="purchase-filter">
+              <div class="filter-options">
+                <button class="filter-btn active" data-filter="all">
+                  Tất Cả
+                </button>
+                <button class="filter-btn" data-filter="completed">
+                  Hoàn Thành
+                </button>
+                <button class="filter-btn" data-filter="pending">
+                  Chờ Thanh Toán
+                </button>
+                <button class="filter-btn" data-filter="cancelled">
+                  Đã Hủy
+                </button>
+              </div>
+            </div>
+
+            <div class="purchase-list" id="purchase-list">
+              <!-- Load purchase history from database -->
+              <div class="loading-state">
+                <i class="fas fa-spinner fa-spin"></i>
+                <span>Đang tải lịch sử mua hàng...</span>
+              </div>
             </div>
           </div>
 

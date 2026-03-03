@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="vi">
   <head>
     <meta charset="UTF-8" />
@@ -28,9 +28,14 @@
     <main class="my-blog-wrapper">
       <div class="my-blog-header">
         <h1 class="my-blog-title">Bài viết của tôi</h1>
-        <a class="blog-back">
-          <i class="fas fa-arrow-left"></i> Trở lại trang Blog
-        </a>
+        <div class="my-blog-actions">
+          <button id="open-post-modal" class="btn btn-primary">
+            <i class="fa fa-plus"></i> Đăng bài
+          </button>
+          <a class="blog-back">
+            <i class="fas fa-arrow-left"></i> Trở lại Blog
+          </a>
+        </div>
       </div>
 
       <div class="my-blog-content">
@@ -100,21 +105,20 @@
     <!-- Modal edit blog -->
     <div id="edit-blog-modal" class="modal" style="display: none">
       <div class="modal-content">
-        <span class="close-modal" id="close-post-modal">&times;</span>
+        <span class="close-modal" id="close-edit-modal">&times;</span>
         <h2>Chỉnh sửa bài viết</h2>
-        <form id="blog-post-form">
-          <div>
-            <textarea id="edit-title" placeholder="Tiêu đề" required></textarea>
+        <form id="edit-blog-form">
+          <div class="form-sidebar">
+            <input type="text" id="edit-title" placeholder="Tiêu đề" required />
             <input
               type="text"
               id="edit-tags"
               placeholder="Tags (cách nhau bởi dấu phẩy)"
             />
-
             <input type="file" id="edit-image" accept="image/*" />
-            <!-- review ảnh khi úp -->
+            <!-- preview ảnh khi upload -->
             <img
-              id="image-preview"
+              id="edit-image-preview"
               style="
                 display: none;
                 max-width: 90%;
@@ -129,6 +133,42 @@
               placeholder="Nội dung (Markdown)"
             ></textarea>
             <button type="submit" class="btn btn-success">Lưu thay đổi</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Modal đăng bài mới -->
+    <div id="post-modal" class="modal" style="display: none">
+      <div class="modal-content">
+        <span class="close-modal" id="close-post-modal">&times;</span>
+        <h2>Đăng bài viết mới</h2>
+        <form id="blog-post-form">
+          <div class="form-sidebar">
+            <input type="text" id="post-title" placeholder="Tiêu đề" required />
+            <input
+              type="text"
+              id="post-tags"
+              placeholder="Tags (cách nhau bởi dấu phẩy)"
+            />
+            <input type="file" id="post-image" accept="image/*" />
+            <!-- preview ảnh khi upload -->
+            <img
+              id="post-image-preview"
+              style="
+                display: none;
+                max-width: 90%;
+                margin: 10px 0;
+                border-radius: 8px;
+              "
+            />
+          </div>
+          <div class="blog-main-content">
+            <textarea
+              id="post-content"
+              placeholder="Nội dung (Markdown)"
+            ></textarea>
+            <button type="submit" class="btn btn-success">Đăng bài</button>
           </div>
         </form>
       </div>

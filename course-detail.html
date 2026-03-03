@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="vi">
   <head>
     <meta charset="UTF-8" />
@@ -7,44 +7,198 @@
     <link rel="icon" href="./assets/images/favicon.ico" type="image/x-icon" />
     <link rel="stylesheet" href="./assets/css/style.css" />
     <link rel="stylesheet" href="./assets/css/course.css" />
+    <link rel="stylesheet" href="./assets/css/learning-layout.css" />
     <link rel="stylesheet" href="./assets/css/comments.css" />
+    <link rel="stylesheet" href="./assets/css/certificate.css" />
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Great+Vibes&family=Montserrat:wght@300;500&display=swap"
+      rel="stylesheet"
     />
     <!-- thư viện animation -->
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
     />
+    <style></style>
   </head>
 
-  <body>
-    <!-- load với component -->
-    <header id="header-placeholder"></header>
+  <body class="learning-body">
+    <!-- SVG Gradient Definition for Progress Circle -->
+    <svg width="0" height="0" style="position: absolute">
+      <defs>
+        <linearGradient id="progressGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" style="stop-color: #5ebbff" />
+          <stop offset="100%" style="stop-color: #a174ff" />
+        </linearGradient>
+      </defs>
+    </svg>
 
-    <section class="course-header">
-      <div class="container course-intro">
-        <div class="course-info">
-          <h1 class="course-info-title"></h1>
-          <div class="course-meta">
-            <span class="level beginner"></span>
-            <span class="duration"> </span>
-            <span class="lessons"> </span>
+    <!-- ========== LEARNING WRAPPER ========== -->
+    <div class="learning-wrapper">
+      <!-- Header -->
+      <div class="learning-header">
+        <div class="header-left">
+          <div class="header-logo">
+            <a href="./index.html">
+              <img src="./assets/images/logo-01.svg" alt="CodeMaster" />
+            </a>
           </div>
-          <p></p>
+          <a href="./courses.html">
+            <button class="btn-back" title="Quay lại Khóa học">
+              <i class="fas fa-chevron-left"></i>
+            </button>
+          </a>
         </div>
-        <div class="course-image">
-          <img class="course-thumbnail" src="" alt="" />
+        <div class="header-center">
+          <span class="header-course-title" id="course-title"
+            >Chọn bài học để bắt đầu</span
+          >
+        </div>
+        <div class="header-right">
+          <!-- Theme Toggle Button -->
+          <button
+            class="theme-toggle-btn"
+            id="learning-theme-toggle"
+            title="Chuyển đổi chế độ sáng/tối"
+          >
+            <i class="fas fa-sun theme-icon-light"></i>
+            <i class="fas fa-moon theme-icon-dark"></i>
+          </button>
+          <div class="circular-progress" id="header-progress">
+            <svg viewBox="0 0 36 36">
+              <circle class="progress-bg" cx="18" cy="18" r="16"></circle>
+              <circle
+                class="progress-bar"
+                cx="18"
+                cy="18"
+                r="16"
+                stroke-dasharray="100"
+                stroke-dashoffset="100"
+              ></circle>
+            </svg>
+            <span class="progress-text">0%</span>
+          </div>
+          <button
+            id="certificate-button"
+            class="btn certificate-action"
+            type="button"
+          >
+            🎖️ Chứng Chỉ
+          </button>
         </div>
       </div>
-    </section>
 
-    <section class="course-content">
-      <div class="container">
-        <div class="course-layout">
-          <div class="course-sidebar">
-            <div class="progress-tracker">
+      <!-- Main Container -->
+      <div class="learning-container">
+        <!-- Main Content Area (Left) -->
+        <div class="learning-main">
+          <!-- Tab Switcher -->
+          <div class="tab-switcher">
+            <button class="tab-btn active" data-tab="lesson">
+              <i class="fas fa-book-open"></i> Bài học
+            </button>
+            <button class="tab-btn" data-tab="editor">
+              <i class="fas fa-code"></i> Code Editor
+            </button>
+          </div>
+
+          <!-- Tab: Bài học (Default) -->
+          <div id="tab-lesson" class="tab-content active">
+            <!-- Scrollable Area (video + content scroll together) -->
+            <div class="main-scroll-area">
+              <!-- Video Stage -->
+              <div class="video-stage" id="video-stage">
+                <!-- Video will be rendered here -->
+              </div>
+
+              <!-- Lesson Container -->
+              <div class="content-scroll">
+                <div class="lesson-container">
+                  <!-- Nội dung bài học sẽ được render động từ JS -->
+                </div>
+
+                <!-- Comments Panel -->
+                <div class="comments-overlay"></div>
+                <div class="comments-panel" id="course-comments-panel"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tab: Code Editor -->
+          <div id="tab-editor" class="tab-content">
+            <div class="editor-wrapper">
+              <div class="editor-toolbar">
+                <div class="toolbar-left">
+                  <!-- Language selector được render động bởi ide.js -->
+                  <select id="language-select" class="language-selector">
+                    <!-- Options sẽ được thêm tự động dựa trên template -->
+                  </select>
+                  <!-- Status indicator cho Python/Pyodide -->
+                  <span
+                    id="pyodide-status"
+                    class="pyodide-status"
+                    style="display: none"
+                  >
+                    <i class="fas fa-circle"></i>
+                    <span class="status-text">Đang tải Python...</span>
+                  </span>
+                </div>
+                <div class="toolbar-right">
+                  <button id="btn-run-code" class="btn-run">
+                    <i class="fas fa-play"></i> Chạy Code
+                  </button>
+                </div>
+              </div>
+              <div class="editor-container" id="editor-container">
+                <div id="monaco-container" class="editor-pane"></div>
+                <!-- Resizable Divider -->
+                <div class="editor-divider" id="editor-divider"></div>
+                <div class="preview-pane">
+                  <div class="preview-header">
+                    <i class="fas fa-eye"></i> Kết quả
+                  </div>
+                  <iframe id="code-preview" title="Code Preview"></iframe>
+                </div>
+              </div>
+            </div>
+
+            <!-- Sidebar Toggle Edge Button (VS Code Style) -->
+            <button
+              class="sidebar-toggle-edge"
+              id="sidebar-toggle-edge"
+              title="Toggle Sidebar (Ctrl+B)"
+            >
+              <i class="fas fa-chevron-right"></i>
+            </button>
+          </div>
+
+          <!-- Footer Navigation -->
+          <div class="learning-footer">
+            <div class="footer-center">
+              <button class="btn-prev-lesson" id="prev-lesson-btn" disabled>
+                <i class="fas fa-chevron-left"></i>
+                <span>BÀI TRƯỚC</span>
+              </button>
+              <button class="btn-next-lesson" id="next-lesson-btn" disabled>
+                <span>BÀI TIẾP THEO</span>
+                <i class="fas fa-chevron-right"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sidebar (Right) -->
+        <div class="learning-sidebar">
+          <div class="sidebar-header">
+            <h3>Nội dung khóa học</h3>
+          </div>
+          <div class="sidebar-content">
+            <!-- Hidden progress tracker for JS compatibility -->
+            <div class="progress-tracker" style="display: none">
               <h3>Tiến Độ Của Bạn</h3>
               <div class="progress-container">
                 <div
@@ -58,45 +212,103 @@
               </div>
             </div>
 
-            <div class="module-list">
+            <div class="module-list" id="course-modules">
               <h3>Các Chương Học</h3>
               <ul>
                 <!-- Đổ dữ liệu vào từ firebase -->
               </ul>
             </div>
           </div>
+        </div>
+      </div>
+    </div>
 
-          <div class="course-main">
-            <div class="lesson-content" id="lesson-welcome">
-              <div class="welcome-banner">
-                <div
-                  class="banner-content animate__animated animate__zoomInDown"
-                >
-                  <h1 class="course-info-title">
-                    Chào mừng bạn đến với khóa học!
-                  </h1>
-                  <p class="banner-subtitle">
-                    Hãy bắt đầu hành trình học tập của bạn tại CodeMaster.
-                  </p>
-                  <a href="#" class="btn btn-primary" id="start-course"
-                    >Bắt Đầu Khóa Học</a
-                  >
+    <!-- Modal Review Chứng Chỉ Toàn Màn Hình -->
+    <div id="cert-review-modal" class="cert-modal">
+      <div class="cert-modal-backdrop"></div>
+      <div class="cert-modal-content">
+        <div id="certificate-template" class="certificate-container">
+          <div class="cert-border">
+            <div class="corner tl"></div>
+            <div class="corner tr"></div>
+            <div class="corner bl"></div>
+            <div class="corner br"></div>
+
+            <div class="cert-watermark">
+              <i class="fas fa-code"></i>
+            </div>
+
+            <div class="cert-content">
+              <div class="cert-header">CodeMaster Academy</div>
+              <div class="cert-subheader">Giấy Chứng Nhận Hoàn Thành</div>
+
+              <div class="cert-present">Trân trọng trao tặng cho</div>
+
+              <!-- Trạng thái nhập tên (chưa cấp) -->
+              <input
+                id="cert-student-input"
+                class="cert-student-name cert-input"
+                type="text"
+                value="Học viên CodeMaster"
+                aria-label="Nhập tên hiển thị trên chứng chỉ"
+              />
+
+              <!-- Trạng thái đã cấp (text tĩnh) -->
+              <div
+                id="cert-student-display"
+                class="cert-student-name cert-display"
+                style="display: none"
+              >
+                Học viên CodeMaster
+              </div>
+
+              <div class="cert-course-label">
+                Đã hoàn thành xuất sắc khóa học
+              </div>
+
+              <div id="cert-course-title" class="cert-course-title">
+                Tên khóa học
+              </div>
+
+              <div class="cert-footer">
+                <div class="footer-item">
+                  <div id="cert-issued-date" class="signature-line">
+                    dd/mm/yyyy
+                  </div>
+                  <div class="footer-label">Ngày cấp</div>
                 </div>
-                <div class="banner-image">
-                  <img src="assets/images/logo-01.svg" alt="${banner.title}" />
+
+                <div class="cert-seal">
+                  <i class="fas fa-medal" style="font-size: 30px"></i>
+                </div>
+
+                <div class="footer-item">
+                  <div class="signature-line">Admin CodeMaster</div>
+                  <div class="footer-label">Giám đốc đào tạo</div>
                 </div>
               </div>
+
+              <div class="cert-meta">
+                CERTIFICATE ID: <span id="cert-id">#000000</span>
+              </div>
             </div>
-            <div class="lesson-container">
-              <!-- Nội dung bài học sẽ được render động từ JS -->
-            </div>
-            <!-- Phần bình luận khóa học -->
-            <div class="comments-overlay"></div>
-            <div class="comments-panel" id="course-comments-panel"></div>
+          </div>
+        </div>
+
+        <div class="cert-actions">
+          <div class="cert-note">Kiểm tra kỹ tên trước khi lưu.</div>
+          <div class="cert-buttons">
+            <button id="cert-confirm-btn" class="btn btn-primary">
+              Xác nhận & Lưu
+            </button>
+            <button id="cert-download-btn" class="btn btn-secondary">
+              Tải PDF
+            </button>
+            <button class="btn btn-secondary" data-modal-close>Đóng</button>
           </div>
         </div>
       </div>
-    </section>
+    </div>
 
     <!-- ChatBot AI -->
     <div id="ai-chatbot">
@@ -117,15 +329,17 @@
       <button id="ai-chat-open"><i class="fas fa-robot"></i> Chat AI</button>
     </div>
 
-    <!-- load bằng components -->
-    <footer id="footer-placeholder"></footer>
-
     <script src="./assets/js/script.js"></script>
     <script type="module" src="./assets/js/course.js"></script>
     <!-- thư viện marked.js để convert AI sang HTML  -->
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script src="./assets/js/chat-ai.js"></script>
-    <script src="./assets/js/components.js"></script>
     <script type="module" src="./assets/js/auth.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+    <!-- Monaco Editor Loader -->
+    <script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.45.0/min/vs/loader.js"></script>
+    <script type="module" src="./assets/js/ide/ide.js"></script>
+    <script type="module" src="./assets/js/ide/ide-ui.js"></script>
   </body>
 </html>

@@ -15,6 +15,7 @@ import {
   summarizeCourseModules,
   formatMinutesToDuration,
 } from "../utils/time.js";
+import { getAllTemplates } from "../ide/ide-config.js";
 
 export default class CoursesManager {
   constructor(adminPanel) {
@@ -30,10 +31,17 @@ export default class CoursesManager {
     this._renderTimer = null;
     // Image file selected for upload
     this.imageFile = null;
+    // SimpleMDE instance
+    this.courseMDE = null;
+    // Flag to check if events are initialized
+    this.eventsInitialized = false;
   }
 
   // Tải dữ liệu khóa học
   async loadData() {
+    // Init events cho modal
+    this.initCourseModalEvents();
+
     // Hiển thị loading
     this.showCoursesLoading();
 
@@ -163,10 +171,6 @@ export default class CoursesManager {
     )} bài`;
     meta.append(levelSpan, clockSpan, lessonsSpan);
 
-    const desc = document.createElement("p");
-    desc.className = "course-card-description line-clamp-2";
-    desc.textContent = course.description || "";
-
     const actionsWrap = document.createElement("div");
     actionsWrap.className = "course-card-actions";
     const actionBtns = document.createElement("div");
@@ -195,7 +199,7 @@ export default class CoursesManager {
     actionBtns.append(btnEdit, btnDelete, btnDetail);
     actionsWrap.appendChild(actionBtns);
 
-    content.append(titleEl, meta, desc, actionsWrap);
+    content.append(titleEl, meta, actionsWrap);
     div.append(imgWrap, content);
     return div;
   }
@@ -223,6 +227,12 @@ export default class CoursesManager {
     const course = this.courses.find((c) => c.id === courseId);
     if (!course) return;
 
+    // Reset tabs về tab đầu tiên
+    this.resetTabs();
+
+    // Render options cho IDE Template select
+    this.renderIdeTemplateOptions();
+
     // Đổ dữ liệu khóa học vào modal
     document.getElementById("course-id").value = courseId;
     document.getElementById("course-title").value = course.title || "";
@@ -232,6 +242,24 @@ export default class CoursesManager {
     document.getElementById("course-duration").value = course.duration || "";
     document.getElementById("course-lessons").value = course.lessons || "";
     document.getElementById("course-category").value = course.category || "web";
+    document.getElementById("course-ide-template").value =
+      course.ideTemplate || "";
+
+    // Dữ liệu giá
+    document.getElementById("course-original-price").value = course.originalPrice || 0;
+    document.getElementById("course-price").value = course.price || 0;
+    document.getElementById("course-video-intro").value =
+      course.videoIntro || "";
+
+    // SimpleMDE
+    if (this.courseMDE) {
+      this.courseMDE.value(course.detailedDescription || "");
+    }
+
+    // Dynamic Lists
+    this.renderDynamicList("outcomes-list", course.learningOutcomes || []);
+    this.renderDynamicList("requirements-list", course.requirements || []);
+
     // Không set lại file input khi edit
     const imageInput = document.getElementById("course-image");
     if (imageInput) imageInput.value = "";
@@ -255,6 +283,10 @@ export default class CoursesManager {
 
     // Hiện modal
     this.adminPanel.showModal("course-modal");
+    // Refresh SimpleMDE để hiển thị đúng
+    setTimeout(() => {
+      if (this.courseMDE) this.courseMDE.codemirror.refresh();
+    }, 200);
   }
 
   async deleteCourse(courseId) {
@@ -312,6 +344,24 @@ export default class CoursesManager {
     document.getElementById("course-image").required = true;
     document.getElementById("form-featured").style.display = "none"; // Ẩn trường featured
     document.getElementById("course-modal-title").textContent = "Thêm khóa học";
+
+    // Render options cho IDE Template select
+    this.renderIdeTemplateOptions();
+
+    // Reset các trường giá và video
+    document.getElementById("course-original-price").value = "";
+    document.getElementById("course-price").value = "";
+    document.getElementById("course-video-intro").value = "";
+    document.getElementById("course-ide-template").value = "";
+    if (this.courseMDE) {
+      this.courseMDE.value("");
+    }
+    this.renderDynamicList("outcomes-list", []);
+    this.renderDynamicList("requirements-list", []);
+
+    // Reset tabs
+    this.resetTabs();
+
     // Xóa file input khi mở modal
     const imageInput = document.getElementById("course-image");
     if (imageInput) imageInput.value = "";
@@ -323,8 +373,155 @@ export default class CoursesManager {
     this.imageFile = null;
 
     this.adminPanel.showModal("course-modal");
+    // Refresh SimpleMDE
+    setTimeout(() => {
+      if (this.courseMDE) this.courseMDE.codemirror.refresh();
+    }, 200);
+
     // xử lý file ảnh và hiện preview
     this.setupCourseImage();
+  }
+
+  // Helper: Reset tabs
+  resetTabs() {
+    const tabs = document.querySelectorAll(".modal-tabs .tab-btn");
+    const contents = document.querySelectorAll(".tab-content");
+    tabs.forEach((t) => t.classList.remove("active"));
+    contents.forEach((c) => c.classList.remove("active"));
+
+    // Active tab đầu tiên
+    if (tabs[0]) tabs[0].classList.add("active");
+    if (contents[0]) contents[0].classList.add("active");
+  }
+
+  /**
+   * Render các options cho IDE Template select
+   * Lấy danh sách templates từ ide-config.js
+   */
+  renderIdeTemplateOptions() {
+    const select = document.getElementById("course-ide-template");
+    if (!select) return;
+
+    // Lấy giá trị hiện tại để restore sau khi render
+    const currentValue = select.value;
+
+    // Xóa các options cũ (trừ option đầu tiên "Không sử dụng IDE")
+    select.innerHTML =
+      '<option value="">Không sử dụng IDE (CodeEditor)</option>';
+
+    // Lấy danh sách templates và render
+    const templates = getAllTemplates();
+    templates.forEach((template) => {
+      const option = document.createElement("option");
+      option.value = template.id;
+      option.textContent = template.name;
+      select.appendChild(option);
+    });
+
+    // Restore giá trị nếu có
+    if (currentValue) {
+      select.value = currentValue;
+    }
+  }
+
+  // Helper: Render dynamic list inputs
+  renderDynamicList(containerId, items) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+    container.innerHTML = "";
+    items.forEach((item) => {
+      this.addDynamicInput(container, item);
+    });
+  }
+
+  // Helper: Add single dynamic input
+  addDynamicInput(container, value = "") {
+    const div = document.createElement("div");
+    div.className = "dynamic-input-group";
+    div.style.display = "flex";
+    div.style.marginBottom = "5px";
+    div.style.gap = "5px";
+
+    const input = document.createElement("input");
+    input.type = "text";
+    input.className = "form-control"; // Giả sử có class này hoặc style mặc định
+    input.value = value;
+    input.style.flex = "1";
+
+    const btnRemove = document.createElement("button");
+    btnRemove.type = "button";
+    btnRemove.className = "btn btn-danger btn-sm";
+    btnRemove.innerHTML = '<i class="fas fa-times"></i>';
+    btnRemove.onclick = () => div.remove();
+
+    div.appendChild(input);
+    div.appendChild(btnRemove);
+    container.appendChild(div);
+  }
+
+  // Helper: Collect data from dynamic list
+  getDynamicListValues(containerId) {
+    const container = document.getElementById(containerId);
+    if (!container) return [];
+    const inputs = container.querySelectorAll("input");
+    return Array.from(inputs)
+      .map((input) => input.value.trim())
+      .filter((val) => val !== "");
+  }
+
+  // Khởi tạo các sự kiện cho Modal Khóa học (Tabs, Dynamic Buttons)
+  initCourseModalEvents() {
+    if (this.eventsInitialized) return;
+
+    // Tabs
+    const tabs = document.querySelectorAll(".modal-tabs .tab-btn");
+    tabs.forEach((tab) => {
+      tab.addEventListener("click", () => {
+        const targetId = tab.getAttribute("data-tab");
+        // Deactive all
+        document
+          .querySelectorAll(".modal-tabs .tab-btn")
+          .forEach((t) => t.classList.remove("active"));
+        document
+          .querySelectorAll(".tab-content")
+          .forEach((c) => c.classList.remove("active"));
+        // Active current
+        tab.classList.add("active");
+        const targetContent = document.getElementById(targetId);
+        if (targetContent) {
+          targetContent.classList.add("active");
+        }
+      });
+    });
+
+    // Dynamic Buttons
+    const addOutcomeBtn = document.getElementById("add-outcome-btn");
+    if (addOutcomeBtn) {
+      addOutcomeBtn.onclick = () => {
+        const container = document.getElementById("outcomes-list");
+        this.addDynamicInput(container);
+      };
+    }
+
+    const addRequirementBtn = document.getElementById("add-requirement-btn");
+    if (addRequirementBtn) {
+      addRequirementBtn.onclick = () => {
+        const container = document.getElementById("requirements-list");
+        this.addDynamicInput(container);
+      };
+    }
+
+    // Init SimpleMDE nếu chưa có
+    if (!this.courseMDE && document.getElementById("course-detailed-desc")) {
+      this.courseMDE = new SimpleMDE({
+        element: document.getElementById("course-detailed-desc"),
+        spellChecker: false,
+        status: false,
+        placeholder: "Nhập mô tả chi tiết khóa học...",
+      });
+    }
+
+    this.eventsInitialized = true;
   }
 
   // xử lý dữ liệu ảnh trước khi submit
@@ -379,6 +576,70 @@ export default class CoursesManager {
     imageInput.addEventListener("change", imageInput._previewEventHandler);
   }
 
+  // Helper: Thu thập dữ liệu từ form
+  getCourseFormData(imageUrl) {
+    // Lấy giá trị ideTemplate
+    const ideTemplateValue = document
+      .getElementById("course-ide-template")
+      .value.trim();
+
+    const formData = {
+      title: document.getElementById("course-title").value.trim(),
+      description: document.getElementById("course-description").value.trim(),
+      level: document.getElementById("course-level").value,
+      duration: document.getElementById("course-duration").value.trim(),
+      lessons: parseInt(document.getElementById("course-lessons").value) || 0,
+      category: document.getElementById("course-category").value,
+      image: imageUrl,
+      updatedAt: new Date().toISOString().slice(0, 10),
+      originalPrice: Number(document.getElementById("course-original-price").value) || 0,
+      price: Number(document.getElementById("course-price").value) || 0,
+      videoIntro:
+        document.getElementById("course-video-intro").value.trim() || "",
+      detailedDescription: this.courseMDE ? this.courseMDE.value().trim() : "",
+      learningOutcomes: this.getDynamicListValues("outcomes-list"),
+      requirements: this.getDynamicListValues("requirements-list"),
+      // ideTemplate: lưu giá trị hoặc null để xóa khỏi database khi update
+      ideTemplate: ideTemplateValue || null,
+    };
+
+    return formData;
+  }
+
+  // Helper: Validate dữ liệu khóa học
+  validateCourseData(courseData, isEditMode, customId) {
+    if (!courseData.title) {
+      this.adminPanel.showNotification("Vui lòng nhập tên khóa học", "error");
+      return false;
+    }
+
+    // Validate ID only if adding new course
+    if (!isEditMode) {
+      if (!customId) {
+        this.adminPanel.showNotification("Vui lòng nhập ID khóa học", "error");
+        return false;
+      }
+      if (!/^[a-z0-9-]+$/.test(customId)) {
+        this.adminPanel.showNotification(
+          "ID khóa học chỉ chứa chữ thường, số và dấu gạch ngang",
+          "error"
+        );
+        return false;
+      }
+    }
+
+    if (courseData.price < 0) {
+      this.adminPanel.showNotification("Giá khóa học không được âm", "error");
+      return false;
+    }
+    if (courseData.lessons < 0) {
+      this.adminPanel.showNotification("Số bài học không được âm", "error");
+      return false;
+    }
+
+    return true;
+  }
+
   // Xử lý submit form thêm/sửa
   async handleFormSubmit(e) {
     e.preventDefault();
@@ -408,16 +669,13 @@ export default class CoursesManager {
       return;
     }
 
-    const courseData = {
-      title: document.getElementById("course-title").value,
-      description: document.getElementById("course-description").value,
-      level: document.getElementById("course-level").value,
-      duration: document.getElementById("course-duration").value,
-      lessons: parseInt(document.getElementById("course-lessons").value),
-      category: document.getElementById("course-category").value,
-      image: imageUrl,
-      updatedAt: new Date().toISOString().slice(0, 10),
-    };
+    // Thu thập dữ liệu
+    const courseData = this.getCourseFormData(imageUrl);
+
+    // Validate dữ liệu
+    if (!this.validateCourseData(courseData, !!courseId, customId)) {
+      return;
+    }
 
     try {
       if (courseId) {
