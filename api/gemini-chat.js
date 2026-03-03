@@ -84,73 +84,41 @@ async function handleRoadmapRecommendation(res, apiUrl, apiKey, data) {
     return res.status(400).json({ error: "No available courses provided" });
   }
 
-  // Build context strings
-  const levelMap = {
-    beginner: "Mới bắt đầu",
-    basic: "Biết cơ bản",
-    intermediate: "Trung cấp",
-    advanced: "Nâng cao",
-  };
+  // Build context - simplified
+  const userLevel = preferences?.level || "beginner";
+  const userInterests = preferences?.interests?.join(", ") || "frontend";
+  const userGoal = preferences?.goal || "job";
 
-  const goalMap = {
-    job: "Tìm việc làm",
-    upgrade: "Nâng cao kỹ năng",
-    project: "Làm dự án cá nhân",
-    explore: "Khám phá",
-  };
+  // Simplified course list - chỉ lấy thông tin cần thiết
+  const courseList = availableCourses.map((c) => ({
+    id: c.id,
+    title: c.title,
+    level: c.level,
+    category: c.category,
+  }));
 
-  const userLevel = preferences?.level
-    ? levelMap[preferences.level] || preferences.level
-    : "Chưa xác định";
+  // System instruction - ép AI chỉ trả JSON
+  const systemInstruction = `Bạn là API trả về JSON. KHÔNG viết markdown, KHÔNG giải thích, CHỈ trả về JSON object.`;
 
-  const userInterests = preferences?.interests?.length
-    ? preferences.interests.join(", ")
-    : "Chưa xác định";
+  // Prompt ngắn gọn với ví dụ cụ thể
+  const prompt = `Chọn 1-2 khóa học phù hợp nhất cho user.
 
-  const userGoal = preferences?.goal
-    ? goalMap[preferences.goal] || preferences.goal
-    : "Chưa xác định";
+USER: level=${userLevel}, interests=${userInterests}, goal=${userGoal}
+COURSES: ${JSON.stringify(courseList)}
 
-  const completedList =
-    completedCourses?.length > 0
-      ? completedCourses
-          .map((c) => `- ${c.title} (${c.category}, ${c.level})`)
-          .join("\n")
-      : "Chưa hoàn thành khóa học nào";
-
-  const availableList = availableCourses
-    .map(
-      (c) =>
-        `- ID: ${c.id}, Tên: ${c.title}, Category: ${c.category}, Level: ${c.level}, Mô tả: ${c.description}`,
-    )
-    .join("\n");
-
-  const prompt = `Bạn là cố vấn học tập AI. Gợi ý khóa học cho người dùng.
-
-NGƯỜI DÙNG: Trình độ ${userLevel}, quan tâm ${userInterests}, mục tiêu ${userGoal}
-ĐÃ HOÀN THÀNH: ${completedList}
-
-DANH SÁCH KHÓA HỌC:
-${availableList}
-
-LUẬT BẮT BUỘC:
-- PHẢI chọn ít nhất 1 khóa từ danh sách trên (dù không khớp hoàn hảo)
-- Ưu tiên: level phù hợp > category quan tâm > featured
-- summary tối đa 50 từ
-- reason tối đa 20 từ
-
-Trả về JSON (không markdown):
-{"recommendations":[{"courseId":"abc","reason":"ngắn gọn"}],"summary":"ngắn gọn"}`;
+Trả về ĐÚNG format này (thay id và text):
+{"recommendations":[{"courseId":"course_id_here","reason":"lý do ngắn"}],"summary":"tóm tắt ngắn"}`;
 
   try {
     const geminiRes = await fetch(`${apiUrl}?key=${apiKey}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
+        systemInstruction: { parts: [{ text: systemInstruction }] },
         contents: [{ role: "user", parts: [{ text: prompt }] }],
         generationConfig: {
-          temperature: 0.1,
-          maxOutputTokens: 512,
+          temperature: 0,
+          maxOutputTokens: 256,
         },
       }),
     });
@@ -171,7 +139,7 @@ Trả về JSON (không markdown):
       });
     }
 
-    console.log("[Roadmap] Raw:", rawText.substring(0, 500));
+    console.log("[Roadmap] Raw:", rawText.substring(0, 300));
 
     // Parse JSON - xử lý nhiều trường hợp
     let result = parseJsonResponse(rawText);
