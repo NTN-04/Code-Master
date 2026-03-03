@@ -82,6 +82,73 @@ export async function getCompletedCourses(userId) {
 }
 
 /**
+ * SOLUTION B: Lấy khóa học đã enroll với thông tin progress chi tiết
+ * Phân loại: inProgress (đang học), notStarted (chưa bắt đầu), completed (hoàn thành)
+ */
+export async function getEnrolledCoursesWithProgress(userId) {
+  try {
+    // 1. Lấy danh sách khóa đã enroll
+    const enrollRef = ref(database, `enrollments/${userId}`);
+    const enrollSnap = await get(enrollRef);
+    if (!enrollSnap.exists()) return { inProgress: [], notStarted: [], completed: [] };
+
+    const enrolledIds = Object.keys(enrollSnap.val());
+
+    // 2. Lấy progress của user
+    const progressRef = ref(database, `userProgress/${userId}/courses`);
+    const progressSnap = await get(progressRef);
+    const progressData = progressSnap.exists() ? progressSnap.val() : {};
+
+    // 3. Lấy thông tin chi tiết các khóa học
+    const coursesRef = ref(database, "courses");
+    const coursesSnap = await get(coursesRef);
+    if (!coursesSnap.exists()) return { inProgress: [], notStarted: [], completed: [] };
+
+    const allCourses = coursesSnap.val();
+
+    // 4. Phân loại khóa học
+    const inProgress = [];
+    const notStarted = [];
+    const completed = [];
+
+    enrolledIds.forEach((id) => {
+      const course = allCourses[id];
+      if (!course || course.lessons === 0) return;
+
+      const progress = progressData[id]?.progress || 0;
+      const courseData = {
+        id,
+        title: course.title,
+        category: course.category,
+        level: course.level,
+        description: course.description,
+        image: course.image,
+        duration: course.duration,
+        lessons: course.lessons,
+        featured: course.featured,
+        progress, // Thêm progress để scoring
+      };
+
+      if (progress === 100) {
+        completed.push(courseData);
+      } else if (progress > 0) {
+        inProgress.push(courseData);
+      } else {
+        notStarted.push(courseData);
+      }
+    });
+
+    // Sort inProgress by progress descending (gần hoàn thành trước)
+    inProgress.sort((a, b) => b.progress - a.progress);
+
+    return { inProgress, notStarted, completed };
+  } catch (error) {
+    console.error("Error fetching enrolled courses with progress:", error);
+    return { inProgress: [], notStarted: [], completed: [] };
+  }
+}
+
+/**
  * Lấy danh sách khóa học user đã enroll
  */
 export async function getEnrolledCourseIds(userId) {
@@ -154,18 +221,21 @@ export async function getCourseById(courseId) {
 }
 
 /**
- * Gọi AI API để lấy gợi ý lộ trình
+ * SOLUTION B: Gọi AI API với data structure mới
+ * Gửi cả enrolledCourses (inProgress, notStarted, completed) và availableCourses
  */
 export async function fetchAIRecommendations(
   preferences,
-  completedCourses,
+  enrolledCourses, // { inProgress, notStarted, completed }
   availableCourses,
 ) {
   try {
     // Debug: Log data being sent
     console.log("[Roadmap] Sending to API:", {
       preferences,
-      completedCoursesCount: completedCourses?.length || 0,
+      inProgressCount: enrolledCourses?.inProgress?.length || 0,
+      notStartedCount: enrolledCourses?.notStarted?.length || 0,
+      completedCount: enrolledCourses?.completed?.length || 0,
       availableCoursesCount: availableCourses?.length || 0,
     });
 
@@ -175,7 +245,7 @@ export async function fetchAIRecommendations(
       body: JSON.stringify({
         type: "roadmap",
         preferences,
-        completedCourses,
+        enrolledCourses, // New structure: { inProgress, notStarted, completed }
         availableCourses,
       }),
     });
@@ -198,7 +268,8 @@ export async function fetchAIRecommendations(
 }
 
 /**
- * Main function: Lấy lộ trình gợi ý cho user
+ * Main function: Lấy lộ trình gợi ý cho user (SOLUTION B)
+ * Gợi ý cả khóa đang học, chưa bắt đầu, và khóa mới
  * @param {string} userId - ID người dùng
  * @param {boolean} forceRefresh - Bỏ qua cache nếu true
  * @returns {Promise<Object>} - { recommendations, summary, courses }
@@ -215,40 +286,56 @@ export async function getPersonalizedRoadmap(userId, forceRefresh = false) {
 
   try {
     // Fetch all required data in parallel
-    const [preferences, completedCourses, enrolledIds] = await Promise.all([
+    const [preferences, enrolledWithProgress, enrolledIds] = await Promise.all([
       getUserPreferences(userId),
-      getCompletedCourses(userId),
+      getEnrolledCoursesWithProgress(userId),
       getEnrolledCourseIds(userId),
     ]);
 
-    // Get available courses (excluding enrolled)
+    // Get available courses (chưa enroll)
     const availableCourses = await getAvailableCourses(enrolledIds);
 
-    if (availableCourses.length === 0) {
+    // Destructure enrolled courses
+    const { inProgress, notStarted, completed } = enrolledWithProgress;
+
+    console.log("[Roadmap] Course stats:", {
+      inProgress: inProgress.length,
+      notStarted: notStarted.length,
+      available: availableCourses.length,
+      completed: completed.length,
+    });
+
+    // Nếu không có gì để gợi ý
+    const totalRecommendable = inProgress.length + notStarted.length + availableCourses.length;
+    if (totalRecommendable === 0) {
       return {
         recommendations: [],
-        summary: "Bạn đã đăng ký tất cả các khóa học hiện có!",
+        summary: completed.length > 0
+          ? `Tuyệt vời! Bạn đã hoàn thành ${completed.length} khóa học. Hãy quay lại sau để xem khóa mới!`
+          : "Bạn đã đăng ký tất cả các khóa học hiện có!",
         courses: [],
         fromCache: false,
       };
     }
 
-    // Call AI API
+    // Call AI API với data mới
     const aiResult = await fetchAIRecommendations(
       preferences,
-      completedCourses,
+      { inProgress, notStarted, completed }, // Gửi cả 3 loại
       availableCourses,
     );
 
     if (!aiResult || !aiResult.recommendations) {
-      // Fallback: return featured/beginner courses
-      return getFallbackRecommendations(availableCourses, preferences);
+      // Fallback: dùng local scoring
+      return getSmartRecommendations(inProgress, notStarted, availableCourses, preferences);
     }
 
-    // Map courseIds to full course data
+    // Map courseIds to full course data từ tất cả các nguồn
+    const allCourses = [...inProgress, ...notStarted, ...availableCourses];
     const recommendedCourses = [];
+    
     for (const rec of aiResult.recommendations) {
-      const course = availableCourses.find((c) => c.id === rec.courseId);
+      const course = allCourses.find((c) => c.id === rec.courseId);
       if (course) {
         recommendedCourses.push({
           ...course,
@@ -275,56 +362,115 @@ export async function getPersonalizedRoadmap(userId, forceRefresh = false) {
 }
 
 /**
- * Fallback recommendations khi AI không hoạt động
+ * SOLUTION B: Smart recommendations with priority scoring
+ * Ưu tiên: inProgress > notStarted > available
+ * Matching: category + level
  */
-function getFallbackRecommendations(availableCourses, preferences) {
-  let recommended = [...availableCourses];
+function getSmartRecommendations(inProgress, notStarted, available, preferences) {
+  const userLevel = preferences?.level || "beginner";
+  const userInterests = preferences?.interests || [];
 
-  // Filter by user interests if available
-  if (preferences?.interests?.length > 0) {
-    const filtered = recommended.filter((c) =>
-      preferences.interests.includes(c.category),
-    );
-    if (filtered.length > 0) recommended = filtered;
-  }
-
-  // Sort by level based on user level
-  const levelOrder = {
-    beginner: ["beginner", "intermediate", "advanced"],
-    basic: ["beginner", "intermediate", "advanced"],
-    intermediate: ["intermediate", "advanced", "beginner"],
-    advanced: ["advanced", "intermediate", "beginner"],
+  // Category mapping để mở rộng matching
+  const categoryRelations = {
+    web: ["frontend", "backend", "web", "javascript", "html", "css", "react"],
+    frontend: ["frontend", "web", "javascript", "html", "css", "react"],
+    backend: ["backend", "nodejs", "database", "api"],
+    mobile: ["mobile", "flutter", "react-native"],
+    database: ["database", "sql", "mongodb", "backend"],
+    "data-science": ["data-science", "python", "machine-learning"],
   };
 
-  const userLevel = preferences?.level || "beginner";
-  const order = levelOrder[userLevel] || levelOrder.beginner;
-
-  recommended.sort((a, b) => {
-    const aIdx = order.indexOf(a.level);
-    const bIdx = order.indexOf(b.level);
-    // Featured courses first
-    if (a.featured && !b.featured) return -1;
-    if (!a.featured && b.featured) return 1;
-    return aIdx - bIdx;
+  // Expand interests
+  const expandedInterests = new Set();
+  userInterests.forEach((interest) => {
+    const related = categoryRelations[interest] || [interest];
+    related.forEach((cat) => expandedInterests.add(cat.toLowerCase()));
   });
 
-  // Take top 3
-  const topCourses = recommended.slice(0, 3).map((course) => ({
-    ...course,
-    reason: "Khóa học phổ biến phù hợp với trình độ của bạn",
-  }));
+  // Scoring function
+  const scoreCourse = (course, baseScore) => {
+    let score = baseScore;
+    const category = (course.category || "").toLowerCase();
+    const level = (course.level || "").toLowerCase();
+
+    // Category match (+100)
+    if (expandedInterests.has(category)) score += 100;
+
+    // Level match (+30 exact, +15 adjacent)
+    if (level === userLevel) score += 30;
+    else if (
+      (userLevel === "beginner" && level === "intermediate") ||
+      (userLevel === "intermediate" && (level === "beginner" || level === "advanced")) ||
+      (userLevel === "advanced" && level === "intermediate")
+    ) {
+      score += 15;
+    }
+
+    // Progress bonus for inProgress courses
+    if (course.progress && course.progress > 50) score += 50;
+
+    // Featured bonus
+    if (course.featured) score += 10;
+
+    return { ...course, score, categoryMatched: expandedInterests.has(category) };
+  };
+
+  // Score all courses với base score theo loại
+  const scoredInProgress = inProgress.map((c) => scoreCourse(c, 200));
+  const scoredNotStarted = notStarted.map((c) => scoreCourse(c, 100));
+  const scoredAvailable = available.map((c) => scoreCourse(c, 50));
+
+  // Combine và sort
+  const allScored = [...scoredInProgress, ...scoredNotStarted, ...scoredAvailable];
+  allScored.sort((a, b) => b.score - a.score);
+
+  // Lấy top 3
+  const top = allScored.slice(0, 3);
+
+  // Generate summary dựa trên kết quả
+  let summary;
+  const hasInProgress = scoredInProgress.length > 0;
+  const topCategoryMatch = top.filter((c) => c.categoryMatched).length;
+
+  if (hasInProgress && top[0].progress) {
+    summary = `Bạn đang học ${top[0].title} (${top[0].progress}%). Hãy hoàn thành để tiếp tục lộ trình!`;
+  } else if (topCategoryMatch > 0) {
+    const interestText = userInterests.length > 0 ? userInterests[0] : "lập trình";
+    summary = `Dựa trên sở thích ${interestText} và trình độ của bạn, đây là các khóa học gợi ý.`;
+  } else {
+    summary = "Đây là các khóa học phù hợp với trình độ hiện tại của bạn.";
+  }
+
+  // Generate reasons
+  const recommendations = top.map((course) => {
+    let reason;
+    if (course.progress && course.progress > 0) {
+      reason = `Bạn đã học ${course.progress}% - hãy hoàn thành!`;
+    } else if (course.score >= 200 && course.categoryMatched) {
+      reason = `Phù hợp với sở thích ${course.category} của bạn`;
+    } else if (course.score >= 100) {
+      reason = "Khóa học bạn đã đăng ký - bắt đầu ngay!";
+    } else {
+      reason = `Khóa học mới phù hợp trình độ ${course.level}`;
+    }
+    return { courseId: course.id, reason };
+  });
 
   return {
-    recommendations: topCourses.map((c) => ({
-      courseId: c.id,
-      reason: c.reason,
-    })),
-    summary:
-      "Dựa trên trình độ và sở thích của bạn, đây là những khóa học gợi ý.",
-    courses: topCourses,
+    recommendations,
+    summary,
+    courses: top.map((c) => ({ ...c, reason: recommendations.find((r) => r.courseId === c.id)?.reason })),
     fromCache: false,
     isFallback: true,
   };
+}
+
+/**
+ * Fallback recommendations khi AI không hoạt động (legacy - kept for compatibility)
+ */
+function getFallbackRecommendations(availableCourses, preferences) {
+  // Redirect to new smart recommendations
+  return getSmartRecommendations([], [], availableCourses, preferences);
 }
 
 /**
@@ -337,6 +483,7 @@ export function clearRoadmapCache(userId) {
 export default {
   getUserPreferences,
   getCompletedCourses,
+  getEnrolledCoursesWithProgress,
   getAvailableCourses,
   getPersonalizedRoadmap,
   clearRoadmapCache,

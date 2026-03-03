@@ -33,6 +33,7 @@ export default async function handler(req, res) {
       conversationHistory,
       preferences,
       completedCourses,
+      enrolledCourses, // SOLUTION B: New structure { inProgress, notStarted, completed }
       availableCourses,
     } = req.body;
 
@@ -42,6 +43,11 @@ export default async function handler(req, res) {
       "[API] Available courses count:",
       availableCourses?.length || 0,
     );
+    console.log("[API] Enrolled courses:", {
+      inProgress: enrolledCourses?.inProgress?.length || 0,
+      notStarted: enrolledCourses?.notStarted?.length || 0,
+      completed: enrolledCourses?.completed?.length || completedCourses?.length || 0,
+    });
     console.log(
       "[API] Conversation history length:",
       conversationHistory?.length || 0,
@@ -49,10 +55,10 @@ export default async function handler(req, res) {
 
     // Xử lý theo loại request
     if (type === "roadmap") {
-      // AI Roadmap Recommendation
+      // SOLUTION B: AI Roadmap Recommendation với data structure mới
       return handleRoadmapRecommendation(res, GEMINI_API_URL, GEMINI_API_KEY, {
         preferences,
-        completedCourses,
+        enrolledCourses: enrolledCourses || { inProgress: [], notStarted: [], completed: completedCourses || [] },
         availableCourses,
       });
     }
@@ -74,30 +80,53 @@ export default async function handler(req, res) {
 }
 
 /**
- * Xử lý gợi ý lộ trình học tập cá nhân hóa
+ * SOLUTION B: Xử lý gợi ý lộ trình học tập - bao gồm cả khóa đang học và chưa bắt đầu
  */
 async function handleRoadmapRecommendation(res, apiUrl, apiKey, data) {
-  const { preferences, completedCourses, availableCourses } = data;
+  const { preferences, enrolledCourses, availableCourses } = data;
+  const { inProgress = [], notStarted = [], completed = [] } = enrolledCourses || {};
 
-  // Validate input
-  if (!availableCourses || availableCourses.length === 0) {
-    return res.status(400).json({ error: "No available courses provided" });
+  // Tổng số khóa có thể gợi ý
+  const totalRecommendable = inProgress.length + notStarted.length + (availableCourses?.length || 0);
+
+  console.log("[Roadmap] Data stats:", {
+    inProgress: inProgress.length,
+    notStarted: notStarted.length,
+    available: availableCourses?.length || 0,
+    completed: completed.length,
+  });
+
+  if (totalRecommendable === 0) {
+    return res.status(200).json({
+      recommendations: [],
+      summary: completed.length > 0
+        ? `Tuyệt vời! Bạn đã hoàn thành ${completed.length} khóa học.`
+        : "Bạn đã đăng ký tất cả khóa học hiện có!",
+    });
   }
 
-  // Build context - super simplified
+  // Build context
   const userLevel = preferences?.level || "beginner";
-  const userInterests = preferences?.interests?.[0] || "frontend";
+  const userInterests = preferences?.interests || [];
 
-  // Course list dạng ngắn nhất: "id:title:level"
-  const courseStr = availableCourses
-    .slice(0, 5) // Chỉ lấy tối đa 5 khóa
-    .map((c) => `${c.id}|${c.level}`)
-    .join(",");
+  // Tạo prompt cho AI với data mới (tối ưu ngắn gọn)
+  const formatCourses = (courses, maxCount = 3) =>
+    courses.slice(0, maxCount).map((c) => `${c.id}|${c.title}|${c.category}|${c.level}${c.progress !== undefined ? `|${c.progress}%` : ""}`).join("; ");
 
-  // Prompt cực ngắn
-  const prompt = `Pick 1-2 courses for ${userLevel} user interested in ${userInterests}.
-Courses: ${courseStr}
-Return JSON only: {"recommendations":[{"courseId":"id","reason":"5 words max"}],"summary":"10 words max"}`;
+  let prompt = `User: ${userLevel} level, interests: ${userInterests.join(", ") || "general"}\n`;
+  
+  if (inProgress.length > 0) {
+    prompt += `IN_PROGRESS (continue these first!): ${formatCourses(inProgress)}\n`;
+  }
+  if (notStarted.length > 0) {
+    prompt += `ENROLLED_NOT_STARTED: ${formatCourses(notStarted)}\n`;
+  }
+  if (availableCourses?.length > 0) {
+    prompt += `NEW_COURSES: ${formatCourses(availableCourses)}\n`;
+  }
+
+  prompt += `\nSelect 2-3 courses. Prioritize: 1) IN_PROGRESS (must continue), 2) ENROLLED matching interests, 3) NEW matching interests.
+Return JSON only: {"recommendations":[{"courseId":"id","reason":"vì sao - 10 words"}],"summary":"1 sentence summary"}`;
 
   try {
     const geminiRes = await fetch(`${apiUrl}?key=${apiKey}`, {
@@ -106,8 +135,8 @@ Return JSON only: {"recommendations":[{"courseId":"id","reason":"5 words max"}],
       body: JSON.stringify({
         contents: [{ role: "user", parts: [{ text: prompt }] }],
         generationConfig: {
-          temperature: 0,
-          maxOutputTokens: 150,
+          temperature: 0.2,
+          maxOutputTokens: 250,
         },
       }),
     });
@@ -116,12 +145,11 @@ Return JSON only: {"recommendations":[{"courseId":"id","reason":"5 words max"}],
     const finishReason = responseData.candidates?.[0]?.finishReason;
     const rawText = responseData.candidates?.[0]?.content?.parts?.[0]?.text;
 
-    console.log("[Roadmap] Finish:", finishReason, "Raw:", rawText?.substring(0, 200));
+    console.log("[Roadmap] Finish:", finishReason, "Length:", rawText?.length || 0);
 
-    // Nếu MAX_TOKENS hoặc parse fail → dùng smart fallback
     if (finishReason === "MAX_TOKENS" || !rawText) {
       return res.status(200).json(
-        buildSmartRecommendation(availableCourses, preferences)
+        buildSmartRecommendation(inProgress, notStarted, availableCourses, preferences)
       );
     }
 
@@ -129,7 +157,7 @@ Return JSON only: {"recommendations":[{"courseId":"id","reason":"5 words max"}],
 
     if (!result || !result.recommendations?.length) {
       return res.status(200).json(
-        buildSmartRecommendation(availableCourses, preferences)
+        buildSmartRecommendation(inProgress, notStarted, availableCourses, preferences)
       );
     }
 
@@ -138,50 +166,108 @@ Return JSON only: {"recommendations":[{"courseId":"id","reason":"5 words max"}],
   } catch (err) {
     console.error("[Roadmap] Error:", err.message);
     return res.status(200).json(
-      buildSmartRecommendation(availableCourses, preferences)
+      buildSmartRecommendation(inProgress, notStarted, availableCourses, preferences)
     );
   }
 }
 
 /**
- * Smart fallback - gợi ý dựa trên logic đơn giản
+ * SOLUTION B: Smart fallback với priority scoring
+ * Ưu tiên: inProgress > notStarted > available
  */
-function buildSmartRecommendation(courses, preferences) {
+function buildSmartRecommendation(inProgress, notStarted, available, preferences) {
   const userLevel = preferences?.level || "beginner";
   const userInterests = preferences?.interests || [];
 
-  // Scoring: level match + category match
-  const scored = courses.map((c) => {
-    let score = 0;
-    // Level matching
-    if (c.level === userLevel) score += 10;
-    if (c.level === "beginner" && userLevel === "basic") score += 5;
-    if (c.level === "intermediate" && userLevel === "advanced") score += 3;
-    // Category matching
-    if (userInterests.includes(c.category)) score += 8;
-    // Featured bonus
-    if (c.featured) score += 2;
-    return { ...c, score };
-  });
-
-  // Sort by score descending
-  scored.sort((a, b) => b.score - a.score);
-
-  const top = scored.slice(0, Math.min(2, scored.length));
-
-  const levelText = {
-    beginner: "người mới bắt đầu",
-    basic: "cơ bản",
-    intermediate: "trung cấp",
-    advanced: "nâng cao",
+  // Category relations (mở rộng matching)
+  const categoryRelations = {
+    web: ["frontend", "backend", "web", "javascript", "html", "css", "react"],
+    frontend: ["frontend", "web", "javascript", "html", "css", "react"],
+    backend: ["backend", "nodejs", "database", "api"],
+    mobile: ["mobile", "flutter", "react-native"],
+    database: ["database", "sql", "mongodb", "backend"],
+    "data-science": ["data-science", "python", "machine-learning"],
   };
 
+  // Expand interests
+  const expandedInterests = new Set();
+  userInterests.forEach((interest) => {
+    const related = categoryRelations[interest] || [interest];
+    related.forEach((cat) => expandedInterests.add(cat.toLowerCase()));
+  });
+
+  // Scoring function
+  const scoreCourse = (course, baseScore) => {
+    let score = baseScore;
+    const category = (course.category || "").toLowerCase();
+    const level = (course.level || "").toLowerCase();
+
+    // Category match (+100)
+    if (expandedInterests.has(category)) score += 100;
+
+    // Level match (+30 exact, +15 adjacent)
+    if (level === userLevel) score += 30;
+    else if (
+      (userLevel === "beginner" && level === "intermediate") ||
+      (userLevel === "intermediate" && (level === "beginner" || level === "advanced")) ||
+      (userLevel === "advanced" && level === "intermediate")
+    ) {
+      score += 15;
+    }
+
+    // Progress bonus cho inProgress
+    if (course.progress && course.progress > 50) score += 50;
+
+    // Featured bonus
+    if (course.featured) score += 10;
+
+    return { ...course, score, categoryMatched: expandedInterests.has(category) };
+  };
+
+  // Score all courses với base score theo loại
+  const scoredInProgress = (inProgress || []).map((c) => scoreCourse(c, 200));
+  const scoredNotStarted = (notStarted || []).map((c) => scoreCourse(c, 100));
+  const scoredAvailable = (available || []).map((c) => scoreCourse(c, 50));
+
+  // Combine và sort
+  const allScored = [...scoredInProgress, ...scoredNotStarted, ...scoredAvailable];
+  allScored.sort((a, b) => b.score - a.score);
+
+  // Lấy top 3
+  const top = allScored.slice(0, 3);
+
+  // Generate summary
+  let summary;
+  const hasInProgress = scoredInProgress.length > 0;
+  const topCategoryMatch = top.filter((c) => c.categoryMatched).length;
+
+  if (hasInProgress && top[0].progress) {
+    summary = `Bạn đang học ${top[0].title} (${top[0].progress}%). Hãy hoàn thành để tiếp tục!`;
+  } else if (topCategoryMatch > 0) {
+    const interestText = userInterests.length > 0 ? userInterests[0] : "lập trình";
+    summary = `Dựa trên sở thích ${interestText} và trình độ, đây là gợi ý cho bạn.`;
+  } else {
+    summary = "Đây là các khóa học phù hợp với trình độ của bạn.";
+  }
+
+  // Generate reasons
+  const recommendations = top.map((course) => {
+    let reason;
+    if (course.progress && course.progress > 0) {
+      reason = `Đã học ${course.progress}% - hãy hoàn thành!`;
+    } else if (course.score >= 200 && course.categoryMatched) {
+      reason = `Phù hợp sở thích ${course.category}`;
+    } else if (course.score >= 100) {
+      reason = "Khóa đã đăng ký - bắt đầu ngay!";
+    } else {
+      reason = `Phù hợp trình độ ${course.level}`;
+    }
+    return { courseId: course.id, reason };
+  });
+
   return {
-    recommendations: top.map((c) => ({
-      courseId: c.id,
-      reason: `Phù hợp với trình độ ${levelText[c.level] || c.level} của bạn`,
-    })),
-    summary: `Dựa trên sở thích${userInterests.length ? ` (${userInterests[0]})` : ""} và trình độ của bạn, đây là các khóa học gợi ý.`,
+    recommendations,
+    summary,
     isFallback: true,
   };
 }
