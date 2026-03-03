@@ -126,7 +126,7 @@ async function handleRoadmapRecommendation(res, apiUrl, apiKey, data) {
     .join("\n");
 
   const prompt = `
-Bạn là cố vấn học tập AI cho nền tảng CodeMaster. Nhiệm vụ: Gợi ý 2-3 khóa học phù hợp nhất cho người dùng.
+Bạn là cố vấn học tập AI cho nền tảng CodeMaster. Nhiệm vụ: Gợi ý khóa học phù hợp nhất cho người dùng.
 
 **THÔNG TIN NGƯỜI DÙNG:**
 - Trình độ: ${userLevel}
@@ -136,22 +136,18 @@ Bạn là cố vấn học tập AI cho nền tảng CodeMaster. Nhiệm vụ: G
 **KHÓA HỌC ĐÃ HOÀN THÀNH:**
 ${completedList}
 
-**DANH SÁCH KHÓA HỌC CÓ THỂ HỌC:**
+**DANH SÁCH KHÓA HỌC CÓ THỂ HỌC (chỉ chọn trong danh sách này):**
 ${availableList}
 
 **YÊU CẦU:**
-1. Chọn 2-3 khóa học phù hợp nhất từ danh sách trên
+1. Chọn 1-3 khóa học phù hợp nhất từ danh sách trên (nếu ít hơn 3 khóa thì chọn tất cả)
 2. Ưu tiên theo: trình độ phù hợp → lĩnh vực quan tâm → mục tiêu học tập
 3. Với người mới (beginner): ưu tiên khóa beginner trong lĩnh vực quan tâm
 4. Với người đã học: gợi ý khóa level cao hơn hoặc lĩnh vực liên quan
 
-**TRẢ VỀ ĐÚNG ĐỊNH DẠNG JSON (không markdown, không backticks):**
-{
-  "recommendations": [
-    {"courseId": "id_khóa_học", "reason": "Lý do ngắn gọn (1-2 câu tiếng Việt)"}
-  ],
-  "summary": "Tóm tắt ngắn gọn về lộ trình gợi ý (2-3 câu tiếng Việt)"
-}
+QUAN TRỌNG: Chỉ trả về JSON thuần túy, không có markdown, không có backtick, không có giải thích thêm.
+Định dạng bắt buộc:
+{"recommendations":[{"courseId":"ID_KHOA_HOC","reason":"Lý do ngắn gọn 1-2 câu"}],"summary":"Tóm tắt lộ trình 2-3 câu"}
 `;
 
   try {
@@ -159,44 +155,78 @@ ${availableList}
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        contents: [{ parts: [{ text: prompt }] }],
+        contents: [{ role: "user", parts: [{ text: prompt }] }],
         generationConfig: {
-          temperature: 0.3,
-          maxOutputTokens: 800,
-          responseMimeType: "application/json",
+          temperature: 0.2,
+          maxOutputTokens: 1024,
         },
       }),
     });
 
     const responseData = await geminiRes.json();
+
+    // Debug log để dễ trace lỗi trên Vercel
+    console.log("[Roadmap] Gemini HTTP status:", geminiRes.status);
+    console.log("[Roadmap] Candidates:", JSON.stringify(responseData.candidates?.length));
+    console.log("[Roadmap] FinishReason:", responseData.candidates?.[0]?.finishReason);
+
     const rawText = responseData.candidates?.[0]?.content?.parts?.[0]?.text;
 
     if (!rawText) {
-      return res.status(500).json({ error: "Empty AI response" });
+      const blockReason = responseData.promptFeedback?.blockReason || "unknown";
+      console.error("[Roadmap] Empty response. Block reason:", blockReason);
+      return res.status(500).json({
+        error: "Empty AI response",
+        details: `Block reason: ${blockReason}`,
+      });
     }
 
-    // Parse JSON response
+    console.log("[Roadmap] Raw text (first 300 chars):", rawText.substring(0, 300));
+
+    // Parse JSON - xử lý nhiều trường hợp model trả về
     let result;
     try {
-      result = JSON.parse(rawText);
-    } catch (parseErr) {
-      // Try to extract JSON from the response
-      const jsonMatch = rawText.match(/\{[\s\S]*\}/);
-      if (jsonMatch) {
-        result = JSON.parse(jsonMatch[0]);
-      } else {
-        throw new Error("Invalid JSON response");
+      // Trường hợp 1: JSON thuần túy
+      result = JSON.parse(rawText.trim());
+    } catch {
+      // Trường hợp 2: JSON bọc trong markdown ```json ... ```
+      const fenceMatch = rawText.match(/```(?:json)?\s*([\s\S]*?)```/i);
+      if (fenceMatch) {
+        try {
+          result = JSON.parse(fenceMatch[1].trim());
+        } catch {
+          // ignore, try next
+        }
+      }
+
+      // Trường hợp 3: Tìm object JSON đầu tiên trong text
+      if (!result) {
+        const jsonMatch = rawText.match(/\{[\s\S]*\}/);
+        if (jsonMatch) {
+          try {
+            result = JSON.parse(jsonMatch[0]);
+          } catch {
+            // ignore
+          }
+        }
+      }
+
+      if (!result) {
+        console.error("[Roadmap] Cannot parse JSON from:", rawText);
+        throw new Error("Cannot parse JSON from AI response");
       }
     }
 
-    // Validate result structure
+    // Validate cấu trúc
     if (!result.recommendations || !Array.isArray(result.recommendations)) {
+      console.error("[Roadmap] Invalid structure:", JSON.stringify(result));
       return res.status(500).json({ error: "Invalid recommendation format" });
     }
 
+    console.log("[Roadmap] Success, recommendations:", result.recommendations.length);
     return res.status(200).json(result);
   } catch (err) {
-    console.error("Roadmap recommendation error:", err.message || err);
+    console.error("[Roadmap] Error:", err.message || err);
     return res.status(500).json({
       error: "AI recommendation failed",
       details: err.message || "Unknown error",
