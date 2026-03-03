@@ -30,6 +30,7 @@ export default async function handler(req, res) {
       type,
       question,
       context,
+      conversationHistory,
       preferences,
       completedCourses,
       availableCourses,
@@ -40,6 +41,10 @@ export default async function handler(req, res) {
     console.log(
       "[API] Available courses count:",
       availableCourses?.length || 0,
+    );
+    console.log(
+      "[API] Conversation history length:",
+      conversationHistory?.length || 0,
     );
 
     // Xử lý theo loại request
@@ -52,28 +57,17 @@ export default async function handler(req, res) {
       });
     }
 
-    // Default: Chat assistant
+    // ============================================
+    // PHASE 1: Multi-turn Chat với Conversation Memory
+    // ============================================
     if (!question) return res.status(400).json({ error: "Missing question" });
 
-    const prompt = `
-Bạn là trợ lý AI cho nền tảng học lập trình. Hãy trả lời ngắn gọn, dễ hiểu, ưu tiên giải thích cho người mới học.
-Câu hỏi: ${question}
-Bối cảnh bài học: ${context || "Không có"}
-`;
-
-    const geminiRes = await fetch(`${GEMINI_API_URL}?key=${GEMINI_API_KEY}`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        contents: [{ parts: [{ text: prompt }] }],
-        generationConfig: { temperature: 0.2, maxOutputTokens: 512 },
-      }),
+    // Xử lý chat với conversation history
+    return handleChatWithMemory(res, GEMINI_API_URL, GEMINI_API_KEY, {
+      question,
+      context,
+      conversationHistory,
     });
-    const data = await geminiRes.json();
-    const answer =
-      data.candidates?.[0]?.content?.parts?.[0]?.text ||
-      "Xin lỗi, tôi chưa có câu trả lời.";
-    res.status(200).json({ answer });
   } catch (err) {
     res.status(500).json({ error: "AI server error" });
   }
@@ -208,4 +202,246 @@ ${availableList}
       details: err.message || "Unknown error",
     });
   }
+}
+
+/**
+ * PHASE 1 + 2 + 3: Xử lý chat với Memory, Guardrails, và Suggestions
+ */
+async function handleChatWithMemory(res, apiUrl, apiKey, data) {
+  const { question, context, conversationHistory } = data;
+
+  // ============================================
+  // PHASE 3: Guardrails - Kiểm tra chủ đề
+  // ============================================
+  const offTopicCheck = checkOffTopic(question);
+  if (offTopicCheck.isOffTopic) {
+    return res.status(200).json({
+      answer: offTopicCheck.message,
+      suggestions: [
+        "Hỏi về bài học hiện tại",
+        "Giải thích code trong bài",
+        "Cho tôi ví dụ thực tế",
+      ],
+    });
+  }
+
+  // Parse context
+  let parsedContext = {};
+  try {
+    parsedContext = context ? JSON.parse(context) : {};
+  } catch {
+    parsedContext = { content: context || "" };
+  }
+
+  // ============================================
+  // System Instruction với Guardrails
+  // ============================================
+  const systemInstruction = `Bạn là "CodeMaster AI" - trợ lý học tập thông minh cho nền tảng học lập trình CodeMaster.
+
+**TÍNH CÁCH:**
+- Thân thiện, nhiệt tình như một người bạn học cùng
+- Giải thích đơn giản, dễ hiểu cho người mới
+- Đưa ra ví dụ code thực tế khi cần thiết
+- Khuyến khích và động viên người học
+
+**QUY TẮC QUAN TRỌNG:**
+1. CHỈ trả lời về lập trình, công nghệ, và nội dung học tập trên CodeMaster
+2. Từ chối lịch sự nếu câu hỏi về: chính trị, tôn giáo, bạo lực, nội dung người lớn, hoặc không liên quan đến học lập trình
+3. Nếu câu hỏi mơ hồ, hỏi lại để làm rõ thay vì đoán
+4. Trả lời bằng tiếng Việt, ngắn gọn nhưng đầy đủ (tối đa 300 từ)
+5. Sử dụng markdown cho code blocks: \`\`\`language
+6. Cuối câu trả lời, LUÔN gợi ý 2-3 câu hỏi tiếp theo liên quan
+
+**FORMAT TRẢ LỜI:**
+[Câu trả lời chính]
+
+---
+💡 **Bạn có thể hỏi thêm:**
+- [Gợi ý 1]
+- [Gợi ý 2]  
+- [Gợi ý 3]
+
+**BỐI CẢNH BÀI HỌC:**
+- Trang: ${parsedContext.pageTitle || "Không xác định"}
+- Bài học: ${parsedContext.lessonTitle || "Không có"}
+- Cấu trúc: ${parsedContext.structure || "Không có"}
+${parsedContext.codeExamples ? `- Code mẫu: ${parsedContext.codeExamples.substring(0, 500)}` : ""}`;
+
+  // Build conversation contents
+  const contents = [];
+
+  if (conversationHistory && conversationHistory.length > 0) {
+    for (const msg of conversationHistory) {
+      const role = msg.role === "assistant" ? "model" : "user";
+      contents.push({
+        role,
+        parts: [{ text: msg.content }],
+      });
+    }
+  }
+
+  const lastMsg = conversationHistory?.[conversationHistory.length - 1];
+  if (!lastMsg || lastMsg.content !== question) {
+    contents.push({
+      role: "user",
+      parts: [{ text: question }],
+    });
+  }
+
+  try {
+    const geminiRes = await fetch(`${apiUrl}?key=${apiKey}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        systemInstruction: {
+          parts: [{ text: systemInstruction }],
+        },
+        contents,
+        generationConfig: {
+          temperature: 0.4,
+          maxOutputTokens: 1024,
+          topP: 0.9,
+        },
+      }),
+    });
+
+    const responseData = await geminiRes.json();
+
+    console.log(
+      "[Chat] Response status:",
+      geminiRes.status,
+      responseData.candidates ? "OK" : "No candidates",
+    );
+
+    let answer =
+      responseData.candidates?.[0]?.content?.parts?.[0]?.text ||
+      "Xin lỗi, tôi đang gặp sự cố. Vui lòng thử lại sau nhé!";
+
+    // ============================================
+    // PHASE 2: Extract suggestions từ câu trả lời
+    // ============================================
+    const suggestions = extractSuggestions(answer, parsedContext);
+
+    // Loại bỏ phần suggestions từ answer nếu đã extract được
+    answer = cleanAnswerText(answer);
+
+    return res.status(200).json({ answer, suggestions });
+  } catch (err) {
+    console.error("Chat with memory error:", err.message || err);
+    return res.status(500).json({
+      error: "AI chat failed",
+      answer: "Có lỗi xảy ra khi xử lý. Vui lòng thử lại!",
+      suggestions: ["Thử hỏi lại", "Đặt câu hỏi khác"],
+    });
+  }
+}
+
+/**
+ * Lọc câu hỏi ngoài chủ đề (chính trị, bạo lực, 18+...)
+ */
+function checkOffTopic(question) {
+  const lowerQ = question.toLowerCase();
+
+  // Các từ khóa off-topic
+  const offTopicPatterns = [
+    // Chính trị
+    /\b(chính trị|bầu cử|đảng|chủ tịch|thủ tướng|quốc hội)\b/i,
+    // Tôn giáo
+    /\b(tôn giáo|phật|chúa|allah|đạo|nhà thờ|chùa)\b/i,
+    // Bạo lực
+    /\b(giết|đánh|bom|khủng bố|vũ khí|súng)\b/i,
+    // Nội dung người lớn
+    /\b(sex|porn|khiêu dâm|18\+|người lớn)\b/i,
+    // Cờ bạc, ma túy
+    /\b(cá độ|cờ bạc|casino|ma túy|thuốc lắc)\b/i,
+  ];
+
+  for (const pattern of offTopicPatterns) {
+    if (pattern.test(lowerQ)) {
+      return {
+        isOffTopic: true,
+        message:
+          "Xin lỗi, tôi chỉ có thể hỗ trợ các câu hỏi về lập trình và học tập. Bạn có thể hỏi tôi về bài học hiện tại hoặc các khái niệm lập trình nhé! 😊",
+      };
+    }
+  }
+
+  // Các câu hỏi chung chung không liên quan
+  const generalOffTopic = [
+    /^(bạn là ai|tên bạn là gì|bạn bao nhiêu tuổi)/i,
+    /^(thời tiết|dự báo|hôm nay là ngày)/i,
+    /^(kể chuyện|hát|rap|thơ)/i,
+  ];
+
+  for (const pattern of generalOffTopic) {
+    if (pattern.test(lowerQ)) {
+      return {
+        isOffTopic: true,
+        message:
+          "Mình là CodeMaster AI - trợ lý học lập trình của bạn! 🤖 Mình chuyên giúp bạn hiểu bài học, giải thích code, và trả lời câu hỏi về lập trình. Bạn đang học gì, để mình hỗ trợ nhé?",
+      };
+    }
+  }
+
+  return { isOffTopic: false };
+}
+
+/**
+ * Trích xuất gợi ý từ AI response
+ */
+function extractSuggestions(answer, context) {
+  const suggestions = [];
+
+  // Tìm phần "Bạn có thể hỏi thêm" trong answer
+  const suggestionsMatch = answer.match(
+    /(?:Bạn có thể hỏi thêm|Câu hỏi gợi ý|Hỏi thêm)[:\s]*\n?([-•*]\s*.+\n?)+/gi,
+  );
+
+  if (suggestionsMatch) {
+    const lines = suggestionsMatch[0].split("\n");
+    for (const line of lines) {
+      const cleanLine = line.replace(/^[-•*]\s*/, "").trim();
+      if (cleanLine && cleanLine.length > 5 && cleanLine.length < 60) {
+        suggestions.push(cleanLine);
+      }
+    }
+  }
+
+  // Nếu không tìm được, tạo suggestions mặc định dựa trên context
+  if (suggestions.length === 0) {
+    const lessonTitle = context.lessonTitle || "";
+
+    if (lessonTitle.toLowerCase().includes("javascript")) {
+      suggestions.push("Cho ví dụ thực tế", "Best practices?", "Lỗi hay gặp?");
+    } else if (lessonTitle.toLowerCase().includes("html")) {
+      suggestions.push("Semantic HTML là gì?", "Thuộc tính quan trọng?");
+    } else if (lessonTitle.toLowerCase().includes("css")) {
+      suggestions.push("Flexbox vs Grid?", "Responsive design?");
+    } else {
+      suggestions.push(
+        "Giải thích thêm?",
+        "Cho ví dụ code",
+        "Bài tập thực hành?",
+      );
+    }
+  }
+
+  return suggestions.slice(0, 3);
+}
+
+/**
+ * Làm sạch answer text, loại bỏ phần suggestions
+ */
+function cleanAnswerText(answer) {
+  // Loại bỏ phần "Bạn có thể hỏi thêm" ở cuối
+  return answer
+    .replace(
+      /\n*---\n*💡?\s*\*?\*?Bạn có thể hỏi thêm\*?\*?[:\s]*\n?([-•*]\s*.+\n?)+/gi,
+      "",
+    )
+    .replace(
+      /\n*💡?\s*\*?\*?Câu hỏi gợi ý\*?\*?[:\s]*\n?([-•*]\s*.+\n?)+/gi,
+      "",
+    )
+    .trim();
 }
