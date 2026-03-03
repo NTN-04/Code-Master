@@ -84,101 +84,106 @@ async function handleRoadmapRecommendation(res, apiUrl, apiKey, data) {
     return res.status(400).json({ error: "No available courses provided" });
   }
 
-  // Build context - simplified
+  // Build context - super simplified
   const userLevel = preferences?.level || "beginner";
-  const userInterests = preferences?.interests?.join(", ") || "frontend";
-  const userGoal = preferences?.goal || "job";
+  const userInterests = preferences?.interests?.[0] || "frontend";
 
-  // Simplified course list - chỉ lấy thông tin cần thiết
-  const courseList = availableCourses.map((c) => ({
-    id: c.id,
-    title: c.title,
-    level: c.level,
-    category: c.category,
-  }));
+  // Course list dạng ngắn nhất: "id:title:level"
+  const courseStr = availableCourses
+    .slice(0, 5) // Chỉ lấy tối đa 5 khóa
+    .map((c) => `${c.id}|${c.level}`)
+    .join(",");
 
-  // System instruction - ép AI chỉ trả JSON
-  const systemInstruction = `Bạn là API trả về JSON. KHÔNG viết markdown, KHÔNG giải thích, CHỈ trả về JSON object.`;
-
-  // Prompt ngắn gọn với ví dụ cụ thể
-  const prompt = `Chọn 1-2 khóa học phù hợp nhất cho user.
-
-USER: level=${userLevel}, interests=${userInterests}, goal=${userGoal}
-COURSES: ${JSON.stringify(courseList)}
-
-Trả về ĐÚNG format này (thay id và text):
-{"recommendations":[{"courseId":"course_id_here","reason":"lý do ngắn"}],"summary":"tóm tắt ngắn"}`;
+  // Prompt cực ngắn
+  const prompt = `Pick 1-2 courses for ${userLevel} user interested in ${userInterests}.
+Courses: ${courseStr}
+Return JSON only: {"recommendations":[{"courseId":"id","reason":"5 words max"}],"summary":"10 words max"}`;
 
   try {
     const geminiRes = await fetch(`${apiUrl}?key=${apiKey}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        systemInstruction: { parts: [{ text: systemInstruction }] },
         contents: [{ role: "user", parts: [{ text: prompt }] }],
         generationConfig: {
           temperature: 0,
-          maxOutputTokens: 256,
+          maxOutputTokens: 150,
         },
       }),
     });
 
     const responseData = await geminiRes.json();
-
-    console.log("[Roadmap] HTTP:", geminiRes.status);
-    console.log("[Roadmap] FinishReason:", responseData.candidates?.[0]?.finishReason);
-
+    const finishReason = responseData.candidates?.[0]?.finishReason;
     const rawText = responseData.candidates?.[0]?.content?.parts?.[0]?.text;
 
-    if (!rawText) {
-      const blockReason = responseData.promptFeedback?.blockReason || "unknown";
-      console.error("[Roadmap] Empty. Block:", blockReason);
-      return res.status(500).json({
-        error: "Empty AI response",
-        details: `Block reason: ${blockReason}`,
-      });
+    console.log("[Roadmap] Finish:", finishReason, "Raw:", rawText?.substring(0, 200));
+
+    // Nếu MAX_TOKENS hoặc parse fail → dùng smart fallback
+    if (finishReason === "MAX_TOKENS" || !rawText) {
+      return res.status(200).json(
+        buildSmartRecommendation(availableCourses, preferences)
+      );
     }
 
-    console.log("[Roadmap] Raw:", rawText.substring(0, 300));
-
-    // Parse JSON - xử lý nhiều trường hợp
     let result = parseJsonResponse(rawText);
 
-    if (!result) {
-      // Fallback: nếu parse fail, trả về khóa đầu tiên trong list
-      console.warn("[Roadmap] Parse failed, using fallback");
-      result = {
-        recommendations: availableCourses.slice(0, 2).map((c) => ({
-          courseId: c.id,
-          reason: "Khóa học phù hợp với trình độ của bạn",
-        })),
-        summary: "Đây là các khóa học gợi ý dựa trên trình độ hiện tại của bạn.",
-      };
+    if (!result || !result.recommendations?.length) {
+      return res.status(200).json(
+        buildSmartRecommendation(availableCourses, preferences)
+      );
     }
 
-    // Validate: nếu recommendations rỗng, fallback
-    if (!result.recommendations || result.recommendations.length === 0) {
-      console.warn("[Roadmap] Empty recommendations, using fallback");
-      result.recommendations = availableCourses.slice(0, 2).map((c) => ({
-        courseId: c.id,
-        reason: "Khóa học phù hợp với trình độ của bạn",
-      }));
-    }
-
-    console.log("[Roadmap] Success:", result.recommendations.length, "courses");
+    console.log("[Roadmap] AI Success:", result.recommendations.length);
     return res.status(200).json(result);
   } catch (err) {
-    console.error("[Roadmap] Error:", err.message || err);
-    // Fallback khi có lỗi
-    return res.status(200).json({
-      recommendations: availableCourses.slice(0, 2).map((c) => ({
-        courseId: c.id,
-        reason: "Khóa học phù hợp với trình độ của bạn",
-      })),
-      summary: "Đây là các khóa học gợi ý cho bạn.",
-      isFallback: true,
-    });
+    console.error("[Roadmap] Error:", err.message);
+    return res.status(200).json(
+      buildSmartRecommendation(availableCourses, preferences)
+    );
   }
+}
+
+/**
+ * Smart fallback - gợi ý dựa trên logic đơn giản
+ */
+function buildSmartRecommendation(courses, preferences) {
+  const userLevel = preferences?.level || "beginner";
+  const userInterests = preferences?.interests || [];
+
+  // Scoring: level match + category match
+  const scored = courses.map((c) => {
+    let score = 0;
+    // Level matching
+    if (c.level === userLevel) score += 10;
+    if (c.level === "beginner" && userLevel === "basic") score += 5;
+    if (c.level === "intermediate" && userLevel === "advanced") score += 3;
+    // Category matching
+    if (userInterests.includes(c.category)) score += 8;
+    // Featured bonus
+    if (c.featured) score += 2;
+    return { ...c, score };
+  });
+
+  // Sort by score descending
+  scored.sort((a, b) => b.score - a.score);
+
+  const top = scored.slice(0, Math.min(2, scored.length));
+
+  const levelText = {
+    beginner: "người mới bắt đầu",
+    basic: "cơ bản",
+    intermediate: "trung cấp",
+    advanced: "nâng cao",
+  };
+
+  return {
+    recommendations: top.map((c) => ({
+      courseId: c.id,
+      reason: `Phù hợp với trình độ ${levelText[c.level] || c.level} của bạn`,
+    })),
+    summary: `Dựa trên sở thích${userInterests.length ? ` (${userInterests[0]})` : ""} và trình độ của bạn, đây là các khóa học gợi ý.`,
+    isFallback: true,
+  };
 }
 
 /**
