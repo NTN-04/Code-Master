@@ -245,10 +245,10 @@ input[type="radio"] {
 }
 
 header {
-  min-height: 80px;
+  min-height: 70px;
   background-color: white;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  padding: 15px 0 10px;
+  padding: 10px 0 7px;
   position: sticky;
   top: 0;
   z-index: 100;
@@ -260,7 +260,7 @@ header .container {
   align-items: center;
 }
 .logo a img {
-  min-height: 60px;
+  min-height: 46px;
   width: auto;
 }
 
@@ -1151,7 +1151,7 @@ footer {
   .navbar-on-mobile {
     display: block;
   }
-  .logo{
+  .logo {
     margin-right: auto;
   }
 
