@@ -11,6 +11,13 @@ import {
 import { formatCurrency } from "../pay/vietqr-service.js";
 import { sanitizeText } from "../utils/sanitize.js";
 import { formatDateTime } from "../utils/date.js";
+import { exportOrders as exportOrdersToExcel } from "../utils/export.js";
+import {
+  initBulkSelect,
+  clearSelection,
+  toggleBulkActionsBar,
+  batchUpdateStatus,
+} from "../utils/bulk-select.js";
 
 /**
  * Admin Orders Manager
@@ -26,6 +33,9 @@ export default class OrdersManager {
     // Listener management
     this.ordersListenerRef = null;
     this.ordersListenerCallback = null;
+
+    // Bulk selection
+    this.selectedOrderIds = [];
 
     // Filter state
     this.currentFilter = {
@@ -174,10 +184,15 @@ export default class OrdersManager {
 
     const filteredOrders = this.getFilteredOrders();
 
+    // Clear bulk selection when re-rendering
+    clearSelection("orders-table");
+    this.selectedOrderIds = [];
+    toggleBulkActionsBar("orders-bulk-bar", 0);
+
     if (filteredOrders.length === 0) {
       tbody.innerHTML = `
         <tr>
-          <td colspan="8" class="text-center">
+          <td colspan="9" class="text-center">
             <div class="empty-state">
               <i class="fas fa-receipt"></i>
               <p>Không có đơn hàng nào</p>
@@ -217,6 +232,9 @@ export default class OrdersManager {
 
     return `
       <tr data-order-id="${safeOrderId}">
+        <td class="checkbox-col">
+          <input type="checkbox" class="select-row" data-id="${safeOrderId}">
+        </td>
         <td>
           <div class="order-id">
             <code>${safeOrderId}</code>
@@ -607,10 +625,131 @@ export default class OrdersManager {
     if (exportBtn) {
       exportBtn.addEventListener("click", () => this.exportOrders());
     }
+
+    // Initialize bulk selection
+    initBulkSelect("orders-table", (selectedIds) => {
+      this.selectedOrderIds = selectedIds;
+      toggleBulkActionsBar("orders-bulk-bar", selectedIds.length);
+      // Update count number
+      const countSpan = document.querySelector(
+        "#orders-bulk-bar .count-number",
+      );
+      if (countSpan) {
+        countSpan.textContent = selectedIds.length;
+      }
+    });
+
+    // Bulk cancel button
+    const bulkCancelBtn = document.getElementById("orders-bulk-cancel-btn");
+    if (bulkCancelBtn) {
+      bulkCancelBtn.addEventListener("click", () => {
+        clearSelection("orders-table");
+        this.selectedOrderIds = [];
+        toggleBulkActionsBar("orders-bulk-bar", 0);
+      });
+    }
+
+    // Bulk complete button
+    const bulkCompleteBtn = document.getElementById("orders-bulk-complete-btn");
+    if (bulkCompleteBtn) {
+      bulkCompleteBtn.addEventListener("click", () =>
+        this.bulkUpdateOrderStatus("completed"),
+      );
+    }
+
+    // Bulk cancel order button
+    const bulkCancelOrderBtn = document.getElementById(
+      "orders-bulk-cancel-order-btn",
+    );
+    if (bulkCancelOrderBtn) {
+      bulkCancelOrderBtn.addEventListener("click", () =>
+        this.bulkUpdateOrderStatus("cancelled"),
+      );
+    }
   }
 
   /**
-   * Export orders to CSV
+   * Bulk update order status
+   */
+  async bulkUpdateOrderStatus(newStatus) {
+    if (this.selectedOrderIds.length === 0) {
+      this.adminPanel.showNotification("Chưa chọn đơn hàng nào", "warning");
+      return;
+    }
+
+    // Only allow bulk actions on pending orders
+    const pendingOrders = this.orders.filter(
+      (o) =>
+        this.selectedOrderIds.includes(o.orderId) && o.status === "pending",
+    );
+
+    if (pendingOrders.length === 0) {
+      this.adminPanel.showNotification(
+        "Không có đơn hàng nào đang chờ xử lý",
+        "warning",
+      );
+      return;
+    }
+
+    const count = pendingOrders.length;
+    const statusText =
+      newStatus === "completed" ? "xác nhận thanh toán" : "hủy";
+
+    if (
+      !confirm(
+        `Bạn có chắc chắn muốn ${statusText} ${count} đơn hàng đang chờ xử lý?`,
+      )
+    ) {
+      return;
+    }
+
+    try {
+      const updateFunc = async (orderId, status) => {
+        const order = this.orders.find((o) => o.orderId === orderId);
+        if (!order) return;
+
+        const orderRef = ref(database, `orders/${order.id}`);
+        await update(orderRef, {
+          status,
+          updatedAt: new Date().toISOString(),
+        });
+
+        // If completing, also enroll user in course
+        if (status === "completed") {
+          const enrollmentRef = ref(
+            database,
+            `enrollments/${order.userId}/${order.courseId}`,
+          );
+          await update(enrollmentRef, {
+            enrolledAt: new Date().toISOString(),
+            status: "active",
+          });
+        }
+      };
+
+      const result = await batchUpdateStatus(
+        pendingOrders.map((o) => o.orderId),
+        newStatus,
+        updateFunc,
+      );
+
+      this.adminPanel.showNotification(
+        `Đã ${statusText} ${result.success} đơn hàng${result.failed > 0 ? `, ${result.failed} lỗi` : ""}`,
+        result.failed > 0 ? "warning" : "success",
+      );
+
+      // Clear selection
+      this.selectedOrderIds = [];
+      clearSelection("orders-table");
+      toggleBulkActionsBar("orders-bulk-bar", 0);
+    } catch (error) {
+      console.error("Error bulk updating orders:", error);
+      this.adminPanel.showNotification("Lỗi cập nhật đơn hàng", "error");
+    }
+  }
+
+  /**
+   * Export orders to Excel
    */
   exportOrders() {
     const filteredOrders = this.getFilteredOrders();
@@ -619,52 +758,23 @@ export default class OrdersManager {
       return;
     }
 
-    const headers = [
-      "Mã đơn hàng",
-      "Khách hàng",
-      "Email",
-      "Khóa học",
-      "Số tiền",
-      "Trạng thái",
-      "Phương thức",
-      "Ngày tạo",
-    ];
+    try {
+      const success = exportOrdersToExcel(
+        filteredOrders,
+        this.courses,
+        this.users,
+        "excel",
+      );
 
-    const rows = filteredOrders.map((order) => {
-      const user = this.users[order.userId] || {};
-      const course = this.courses[order.courseId] || {};
-      return [
-        order.orderId,
-        user.username || "N/A",
-        user.email || "N/A",
-        course.title || order.courseId,
-        order.amount,
-        order.status,
-        order.paymentMethod || "VietQR",
-        new Date(order.createdAt).toLocaleString("vi-VN"),
-      ];
-    });
-
-    // Create CSV content
-    const csvContent = [
-      headers.join(","),
-      ...rows.map((row) =>
-        row.map((cell) => `"${String(cell).replace(/"/g, '""')}"`).join(","),
-      ),
-    ].join("\n");
-
-    // Download file
-    const blob = new Blob(["\ufeff" + csvContent], {
-      type: "text/csv;charset=utf-8;",
-    });
-    const link = document.createElement("a");
-    link.href = URL.createObjectURL(blob);
-    link.download = `orders_${new Date().toISOString().split("T")[0]}.csv`;
-    link.click();
-
-    this.adminPanel.showNotification(
-      `Đã xuất ${filteredOrders.length} đơn hàng`,
-      "success",
-    );
+      if (success) {
+        this.adminPanel.showNotification(
+          `Đã xuất ${filteredOrders.length} đơn hàng ra file Excel`,
+          "success",
+        );
+      }
+    } catch (error) {
+      console.error("Error exporting orders:", error);
+      this.adminPanel.showNotification("Lỗi xuất file Excel", "error");
+    }
   }
 }
