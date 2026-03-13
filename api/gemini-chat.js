@@ -113,7 +113,31 @@ async function handleRoadmapRecommendation(res, apiUrl, apiKey, data) {
         completed.length > 0
           ? `Tuyệt vời! Bạn đã hoàn thành ${completed.length} khóa học.`
           : "Bạn đã đăng ký tất cả khóa học hiện có!",
+      isFallback: false,
     });
+  }
+
+  const logFallback = (reason, meta = {}) => {
+    console.warn("[Roadmap] Fallback:", reason, meta);
+  };
+
+  if (!apiKey) {
+    logFallback("missing_api_key", {
+      finishReason: null,
+      rawTextLength: 0,
+      rawTextSnippet: "",
+    });
+    return res
+      .status(200)
+      .json(
+        roadmapFallback(
+          inProgress,
+          notStarted,
+          availableCourses,
+          preferences,
+          "missing_api_key",
+        ),
+      );
   }
 
   // Build context
@@ -153,62 +177,152 @@ Return JSON only: {"recommendations":[{"courseId":"id","reason":"vì sao - 10 wo
         contents: [{ role: "user", parts: [{ text: prompt }] }],
         generationConfig: {
           temperature: 0.2,
-          maxOutputTokens: 250,
+          maxOutputTokens: 512,
+          responseMimeType: "application/json",
         },
       }),
     });
 
-    const responseData = await geminiRes.json();
+    let responseData = {};
+    try {
+      responseData = await geminiRes.json();
+    } catch {
+      responseData = {};
+    }
+
     const finishReason = responseData.candidates?.[0]?.finishReason;
     const rawText = responseData.candidates?.[0]?.content?.parts?.[0]?.text;
+    const rawTextLength = rawText?.length || 0;
+    const rawTextSnippet = rawText ? rawText.slice(0, 160) : "";
 
     console.log(
       "[Roadmap] Finish:",
       finishReason,
       "Length:",
-      rawText?.length || 0,
+      rawTextLength,
     );
 
-    if (finishReason === "MAX_TOKENS" || !rawText) {
+    if (!geminiRes.ok) {
+      logFallback("non_ok_response", {
+        status: geminiRes.status,
+        finishReason,
+        rawTextLength,
+        rawTextSnippet,
+      });
       return res
         .status(200)
         .json(
-          buildSmartRecommendation(
+          roadmapFallback(
             inProgress,
             notStarted,
             availableCourses,
             preferences,
+            "non_ok_response",
           ),
         );
     }
 
-    let result = parseJsonResponse(rawText);
-
-    if (!result || !result.recommendations?.length) {
+    if (finishReason === "MAX_TOKENS") {
+      logFallback("max_tokens", {
+        finishReason,
+        rawTextLength,
+        rawTextSnippet,
+      });
       return res
         .status(200)
         .json(
-          buildSmartRecommendation(
+          roadmapFallback(
             inProgress,
             notStarted,
             availableCourses,
             preferences,
+            "max_tokens",
+          ),
+        );
+    }
+
+    if (!rawText) {
+      logFallback("empty_text", {
+        finishReason,
+        rawTextLength,
+        rawTextSnippet,
+      });
+      return res
+        .status(200)
+        .json(
+          roadmapFallback(
+            inProgress,
+            notStarted,
+            availableCourses,
+            preferences,
+            "empty_text",
+          ),
+        );
+    }
+
+    const result = parseJsonResponse(rawText);
+
+    if (!result) {
+      logFallback("parse_failure", {
+        finishReason,
+        rawTextLength,
+        rawTextSnippet,
+      });
+      return res
+        .status(200)
+        .json(
+          roadmapFallback(
+            inProgress,
+            notStarted,
+            availableCourses,
+            preferences,
+            "parse_failure",
+          ),
+        );
+    }
+
+    if (!Array.isArray(result.recommendations) || result.recommendations.length === 0) {
+      logFallback("empty_recommendations", {
+        finishReason,
+        rawTextLength,
+        rawTextSnippet,
+      });
+      return res
+        .status(200)
+        .json(
+          roadmapFallback(
+            inProgress,
+            notStarted,
+            availableCourses,
+            preferences,
+            "empty_recommendations",
           ),
         );
     }
 
     console.log("[Roadmap] AI Success:", result.recommendations.length);
-    return res.status(200).json(result);
+    return res.status(200).json({
+      recommendations: result.recommendations,
+      summary: result.summary || "Đây là lộ trình gợi ý phù hợp với bạn.",
+      isFallback: false,
+    });
   } catch (err) {
     console.error("[Roadmap] Error:", err.message);
+    logFallback("fetch_error", {
+      error: err.message,
+      finishReason: null,
+      rawTextLength: 0,
+      rawTextSnippet: "",
+    });
     return res
       .status(200)
       .json(
-        buildSmartRecommendation(
+        roadmapFallback(
           inProgress,
           notStarted,
           availableCourses,
           preferences,
+          "fetch_error",
         ),
       );
   }
@@ -361,6 +475,25 @@ function buildSmartRecommendation(
     recommendations,
     summary,
     isFallback: true,
+  };
+}
+
+function roadmapFallback(
+  inProgress,
+  notStarted,
+  availableCourses,
+  preferences,
+  reason,
+) {
+  return {
+    ...buildSmartRecommendation(
+      inProgress,
+      notStarted,
+      availableCourses,
+      preferences,
+    ),
+    isFallback: true,
+    fallbackReason: reason,
   };
 }
 
