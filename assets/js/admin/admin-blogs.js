@@ -9,6 +9,13 @@ import {
   onValue,
   off,
 } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-database.js";
+import {
+  initBulkSelect,
+  clearSelection,
+  toggleBulkActionsBar,
+  batchDelete,
+  batchUpdateStatus,
+} from "../utils/bulk-select.js";
 
 export default class BlogManager {
   constructor(adminPanel) {
@@ -17,6 +24,8 @@ export default class BlogManager {
     // Listener management
     this.blogsListenerRef = null;
     this.blogsListenerCallback = null;
+    // Bulk selection
+    this.selectedBlogIds = [];
   }
 
   async loadData() {
@@ -76,6 +85,11 @@ export default class BlogManager {
 
     tbody.innerHTML = "";
 
+    // Clear bulk selection when re-rendering
+    clearSelection("blogs-table");
+    this.selectedBlogIds = [];
+    toggleBulkActionsBar("blogs-bulk-bar", 0);
+
     this.blogs.forEach((blog) => {
       const tr = document.createElement("tr");
 
@@ -84,16 +98,16 @@ export default class BlogManager {
         blog.status === "published"
           ? "status-active"
           : blog.status === "pending"
-          ? "status-pending"
-          : "status-inactive";
+            ? "status-pending"
+            : "status-inactive";
 
       // Get status text
       const statusText =
         blog.status === "published"
           ? "Đã đăng"
           : blog.status === "pending"
-          ? "Chờ duyệt"
-          : "Không hoạt động";
+            ? "Chờ duyệt"
+            : "Không hoạt động";
 
       // Truncate content for preview
       const contentPreview = blog.content
@@ -103,6 +117,9 @@ export default class BlogManager {
         : "";
 
       tr.innerHTML = `
+        <td class="checkbox-col">
+          <input type="checkbox" class="select-row" data-id="${blog.id}">
+        </td>
         <td>${blog.title || "Không có tiêu đề"}</td>
         <td>${blog.authorName}</td>
         <td>${(blog.tags || []).join(", ") || "Không phân loại"}</td>
@@ -193,7 +210,7 @@ export default class BlogManager {
         "blog",
         "Xóa bài viết",
         `Đã xóa bài viết "${blog?.title || blogId}"`,
-        "fas fa-trash"
+        "fas fa-trash",
       );
 
       this.adminPanel.showNotification("Đã xóa bài viết", "success");
@@ -221,7 +238,7 @@ export default class BlogManager {
         "blog",
         "Duyệt bài viết",
         `Đã duyệt bài viết "${blog.title}"`,
-        "fas fa-check"
+        "fas fa-check",
       );
 
       this.adminPanel.showNotification("Đã duyệt bài viết", "success");
@@ -360,7 +377,7 @@ export default class BlogManager {
           "blog",
           "Cập nhật bài viết",
           `Đã cập nhật bài viết "${blogData.title}"`,
-          "fas fa-edit"
+          "fas fa-edit",
         );
         e.target.reset();
         // xóa tham chiếu file tạm
@@ -458,7 +475,7 @@ export default class BlogManager {
     tagsInput.oninput = () =>
       localStorage.setItem("admin-blog-draft-tags", tagsInput.value);
     mde.codemirror.on("change", () =>
-      localStorage.setItem("admin-blog-draft-content", mde.value())
+      localStorage.setItem("admin-blog-draft-content", mde.value()),
     );
     imageInput.onchange = (e) => {
       const file = e.target.files[0];
@@ -508,7 +525,7 @@ export default class BlogManager {
         authorId: this.adminPanel.currentUser?.uid || "admin",
         authorAvatar:
           localStorage.getItem(
-            "profile-avatar-" + this.adminPanel.currentUser?.uid
+            "profile-avatar-" + this.adminPanel.currentUser?.uid,
           ) || "assets/images/avatar-default.jpg",
         createdAt: new Date().toLocaleDateString("vi-VN"),
         status: "published",
@@ -523,7 +540,7 @@ export default class BlogManager {
           "blog",
           "Thêm bài viết",
           `Đã thêm bài viết "${blogData.title}"`,
-          "fas fa-blog"
+          "fas fa-blog",
         );
         e.target.reset();
         // Xóa nháp (không còn ảnh Base64)
@@ -609,6 +626,134 @@ export default class BlogManager {
     if (statusFilter) {
       statusFilter.addEventListener("change", this.handleFilter.bind(this));
     }
+
+    // Initialize bulk selection
+    initBulkSelect("blogs-table", (selectedIds) => {
+      this.selectedBlogIds = selectedIds;
+      toggleBulkActionsBar("blogs-bulk-bar", selectedIds.length);
+      // Update count number
+      const countSpan = document.querySelector("#blogs-bulk-bar .count-number");
+      if (countSpan) {
+        countSpan.textContent = selectedIds.length;
+      }
+    });
+
+    // Bulk cancel button
+    const bulkCancelBtn = document.getElementById("blogs-bulk-cancel-btn");
+    if (bulkCancelBtn) {
+      bulkCancelBtn.addEventListener("click", () => {
+        clearSelection("blogs-table");
+        this.selectedBlogIds = [];
+        toggleBulkActionsBar("blogs-bulk-bar", 0);
+      });
+    }
+
+    // Bulk approve button
+    const bulkApproveBtn = document.getElementById("blogs-bulk-approve-btn");
+    if (bulkApproveBtn) {
+      bulkApproveBtn.addEventListener("click", () =>
+        this.bulkUpdateStatus("published"),
+      );
+    }
+
+    // Bulk draft button
+    const bulkDraftBtn = document.getElementById("blogs-bulk-draft-btn");
+    if (bulkDraftBtn) {
+      bulkDraftBtn.addEventListener("click", () =>
+        this.bulkUpdateStatus("draft"),
+      );
+    }
+
+    // Bulk delete button
+    const bulkDeleteBtn = document.getElementById("blogs-bulk-delete-btn");
+    if (bulkDeleteBtn) {
+      bulkDeleteBtn.addEventListener("click", () => this.bulkDeleteBlogs());
+    }
+  }
+
+  // Bulk delete blogs
+  async bulkDeleteBlogs() {
+    if (this.selectedBlogIds.length === 0) {
+      this.adminPanel.showNotification("Chưa chọn bài viết nào", "warning");
+      return;
+    }
+
+    const count = this.selectedBlogIds.length;
+    if (!confirm(`Bạn có chắc chắn muốn xóa ${count} bài viết đã chọn?`)) {
+      return;
+    }
+
+    try {
+      const deleteFunc = async (blogId) => {
+        await remove(ref(database, `blogs/${blogId}`));
+      };
+
+      const result = await batchDelete(
+        this.selectedBlogIds,
+        deleteFunc,
+        "bài viết",
+      );
+
+      this.adminPanel.showNotification(
+        `Đã xóa ${result.success} bài viết${result.failed > 0 ? `, ${result.failed} lỗi` : ""}`,
+        result.failed > 0 ? "warning" : "success",
+      );
+
+      // Clear selection
+      this.selectedBlogIds = [];
+      clearSelection("blogs-table");
+      toggleBulkActionsBar("blogs-bulk-bar", 0);
+    } catch (error) {
+      console.error("Error bulk deleting blogs:", error);
+      this.adminPanel.showNotification(
+        error.message || "Lỗi xóa bài viết",
+        "error",
+      );
+    }
+  }
+
+  // Bulk update status
+  async bulkUpdateStatus(newStatus) {
+    if (this.selectedBlogIds.length === 0) {
+      this.adminPanel.showNotification("Chưa chọn bài viết nào", "warning");
+      return;
+    }
+
+    const count = this.selectedBlogIds.length;
+    const statusText =
+      newStatus === "published" ? "duyệt" : "chuyển về bản nháp";
+
+    if (
+      !confirm(`Bạn có chắc chắn muốn ${statusText} ${count} bài viết đã chọn?`)
+    ) {
+      return;
+    }
+
+    try {
+      const updateFunc = async (blogId, status) => {
+        const blogRef = ref(database, `blogs/${blogId}`);
+        await update(blogRef, { status });
+      };
+
+      const result = await batchUpdateStatus(
+        this.selectedBlogIds,
+        newStatus,
+        updateFunc,
+      );
+
+      this.adminPanel.showNotification(
+        `Đã ${statusText} ${result.success} bài viết${result.failed > 0 ? `, ${result.failed} lỗi` : ""}`,
+        result.failed > 0 ? "warning" : "success",
+      );
+
+      // Clear selection
+      this.selectedBlogIds = [];
+      clearSelection("blogs-table");
+      toggleBulkActionsBar("blogs-bulk-bar", 0);
+    } catch (error) {
+      console.error("Error bulk updating status:", error);
+      this.adminPanel.showNotification("Lỗi cập nhật trạng thái", "error");
+    }
   }
 
   handleFilter() {
@@ -625,7 +770,7 @@ export default class BlogManager {
         (blog) =>
           blog.title?.toLowerCase().includes(searchTerm) ||
           blog.content?.toLowerCase().includes(searchTerm) ||
-          blog.authorName?.toLowerCase().includes(searchTerm)
+          blog.authorName?.toLowerCase().includes(searchTerm),
       );
     }
 
@@ -635,14 +780,14 @@ export default class BlogManager {
       filteredBlogs = filteredBlogs.filter(
         (blog) =>
           Array.isArray(blog.tags) &&
-          blog.tags.some((tag) => tag.toLowerCase() === filteredTags)
+          blog.tags.some((tag) => tag.toLowerCase() === filteredTags),
       );
     }
 
     // Lọc theo trạng thái
     if (statusFilter && statusFilter.value) {
       filteredBlogs = filteredBlogs.filter(
-        (blog) => blog.status === statusFilter.value
+        (blog) => blog.status === statusFilter.value,
       );
     }
 
@@ -656,10 +801,15 @@ export default class BlogManager {
 
     tbody.innerHTML = "";
 
+    // Clear bulk selection when filtering
+    clearSelection("blogs-table");
+    this.selectedBlogIds = [];
+    toggleBulkActionsBar("blogs-bulk-bar", 0);
+
     if (filteredBlogs.length === 0) {
       const tr = document.createElement("tr");
       tr.innerHTML = `
-        <td colspan="6" class="text-center">Không tìm thấy bài viết nào phù hợp</td>
+        <td colspan="7" class="text-center">Không tìm thấy bài viết nào phù hợp</td>
       `;
       tbody.appendChild(tr);
       return;
@@ -673,18 +823,21 @@ export default class BlogManager {
         blog.status === "published"
           ? "status-active"
           : blog.status === "pending"
-          ? "status-pending"
-          : "status-inactive";
+            ? "status-pending"
+            : "status-inactive";
 
       // Get status text
       const statusText =
         blog.status === "published"
           ? "Đã đăng"
           : blog.status === "pending"
-          ? "Chờ duyệt"
-          : "Không hoạt động";
+            ? "Chờ duyệt"
+            : "Không hoạt động";
 
       tr.innerHTML = `
+        <td class="checkbox-col">
+          <input type="checkbox" class="select-row" data-id="${blog.id}">
+        </td>
         <td>${blog.title || "Không có tiêu đề"}</td>
         <td>${blog.authorName}</td>
         <td>${(blog.tags || []).join(", ") || "Không phân loại"}</td>

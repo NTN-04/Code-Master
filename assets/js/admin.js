@@ -15,12 +15,14 @@ import { openModal, closeModal, attachModalDismiss } from "./utils/modal.js";
 import UsersManager from "./admin/admin-user.js";
 import CoursesManager from "./admin/admin-courses.js";
 import BlogManager from "./admin/admin-blogs.js";
-import AnalyticsManager from "./admin/admin-analytics.js";
+// AnalyticsManager đã được merge vào Dashboard (Smart Dashboard)
+// import AnalyticsManager from "./admin/admin-analytics.js";
 import Dashboard from "./admin/admin-dashboard.js";
 import SettingsManager from "./admin/admin-setting.js";
 import CommentsManager from "./admin/admin-comments.js";
 import OrdersManager from "./admin/admin-orders.js";
 import PaymentLogsManager from "./admin/admin-payment-logs.js";
+import RevenueManager from "./admin/admin-revenue.js";
 
 // Bộ điều khiển chính cho trang Quản trị Admin
 class AdminPanel {
@@ -31,12 +33,13 @@ class AdminPanel {
     this.users = new UsersManager(this);
     this.courses = new CoursesManager(this);
     this.blogs = new BlogManager(this);
-    this.analytics = new AnalyticsManager(this);
+    // Analytics đã merge vào Dashboard
     this.dashboard = new Dashboard(this);
     this.settings = new SettingsManager(this);
     this.comments = new CommentsManager(this);
     this.orders = new OrdersManager(this);
     this.paymentLogs = new PaymentLogsManager(this);
+    this.revenue = new RevenueManager(this);
 
     this.notificationManager = createNotificationManager({
       containerId: "notification",
@@ -125,18 +128,15 @@ class AdminPanel {
         case "comments":
           this.loadCommentsData();
           break;
+        case "revenue":
+          this.loadRevenueData();
+          break;
         case "settings":
           // Được khởi tạo khi sau khi xác thực quyền thành công checkAccess()
           // khởi tạo lại khi vào tab cài đặt
           if (this.settings) this.settings.init();
           break;
-        case "analytics":
-          // luôn hủy và tải lại biểu đồ khi chuyển tab
-          if (this.analytics) {
-            this.analytics.destroyCharts();
-          }
-          this.loadAnalyticsData();
-          break;
+        // Analytics đã được merge vào Dashboard
       }
     }
   }
@@ -240,15 +240,20 @@ class AdminPanel {
     }
   }
 
-  // Thống kê
-  async loadAnalyticsData() {
+  // Quản lý doanh thu
+  async loadRevenueData() {
     try {
-      await this.analytics.loadData();
+      if (this.revenue) {
+        this.revenue.destroyChart();
+      }
+      await this.revenue.loadData();
     } catch (error) {
-      console.error("Error loading analytics data:", error);
-      this.showNotification("Lỗi tải dữ liệu thống kê", "error");
+      console.error("Error loading revenue data:", error);
+      this.showNotification("Lỗi tải dữ liệu doanh thu", "error");
     }
   }
+
+  // Analytics đã được merge vào Dashboard (Smart Dashboard)
 
   // Ghi log hoạt động
   async logActivity(type, title, description, icon = null) {

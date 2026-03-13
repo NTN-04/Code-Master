@@ -7,6 +7,13 @@ import {
   remove,
 } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-database.js";
 import { formatDateTime } from "../utils/date.js";
+import {
+  initBulkSelect,
+  clearSelection,
+  toggleBulkActionsBar,
+  batchDelete,
+  batchUpdateStatus,
+} from "../utils/bulk-select.js";
 
 export default class CommentsManager {
   constructor(panel) {
@@ -16,6 +23,8 @@ export default class CommentsManager {
     this.flattenedComments = [];
     this.blogTitles = {}; // Lưu trữ tiêu đề của các blog
     this.courseTitles = {}; // Lưu trữ tiêu đề của các khóa học
+    // Bulk selection
+    this.selectedCommentPaths = [];
   }
 
   /**
@@ -148,7 +157,7 @@ export default class CommentsManager {
 
         // Tìm bình luận tương ứng
         const comment = this.flattenedComments.find(
-          (c) => c.id === commentId || c.commentId === commentId
+          (c) => c.id === commentId || c.commentId === commentId,
         );
 
         if (comment) {
@@ -182,6 +191,30 @@ export default class CommentsManager {
         <div class="section-actions">
           <button class="btn btn-primary refresh-comments">
             <i class="fas fa-sync-alt"></i> Làm mới
+          </button>
+        </div>
+      </div>
+      
+      <!-- Bulk Actions Bar for Comments -->
+      <div class="bulk-actions-bar" id="comments-bulk-bar" style="display: none">
+        <span class="selected-count"><i class="fas fa-check-circle"></i> <span class="count-number">0</span> đã chọn</span>
+        <div class="bulk-actions">
+          <button class="btn btn-cancel" id="comments-bulk-cancel-btn" title="Bỏ chọn tất cả">
+            <i class="fas fa-times"></i>
+            <span>Bỏ chọn</span>
+          </button>
+          <span class="bulk-divider"></span>
+          <button class="btn btn-warning" id="comments-bulk-hide-btn" title="Ẩn bình luận đã chọn">
+            <i class="fas fa-eye-slash"></i>
+            <span>Ẩn</span>
+          </button>
+          <button class="btn btn-success" id="comments-bulk-show-btn" title="Hiện bình luận đã chọn">
+            <i class="fas fa-eye"></i>
+            <span>Hiện</span>
+          </button>
+          <button class="btn btn-danger" id="comments-bulk-delete-btn" title="Xóa bình luận đã chọn">
+            <i class="fas fa-trash-alt"></i>
+            <span>Xóa</span>
           </button>
         </div>
       </div>
@@ -257,7 +290,7 @@ export default class CommentsManager {
               .map((report) => {
                 // Tìm bình luận từ danh sách
                 const comment = this.flattenedComments.find(
-                  (c) => c.path === report.commentPath
+                  (c) => c.path === report.commentPath,
                 );
                 const contentType =
                   comment?.contentType ||
@@ -269,7 +302,7 @@ export default class CommentsManager {
                   <tr>
                     <td>${this.truncateText(
                       report.commentContent || "Nội dung đã bị xóa",
-                      50
+                      50,
                     )}</td>
                     <td>
                       <span class="badge ${
@@ -320,6 +353,12 @@ export default class CommentsManager {
    * Tạo bảng hiển thị tất cả bình luận
    */
   renderCommentsTable() {
+    // Clear selection when re-rendering
+    clearSelection("comments-table", (selected) => {
+      this.selectedCommentPaths = selected;
+      toggleBulkActionsBar("#comments-bulk-bar", selected.length);
+    });
+
     if (this.flattenedComments.length === 0) {
       return `<p class="empty-state"><i class="fas fa-comments-slash"></i> Không có bình luận nào.</p>`;
     }
@@ -329,6 +368,7 @@ export default class CommentsManager {
         <table class="admin-table" id="comments-table">
           <thead>
             <tr>
+              <th class="checkbox-col"><input type="checkbox" class="select-all"></th>
               <th>Nội dung</th>
               <th>Loại</th>
               <th>Người đăng</th>
@@ -343,9 +383,10 @@ export default class CommentsManager {
               .map(
                 (comment) => `
               <tr>
+                <td class="checkbox-col"><input type="checkbox" class="select-row" data-id="${comment.path}"></td>
                 <td>${this.truncateText(
                   comment.content || "Nội dung đã bị xóa",
-                  50
+                  50,
                 )}</td>
                 <td>
                   <span class="badge ${
@@ -401,7 +442,7 @@ export default class CommentsManager {
                   </button>
                 </td>
               </tr>
-            `
+            `,
               )
               .join("")}
           </tbody>
@@ -416,6 +457,40 @@ export default class CommentsManager {
   setupEventListeners() {
     const commentsSection = document.getElementById("comments");
     if (!commentsSection) return;
+
+    // Initialize bulk select for comments table
+    initBulkSelect("comments-table", (selected) => {
+      this.selectedCommentPaths = selected;
+      toggleBulkActionsBar("#comments-bulk-bar", selected.length);
+    });
+
+    // Bulk action buttons
+    document
+      .getElementById("comments-bulk-cancel-btn")
+      ?.addEventListener("click", () => {
+        clearSelection("comments-table", (selected) => {
+          this.selectedCommentPaths = selected;
+          toggleBulkActionsBar("#comments-bulk-bar", selected.length);
+        });
+      });
+
+    document
+      .getElementById("comments-bulk-hide-btn")
+      ?.addEventListener("click", () => {
+        this.bulkHideComments();
+      });
+
+    document
+      .getElementById("comments-bulk-show-btn")
+      ?.addEventListener("click", () => {
+        this.bulkShowComments();
+      });
+
+    document
+      .getElementById("comments-bulk-delete-btn")
+      ?.addEventListener("click", () => {
+        this.bulkDeleteComments();
+      });
 
     // Nút làm mới
     commentsSection
@@ -515,9 +590,9 @@ export default class CommentsManager {
     const rows = commentsTable.querySelectorAll("tbody tr");
 
     rows.forEach((row) => {
-      const content = row.cells[0].textContent.toLowerCase();
-      const userName = row.cells[2].textContent.toLowerCase();
-      const status = row.cells[5].textContent.trim();
+      const content = row.cells[1].textContent.toLowerCase(); // Index shifted by 1 due to checkbox column
+      const userName = row.cells[3].textContent.toLowerCase();
+      const status = row.cells[6].textContent.trim();
 
       const matchesSearch =
         content.includes(searchTerm) || userName.includes(searchTerm);
@@ -545,7 +620,7 @@ export default class CommentsManager {
     // Lấy tiêu đề nội dung
     const contentTitle = this.getContentTitle(
       comment.courseId,
-      comment.contentType
+      comment.contentType,
     );
 
     // Hiển thị modal xem chi tiết
@@ -598,8 +673,8 @@ export default class CommentsManager {
           
           <div class="comment-path">
             <strong>ID:</strong> ${comment.courseId}${
-      comment.contentType === "course" ? " / " + comment.lessonId : ""
-    }
+              comment.contentType === "course" ? " / " + comment.lessonId : ""
+            }
           </div>
         </div>
       </div>
@@ -679,7 +754,7 @@ export default class CommentsManager {
 
             // 3. Cập nhật nút ẩn/hiện
             const hideShowBtn = row.querySelector(
-              '[data-action="hide"], [data-action="show"]'
+              '[data-action="hide"], [data-action="show"]',
             );
             if (hideShowBtn) {
               hideShowBtn.dataset.action = "show";
@@ -704,7 +779,7 @@ export default class CommentsManager {
         "system",
         "Ẩn bình luận",
         `Đã ẩn bình luận của ${username}`,
-        "fas fa-eye-slash"
+        "fas fa-eye-slash",
       );
     } catch (error) {
       console.error("Error hiding comment:", error);
@@ -743,7 +818,7 @@ export default class CommentsManager {
 
             // Cập nhật nút ẩn/hiện
             const hideShowBtn = row.querySelector(
-              '[data-action="hide"], [data-action="show"]'
+              '[data-action="hide"], [data-action="show"]',
             );
             if (hideShowBtn) {
               hideShowBtn.dataset.action = "hide";
@@ -768,7 +843,7 @@ export default class CommentsManager {
         "system",
         "Hiện bình luận",
         `Đã hiện bình luận của ${username}`,
-        "fas fa-eye"
+        "fas fa-eye",
       );
     } catch (error) {
       console.error("Error showing comment:", error);
@@ -784,7 +859,7 @@ export default class CommentsManager {
       // Hiện hộp thoại xác nhận
       if (
         !confirm(
-          "Bạn có chắc chắn muốn xóa bình luận này không? Hành động này không thể hoàn tác."
+          "Bạn có chắc chắn muốn xóa bình luận này không? Hành động này không thể hoàn tác.",
         )
       ) {
         return;
@@ -800,7 +875,7 @@ export default class CommentsManager {
 
       // Tìm comment vừa xóa để lấy tên người đăng
       const deletedComment = this.flattenedComments.find(
-        (c) => c.path === path
+        (c) => c.path === path,
       );
       const username =
         deletedComment?.userName || deletedComment?.userId || "Không xác định";
@@ -809,7 +884,7 @@ export default class CommentsManager {
         "system",
         "Xóa bình luận",
         `Đã xóa bình luận của ${username}`,
-        "fas fa-trash"
+        "fas fa-trash",
       );
     } catch (error) {
       console.error("Error deleting comment:", error);
@@ -824,7 +899,7 @@ export default class CommentsManager {
     try {
       const reportRef = ref(
         database,
-        `commentReports/${commentId}/${reporterId}`
+        `commentReports/${commentId}/${reporterId}`,
       );
 
       await remove(reportRef);
@@ -835,7 +910,7 @@ export default class CommentsManager {
 
       // Tìm comment bị báo cáo để lấy tên người đăng
       const comment = this.flattenedComments.find(
-        (c) => c.id === commentId || c.commentId === commentId
+        (c) => c.id === commentId || c.commentId === commentId,
       );
       const username = comment?.userName || comment?.userId || "Không xác định";
 
@@ -843,11 +918,155 @@ export default class CommentsManager {
         "system",
         "Bỏ qua báo cáo",
         `Đã bỏ qua báo cáo về bình luận của ${username}`,
-        "fa-solid fa-forward"
+        "fa-solid fa-forward",
       );
     } catch (error) {
       console.error("Error dismissing report:", error);
       this.panel.showNotification("Lỗi khi bỏ qua báo cáo.", "error");
+    }
+  }
+
+  /**
+   * Ẩn nhiều bình luận đã chọn
+   */
+  async bulkHideComments() {
+    if (this.selectedCommentPaths.length === 0) {
+      this.panel.showNotification(
+        "Vui lòng chọn ít nhất một bình luận.",
+        "warning",
+      );
+      return;
+    }
+
+    if (
+      !confirm(
+        `Bạn có chắc chắn muốn ẩn ${this.selectedCommentPaths.length} bình luận đã chọn?`,
+      )
+    ) {
+      return;
+    }
+
+    try {
+      const updates = {};
+      this.selectedCommentPaths.forEach((path) => {
+        updates[`comments/${path}/status`] = "hidden";
+      });
+
+      await update(ref(database), updates);
+
+      this.panel.showNotification(
+        `Đã ẩn ${this.selectedCommentPaths.length} bình luận.`,
+        "success",
+      );
+      this.panel.logActivity(
+        "system",
+        "Ẩn bình luận hàng loạt",
+        `Đã ẩn ${this.selectedCommentPaths.length} bình luận`,
+        "fas fa-eye-slash",
+      );
+
+      this.selectedCommentPaths = [];
+      toggleBulkActionsBar("#comments-bulk-bar", 0);
+      await this.loadData();
+    } catch (error) {
+      console.error("Error bulk hiding comments:", error);
+      this.panel.showNotification("Lỗi khi ẩn bình luận.", "error");
+    }
+  }
+
+  /**
+   * Hiện nhiều bình luận đã chọn
+   */
+  async bulkShowComments() {
+    if (this.selectedCommentPaths.length === 0) {
+      this.panel.showNotification(
+        "Vui lòng chọn ít nhất một bình luận.",
+        "warning",
+      );
+      return;
+    }
+
+    if (
+      !confirm(
+        `Bạn có chắc chắn muốn hiện ${this.selectedCommentPaths.length} bình luận đã chọn?`,
+      )
+    ) {
+      return;
+    }
+
+    try {
+      const updates = {};
+      this.selectedCommentPaths.forEach((path) => {
+        updates[`comments/${path}/status`] = "active";
+      });
+
+      await update(ref(database), updates);
+
+      this.panel.showNotification(
+        `Đã hiện ${this.selectedCommentPaths.length} bình luận.`,
+        "success",
+      );
+      this.panel.logActivity(
+        "system",
+        "Hiện bình luận hàng loạt",
+        `Đã hiện ${this.selectedCommentPaths.length} bình luận`,
+        "fas fa-eye",
+      );
+
+      this.selectedCommentPaths = [];
+      toggleBulkActionsBar("#comments-bulk-bar", 0);
+      await this.loadData();
+    } catch (error) {
+      console.error("Error bulk showing comments:", error);
+      this.panel.showNotification("Lỗi khi hiện bình luận.", "error");
+    }
+  }
+
+  /**
+   * Xóa nhiều bình luận đã chọn
+   */
+  async bulkDeleteComments() {
+    if (this.selectedCommentPaths.length === 0) {
+      this.panel.showNotification(
+        "Vui lòng chọn ít nhất một bình luận.",
+        "warning",
+      );
+      return;
+    }
+
+    if (
+      !confirm(
+        `Bạn có chắc chắn muốn xóa ${this.selectedCommentPaths.length} bình luận đã chọn? Hành động này không thể hoàn tác.`,
+      )
+    ) {
+      return;
+    }
+
+    try {
+      const deletePromises = this.selectedCommentPaths.map((path) => {
+        const commentRef = ref(database, `comments/${path}`);
+        return remove(commentRef);
+      });
+
+      await Promise.all(deletePromises);
+
+      this.panel.showNotification(
+        `Đã xóa ${this.selectedCommentPaths.length} bình luận.`,
+        "success",
+      );
+      this.panel.logActivity(
+        "system",
+        "Xóa bình luận hàng loạt",
+        `Đã xóa ${this.selectedCommentPaths.length} bình luận`,
+        "fas fa-trash-alt",
+      );
+
+      this.selectedCommentPaths = [];
+      toggleBulkActionsBar("#comments-bulk-bar", 0);
+      await this.loadData();
+    } catch (error) {
+      console.error("Error bulk deleting comments:", error);
+      this.panel.showNotification("Lỗi khi xóa bình luận.", "error");
     }
   }
 

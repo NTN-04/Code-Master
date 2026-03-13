@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="vi">
   <head>
     <meta charset="UTF-8" />
@@ -12,32 +12,69 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
     />
   </head>
-
-  <body>
-    <!-- Nút home -->
-    <div class="login-home">
-      <a href="index.html">
-        <i class="fa-solid fa-house"></i>
-      </a>
-    </div>
-
-    <section class="login-section">
-      <div class="container">
-        <div class="login-container">
-          <div class="login-header">
-            <h2>Đăng Nhập</h2>
-            <p>
-              Chào mừng trở lại! Đăng nhập để tiếp tục hành trình học tập của
-              bạn.
-            </p>
+  <body class="login-page">
+    <!-- ===== SPLIT LAYOUT ===== -->
+    <div class="auth-layout">
+      <!-- LEFT: BRAND PANEL -->
+      <div class="auth-brand">
+        <a href="index.html" class="brand-back-btn" aria-label="Về trang chủ">
+          <i class="fas fa-arrow-left"></i>
+        </a>
+        <div class="brand-content">
+          <div class="brand-logo">
+            <span class="brand-logo-icon"><i class="fas fa-code"></i></span>
+            <span class="brand-logo-text">CodeMaster</span>
           </div>
+          <h1 class="brand-headline">
+            Nắm vững
+            <span class="brand-highlight">Lập Trình</span><br />
+            từ hôm nay
+          </h1>
+          <p class="brand-sub">
+            Hàng nghìn học viên đã bắt đầu hành trình của họ tại đây. Đến lượt
+            bạn!
+          </p>
+          <ul class="brand-features">
+            <li>
+              <span class="brand-feature-icon"
+                ><i class="fas fa-route"></i
+              ></span>
+              Lộ trình học tập cá nhân hóa
+            </li>
+            <li>
+              <span class="brand-feature-icon"
+                ><i class="fas fa-robot"></i
+              ></span>
+              AI trợ giảng 24/7
+            </li>
+            <li>
+              <span class="brand-feature-icon"
+                ><i class="fas fa-users"></i
+              ></span>
+              Cộng đồng hàng nghìn lập trình viên
+            </li>
+          </ul>
+        </div>
+        <div class="brand-blob brand-blob--1"></div>
+        <div class="brand-blob brand-blob--2"></div>
+        <div class="brand-blob brand-blob--3"></div>
+      </div>
 
+      <!-- RIGHT: FORM PANEL -->
+      <div class="auth-form-panel">
+        <div class="auth-card">
+          <!-- Tabs -->
           <div class="login-tabs">
             <button class="tab-btn active" data-tab="login">Đăng Nhập</button>
             <button class="tab-btn" data-tab="register">Đăng Ký</button>
           </div>
 
+          <!-- TAB: ĐĂNG NHẬP -->
           <div class="tab-content active" id="login">
+            <div class="auth-card-header">
+              <h2>Chào mừng</h2>
+              <p>Đăng nhập để tiếp tục hành trình học tập của bạn.</p>
+            </div>
             <form id="login-form" class="auth-form">
               <div class="form-group">
                 <label for="login-email">Email</label>
@@ -76,29 +113,30 @@
                 <a href="#" class="forgot-password">Quên mật khẩu?</a>
               </div>
               <button type="submit" class="btn btn-primary btn-block">
-                Đăng Nhập
+                <span>Đăng Nhập</span>
+                <i class="fas fa-arrow-right"></i>
               </button>
-              <div class="social-login">
-                <p>Hoặc đăng nhập với</p>
-                <div class="social-buttons">
-                  <button type="button" class="btn-social btn-google">
-                    <i class="fab fa-google"></i>
-                    <span>Google</span>
-                  </button>
-                  <button type="button" class="btn-social btn-facebook">
-                    <i class="fab fa-facebook-f"></i>
-                    <span>Facebook</span>
-                  </button>
-                  <button type="button" class="btn-social btn-github">
-                    <i class="fab fa-github"></i>
-                    <span>GitHub</span>
-                  </button>
-                </div>
+              <div class="social-divider"><span>hoặc tiếp tục với</span></div>
+              <div class="social-buttons">
+                <button type="button" class="btn-social btn-google">
+                  <i class="fab fa-google"></i><span>Google</span>
+                </button>
+                <button type="button" class="btn-social btn-facebook">
+                  <i class="fab fa-facebook-f"></i><span>Facebook</span>
+                </button>
+                <button type="button" class="btn-social btn-github">
+                  <i class="fab fa-github"></i><span>GitHub</span>
+                </button>
               </div>
             </form>
           </div>
 
+          <!-- TAB: ĐĂNG KÝ -->
           <div class="tab-content" id="register">
+            <div class="auth-card-header">
+              <h2>Tạo tài khoản mới</h2>
+              <p>Tham gia CodeMaster và bắt đầu học lập trình ngay hôm nay.</p>
+            </div>
             <form id="register-form" class="auth-form">
               <div class="form-group">
                 <label for="register-name">Họ và Tên</label>
@@ -169,22 +207,24 @@
               <div class="form-options">
                 <div class="terms-checkbox">
                   <input type="checkbox" id="terms-agree" required />
-                  <label for="terms-agree"
-                    >Tôi đồng ý với <a href="#">Điều khoản dịch vụ</a> và
-                    <a href="#">Chính sách bảo mật</a></label
-                  >
+                  <label for="terms-agree">
+                    Tôi đồng ý với <a href="#">Điều khoản dịch vụ</a> và
+                    <a href="#">Chính sách bảo mật</a>
+                  </label>
                 </div>
               </div>
               <button type="submit" class="btn btn-primary btn-block">
-                Tạo Tài Khoản
+                <span>Tạo Tài Khoản</span>
+                <i class="fas fa-arrow-right"></i>
               </button>
             </form>
           </div>
         </div>
       </div>
-    </section>
+    </div>
+    <!-- END SPLIT LAYOUT -->
 
-    <!-- Modal quên mật khẩu -->
+    <!-- MODAL: QUÊN MẬT KHẨU -->
     <div class="modal" id="forgot-password-modal">
       <div class="modal-content">
         <div class="modal-header">

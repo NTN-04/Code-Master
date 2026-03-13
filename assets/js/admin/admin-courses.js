@@ -1,4 +1,4 @@
-import { database } from "../firebaseConfig.js";
+import { auth, database } from "../firebaseConfig.js";
 import { uploadToCloudinary } from "../cloudinary-service.js";
 import {
   ref,
@@ -16,6 +16,11 @@ import {
   formatMinutesToDuration,
 } from "../utils/time.js";
 import { getAllTemplates } from "../ide/ide-config.js";
+import {
+  broadcastNotification,
+  getNotificationServerEndpoint,
+  NOTIFICATION_TYPES,
+} from "../utils/notifications.js";
 
 export default class CoursesManager {
   constructor(adminPanel) {
@@ -143,7 +148,7 @@ export default class CoursesManager {
     const img = lazyImage(
       course.image,
       sanitizeText(course.title || "Course image"),
-      "./assets/images/img-course/html-css.png"
+      "./assets/images/img-course/html-css.png",
     );
     imgWrap.appendChild(img);
 
@@ -159,15 +164,15 @@ export default class CoursesManager {
     meta.className = "course-card-meta";
     const levelSpan = document.createElement("span");
     levelSpan.innerHTML = `<i class="fas fa-signal"></i> ${sanitizeText(
-      this.getLevelText(course.level)
+      this.getLevelText(course.level),
     )}`;
     const clockSpan = document.createElement("span");
     clockSpan.innerHTML = `<i class="fas fa-clock"></i> ${sanitizeText(
-      course.duration || ""
+      course.duration || "",
     )}`;
     const lessonsSpan = document.createElement("span");
     lessonsSpan.innerHTML = `<i class="fas fa-book"></i> ${Number(
-      course.lessons || 0
+      course.lessons || 0,
     )} bài`;
     meta.append(levelSpan, clockSpan, lessonsSpan);
 
@@ -193,7 +198,7 @@ export default class CoursesManager {
     btnDetail.title = "Quản lý chi tiết";
     btnDetail.innerHTML = '<i class="fas fa-tasks"></i>';
     btnDetail.addEventListener("click", () =>
-      this.openCourseDetailManager(course.id)
+      this.openCourseDetailManager(course.id),
     );
 
     actionBtns.append(btnEdit, btnDelete, btnDetail);
@@ -246,7 +251,8 @@ export default class CoursesManager {
       course.ideTemplate || "";
 
     // Dữ liệu giá
-    document.getElementById("course-original-price").value = course.originalPrice || 0;
+    document.getElementById("course-original-price").value =
+      course.originalPrice || 0;
     document.getElementById("course-price").value = course.price || 0;
     document.getElementById("course-video-intro").value =
       course.videoIntro || "";
@@ -312,7 +318,7 @@ export default class CoursesManager {
             userProgressData[userId].courses[courseId]
           ) {
             await remove(
-              ref(database, `userProgress/${userId}/courses/${courseId}`)
+              ref(database, `userProgress/${userId}/courses/${courseId}`),
             );
           }
         }
@@ -323,7 +329,7 @@ export default class CoursesManager {
         "course",
         "Xóa khóa học",
         `Đã xóa khóa học "${course?.title || courseId}"`,
-        "fas fa-trash"
+        "fas fa-trash",
       );
 
       this.adminPanel.showNotification("Đã xóa khóa học", "success");
@@ -592,7 +598,8 @@ export default class CoursesManager {
       category: document.getElementById("course-category").value,
       image: imageUrl,
       updatedAt: new Date().toISOString().slice(0, 10),
-      originalPrice: Number(document.getElementById("course-original-price").value) || 0,
+      originalPrice:
+        Number(document.getElementById("course-original-price").value) || 0,
       price: Number(document.getElementById("course-price").value) || 0,
       videoIntro:
         document.getElementById("course-video-intro").value.trim() || "",
@@ -622,7 +629,7 @@ export default class CoursesManager {
       if (!/^[a-z0-9-]+$/.test(customId)) {
         this.adminPanel.showNotification(
           "ID khóa học chỉ chứa chữ thường, số và dấu gạch ngang",
-          "error"
+          "error",
         );
         return false;
       }
@@ -690,11 +697,11 @@ export default class CoursesManager {
           "course",
           "Cập nhật khóa học",
           `Đã cập nhật khóa học mới ${courseData.title}`,
-          "fas fa-edit"
+          "fas fa-edit",
         );
         this.adminPanel.showNotification(
           "Cập nhật khóa học thành công",
-          "success"
+          "success",
         );
       } else {
         // Thêm khóa học mới
@@ -708,12 +715,14 @@ export default class CoursesManager {
           featured: false,
         });
 
+        await this.notifyNewCourse(newCourseId, courseData);
+
         // Ghi lại hoạt động
         await this.adminPanel.logActivity(
           "course",
           "Thêm khóa học",
           `Đã thêm khóa học mới ${courseData.title}`,
-          "fas fa-book"
+          "fas fa-book",
         );
         this.adminPanel.showNotification("Thêm khóa học thành công", "success");
       }
@@ -726,6 +735,71 @@ export default class CoursesManager {
       console.error("Error saving course:", error);
       this.adminPanel.showNotification("Lỗi lưu khóa học", "error");
     }
+  }
+
+  async notifyNewCourse(courseId, courseData) {
+    const payload = {
+      type: NOTIFICATION_TYPES.NEW_COURSE,
+      title: "Khóa học mới",
+      message: `Khóa học mới "${courseData.title}" vừa ra mắt. Vào học ngay nhé!`,
+      link: `course-intro.html?id=${courseId}`,
+      data: {
+        courseId,
+        courseName: courseData.title,
+        category: courseData.category,
+      },
+    };
+
+    // Production path: server-side dispatch nếu endpoint được cấu hình.
+    const endpoint = getNotificationServerEndpoint();
+    if (endpoint) {
+      try {
+        const idToken = await auth.currentUser?.getIdToken();
+        if (!idToken) {
+          throw new Error("Admin token is missing. Vui lòng đăng nhập lại.");
+        }
+
+        const headers = {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${idToken}`,
+        };
+
+        const response = await fetch(`${endpoint}/new-course`, {
+          method: "POST",
+          headers,
+          body: JSON.stringify(payload),
+        });
+
+        if (response.ok) {
+          return;
+        }
+
+        const errorBody = await response.text();
+        throw new Error(
+          `Server notification dispatch failed: ${response.status} ${errorBody}`,
+        );
+      } catch (error) {
+        console.error("Server notification dispatch error", error);
+        this.adminPanel.showNotification(
+          "Không thể gửi thông báo khóa học mới qua server.",
+          "error",
+        );
+        return;
+      }
+    }
+
+    // Fallback hiện tại: broadcast trực tiếp đến user thường (không admin).
+    const usersRef = ref(database, "users");
+    const usersSnap = await get(usersRef);
+    if (!usersSnap.exists()) return;
+
+    const userIds = Object.entries(usersSnap.val())
+      .filter(([_, user]) => Number(user?.role) !== 1)
+      .map(([uid]) => uid);
+
+    if (userIds.length === 0) return;
+
+    await broadcastNotification(userIds, payload);
   }
 
   // Quản lý chi tiết cho khóa học (module)
@@ -842,9 +916,8 @@ export default class CoursesManager {
     // Trích xuất số module từ moduleId (module1 -> '1')
     const moduleNumber = moduleId.replace(/\D/g, "");
     // Đặt tiêu đề modal
-    document.getElementById(
-      "lesson-manager-title"
-    ).textContent = `Quản lý bài học - Chương ${moduleNumber}`;
+    document.getElementById("lesson-manager-title").textContent =
+      `Quản lý bài học - Chương ${moduleNumber}`;
     // Hiện modal
     this.adminPanel.showModal("lesson-manager-modal");
     // Load danh sách bài học
@@ -907,7 +980,7 @@ export default class CoursesManager {
 
     const moduleRef = ref(
       database,
-      `course_modules/${courseId}/${moduleId}/lessons`
+      `course_modules/${courseId}/${moduleId}/lessons`,
     );
     let lessons = [];
     const snapshot = await get(moduleRef);
@@ -955,7 +1028,7 @@ export default class CoursesManager {
       if (!title) {
         this.adminPanel.showNotification(
           "Vui lòng nhập đầy đủ trường",
-          "error"
+          "error",
         );
         return;
       }
@@ -992,7 +1065,7 @@ export default class CoursesManager {
 
         this.adminPanel.showNotification(
           type === "add" ? "Đã thêm bài học mới" : "Đã cập nhật bài học",
-          "success"
+          "success",
         );
 
         this.adminPanel.hideModal("lesson-form-modal");
@@ -1000,7 +1073,7 @@ export default class CoursesManager {
         console.error("Lỗi khi lưu bài học:", error);
         this.adminPanel.showNotification(
           "Đã xảy ra lỗi khi lưu bài học",
-          "error"
+          "error",
         );
       } finally {
         saveButton.disabled = false;
@@ -1016,7 +1089,7 @@ export default class CoursesManager {
   async deleteLesson(courseId, moduleId, idx) {
     const moduleRef = ref(
       database,
-      `course_modules/${courseId}/${moduleId}/lessons`
+      `course_modules/${courseId}/${moduleId}/lessons`,
     );
     const snapshot = await get(moduleRef);
     if (!snapshot.exists()) return;
@@ -1057,7 +1130,7 @@ export default class CoursesManager {
     try {
       const lessonRef = ref(
         database,
-        `course_modules/${courseId}/${moduleId}/lessons`
+        `course_modules/${courseId}/${moduleId}/lessons`,
       );
       const snapshot = await get(lessonRef);
       quizList.innerHTML = "";
@@ -1103,7 +1176,7 @@ export default class CoursesManager {
 
     const lessonRef = ref(
       database,
-      `course_modules/${courseId}/${moduleId}/lessons`
+      `course_modules/${courseId}/${moduleId}/lessons`,
     );
     let lessons = [];
     const snapshot = await get(lessonRef);
@@ -1121,7 +1194,7 @@ export default class CoursesManager {
     const option4Input = document.getElementById("quiz-option4");
     const saveButton = document.getElementById("save-quiz-btn");
     const radioButtons = document.querySelectorAll(
-      'input[name="correct-answer"]'
+      'input[name="correct-answer"]',
     );
 
     // Đặt tiêu đề và nội dung form
@@ -1186,7 +1259,7 @@ export default class CoursesManager {
       if (options.some((opt) => !opt)) {
         this.adminPanel.showNotification(
           "Vui lòng nhập đầy đủ các đáp án",
-          "error"
+          "error",
         );
         return;
       }
@@ -1212,7 +1285,7 @@ export default class CoursesManager {
 
         this.adminPanel.showNotification(
           type === "add" ? "Đã thêm quiz mới" : "Đã cập nhật quiz",
-          "success"
+          "success",
         );
 
         this.adminPanel.hideModal("quiz-form-modal");
@@ -1232,7 +1305,7 @@ export default class CoursesManager {
   async deleteQuiz(courseId, moduleId, lessonIdx, quizIdx) {
     const lessonRef = ref(
       database,
-      `course_modules/${courseId}/${moduleId}/lessons`
+      `course_modules/${courseId}/${moduleId}/lessons`,
     );
     const snapshot = await get(lessonRef);
     if (!snapshot.exists()) return;

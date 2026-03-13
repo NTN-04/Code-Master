@@ -82,7 +82,7 @@ export async function getCompletedCourses(userId) {
 }
 
 /**
- * SOLUTION B: Lấy khóa học đã enroll với thông tin progress chi tiết
+ * Lấy khóa học đã enroll với thông tin progress chi tiết
  * Phân loại: inProgress (đang học), notStarted (chưa bắt đầu), completed (hoàn thành)
  */
 export async function getEnrolledCoursesWithProgress(userId) {
@@ -90,7 +90,8 @@ export async function getEnrolledCoursesWithProgress(userId) {
     // 1. Lấy danh sách khóa đã enroll
     const enrollRef = ref(database, `enrollments/${userId}`);
     const enrollSnap = await get(enrollRef);
-    if (!enrollSnap.exists()) return { inProgress: [], notStarted: [], completed: [] };
+    if (!enrollSnap.exists())
+      return { inProgress: [], notStarted: [], completed: [] };
 
     const enrolledIds = Object.keys(enrollSnap.val());
 
@@ -102,7 +103,8 @@ export async function getEnrolledCoursesWithProgress(userId) {
     // 3. Lấy thông tin chi tiết các khóa học
     const coursesRef = ref(database, "courses");
     const coursesSnap = await get(coursesRef);
-    if (!coursesSnap.exists()) return { inProgress: [], notStarted: [], completed: [] };
+    if (!coursesSnap.exists())
+      return { inProgress: [], notStarted: [], completed: [] };
 
     const allCourses = coursesSnap.val();
 
@@ -221,7 +223,7 @@ export async function getCourseById(courseId) {
 }
 
 /**
- * SOLUTION B: Gọi AI API với data structure mới
+ * Gọi AI API với data structure mới
  * Gửi cả enrolledCourses (inProgress, notStarted, completed) và availableCourses
  */
 export async function fetchAIRecommendations(
@@ -268,7 +270,7 @@ export async function fetchAIRecommendations(
 }
 
 /**
- * Main function: Lấy lộ trình gợi ý cho user (SOLUTION B)
+ * Main function: Lấy lộ trình gợi ý cho user
  * Gợi ý cả khóa đang học, chưa bắt đầu, và khóa mới
  * @param {string} userId - ID người dùng
  * @param {boolean} forceRefresh - Bỏ qua cache nếu true
@@ -306,19 +308,21 @@ export async function getPersonalizedRoadmap(userId, forceRefresh = false) {
     });
 
     // Nếu không có gì để gợi ý
-    const totalRecommendable = inProgress.length + notStarted.length + availableCourses.length;
+    const totalRecommendable =
+      inProgress.length + notStarted.length + availableCourses.length;
     if (totalRecommendable === 0) {
       return {
         recommendations: [],
-        summary: completed.length > 0
-          ? `Tuyệt vời! Bạn đã hoàn thành ${completed.length} khóa học. Hãy quay lại sau để xem khóa mới!`
-          : "Bạn đã đăng ký tất cả các khóa học hiện có!",
+        summary:
+          completed.length > 0
+            ? `Tuyệt vời! Bạn đã hoàn thành ${completed.length} khóa học. Hãy quay lại sau để xem khóa mới!`
+            : "Bạn đã đăng ký tất cả các khóa học hiện có!",
         courses: [],
         fromCache: false,
       };
     }
 
-    // Call AI API với data mới
+    // Call AI API
     const aiResult = await fetchAIRecommendations(
       preferences,
       { inProgress, notStarted, completed }, // Gửi cả 3 loại
@@ -327,13 +331,18 @@ export async function getPersonalizedRoadmap(userId, forceRefresh = false) {
 
     if (!aiResult || !aiResult.recommendations) {
       // Fallback: dùng local scoring
-      return getSmartRecommendations(inProgress, notStarted, availableCourses, preferences);
+      return getSmartRecommendations(
+        inProgress,
+        notStarted,
+        availableCourses,
+        preferences,
+      );
     }
 
     // Map courseIds to full course data từ tất cả các nguồn
     const allCourses = [...inProgress, ...notStarted, ...availableCourses];
     const recommendedCourses = [];
-    
+
     for (const rec of aiResult.recommendations) {
       const course = allCourses.find((c) => c.id === rec.courseId);
       if (course) {
@@ -362,11 +371,16 @@ export async function getPersonalizedRoadmap(userId, forceRefresh = false) {
 }
 
 /**
- * SOLUTION B: Smart recommendations with priority scoring
+ * Smart recommendations with priority scoring
  * Ưu tiên: inProgress > notStarted > available
  * Matching: category + level
  */
-function getSmartRecommendations(inProgress, notStarted, available, preferences) {
+function getSmartRecommendations(
+  inProgress,
+  notStarted,
+  available,
+  preferences,
+) {
   const userLevel = preferences?.level || "beginner";
   const userInterests = preferences?.interests || [];
 
@@ -387,8 +401,16 @@ function getSmartRecommendations(inProgress, notStarted, available, preferences)
     related.forEach((cat) => expandedInterests.add(cat.toLowerCase()));
   });
 
-  // Scoring function
-  const scoreCourse = (course, baseScore) => {
+  // Map level tiếng Anh → tiếng Việt
+  const levelTextMap = {
+    beginner: "cơ bản",
+    basic: "cơ bản",
+    intermediate: "trung cấp",
+    advanced: "nâng cao",
+  };
+
+  // Scoring function - thêm status để phân biệt loại khóa
+  const scoreCourse = (course, baseScore, status) => {
     let score = baseScore;
     const category = (course.category || "").toLowerCase();
     const level = (course.level || "").toLowerCase();
@@ -400,7 +422,8 @@ function getSmartRecommendations(inProgress, notStarted, available, preferences)
     if (level === userLevel) score += 30;
     else if (
       (userLevel === "beginner" && level === "intermediate") ||
-      (userLevel === "intermediate" && (level === "beginner" || level === "advanced")) ||
+      (userLevel === "intermediate" &&
+        (level === "beginner" || level === "advanced")) ||
       (userLevel === "advanced" && level === "intermediate")
     ) {
       score += 15;
@@ -412,16 +435,31 @@ function getSmartRecommendations(inProgress, notStarted, available, preferences)
     // Featured bonus
     if (course.featured) score += 10;
 
-    return { ...course, score, categoryMatched: expandedInterests.has(category) };
+    return {
+      ...course,
+      score,
+      status, // "inProgress" | "notStarted" | "available"
+      isEnrolled: status !== "available",
+      categoryMatched: expandedInterests.has(category),
+      levelText: levelTextMap[level] || level, // Lưu level tiếng Việt
+    };
   };
 
-  // Score all courses với base score theo loại
-  const scoredInProgress = inProgress.map((c) => scoreCourse(c, 200));
-  const scoredNotStarted = notStarted.map((c) => scoreCourse(c, 100));
-  const scoredAvailable = available.map((c) => scoreCourse(c, 50));
+  // Score all courses với base score và status theo loại
+  const scoredInProgress = inProgress.map((c) =>
+    scoreCourse(c, 200, "inProgress"),
+  );
+  const scoredNotStarted = notStarted.map((c) =>
+    scoreCourse(c, 100, "notStarted"),
+  );
+  const scoredAvailable = available.map((c) => scoreCourse(c, 50, "available"));
 
   // Combine và sort
-  const allScored = [...scoredInProgress, ...scoredNotStarted, ...scoredAvailable];
+  const allScored = [
+    ...scoredInProgress,
+    ...scoredNotStarted,
+    ...scoredAvailable,
+  ];
   allScored.sort((a, b) => b.score - a.score);
 
   // Lấy top 3
@@ -435,31 +473,52 @@ function getSmartRecommendations(inProgress, notStarted, available, preferences)
   if (hasInProgress && top[0].progress) {
     summary = `Bạn đang học ${top[0].title} (${top[0].progress}%). Hãy hoàn thành để tiếp tục lộ trình!`;
   } else if (topCategoryMatch > 0) {
-    const interestText = userInterests.length > 0 ? userInterests[0] : "lập trình";
+    const interestText =
+      userInterests.length > 0 ? userInterests[0] : "lập trình";
     summary = `Dựa trên sở thích ${interestText} và trình độ của bạn, đây là các khóa học gợi ý.`;
   } else {
     summary = "Đây là các khóa học phù hợp với trình độ hiện tại của bạn.";
   }
 
-  // Generate reasons
+  // Generate reasons - phân biệt rõ từng trường hợp
   const recommendations = top.map((course) => {
     let reason;
-    if (course.progress && course.progress > 0) {
+
+    // Case 1: Đang học dở (inProgress) - có progress > 0
+    if (course.status === "inProgress" && course.progress > 0) {
       reason = `Bạn đã học ${course.progress}% - hãy hoàn thành!`;
-    } else if (course.score >= 200 && course.categoryMatched) {
-      reason = `Phù hợp với sở thích ${course.category} của bạn`;
-    } else if (course.score >= 100) {
-      reason = "Khóa học bạn đã đăng ký - bắt đầu ngay!";
-    } else {
-      reason = `Khóa học mới phù hợp trình độ ${course.level}`;
     }
+    // Case 2: Đã đăng ký, chưa bắt đầu, khớp sở thích (notStarted + category match)
+    else if (course.status === "notStarted" && course.categoryMatched) {
+      reason = `Phù hợp sở thích ${course.category} - đã đăng ký, bắt đầu ngay!`;
+    }
+    // Case 3: Đã đăng ký, chưa bắt đầu, không khớp sở thích (notStarted only)
+    else if (course.status === "notStarted") {
+      reason = "Khóa học bạn đã đăng ký - bắt đầu ngay!";
+    }
+    // Case 4: Chưa đăng ký, khớp sở thích (available + category match)
+    else if (course.status === "available" && course.categoryMatched) {
+      reason = `Phù hợp với sở thích ${course.category} của bạn`;
+    }
+    // Case 5: Chưa đăng ký, khớp trình độ (available + level match)
+    else if (course.status === "available") {
+      reason = `Khóa học mới phù hợp trình độ ${course.levelText}`;
+    }
+    // Fallback
+    else {
+      reason = `Khóa học phù hợp với bạn`;
+    }
+
     return { courseId: course.id, reason };
   });
 
   return {
     recommendations,
     summary,
-    courses: top.map((c) => ({ ...c, reason: recommendations.find((r) => r.courseId === c.id)?.reason })),
+    courses: top.map((c) => ({
+      ...c,
+      reason: recommendations.find((r) => r.courseId === c.id)?.reason,
+    })),
     fromCache: false,
     isFallback: true,
   };

@@ -13,6 +13,66 @@ import {
   getAuth,
 } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-auth.js";
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-app.js";
+import {
+  initBulkSelect,
+  getSelectedIds,
+  clearSelection,
+  toggleBulkActionsBar,
+  batchDelete,
+  batchUpdateStatus,
+} from "../utils/bulk-select.js";
+import { exportUsers } from "../utils/export.js";
+import { openModal, closeModal } from "../utils/modal.js";
+
+/**
+ * Show confirm modal and return Promise
+ */
+function showBulkConfirmModal(message, type = "danger") {
+  return new Promise((resolve) => {
+    const modal = document.getElementById("bulk-confirm-modal");
+    const messageEl = document.getElementById("bulk-confirm-message");
+    const okBtn = document.getElementById("bulk-confirm-ok");
+    const cancelBtn = document.getElementById("bulk-confirm-cancel");
+    const header = modal.querySelector(".modal-header");
+
+    // Update message
+    messageEl.innerHTML = message;
+
+    // Update header style based on type
+    header.className = `modal-header modal-header-${type}`;
+
+    // Update OK button style
+    okBtn.className = `btn btn-${type}`;
+
+    // Open modal
+    openModal(modal);
+
+    // Cleanup function
+    const cleanup = () => {
+      okBtn.removeEventListener("click", handleOk);
+      cancelBtn.removeEventListener("click", handleCancel);
+      modal
+        .querySelector(".close-modal")
+        .removeEventListener("click", handleCancel);
+    };
+
+    const handleOk = () => {
+      cleanup();
+      closeModal(modal);
+      resolve(true);
+    };
+
+    const handleCancel = () => {
+      cleanup();
+      closeModal(modal);
+      resolve(false);
+    };
+
+    okBtn.addEventListener("click", handleOk);
+    cancelBtn.addEventListener("click", handleCancel);
+    modal.querySelector(".close-modal").addEventListener("click", handleCancel);
+  });
+}
 
 export default class UsersManager {
   constructor(adminPanel) {
@@ -21,6 +81,8 @@ export default class UsersManager {
     // Listener management
     this.userListenerRef = null;
     this.userListenerCallback = null;
+    // Bulk selection
+    this.selectedUserIds = [];
   }
 
   async loadData() {
@@ -83,6 +145,9 @@ export default class UsersManager {
     users.forEach((user) => {
       const tr = document.createElement("tr");
       tr.innerHTML = `
+        <td class="checkbox-col">
+          <input type="checkbox" class="select-row" data-id="${user.id}">
+        </td>
         <td>
           <img src="${user.avatar || "./assets/images/avatar-default.jpg"}" 
                alt="${user.username}" class="user-avatar">
@@ -128,6 +193,11 @@ export default class UsersManager {
       `;
       tbody.appendChild(tr);
     });
+
+    // Clear selection after render
+    clearSelection("users-table");
+    this.selectedUserIds = [];
+    toggleBulkActionsBar("users-bulk-bar", 0);
   }
 
   setupFilters() {
@@ -147,7 +217,7 @@ export default class UsersManager {
           (user) =>
             (user.username &&
               user.username.toLowerCase().includes(searchTerm)) ||
-            (user.email && user.email.toLowerCase().includes(searchTerm))
+            (user.email && user.email.toLowerCase().includes(searchTerm)),
         );
       }
 
@@ -161,7 +231,7 @@ export default class UsersManager {
       const statusValue = statusFilter.value;
       if (statusValue) {
         filteredUsers = filteredUsers.filter(
-          (user) => (user.status || "active") === statusValue
+          (user) => (user.status || "active") === statusValue,
         );
       }
 
@@ -216,19 +286,19 @@ export default class UsersManager {
         `${newStatus === "suspended" ? "Tạm ngừng" : "Kích hoạt"} tài khoản ${
           user.username || user.email
         }`,
-        `fas fa-${newStatus === "suspended" ? "pause" : "play"}`
+        `fas fa-${newStatus === "suspended" ? "pause" : "play"}`,
       );
 
       this.adminPanel.showNotification(
         `Đã ${newStatus === "suspended" ? "tạm ngừng" : "kích hoạt"} tài khoản`,
-        "success"
+        "success",
       );
       // this.loadData(); realtime
     } catch (error) {
       console.error("Error updating user status:", error);
       this.adminPanel.showNotification(
         "Lỗi cập nhật trạng thái người dùng",
-        "error"
+        "error",
       );
     }
   }
@@ -251,7 +321,7 @@ export default class UsersManager {
         "user",
         "Xóa người dùng",
         `Đã xóa tài khoản ${user?.username || user?.email || userId}`,
-        "fas fa-trash"
+        "fas fa-trash",
       );
 
       this.adminPanel.showNotification("Đã xóa người dùng", "success");
@@ -310,12 +380,12 @@ export default class UsersManager {
           "user",
           "Cập nhật người dùng",
           `Đã cập nhật thông tin người dùng ${username}`,
-          "fas fa-edit"
+          "fas fa-edit",
         );
 
         this.adminPanel.showNotification(
           "Cập nhật người dùng thành công",
-          "success"
+          "success",
         );
       } else {
         // Thêm mới user
@@ -327,7 +397,7 @@ export default class UsersManager {
         const userCredential = await createUserWithEmailAndPassword(
           secondaryAuth,
           email,
-          password
+          password,
         );
         const newUser = userCredential.user;
         // Lưu thông tin vào database
@@ -348,7 +418,7 @@ export default class UsersManager {
           "user",
           "Thêm người dùng",
           `Đã thêm người dùng mới ${username}`,
-          "fas fa-user-plus"
+          "fas fa-user-plus",
         );
 
         this.adminPanel.showNotification("Thêm user thành công", "success");
@@ -362,13 +432,13 @@ export default class UsersManager {
       if (err && err.code === "auth/email-already-in-use") {
         this.adminPanel.showNotification(
           "Email đã tồn tại trên hệ thống!",
-          "error"
+          "error",
         );
       } else {
         console.error("Error saving user:", err);
         this.adminPanel.showNotification(
           "Lỗi lưu thông tin người dùng",
-          "error"
+          "error",
         );
       }
       return;
@@ -386,6 +456,189 @@ export default class UsersManager {
     const addUserBtn = document.getElementById("add-user-btn");
     if (addUserBtn) {
       addUserBtn.addEventListener("click", this.showAddModal.bind(this));
+    }
+
+    // Initialize bulk selection
+    initBulkSelect("users-table", (selectedIds) => {
+      this.selectedUserIds = selectedIds;
+      toggleBulkActionsBar("users-bulk-bar", selectedIds.length);
+      // Update count number in bar
+      const countSpan = document.querySelector("#users-bulk-bar .count-number");
+      if (countSpan) {
+        countSpan.textContent = selectedIds.length;
+      }
+    });
+
+    // Cancel/Deselect all button
+    const bulkCancelBtn = document.getElementById("bulk-cancel-btn");
+    if (bulkCancelBtn) {
+      bulkCancelBtn.addEventListener("click", () => {
+        clearSelection("users-table");
+        this.selectedUserIds = [];
+        toggleBulkActionsBar("users-bulk-bar", 0);
+      });
+    }
+
+    // Bulk action buttons
+    const bulkDeleteBtn = document.getElementById("bulk-delete-btn");
+    if (bulkDeleteBtn) {
+      bulkDeleteBtn.addEventListener("click", () => this.bulkDeleteUsers());
+    }
+
+    const bulkSuspendBtn = document.getElementById("bulk-suspend-btn");
+    if (bulkSuspendBtn) {
+      bulkSuspendBtn.addEventListener("click", () =>
+        this.bulkUpdateStatus("suspended"),
+      );
+    }
+
+    const bulkActivateBtn = document.getElementById("bulk-activate-btn");
+    if (bulkActivateBtn) {
+      bulkActivateBtn.addEventListener("click", () =>
+        this.bulkUpdateStatus("active"),
+      );
+    }
+
+    // Export button
+    const exportBtn = document.getElementById("export-users-btn");
+    if (exportBtn) {
+      exportBtn.addEventListener("click", () => this.exportUsersToExcel());
+    }
+  }
+
+  // Bulk delete users with confirm modal
+  async bulkDeleteUsers() {
+    if (this.selectedUserIds.length === 0) {
+      this.adminPanel.showNotification("Chưa chọn người dùng nào", "warning");
+      return;
+    }
+
+    const count = this.selectedUserIds.length;
+    const confirmed = await showBulkConfirmModal(
+      `Bạn có chắc chắn muốn <strong>xóa vĩnh viễn ${count} người dùng</strong> đã chọn?<br><br>
+      <small style="color: #6b7280;">Tất cả dữ liệu liên quan (tiến độ học, bookmark) cũng sẽ bị xóa.</small>`,
+      "danger",
+    );
+
+    if (!confirmed) return;
+
+    try {
+      const deleteFunc = async (userId) => {
+        await remove(ref(database, `users/${userId}`));
+        await remove(ref(database, `bookmarks/${userId}`));
+        await remove(ref(database, `userProgress/${userId}`));
+      };
+
+      const result = await batchDelete(
+        this.selectedUserIds,
+        deleteFunc,
+        "người dùng",
+      );
+
+      // Log activity
+      await this.adminPanel.logActivity(
+        "user",
+        "Xóa hàng loạt người dùng",
+        `Đã xóa ${result.success} người dùng`,
+        "fas fa-trash",
+      );
+
+      this.adminPanel.showNotification(
+        `Đã xóa ${result.success} người dùng${result.failed > 0 ? `, ${result.failed} lỗi` : ""}`,
+        result.failed > 0 ? "warning" : "success",
+      );
+
+      // Clear selection
+      this.selectedUserIds = [];
+      clearSelection("users-table");
+      toggleBulkActionsBar("users-bulk-bar", 0);
+    } catch (error) {
+      console.error("Error bulk deleting users:", error);
+      this.adminPanel.showNotification(
+        error.message || "Lỗi xóa người dùng",
+        "error",
+      );
+    }
+  }
+
+  // Bulk update status with confirm modal
+  async bulkUpdateStatus(newStatus) {
+    if (this.selectedUserIds.length === 0) {
+      this.adminPanel.showNotification("Chưa chọn người dùng nào", "warning");
+      return;
+    }
+
+    const count = this.selectedUserIds.length;
+    const statusText = newStatus === "suspended" ? "tạm ngừng" : "kích hoạt";
+    const modalType = newStatus === "suspended" ? "warning" : "success";
+
+    const confirmed = await showBulkConfirmModal(
+      `Bạn có chắc chắn muốn <strong>${statusText} ${count} người dùng</strong> đã chọn?`,
+      modalType,
+    );
+
+    if (!confirmed) return;
+
+    try {
+      const updateFunc = async (userId, status) => {
+        const userRef = ref(database, `users/${userId}`);
+        await update(userRef, { status });
+      };
+
+      const result = await batchUpdateStatus(
+        this.selectedUserIds,
+        newStatus,
+        updateFunc,
+      );
+
+      // Log activity
+      await this.adminPanel.logActivity(
+        "user",
+        `${newStatus === "suspended" ? "Tạm ngừng" : "Kích hoạt"} hàng loạt`,
+        `Đã ${statusText} ${result.success} người dùng`,
+        `fas fa-${newStatus === "suspended" ? "pause" : "play"}`,
+      );
+
+      this.adminPanel.showNotification(
+        `Đã ${statusText} ${result.success} người dùng${result.failed > 0 ? `, ${result.failed} lỗi` : ""}`,
+        result.failed > 0 ? "warning" : "success",
+      );
+
+      // Clear selection
+      this.selectedUserIds = [];
+      clearSelection("users-table");
+      toggleBulkActionsBar("users-bulk-bar", 0);
+    } catch (error) {
+      console.error("Error bulk updating status:", error);
+      this.adminPanel.showNotification("Lỗi cập nhật trạng thái", "error");
+    }
+  }
+
+  // Export users to Excel
+  exportUsersToExcel() {
+    if (this.users.length === 0) {
+      this.adminPanel.showNotification("Không có dữ liệu để xuất", "warning");
+      return;
+    }
+
+    try {
+      // Export selected users if any, otherwise export all
+      const dataToExport =
+        this.selectedUserIds.length > 0
+          ? this.users.filter((u) => this.selectedUserIds.includes(u.id))
+          : this.users;
+
+      const success = exportUsers(dataToExport, "excel");
+
+      if (success) {
+        this.adminPanel.showNotification(
+          `Đã xuất ${dataToExport.length} người dùng ra file Excel`,
+          "success",
+        );
+      }
+    } catch (error) {
+      console.error("Error exporting users:", error);
+      this.adminPanel.showNotification("Lỗi xuất file Excel", "error");
     }
   }
 
@@ -425,14 +678,14 @@ export default class UsersManager {
       if (snapshot.exists()) {
         const users = Object.values(snapshot.val());
         const emailExists = users.some(
-          (u) => u.email && u.email.toLowerCase() === email.toLowerCase()
+          (u) => u.email && u.email.toLowerCase() === email.toLowerCase(),
         );
         if (emailExists) {
           return { valid: false, message: "Email đã tồn tại!" };
         }
         const usernameExists = users.some(
           (u) =>
-            u.username && u.username.toLowerCase() === username.toLowerCase()
+            u.username && u.username.toLowerCase() === username.toLowerCase(),
         );
         if (usernameExists) {
           return { valid: false, message: "Tên người dùng đã tồn tại!" };

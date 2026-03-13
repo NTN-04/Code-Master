@@ -71,6 +71,35 @@ let filteredNotifications = [];
 let currentPage = 1;
 const ITEMS_PER_PAGE = 20;
 
+function normalizeTimestamp(value) {
+  if (typeof value === "number" && Number.isFinite(value)) return value;
+  if (typeof value === "string") {
+    const asNumber = Number(value);
+    if (Number.isFinite(asNumber)) return asNumber;
+    const parsed = Date.parse(value);
+    if (Number.isFinite(parsed)) return parsed;
+  }
+  return Date.now();
+}
+
+function isNotificationRead(notif) {
+  if (typeof notif?.read === "boolean") return notif.read;
+  if (typeof notif?.isRead === "boolean") return notif.isRead;
+  return false;
+}
+
+function normalizeNotification(notif) {
+  const read = isNotificationRead(notif);
+  return {
+    ...notif,
+    read,
+    isRead: read,
+    createdAt: normalizeTimestamp(notif?.createdAt),
+    title: typeof notif?.title === "string" ? notif.title : "Thông báo",
+    message: typeof notif?.message === "string" ? notif.message : "",
+  };
+}
+
 // DOM Elements
 const container = document.getElementById("notifications-container");
 const actionsContainer = document.getElementById("notifications-actions");
@@ -211,10 +240,12 @@ async function loadNotifications(userId) {
 
     if (snapshot.exists()) {
       snapshot.forEach((child) => {
-        allNotifications.push({
-          id: child.key,
-          ...child.val(),
-        });
+        allNotifications.push(
+          normalizeNotification({
+            id: child.key,
+            ...child.val(),
+          }),
+        );
       });
 
       // Sắp xếp theo createdAt giảm dần (mới nhất lên đầu)
@@ -236,7 +267,9 @@ function applyFilter() {
   if (currentFilter === "all") {
     filteredNotifications = [...allNotifications];
   } else if (currentFilter === "unread") {
-    filteredNotifications = allNotifications.filter((n) => !n.read);
+    filteredNotifications = allNotifications.filter(
+      (n) => !isNotificationRead(n),
+    );
   } else {
     const types = FILTER_TYPE_MAP[currentFilter];
     if (types) {
@@ -283,7 +316,7 @@ function renderNotificationItem(notif) {
   const icon = NOTIFICATION_ICONS[notif.type] || "fa-bell";
   const color = NOTIFICATION_COLORS[notif.type] || "#64748b";
   const timeAgo = formatTimeAgo(notif.createdAt);
-  const readClass = notif.read ? "" : "unread";
+  const readClass = isNotificationRead(notif) ? "" : "unread";
 
   return `
     <div class="page-notification-item ${readClass}" data-id="${notif.id}">
@@ -299,7 +332,7 @@ function renderNotificationItem(notif) {
       </div>
       <div class="page-notification-actions">
         ${
-          !notif.read
+          !isNotificationRead(notif)
             ? `<button class="mark-read-btn" title="Đánh dấu đã đọc">
                 <i class="fas fa-check"></i>
               </button>`
@@ -347,6 +380,7 @@ function attachEventListeners() {
         const notifIndex = allNotifications.findIndex((n) => n.id === notifId);
         if (notifIndex !== -1) {
           allNotifications[notifIndex].read = true;
+          allNotifications[notifIndex].isRead = true;
         }
 
         applyFilter();
@@ -398,7 +432,7 @@ function updatePagination(totalPages) {
 async function markAsRead(userId, notificationId) {
   try {
     const notifRef = ref(database, `notifications/${userId}/${notificationId}`);
-    await update(notifRef, { read: true });
+    await update(notifRef, { read: true, isRead: true });
   } catch (error) {
     console.error("Error marking as read:", error);
   }
@@ -411,8 +445,9 @@ async function markAllAsRead(userId) {
   try {
     const updates = {};
     allNotifications.forEach((notif) => {
-      if (!notif.read) {
+      if (!isNotificationRead(notif)) {
         updates[`notifications/${userId}/${notif.id}/read`] = true;
+        updates[`notifications/${userId}/${notif.id}/isRead`] = true;
       }
     });
 
@@ -422,6 +457,7 @@ async function markAllAsRead(userId) {
       // Update local state
       allNotifications.forEach((notif) => {
         notif.read = true;
+        notif.isRead = true;
       });
 
       applyFilter();

@@ -18,6 +18,8 @@
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.css"
     />
+    <!-- Thư viện export Excel - SheetJS -->
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.0/package/dist/xlsx.full.min.js"></script>
     <script src="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.js"></script>
   </head>
 
@@ -89,15 +91,15 @@
             </a>
           </li>
           <li class="nav-item">
-            <a href="#comments" data-section="comments">
-              <i class="fas fa-comments"></i>
-              <span>Quản lý bình luận</span>
+            <a href="#revenue" data-section="revenue">
+              <i class="fas fa-dollar-sign"></i>
+              <span>Doanh thu</span>
             </a>
           </li>
           <li class="nav-item">
-            <a href="#analytics" data-section="analytics">
-              <i class="fas fa-chart-bar"></i>
-              <span>Thống kê</span>
+            <a href="#comments" data-section="comments">
+              <i class="fas fa-comments"></i>
+              <span>Quản lý bình luận</span>
             </a>
           </li>
           <li class="nav-item">
@@ -162,6 +164,41 @@
               <p>Bài viết</p>
             </div>
           </div>
+          <div class="stat-card">
+            <div class="stat-icon revenue-icon">
+              <i class="fas fa-dollar-sign"></i>
+            </div>
+            <div class="stat-info">
+              <h3 id="total-revenue">0 ₫</h3>
+              <p>Tổng doanh thu</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tabbed Charts -->
+        <div class="admin-card">
+          <div class="card-header chart-card-header">
+            <div class="chart-tabs">
+              <button class="chart-tab-btn active" data-chart="users">
+                <i class="fas fa-users"></i> Người dùng
+              </button>
+              <button class="chart-tab-btn" data-chart="revenue">
+                <i class="fas fa-chart-line"></i> Doanh thu
+              </button>
+              <button class="chart-tab-btn" data-chart="courses">
+                <i class="fas fa-book"></i> Khóa học
+              </button>
+            </div>
+            <select id="dashboard-period" class="form-control">
+              <option value="week">7 ngày qua</option>
+              <option value="month">30 ngày qua</option>
+              <option value="year">365 ngày qua</option>
+              <option value="all" selected>Tất cả</option>
+            </select>
+          </div>
+          <div class="card-body chart-container">
+            <canvas id="dashboard-chart"></canvas>
+          </div>
         </div>
 
         <!-- Recent Activities -->
@@ -182,9 +219,56 @@
         <div class="section-header">
           <h1>Quản lý người dùng</h1>
           <div class="section-actions">
+            <button class="btn btn-secondary" id="export-users-btn">
+              <i class="fas fa-download"></i>
+              Xuất Excel
+            </button>
             <button class="btn btn-primary" id="add-user-btn">
               <i class="fas fa-plus"></i>
               Thêm người dùng
+            </button>
+          </div>
+        </div>
+
+        <!-- Bulk Actions Bar -->
+        <div class="bulk-actions-bar" id="users-bulk-bar" style="display: none">
+          <span class="selected-count"
+            ><i class="fas fa-check-circle"></i>
+            <span class="count-number">0</span> đã chọn</span
+          >
+          <div class="bulk-actions">
+            <button
+              class="btn btn-cancel"
+              id="bulk-cancel-btn"
+              title="Bỏ chọn tất cả"
+            >
+              <i class="fas fa-times"></i>
+              <span>Bỏ chọn</span>
+            </button>
+            <span class="bulk-divider"></span>
+            <button
+              class="btn btn-warning"
+              id="bulk-suspend-btn"
+              title="Tạm ngưng người dùng đã chọn"
+            >
+              <i class="fas fa-pause-circle"></i>
+              <span>Tạm ngưng</span>
+            </button>
+            <button
+              class="btn btn-success"
+              id="bulk-activate-btn"
+              title="Kích hoạt người dùng đã chọn"
+            >
+              <i class="fas fa-play-circle"></i>
+              <span>Kích hoạt</span>
+            </button>
+            <button
+              class="btn btn-danger"
+              id="bulk-delete-btn"
+              title="Xóa vĩnh viễn người dùng đã chọn"
+            >
+              <i class="fas fa-trash-alt"></i>
+              <span>Xóa</span>
             </button>
           </div>
         </div>
@@ -231,9 +315,16 @@
           </div>
           <div class="card-body">
             <div class="table-responsive">
-              <table class="admin-table">
+              <table class="admin-table" id="users-table">
                 <thead>
                   <tr>
+                    <th class="checkbox-col">
+                      <input
+                        type="checkbox"
+                        class="select-all"
+                        title="Chọn tất cả"
+                      />
+                    </th>
                     <th>Avatar</th>
                     <th>Tên</th>
                     <th>Email</th>
@@ -320,13 +411,63 @@
           </div>
         </div>
 
+        <!-- Bulk Actions Bar for Blogs -->
+        <div class="bulk-actions-bar" id="blogs-bulk-bar" style="display: none">
+          <span class="selected-count"
+            ><i class="fas fa-check-circle"></i>
+            <span class="count-number">0</span> đã chọn</span
+          >
+          <div class="bulk-actions">
+            <button
+              class="btn btn-cancel"
+              id="blogs-bulk-cancel-btn"
+              title="Bỏ chọn tất cả"
+            >
+              <i class="fas fa-times"></i>
+              <span>Bỏ chọn</span>
+            </button>
+            <span class="bulk-divider"></span>
+            <button
+              class="btn btn-success"
+              id="blogs-bulk-approve-btn"
+              title="Duyệt bài viết đã chọn"
+            >
+              <i class="fas fa-check"></i>
+              <span>Duyệt</span>
+            </button>
+            <button
+              class="btn btn-warning"
+              id="blogs-bulk-draft-btn"
+              title="Chuyển về bản nháp"
+            >
+              <i class="fas fa-file-alt"></i>
+              <span>Bản nháp</span>
+            </button>
+            <button
+              class="btn btn-danger"
+              id="blogs-bulk-delete-btn"
+              title="Xóa bài viết đã chọn"
+            >
+              <i class="fas fa-trash-alt"></i>
+              <span>Xóa</span>
+            </button>
+          </div>
+        </div>
+
         <!-- Blogs Table -->
         <div class="admin-card">
           <div class="card-body">
             <div class="table-responsive">
-              <table class="admin-table">
+              <table class="admin-table" id="blogs-table">
                 <thead>
                   <tr>
+                    <th class="checkbox-col">
+                      <input
+                        type="checkbox"
+                        class="select-all"
+                        title="Chọn tất cả"
+                      />
+                    </th>
                     <th>Tiêu đề</th>
                     <th>Tác giả</th>
                     <th>Chủ đề</th>
@@ -477,6 +618,45 @@
             </div>
           </div>
 
+          <!-- Bulk Actions Bar for Orders -->
+          <div
+            class="bulk-actions-bar"
+            id="orders-bulk-bar"
+            style="display: none"
+          >
+            <span class="selected-count"
+              ><i class="fas fa-check-circle"></i>
+              <span class="count-number">0</span> đã chọn</span
+            >
+            <div class="bulk-actions">
+              <button
+                class="btn btn-cancel"
+                id="orders-bulk-cancel-btn"
+                title="Bỏ chọn tất cả"
+              >
+                <i class="fas fa-times"></i>
+                <span>Bỏ chọn</span>
+              </button>
+              <span class="bulk-divider"></span>
+              <button
+                class="btn btn-success"
+                id="orders-bulk-complete-btn"
+                title="Xác nhận thanh toán"
+              >
+                <i class="fas fa-check"></i>
+                <span>Hoàn thành</span>
+              </button>
+              <button
+                class="btn btn-danger"
+                id="orders-bulk-cancel-order-btn"
+                title="Hủy đơn hàng"
+              >
+                <i class="fas fa-times-circle"></i>
+                <span>Hủy đơn</span>
+              </button>
+            </div>
+          </div>
+
           <!-- Orders Table -->
           <div class="admin-card">
             <div class="card-header">
@@ -484,9 +664,16 @@
             </div>
             <div class="card-body">
               <div class="table-responsive">
-                <table class="admin-table">
+                <table class="admin-table" id="orders-table">
                   <thead>
                     <tr>
+                      <th class="checkbox-col">
+                        <input
+                          type="checkbox"
+                          class="select-all"
+                          title="Chọn tất cả"
+                        />
+                      </th>
                       <th>Mã đơn hàng</th>
                       <th>Khách hàng</th>
                       <th>Khóa học</th>
@@ -499,7 +686,7 @@
                   </thead>
                   <tbody id="orders-table-body">
                     <tr>
-                      <td colspan="8" class="text-center">Đang tải...</td>
+                      <td colspan="9" class="text-center">Đang tải...</td>
                     </tr>
                   </tbody>
                 </table>
@@ -576,40 +763,95 @@
       </section>
 
       <!-- Comment Section -->
-      <section id="comments" class="admin-section"></section>
+      <section id="comments" class="admin-section">
+        <!-- Bulk Actions Bar for Comment -->
+        <div
+          class="bulk-actions-bar"
+          id="comments-bulk-bar"
+          style="display: none"
+        >
+          <span class="selected-count"
+            ><i class="fas fa-check-circle"></i>
+            <span class="count-number">0</span> đã chọn</span
+          >
+          <div class="bulk-actions">
+            <button
+              class="btn btn-cancel"
+              id="comments-bulk-cancel-btn"
+              title="Bỏ chọn tất cả"
+            >
+              <i class="fas fa-times"></i>
+              <span>Bỏ chọn</span>
+            </button>
+            <span class="bulk-divider"></span>
+            <button
+              class="btn btn-success"
+              id="comments-bulk-hide-btn"
+              title="Ẩn bình luận"
+            >
+              <i class="fas fa-check"></i>
+              <span>Ẩn</span>
+            </button>
+            <button
+              class="btn btn-danger"
+              id="comments-bulk-show-btn"
+              title="Hiện bình luận"
+            >
+              <i class="fas fa-times-circle"></i>
+              <span>Hiện</span>
+            </button>
+            <button
+              class="btn btn-danger"
+              id="comments-bulk-show-btn"
+              title="Xóa bình luận"
+            >
+              <i class="fas fa-times-circle"></i>
+              <span>Xóa</span>
+            </button>
+          </div>
+        </div>
+      </section>
 
-      <!-- Analytics Section -->
-      <section id="analytics" class="admin-section">
+      <!-- Revenue Section -->
+      <section id="revenue" class="admin-section">
         <div class="section-header">
-          <h1>Thống kê</h1>
-          <!-- bộ lọc -->
+          <h1>Doanh thu</h1>
           <div class="section-actions">
-            <select id="analytics-period" class="form-control">
-              <option value="week">7 ngày qua</option>
-              <option value="month">30 ngày qua</option>
-              <option value="year">365 ngày qua</option>
-              <option value="all" selected>Tất cả</option>
+            <select id="revenue-period" class="form-control">
+              <option value="7">7 ngày qua</option>
+              <option value="30" selected>30 ngày qua</option>
+              <option value="90">90 ngày qua</option>
+              <option value="365">1 năm qua</option>
             </select>
+            <button class="btn btn-primary" id="export-revenue-btn">
+              <i class="fas fa-file-excel"></i>
+              Xuất Excel
+            </button>
           </div>
         </div>
 
-        <!-- Charts -->
-        <div class="charts-grid">
-          <div class="admin-card">
-            <div class="card-header">
-              <h3>Người dùng mới theo tháng</h3>
-            </div>
-            <div class="card-body chart-container">
-              <canvas id="users-chart"></canvas>
-            </div>
+        <!-- Revenue Stats Cards -->
+        <div id="revenue-cards">
+          <!-- Cards sẽ được render bởi JS -->
+        </div>
+
+        <!-- Revenue Chart -->
+        <div class="admin-card">
+          <div class="card-header">
+            <h3>Biểu đồ doanh thu theo thời gian</h3>
           </div>
-          <div class="admin-card">
-            <div class="card-header">
-              <h3>Top 5 khóa học phổ biến</h3>
-            </div>
-            <div class="card-body chart-container">
-              <canvas id="courses-chart"></canvas>
-            </div>
+          <div class="card-body chart-container">
+            <canvas id="revenue-detail-chart"></canvas>
+          </div>
+        </div>
+
+        <!-- Top Selling Courses -->
+        <div class="admin-card">
+          <div class="card-header">
+            <h3>Top khóa học bán chạy (theo doanh thu)</h3>
+          </div>
+          <div class="card-body" id="top-courses-revenue">
+            <!-- Table sẽ được render bởi JS -->
           </div>
         </div>
       </section>
@@ -1017,7 +1259,7 @@
                   />
                 </div>
               </div>
-              <div class="form-row" style="grid-template-columns: 1fr;">
+              <div class="form-row" style="grid-template-columns: 1fr">
                 <div class="form-group">
                   <label>Video giới thiệu (Youtube Embed URL):</label>
                   <input
@@ -1373,6 +1615,34 @@
         <div class="modal-body" id="order-detail-body"></div>
         <div class="modal-footer">
           <button class="btn btn-secondary cancel-btn">Đóng</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Confirm Modal - Bulk Actions -->
+    <div class="modal" id="bulk-confirm-modal">
+      <div class="modal-content modal-sm">
+        <div class="modal-header modal-header-danger">
+          <h3>
+            <i class="fas fa-exclamation-triangle"></i> Xác nhận hành động
+          </h3>
+          <button class="close-modal">&times;</button>
+        </div>
+        <div class="modal-body">
+          <p class="confirm-message" id="bulk-confirm-message">
+            Bạn có chắc chắn muốn thực hiện hành động này?
+          </p>
+          <p class="confirm-warning">
+            <i class="fas fa-info-circle"></i> Hành động này không thể hoàn tác.
+          </p>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary cancel-btn" id="bulk-confirm-cancel">
+            <i class="fas fa-times"></i> Hủy bỏ
+          </button>
+          <button class="btn btn-danger" id="bulk-confirm-ok">
+            <i class="fas fa-check"></i> Xác nhận
+          </button>
         </div>
       </div>
     </div>
