@@ -1,5 +1,5 @@
 // Tiện ích hiển thị thông báo cho toàn bộ dự án
-import { database } from "../firebaseConfig.js";
+import { auth, database } from "../firebaseConfig.js";
 import {
   ref,
   push,
@@ -16,6 +16,135 @@ import {
 } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-database.js";
 
 const FEEDBACK_CLASSES = ["success", "error", "warning", "info"];
+const DEFAULT_NOTIFICATION_SERVER_ENDPOINT =
+  "https://notification-dispatch.infocodemasterdev.workers.dev";
+
+function normalizeTimestamp(value) {
+  if (typeof value === "number" && Number.isFinite(value)) return value;
+  if (typeof value === "string") {
+    const asNumber = Number(value);
+    if (Number.isFinite(asNumber)) return asNumber;
+    const parsed = Date.parse(value);
+    if (Number.isFinite(parsed)) return parsed;
+  }
+  return Date.now();
+}
+
+function isNotificationRead(notification) {
+  if (typeof notification?.read === "boolean") return notification.read;
+  if (typeof notification?.isRead === "boolean") return notification.isRead;
+  return false;
+}
+
+function normalizeNotificationRecord(record) {
+  const normalized = {
+    ...record,
+    title: typeof record?.title === "string" ? record.title : "Thông báo",
+    message: typeof record?.message === "string" ? record.message : "",
+    type: VALID_NOTIFICATION_TYPES.has(record?.type)
+      ? record.type
+      : NOTIFICATION_TYPES.SYSTEM,
+    createdAt: normalizeTimestamp(record?.createdAt),
+  };
+
+  const read = isNotificationRead(record);
+  normalized.read = read;
+  normalized.isRead = read;
+
+  return normalized;
+}
+
+function sanitizeNotificationText(value, fallback) {
+  if (typeof value !== "string") return fallback;
+  return value.trim().slice(0, 500);
+}
+
+function sanitizeNotificationLink(link) {
+  if (typeof link !== "string") return null;
+  const trimmed = link.trim();
+  if (!trimmed) return null;
+
+  // Chỉ cho phép internal relative links để tránh open redirect.
+  if (/^https?:\/\//i.test(trimmed) || /^\/\//.test(trimmed)) {
+    return null;
+  }
+
+  return trimmed;
+}
+
+function getNotificationServerEndpointInternal() {
+  const fromWindow =
+    typeof window !== "undefined" ? window.NOTIFICATION_SERVER_ENDPOINT : null;
+  if (typeof fromWindow === "string" && fromWindow.trim()) {
+    return fromWindow.trim().replace(/\/$/, "");
+  }
+
+  if (typeof DEFAULT_NOTIFICATION_SERVER_ENDPOINT === "string") {
+    const endpoint = DEFAULT_NOTIFICATION_SERVER_ENDPOINT.trim();
+    if (endpoint) {
+      return endpoint.replace(/\/$/, "");
+    }
+  }
+
+  return null;
+}
+
+export function getNotificationServerEndpoint() {
+  return getNotificationServerEndpointInternal();
+}
+
+export function setNotificationServerEndpoint(endpoint) {
+  if (typeof window === "undefined") return;
+
+  const normalized = typeof endpoint === "string" ? endpoint.trim() : "";
+  if (!normalized) {
+    window.NOTIFICATION_SERVER_ENDPOINT = null;
+    return;
+  }
+
+  const safeEndpoint = normalized.replace(/\/$/, "");
+  window.NOTIFICATION_SERVER_ENDPOINT = safeEndpoint;
+}
+
+async function dispatchNotificationViaServer(userId, payload) {
+  const endpoint = getNotificationServerEndpointInternal();
+  if (!endpoint) return null;
+
+  const headers = {
+    "Content-Type": "application/json",
+  };
+
+  const idToken = await auth.currentUser?.getIdToken().catch(() => null);
+  if (idToken) {
+    headers.Authorization = `Bearer ${idToken}`;
+  }
+
+  try {
+    const response = await fetch(`${endpoint}/notification`, {
+      method: "POST",
+      headers,
+      body: JSON.stringify({ userId, ...payload }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`Server dispatch failed: ${response.status}`);
+    }
+
+    const result = await response.json().catch(() => ({}));
+    return {
+      id: result?.id || null,
+      ...payload,
+      read: false,
+      isRead: false,
+    };
+  } catch (error) {
+    console.warn(
+      "dispatchNotificationViaServer failed, fallback to client write",
+      error,
+    );
+    return null;
+  }
+}
 
 function resolveElement(target) {
   if (!target) return null;
@@ -132,6 +261,8 @@ export const NOTIFICATION_TYPES = {
   PROMOTION: "promotion",
   SYSTEM: "system",
 };
+
+const VALID_NOTIFICATION_TYPES = new Set(Object.values(NOTIFICATION_TYPES));
 
 // Icon mapping cho từng loại thông báo
 const NOTIFICATION_ICONS = {
@@ -297,25 +428,26 @@ export class NotificationService {
     // Đánh dấu đã load xong dữ liệu ban đầu (sau khi xử lý xong)
     // Dùng setTimeout để đảm bảo tất cả onChildAdded đã fire xong
     if (!this._initialLoadComplete) {
-      setTimeout(() => {
-        this._initialLoadComplete = true;
-      }, 500);
+      this._initialLoadComplete = true;
     }
 
     if (snapshot.exists()) {
       const notifArray = [];
       snapshot.forEach((child) => {
-        notifArray.push({
+        const normalized = normalizeNotificationRecord({
           id: child.key,
           ...child.val(),
         });
+        notifArray.push(normalized);
       });
 
       // Sắp xếp theo createdAt giảm dần (mới nhất lên đầu)
       notifArray.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
 
       this.notifications = notifArray;
-      this.unreadCount = notifArray.filter((n) => !n.read).length;
+      this.unreadCount = notifArray.filter(
+        (n) => !isNotificationRead(n),
+      ).length;
     }
 
     this._notifyListeners("update", {
@@ -333,10 +465,10 @@ export class NotificationService {
       return;
     }
 
-    const notification = {
+    const notification = normalizeNotificationRecord({
       id: snapshot.key,
       ...snapshot.val(),
-    };
+    });
 
     // Bỏ qua nếu đã hiển thị toast cho notification này
     if (this._shownToastIds.has(notification.id)) {
@@ -352,7 +484,7 @@ export class NotificationService {
     const isNewSinceInit = notifTime > this._initTime;
     const isRecent = now - notifTime < 30000;
 
-    if (isNewSinceInit && isRecent && !notification.read) {
+    if (isNewSinceInit && isRecent && !isNotificationRead(notification)) {
       this._shownToastIds.add(notification.id);
       this._showToast(notification);
     }
@@ -470,7 +602,7 @@ export class NotificationService {
         database,
         `notifications/${this.userId}/${notificationId}`,
       );
-      await update(notifRef, { read: true });
+      await update(notifRef, { read: true, isRead: true });
     } catch (error) {
       console.error("Error marking notification as read:", error);
     }
@@ -485,8 +617,9 @@ export class NotificationService {
     try {
       const updates = {};
       this.notifications.forEach((notif) => {
-        if (!notif.read) {
+        if (!isNotificationRead(notif)) {
           updates[`notifications/${this.userId}/${notif.id}/read`] = true;
+          updates[`notifications/${this.userId}/${notif.id}/isRead`] = true;
         }
       });
 
@@ -571,22 +704,63 @@ export async function createNotification(userId, notificationData) {
     const notificationsRef = ref(database, `notifications/${userId}`);
     const newNotifRef = push(notificationsRef);
 
+    const type = VALID_NOTIFICATION_TYPES.has(notificationData?.type)
+      ? notificationData.type
+      : NOTIFICATION_TYPES.SYSTEM;
+
+    const title = sanitizeNotificationText(
+      notificationData?.title,
+      "Thông báo",
+    );
+    const message = sanitizeNotificationText(notificationData?.message, "");
+    const link = sanitizeNotificationLink(notificationData?.link);
+
     const notification = {
-      type: notificationData.type || NOTIFICATION_TYPES.SYSTEM,
-      title: notificationData.title || "Thông báo",
-      message: notificationData.message || "",
-      link: notificationData.link || null,
-      data: notificationData.data || null,
+      type,
+      title,
+      message,
+      link,
+      data: notificationData?.data || null,
       read: false,
+      isRead: false,
       createdAt: Date.now(),
     };
+
+    // Production-first: nếu có endpoint server thì gửi qua server trước.
+    const serverResult = await dispatchNotificationViaServer(
+      userId,
+      notification,
+    );
+    if (serverResult) {
+      return serverResult;
+    }
 
     await set(newNotifRef, notification);
     return { id: newNotifRef.key, ...notification };
   } catch (error) {
-    console.error("Error creating notification:", error);
+    if (
+      error?.code === "PERMISSION_DENIED" ||
+      /permission_denied/i.test(error?.message || "")
+    ) {
+      console.error(
+        "createNotification: permission denied. Hãy kiểm tra Firebase Rules hoặc chuyển sang server-side dispatch.",
+        error,
+      );
+    } else {
+      console.error("Error creating notification:", error);
+    }
     return null;
   }
+}
+
+/**
+ * Thông báo hệ thống: dùng cho các bản tin vận hành nền tảng (bảo trì, cập nhật, chính sách...)
+ */
+export async function createSystemNotification(userId, data = {}) {
+  return createNotification(userId, {
+    ...data,
+    type: NOTIFICATION_TYPES.SYSTEM,
+  });
 }
 
 /**
